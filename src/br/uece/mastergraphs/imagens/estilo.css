@@ -1,0 +1,9 @@
+.grupoesquerda {
+	-fx-radius: 0,0,3,3;
+}
+.grupointerno {
+	-fx-background-radius: 0;
+}
+.grupodireita {
+	-fx-background-radius: 3, 3, 0, 0;
+}
