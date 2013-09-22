@@ -11,7 +11,7 @@ import java.util.List;
 import javafx.scene.paint.Paint;
 
 /**
- *
+ * Design pattern Observer
  * @author Emerson
  */
 public class Grafo2 implements Grafo {
