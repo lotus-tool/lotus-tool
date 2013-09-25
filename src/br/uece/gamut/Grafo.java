@@ -14,5 +14,6 @@ public interface Grafo {
     
     List<Vertice> getVertices();
     List<Ligacao> getLigacoes();
+    void adicionarVertice(Vertice v);
     
 }

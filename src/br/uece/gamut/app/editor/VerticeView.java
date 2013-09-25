@@ -21,5 +21,13 @@ public class VerticeView implements Vertice {
     public List<Ligacao> getLigacoes() {
         return this.ligacoes;
     }
+
+    void setPosicao(double sceneX, double sceneY) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    void setRotulo(String string) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
     
 }

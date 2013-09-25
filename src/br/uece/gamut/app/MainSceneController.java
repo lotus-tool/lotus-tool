@@ -18,49 +18,53 @@ import javafx.stage.FileChooser;
 
 public class MainSceneController implements Initializable {
 
-        private GrafoEditor editor = new GrafoEditor();        
-        @FXML private GrafoView view;        
-	              
-	@FXML protected void handleVertice(ActionEvent event) {
-		editor.setModo(GrafoEditor.MODO_ADICIONAR_VERTICE);
-                
-                Grafo g = (Grafo) view;
-                g.getVertices();
-	}
-                
-        @FXML protected void handleAbrir(ActionEvent event) {            
-            File file = selecionarArquivo();
-            GrafoUnmarshaller parser = GrafoParserFacade.getUnmarshallerByFile(file);
-            try (FileInputStream in = new FileInputStream(file)) {                
-                view.clear();
-                parser.unmarshaller(in, view);
-            } catch (Exception e) {                
-                mostrarDialogoErro(e);
-            }
-        }
-        
-        @FXML protected void handleSalvar(ActionEvent event) {            
-            FileChooser fileChooser = new FileChooser();
-             
-            FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Arquivos MasterGraphs (*.gph)", "*.gph");
-            fileChooser.getExtensionFilters().add(extFilter);
-            
-            File file = fileChooser.showSaveDialog(null);
-            if (file == null) {
-                return;
-            }
-            try (FileOutputStream out = new FileOutputStream(file)) {                
-                GrafoMarshaller parser = GrafoParserFacade.getMarshallerByFile(file);                
-                parser.marshaller(view, out);
-                out.close();
-            } catch (Exception e) {
-                mostrarDialogoErro(e);
-            }            
-        }
-	
+    private GrafoEditor editor = new GrafoEditor();
+    @FXML
+    private GrafoView view;
+
     @Override
-    public void initialize(URL location, ResourceBundle resources) {        
+    public void initialize(URL location, ResourceBundle resources) {
         editor.setGrafoView(view);
+    }
+
+    @FXML
+    protected void handleVertice(ActionEvent event) {
+        editor.setModo(GrafoEditor.MODO_ADICIONAR_VERTICE);
+
+        Grafo g = (Grafo) view;
+        g.getVertices();
+    }
+
+    @FXML
+    protected void handleAbrir(ActionEvent event) {
+        File file = selecionarArquivo();
+        GrafoUnmarshaller parser = GrafoParserFacade.getUnmarshallerByFile(file);
+        try (FileInputStream in = new FileInputStream(file)) {
+            view.clear();
+            parser.unmarshaller(in, view);
+        } catch (Exception e) {
+            mostrarDialogoErro(e);
+        }
+    }
+
+    @FXML
+    protected void handleSalvar(ActionEvent event) {
+        FileChooser fileChooser = new FileChooser();
+
+        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Arquivos MasterGraphs (*.gph)", "*.gph");
+        fileChooser.getExtensionFilters().add(extFilter);
+
+        File file = fileChooser.showSaveDialog(null);
+        if (file == null) {
+            return;
+        }
+        try (FileOutputStream out = new FileOutputStream(file)) {
+            GrafoMarshaller parser = GrafoParserFacade.getMarshallerByFile(file);
+            parser.marshaller(view, out);
+            out.close();
+        } catch (Exception e) {
+            mostrarDialogoErro(e);
+        }
     }
 
     private void mostrarDialogoErro(Exception e) {
@@ -68,12 +72,11 @@ public class MainSceneController implements Initializable {
     }
 
     private File selecionarArquivo() {
-        FileChooser fileChooser = new FileChooser(); 
+        FileChooser fileChooser = new FileChooser();
         //Set extension filter
         //FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Arquivos MasterGraphs (*.gph)", "*.gph");
         //fileChooser.getExtensionFilters().add(extFilter);
         //Show open file dialog
-        return fileChooser.showOpenDialog(null);            
+        return fileChooser.showOpenDialog(null);
     }
-	
 }

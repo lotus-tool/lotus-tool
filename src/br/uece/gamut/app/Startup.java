@@ -14,9 +14,7 @@ public class Startup extends Application {
 	
 	@Override
 	public void start(Stage stage) throws Exception {
-		Parent root = FXMLLoader.load(getClass().getResource("FrmPrincipal.fxml"));
-		FrmPrincipalController.setEditor((GrafoView) root.getChildrenUnmodifiable().get(1));
-		
+		Parent root = FXMLLoader.load(getClass().getResource("FrmPrincipal.fxml"));		
 		stage.setTitle(TITULO_APP);
 		stage.setScene(new Scene(root, 600, 500));
 		stage.show();
