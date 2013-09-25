@@ -11,40 +11,32 @@ import java.io.FileOutputStream;
 import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
-
+import br.uece.gamut.Grafo;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.stage.FileChooser;
 
 public class MainSceneController implements Initializable {
 
-        private GrafoEditor editor;        
-    
+        private GrafoEditor editor = new GrafoEditor();        
         @FXML private GrafoView view;        
 	              
 	@FXML protected void handleVertice(ActionEvent event) {
 		editor.setModo(GrafoEditor.MODO_ADICIONAR_VERTICE);
+                
+                Grafo g = (Grafo) view;
+                g.getVertices();
 	}
                 
         @FXML protected void handleAbrir(ActionEvent event) {            
-            FileChooser fileChooser = new FileChooser(); 
-            //Set extension filter
-            //FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Arquivos MasterGraphs (*.gph)", "*.gph");
-            //fileChooser.getExtensionFilters().add(extFilter);
-            //Show open file dialog
-            File file = fileChooser.showOpenDialog(null);
-            if (file == null) {
-                return;
-            }
+            File file = selecionarArquivo();
             GrafoUnmarshaller parser = GrafoParserFacade.getUnmarshallerByFile(file);
-            //FileInputStream in = new FileInputStream(file);
             try (FileInputStream in = new FileInputStream(file)) {                
                 view.clear();
                 parser.unmarshaller(in, view);
-                in.close();
             } catch (Exception e) {                
                 mostrarDialogoErro(e);
-            }                     
+            }
         }
         
         @FXML protected void handleSalvar(ActionEvent event) {            
@@ -67,13 +59,21 @@ public class MainSceneController implements Initializable {
         }
 	
     @Override
-    public void initialize(URL location, ResourceBundle resources) {
-        editor = new GrafoEditor();
+    public void initialize(URL location, ResourceBundle resources) {        
         editor.setGrafoView(view);
     }
 
     private void mostrarDialogoErro(Exception e) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    private File selecionarArquivo() {
+        FileChooser fileChooser = new FileChooser(); 
+        //Set extension filter
+        //FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Arquivos MasterGraphs (*.gph)", "*.gph");
+        //fileChooser.getExtensionFilters().add(extFilter);
+        //Show open file dialog
+        return fileChooser.showOpenDialog(null);            
     }
 	
 }
