@@ -53,4 +53,9 @@ public class GrafoEditor {
         view.setOnMouseClicked(aoClicarMouse);
         contador = view.getVertices().size() - 1;
     }
+
+    public GrafoView getGrafo() {
+        return view;
+    }
+
 }
