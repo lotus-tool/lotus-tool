@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import br.uece.mastergraphs.*?>
+<?import br.uece.gamut.app.editor.GrafoView?>
 <?import java.lang.*?>
 <?import java.util.*?>
 <?import javafx.collections.*?>
@@ -10,7 +10,7 @@
 <?import javafx.scene.paint.*?>
 <?import javafx.scene.text.*?>
 
-<AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns:fx="http://javafx.com/fxml" fx:controller="br.uece.mastergraphs.FrmPrincipalController">
+<AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns:fx="http://javafx.com/fxml" fx:controller="br.uece.gamut.app.MainSceneController">
   <children>
     <ToolBar layoutY="-2.0" prefHeight="45.0" prefWidth="599.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="1.0">
       <items>
