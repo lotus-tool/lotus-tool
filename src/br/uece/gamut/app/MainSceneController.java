@@ -79,4 +79,6 @@ public class MainSceneController implements Initializable {
         //Show open file dialog
         return fileChooser.showOpenDialog(null);
     }
+    
+    //
 }
