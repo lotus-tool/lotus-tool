@@ -23,22 +23,43 @@ public class GrafoEditor {
     private int modo;
     private GrafoView view;
     private int contador;
+    
     private EventHandler<? super MouseEvent> aoClicarMouse = new EventHandler<MouseEvent>() {
         @Override
         public void handle(MouseEvent t) {
             switch (modo) {
                 case MODO_ADICIONAR_VERTICE:
+                    //TODO
                     adicionarVertice(t);
                     break;
                 case MODO_ADICIONAR_LIGACAO:
+                    //TODO
                     break;
+                case MODO_MOVER_VERTICE:
+                    //TODO
+                    break;
+                case MODO_NENHUM:
+                    //TODO
+                    break;
+                case MODO_REMOVER_LIGACAO:
+                    //TODO
+                    break;
+                case MODO_REMOVER_VERTICE:
+                    //TODO
+                    break;
+                case MODO_SELECIONAR_LIGACAO:
+                    //TODO
+                case MODO_SELECIONAR_VERTICE:
+                    //TODO
+                    break;
+                    
             }
         }
     };
     
     
     private void adicionarVertice(MouseEvent t) {
-        VerticeView v = new VerticeView();
+        VerticeView v = new VerticeView(contador);
         v.setPosicao(t.getSceneX(), t.getSceneY());
         v.setRotulo("" + contador++);
         view.adicionarVertice(v);
