@@ -72,7 +72,7 @@ public class GrafoEditor {
     public void setGrafoView(GrafoView view) {
         this.view = view;
         view.setOnMouseClicked(aoClicarMouse);
-        contador = view.getVertices().size() - 1;
+      //  contador = view.getVertices().size() - 1;
     }
 
     public GrafoView getGrafo() {

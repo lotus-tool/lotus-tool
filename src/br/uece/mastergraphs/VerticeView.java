@@ -45,7 +45,7 @@ public class VerticeView extends Region implements Vertice2.Listener {
         getChildren().add(circle);
         text = new Text();
         getChildren().add(text);
-        vertice.addListener(this);
+        vertice.addListener(this);        
     }
 
     public void setNome(String nome) {

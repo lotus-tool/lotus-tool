@@ -22,7 +22,7 @@ public class MainSceneController implements Initializable {
 
     private GrafoEditor editor = new GrafoEditor();
     @FXML
-    private GrafoView view;
+    protected GrafoView view;
     
     @FXML protected Button btnNovo;
     
@@ -45,6 +45,7 @@ public class MainSceneController implements Initializable {
     
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        //if (view == null) new throw RuntimeException("View is null!");
         editor.setGrafoView(view);
     }
     
