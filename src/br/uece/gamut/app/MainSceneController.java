@@ -14,6 +14,8 @@ import javafx.event.ActionEvent;
 import br.uece.gamut.Grafo;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Button;
+import javafx.scene.control.ToggleButton;
 import javafx.stage.FileChooser;
 
 public class MainSceneController implements Initializable {
@@ -21,20 +23,36 @@ public class MainSceneController implements Initializable {
     private GrafoEditor editor = new GrafoEditor();
     @FXML
     private GrafoView view;
-
+    
+    @FXML protected Button btnNovo;
+    
+    @FXML protected Button btnAbrir;
+    
+    @FXML protected Button btnSalvar;
+    
+    @FXML protected ToggleButton btnDefault;
+    
+    @FXML protected ToggleButton btnMover;
+    
+    @FXML protected ToggleButton btnAddEstado;
+    
+    @FXML protected ToggleButton btnAddLigacao;
+    
+    @FXML protected ToggleButton btnDelEstado;
+    
+    @FXML protected ToggleButton btnDelLigacao;
+    
+    
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         editor.setGrafoView(view);
     }
-
+    
     @FXML
-    protected void handleVertice(ActionEvent event) {
-        editor.setModo(GrafoEditor.MODO_ADICIONAR_VERTICE);
-
-        Grafo g = (Grafo) view;
-        g.getVertices();
+    protected void handleNovo(ActionEvent event){
+       editor.getGrafo().clear();
     }
-
+    
     @FXML
     protected void handleAbrir(ActionEvent event) {
         File file = selecionarArquivo();
@@ -67,6 +85,39 @@ public class MainSceneController implements Initializable {
         }
     }
 
+    @FXML
+    protected void handleMouseDefault(ActionEvent event) {
+        editor.setModo(GrafoEditor.MODO_NENHUM);
+        System.out.println("modo Default");
+    }
+
+    @FXML
+    protected void handleMover(ActionEvent event) {
+        editor.setModo(GrafoEditor.MODO_MOVER_VERTICE);
+    }
+
+    @FXML
+    protected void handleAddVertice(ActionEvent event) {
+        editor.setModo(GrafoEditor.MODO_ADICIONAR_VERTICE);
+        Grafo g = (Grafo) view;
+        g.getVertices();
+    }
+
+    @FXML
+    protected void handleAddLigacao(ActionEvent event){
+        editor.setModo(GrafoEditor.MODO_ADICIONAR_LIGACAO);
+    }
+    
+    @FXML
+    protected void handleDelVertice(ActionEvent event){
+        editor.setModo(GrafoEditor.MODO_REMOVER_VERTICE);
+    }
+    
+    @FXML
+    protected void handleDelLigacao(ActionEvent event){
+        editor.setModo(GrafoEditor.MODO_REMOVER_LIGACAO);
+    }
+
     private void mostrarDialogoErro(Exception e) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
@@ -79,6 +130,4 @@ public class MainSceneController implements Initializable {
         //Show open file dialog
         return fileChooser.showOpenDialog(null);
     }
-    
-    //
 }

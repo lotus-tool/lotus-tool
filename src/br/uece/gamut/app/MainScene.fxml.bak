@@ -10,11 +10,11 @@
 <?import javafx.scene.paint.*?>
 <?import javafx.scene.text.*?>
 
-<AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns:fx="http://javafx.com/fxml" fx:controller="br.uece.mastergraphs.FrmPrincipalController">
+<AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns:fx="http://javafx.com/fxml" fx:controller="br.uece.gamut.app.MainSceneController">
   <children>
-    <ToolBar layoutY="-2.0" prefHeight="45.0" prefWidth="599.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="1.0">
+    <ToolBar layoutY="-2.0" prefHeight="47.0" prefWidth="600.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
       <items>
-        <HBox alignment="CENTER_LEFT" prefHeight="37.0" prefWidth="569.0" spacing="20.0">
+        <HBox alignment="CENTER_LEFT" prefHeight="37.0" prefWidth="576.0" spacing="20.0">
           <children>
             <Label contentDisplay="CENTER" prefWidth="61.0" text="GAMuT">
               <font>
@@ -30,6 +30,9 @@
                       <Image url="@../../mastergraphs/imagens/NewGraphic.png" preserveRatio="false" smooth="false" />
                     </ImageView>
                   </graphic>
+                  <tooltip>
+                    <Tooltip text="Novo Projeto" />
+                  </tooltip>
                 </Button>
                 <Button fx:id="btnAbrir" minHeight="31.0" minWidth="47.0" onAction="#handleAbrir" prefHeight="33.0" prefWidth="47.000099999997474">
                   <graphic>
@@ -37,6 +40,9 @@
                       <Image url="@../../mastergraphs/imagens/Abrir_1.png" preserveRatio="false" smooth="false" />
                     </ImageView>
                   </graphic>
+                  <tooltip>
+                    <Tooltip text="Abrir Projeto" />
+                  </tooltip>
                 </Button>
                 <Button fx:id="btnSalvar" minHeight="31.0" minWidth="47.0" onAction="#handleSalvar" prefHeight="32.0" prefWidth="48.0">
                   <graphic>
@@ -44,6 +50,9 @@
                       <Image url="@../../mastergraphs/imagens/Salvar_1.png" preserveRatio="false" smooth="false" />
                     </ImageView>
                   </graphic>
+                  <tooltip>
+                    <Tooltip text="Salvar Projeto" />
+                  </tooltip>
                 </Button>
               </children>
             </HBox>
@@ -59,7 +68,7 @@
           <children>
             <VBox alignment="TOP_CENTER" prefHeight="69.0" prefWidth="51.0" spacing="5.0">
               <children>
-                <ToggleButton fx:id="btnSelecionar" minHeight="32.0" minWidth="38.0" onAction="#handleSelecionar" prefHeight="32.000099999997474" prefWidth="47.0">
+                <ToggleButton id="btnSelecionar" fx:id="btnDefault" minHeight="32.0" minWidth="38.0" onAction="#handleMouseDefault" prefHeight="32.000099999997474" prefWidth="47.0">
                   <graphic>
                     <ImageView fitHeight="26.0" fitWidth="23.0">
                       <Image url="@../../mastergraphs/imagens/Cursor.png" preserveRatio="false" smooth="false" />
@@ -72,7 +81,7 @@
                     <Tooltip text="Default" />
                   </tooltip>
                 </ToggleButton>
-                <ToggleButton fx:id="btnApagar" onAction="#handleApagar" prefHeight="31.0" prefWidth="47.0" toggleGroup="$ferramentas">
+                <ToggleButton id="btnApagar" fx:id="btnMover" onAction="#handleMover" prefHeight="31.0" prefWidth="47.0" toggleGroup="$ferramentas">
                   <graphic>
                     <ImageView fitHeight="26.0" fitWidth="23.0">
                       <Image url="@../../mastergraphs/imagens/DragnDrop.png" preserveRatio="false" smooth="false" />
@@ -93,6 +102,9 @@
                       <Image url="@../../mastergraphs/imagens/Positive.png" preserveRatio="false" smooth="false" />
                     </ImageView>
                   </graphic>
+                  <tooltip>
+                    <Tooltip text="Cricar Estado" />
+                  </tooltip>
                 </ToggleButton>
                 <ToggleButton fx:id="btnVertice" minWidth="47.0" onAction="#handleVertice" prefHeight="37.0" prefWidth="47.0" toggleGroup="$ferramentas">
                   <graphic>
@@ -100,6 +112,9 @@
                       <Image url="@../../mastergraphs/imagens/LinkAdd.png" preserveRatio="false" smooth="false" />
                     </ImageView>
                   </graphic>
+                  <tooltip>
+                    <Tooltip text="Criar Ligação" />
+                  </tooltip>
                 </ToggleButton>
               </children>
             </VBox>
@@ -112,6 +127,9 @@
                       <Image url="@../../mastergraphs/imagens/Negative.png" preserveRatio="false" smooth="false" />
                     </ImageView>
                   </graphic>
+                  <tooltip>
+                    <Tooltip text="Deletar Estado" />
+                  </tooltip>
                 </ToggleButton>
                 <ToggleButton id="btnLigacao" minWidth="47.0" onAction="#handleLigacao" prefHeight="37.0" prefWidth="47.0">
                   <graphic>
@@ -122,6 +140,9 @@
                   <toggleGroup>
                     <ToggleGroup />
                   </toggleGroup>
+                  <tooltip>
+                    <Tooltip text="Deletar Ligação" />
+                  </tooltip>
                 </ToggleButton>
               </children>
             </VBox>
