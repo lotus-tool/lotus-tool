@@ -15,6 +15,7 @@ import javafx.scene.layout.Region;
  * @author emerson
  */
 public class GrafoView extends Region implements Grafo {
+
     private List<Vertice> vertices;
 
     public void clear() {
@@ -34,10 +35,13 @@ public class GrafoView extends Region implements Grafo {
 
     @Override
     public void adicionarVertice(Vertice v) {
-        if (v instanceof VerticeView) throw new IllegalArgumentException("v deve ser do tipo VerticeView!");
-        vertices.add(v);
-        getChildren().add((Region) v);
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        if (v instanceof VerticeView) {
+            //vertices.add(v); //Joga NullPointException
+            getChildren().add((Region) v);
+        } else {
+            throw new IllegalArgumentException("v deve ser do tipo VerticeView!");
+        }
+
+//        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-    
 }

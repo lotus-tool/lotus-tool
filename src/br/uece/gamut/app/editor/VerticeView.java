@@ -12,6 +12,7 @@ import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.StrokeType;
+import javafx.scene.text.Text;
 
 /**
  *
@@ -24,8 +25,9 @@ public class VerticeView extends Region implements Vertice {
     public static final int ESPESSURA_PERIMETRO_CIRCULO = 2;
    
     private List<Ligacao> ligacoes = new ArrayList<>();
+    private Text text;
     
-    //Acrescentar o Contador no meio do vertice
+
     public VerticeView(int contador){
         circle = new Circle(RAIO_CIRCULO);
         circle.setStrokeType(StrokeType.OUTSIDE);
@@ -34,10 +36,11 @@ public class VerticeView extends Region implements Vertice {
             circle.setFill(Color.RED);
         } else{
             circle.setFill(Color.CYAN);
-        }
-                
-        getChildren().add(circle);
-        
+        }                
+        getChildren().add(circle);      
+       
+        text = new Text();        
+        getChildren().add(text);
         
     }
     
@@ -47,11 +50,14 @@ public class VerticeView extends Region implements Vertice {
     }
 
     void setPosicao(double sceneX, double sceneY) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        setLayoutX(sceneX);
+        setLayoutY(sceneY);
+     //   throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     void setRotulo(String string) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        text.setText(string);
+        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     
 }

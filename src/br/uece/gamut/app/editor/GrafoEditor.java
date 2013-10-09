@@ -59,10 +59,11 @@ public class GrafoEditor {
     
     
     private void adicionarVertice(MouseEvent t) {
-        VerticeView v = new VerticeView(contador);
-        v.setPosicao(t.getSceneX(), t.getSceneY());
-        v.setRotulo("" + contador++);
+        VerticeView v = new VerticeView(contador);        
+        v.setPosicao(t.getX(), t.getY());
+        v.setRotulo(contador+"");
         view.adicionarVertice(v);
+        contador++;
     }
 
     public void setModo(int modo) {
