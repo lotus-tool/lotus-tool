@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import br.uece.gamut.app.editor.GrafoView?>
+<?import br.uece.gamut.app.editor.*?>
 <?import java.lang.*?>
 <?import java.util.*?>
 <?import javafx.collections.*?>
@@ -131,7 +131,7 @@
                     <Tooltip text="Deletar Estado" />
                   </tooltip>
                 </ToggleButton>
-                <ToggleButton id="btnLigacao" fx:id="btnDelLigacao" minWidth="47.0" onAction="#handleDelLigacao" prefHeight="37.0" prefWidth="47.0">
+                <ToggleButton id="btnLigacao" fx:id="btnDelLigacao" minWidth="47.0" onAction="#handleDelLigacao" prefHeight="37.0" prefWidth="47.0" toggleGroup="$ferramentas">
                   <graphic>
                     <ImageView>
                       <Image url="@../../mastergraphs/imagens/UnLink.png" preserveRatio="false" smooth="false" />

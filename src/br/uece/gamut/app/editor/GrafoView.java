@@ -7,8 +7,10 @@ package br.uece.gamut.app.editor;
 import br.uece.gamut.Grafo;
 import br.uece.gamut.Ligacao;
 import br.uece.gamut.Vertice;
+import java.util.ArrayList;
 import java.util.List;
 import javafx.scene.layout.Region;
+import javafx.scene.shape.Circle;
 
 /**
  *
@@ -16,7 +18,7 @@ import javafx.scene.layout.Region;
  */
 public class GrafoView extends Region implements Grafo {
 
-    private List<Vertice> vertices;
+    private List<Vertice> vertices = new ArrayList<>();
 
     public void clear() {
         vertices.clear();
@@ -36,12 +38,12 @@ public class GrafoView extends Region implements Grafo {
     @Override
     public void adicionarVertice(Vertice v) {
         if (v instanceof VerticeView) {
-            //vertices.add(v); //Joga NullPointException
+            vertices.add(v); 
             getChildren().add((Region) v);
         } else {
             throw new IllegalArgumentException("v deve ser do tipo VerticeView!");
         }
 
 //        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+    }   
 }

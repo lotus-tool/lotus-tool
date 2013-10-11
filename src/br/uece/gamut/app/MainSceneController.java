@@ -14,6 +14,7 @@ import javafx.event.ActionEvent;
 import br.uece.gamut.Grafo;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Cursor;
 import javafx.scene.control.Button;
 import javafx.scene.control.ToggleButton;
 import javafx.stage.FileChooser;
@@ -42,20 +43,22 @@ public class MainSceneController implements Initializable {
     
     @FXML protected ToggleButton btnDelLigacao;
     
+     ToggleButton group;
     
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        //if (view == null) new throw RuntimeException("View is null!");
+        //if (view == null) new throw RuntimeException("View is null!");        
+      
         editor.setGrafoView(view);
     }
     
     @FXML
-    protected void handleNovo(ActionEvent event){
-       editor.getGrafo().clear();
+    protected void handleNovo(ActionEvent event){       
+        editor.getGrafo().clear();
     }
     
     @FXML
-    protected void handleAbrir(ActionEvent event) {
+    protected void handleAbrir(ActionEvent event) {       
         File file = selecionarArquivo();
         GrafoUnmarshaller parser = GrafoParserFacade.getUnmarshallerByFile(file);
         try (FileInputStream in = new FileInputStream(file)) {
@@ -67,7 +70,7 @@ public class MainSceneController implements Initializable {
     }
 
     @FXML
-    protected void handleSalvar(ActionEvent event) {
+    protected void handleSalvar(ActionEvent event) {        
         FileChooser fileChooser = new FileChooser();
 
         FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Arquivos MasterGraphs (*.gph)", "*.gph");
@@ -89,16 +92,18 @@ public class MainSceneController implements Initializable {
     @FXML
     protected void handleMouseDefault(ActionEvent event) {
         editor.setModo(GrafoEditor.MODO_NENHUM);
-        System.out.println("modo Default");
+        view.setCursor(Cursor.DEFAULT);        
     }
 
     @FXML
     protected void handleMover(ActionEvent event) {
         editor.setModo(GrafoEditor.MODO_MOVER_VERTICE);
+        view.setCursor(Cursor.MOVE);
     }
 
     @FXML
     protected void handleAddVertice(ActionEvent event) {
+        view.setCursor(Cursor.DEFAULT); 
         editor.setModo(GrafoEditor.MODO_ADICIONAR_VERTICE);
         Grafo g = (Grafo) view;
         g.getVertices();
@@ -106,16 +111,19 @@ public class MainSceneController implements Initializable {
 
     @FXML
     protected void handleAddLigacao(ActionEvent event){
+       view.setCursor(Cursor.DEFAULT); 
         editor.setModo(GrafoEditor.MODO_ADICIONAR_LIGACAO);
     }
     
     @FXML
     protected void handleDelVertice(ActionEvent event){
+        view.setCursor(Cursor.DEFAULT); 
         editor.setModo(GrafoEditor.MODO_REMOVER_VERTICE);
     }
     
     @FXML
     protected void handleDelLigacao(ActionEvent event){
+        view.setCursor(Cursor.DEFAULT); 
         editor.setModo(GrafoEditor.MODO_REMOVER_LIGACAO);
     }
 
@@ -124,6 +132,7 @@ public class MainSceneController implements Initializable {
     }
 
     private File selecionarArquivo() {
+        view.setCursor(Cursor.DEFAULT); 
         FileChooser fileChooser = new FileChooser();
         //Set extension filter
         //FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Arquivos MasterGraphs (*.gph)", "*.gph");
