@@ -10,7 +10,6 @@ import br.uece.gamut.Vertice;
 import java.util.ArrayList;
 import java.util.List;
 import javafx.scene.layout.Region;
-import javafx.scene.shape.Circle;
 
 /**
  *
@@ -38,12 +37,18 @@ public class GrafoView extends Region implements Grafo {
     @Override
     public void adicionarVertice(Vertice v) {
         if (v instanceof VerticeView) {
-            vertices.add(v); 
+            vertices.add(v);
             getChildren().add((Region) v);
         } else {
             throw new IllegalArgumentException("v deve ser do tipo VerticeView!");
         }
 
 //        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }   
+    }
+
+    void removerVerticeView(Vertice v) {
+        VerticeView vv = (VerticeView) v;
+        vertices.remove(v);
+        getChildren().remove(vv);
+    }
 }

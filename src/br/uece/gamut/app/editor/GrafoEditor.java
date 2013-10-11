@@ -1,12 +1,11 @@
 package br.uece.gamut.app.editor;
 
 import br.uece.gamut.Vertice;
-import static br.uece.gamut.app.editor.GrafoEditor.MODO_ADICIONAR_LIGACAO;
 import static br.uece.gamut.app.editor.GrafoEditor.MODO_ADICIONAR_VERTICE;
 import java.util.List;
 import javafx.event.EventHandler;
-import javafx.scene.Cursor;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 
 /**
@@ -24,40 +23,66 @@ public class GrafoEditor {
     public static final int MODO_REMOVER_VERTICE = 6;//click
     public static final int MODO_REMOVER_LIGACAO = 7;//click
     private int modo;
-    private GrafoView view;    
+    private GrafoView view;
     private int contador;
-    
     private EventHandler<? super MouseEvent> aoClicarMouse = new EventHandler<MouseEvent>() {
         @Override
         public void handle(MouseEvent t) {
             switch (modo) {
                 case MODO_ADICIONAR_VERTICE:
                     adicionarVertice(t);
-                    break;
-                case MODO_ADICIONAR_LIGACAO:
-                    //TODO
-                    break;
-                case MODO_MOVER_VERTICE:
-                   //TODO
-                    break;
+                    break;                          
                 case MODO_NENHUM:
-                    //TODO
+                    //Default
                     break;
                 case MODO_REMOVER_LIGACAO:
                     //TODO
                     break;
                 case MODO_REMOVER_VERTICE:
-                    //TODO
-                    break;
-                case MODO_SELECIONAR_LIGACAO:
-                //TODO
-                case MODO_SELECIONAR_VERTICE:
-                    //TODO
-                    break;
+                    Vertice v = (Vertice) procurarVertice(t);
+                    removerVertice(v);
+                    break;            
 
             }
         }
     };
+
+    private void removerVertice(Vertice v) {
+        //v.removerLigacoes(); - IMPLEMENTAR
+        view.removerVerticeView(v);
+        recalcularVerticesECor();
+    }
+
+    private VerticeView procurarVertice(MouseEvent t) {
+        VerticeView verticeProcurado = null;
+        List<Vertice> lista = view.getVertices();
+
+        for (Vertice v : lista) {
+            VerticeView vv = (VerticeView) v;
+
+            if (t.getX() >= vv.getLayoutX() && t.getX() <= vv.getLayoutX() + 20) {
+                if (t.getY() >= vv.getLayoutY() && t.getY() <= vv.getLayoutY() + 20) {
+                    verticeProcurado = vv;
+                } else {
+                    if (t.getY() <= vv.getLayoutY() && t.getY() >= vv.getLayoutY() - 20) {
+                        verticeProcurado = vv;
+                    }
+                }
+
+            } else {
+                if (t.getX() <= vv.getLayoutX() && t.getX() >= vv.getLayoutX() - 20) {
+                    if (t.getY() >= vv.getLayoutY() && t.getY() <= vv.getLayoutY() + 20) {
+                        verticeProcurado = vv;
+                    } else {
+                        if (t.getY() <= vv.getLayoutY() && t.getY() >= vv.getLayoutY() - 20) {
+                            verticeProcurado = vv;
+                        }
+                    }
+                }
+            }
+        }
+        return verticeProcurado;
+    }
 
     private void adicionarVertice(MouseEvent t) {
         if (view.getVertices().isEmpty()) {
@@ -82,5 +107,21 @@ public class GrafoEditor {
 
     public GrafoView getGrafo() {
         return view;
+    }
+
+    private void recalcularVerticesECor() {
+        List<Vertice> lista = view.getVertices();
+        contador = 0;
+        for (Vertice vert : lista) {
+            VerticeView v1 = (VerticeView) vert;
+            v1.setRotulo(contador + "");
+            Circle c = v1.getCircle();
+            if (contador == 0) {                
+                c.setFill(Color.RED);
+            } else {
+                c.setFill(Color.CYAN);
+            }
+            contador++;
+        }
     }
 }

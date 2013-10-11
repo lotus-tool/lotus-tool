@@ -8,14 +8,10 @@ import br.uece.gamut.Ligacao;
 import br.uece.gamut.Vertice;
 import java.util.ArrayList;
 import java.util.List;
-import javafx.beans.property.DoubleProperty;
-import javafx.geometry.Pos;
-import javafx.scene.control.Label;
 import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.StrokeType;
-import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 
 /**
@@ -24,14 +20,14 @@ import javafx.scene.text.Text;
  */
 public class VerticeView extends Region implements Vertice {
    
-    private Circle circle;
+    private Circle circle;    
     public static final int RAIO_CIRCULO = 20;
     public static final int ESPESSURA_PERIMETRO_CIRCULO = 2;
    
     private List<Ligacao> ligacoes = new ArrayList<>();
     private Text text;
-    
 
+      
     public VerticeView(int contador){
         setId("Vertice " + contador);
         circle = new Circle(RAIO_CIRCULO);
@@ -49,6 +45,10 @@ public class VerticeView extends Region implements Vertice {
         text.setLayoutY(text.getLayoutBounds().getMaxY());   
         getChildren().add(text);
         
+    }
+    
+     public Circle getCircle() {
+        return circle;
     }
    
     @Override
