@@ -4,6 +4,7 @@ import br.uece.gamut.Vertice;
 import static br.uece.gamut.app.editor.GrafoEditor.MODO_ADICIONAR_VERTICE;
 import java.util.List;
 import javafx.event.EventHandler;
+import javafx.scene.input.MouseDragEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
@@ -31,7 +32,7 @@ public class GrafoEditor {
             switch (modo) {
                 case MODO_ADICIONAR_VERTICE:
                     adicionarVertice(t);
-                    break;                          
+                    break;
                 case MODO_NENHUM:
                     //Default
                     break;
@@ -41,9 +42,31 @@ public class GrafoEditor {
                 case MODO_REMOVER_VERTICE:
                     Vertice v = (Vertice) procurarVertice(t);
                     removerVertice(v);
-                    break;            
+                    break;
 
             }
+        }
+    };
+    private EventHandler<? super MouseEvent> aoArrastarMouse = new EventHandler<MouseEvent>() {
+        @Override
+        public void handle(MouseEvent t) {
+            switch (modo) {
+                case MODO_MOVER_VERTICE:
+                    try {
+                        VerticeView v = procurarVertice(t);
+                        v.setPosicao(t.getX(), t.getY());
+                    } catch (NullPointerException e) {
+                        System.out.println("Vertice não selecionado");
+                    }
+                    break;
+                case MODO_ADICIONAR_LIGACAO:                    
+                    //Seleciona o 1° vertice para fazer a ligação
+                 /*   if (t.isDragDetect()) {
+                        VerticeView ligIni = procurarVertice(t);
+                        System.out.println(ligIni.getId());
+                    }*/                    
+                    break;
+            }         
         }
     };
 
@@ -102,6 +125,8 @@ public class GrafoEditor {
     public void setGrafoView(GrafoView view) {
         this.view = view;
         view.setOnMouseClicked(aoClicarMouse);
+        view.setOnMouseDragged(aoArrastarMouse);
+        
         //  contador = view.getVertices().size() - 1;
     }
 
@@ -116,7 +141,7 @@ public class GrafoEditor {
             VerticeView v1 = (VerticeView) vert;
             v1.setRotulo(contador + "");
             Circle c = v1.getCircle();
-            if (contador == 0) {                
+            if (contador == 0) {
                 c.setFill(Color.RED);
             } else {
                 c.setFill(Color.CYAN);

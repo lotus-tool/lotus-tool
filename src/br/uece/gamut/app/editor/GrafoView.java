@@ -51,4 +51,6 @@ public class GrafoView extends Region implements Grafo {
         vertices.remove(v);
         getChildren().remove(vv);
     }
+
+    
 }
