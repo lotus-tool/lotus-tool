@@ -52,5 +52,9 @@ public class GrafoView extends Region implements Grafo {
         getChildren().remove(vv);
     }
 
+    void adicionarTransicao(VerticeView verticeOrigemParaAdicionarTransicao, VerticeView destino) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
     
 }

@@ -1,13 +1,17 @@
 package br.uece.gamut.app.editor;
 
 import br.uece.gamut.Vertice;
-import static br.uece.gamut.app.editor.GrafoEditor.MODO_ADICIONAR_VERTICE;
 import java.util.List;
 import javafx.event.EventHandler;
+import javafx.scene.input.ClipboardContent;
+import javafx.scene.input.DragEvent;
+import javafx.scene.input.Dragboard;
 import javafx.scene.input.MouseDragEvent;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.input.TransferMode;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
+import org.omg.PortableInterceptor.SYSTEM_EXCEPTION;
 
 /**
  *
@@ -47,26 +51,95 @@ public class GrafoEditor {
             }
         }
     };
-    private EventHandler<? super MouseEvent> aoArrastarMouse = new EventHandler<MouseEvent>() {
+    /**
+     ******************
+     * Mover vertice *****************
+     */
+    private double variacaoXCliqueMouseComOCantoSuperiorEsquerdoVertice;
+    private double variacaoYCliqueMouseComOCantoSuperiorEsquerdoVertice;
+    private EventHandler<? super MouseEvent> aoIniciarArrastoVerticeComOMouse = new EventHandler<MouseEvent>() {
         @Override
         public void handle(MouseEvent t) {
-            switch (modo) {
-                case MODO_MOVER_VERTICE:
-                    try {
-                        VerticeView v = procurarVertice(t);
-                        v.setPosicao(t.getX(), t.getY());
-                    } catch (NullPointerException e) {
-                        System.out.println("Vertice não selecionado");
-                    }
-                    break;
-                case MODO_ADICIONAR_LIGACAO:                    
-                    //Seleciona o 1° vertice para fazer a ligação
-                 /*   if (t.isDragDetect()) {
-                        VerticeView ligIni = procurarVertice(t);
-                        System.out.println(ligIni.getId());
-                    }*/                    
-                    break;
-            }         
+            if (modo != MODO_MOVER_VERTICE) {
+                return;
+            }
+            VerticeView vertice = (VerticeView) t.getSource();
+            variacaoXCliqueMouseComOCantoSuperiorEsquerdoVertice = vertice.getLayoutX() - t.getSceneX();
+            variacaoYCliqueMouseComOCantoSuperiorEsquerdoVertice = vertice.getLayoutY() - t.getSceneY();
+        }
+    };
+    private EventHandler<? super MouseEvent> aoArrastarVerticeComOMouse = new EventHandler<MouseEvent>() {
+        @Override
+        public void handle(MouseEvent t) {
+            if (modo != MODO_MOVER_VERTICE) {
+                return;
+            }
+            VerticeView v = (VerticeView) t.getSource();
+            v.setLayoutX(t.getSceneX() + variacaoXCliqueMouseComOCantoSuperiorEsquerdoVertice);
+            v.setLayoutY(t.getSceneY() + variacaoYCliqueMouseComOCantoSuperiorEsquerdoVertice);
+        }
+    };
+    private EventHandler<? super MouseEvent> aoLiberarVerticeArrastadoComOMouse = new EventHandler<MouseEvent>() {
+        @Override
+        public void handle(MouseEvent t) {
+            if (modo != MODO_MOVER_VERTICE) {
+                return;
+            }
+            variacaoXCliqueMouseComOCantoSuperiorEsquerdoVertice = 0;
+            variacaoYCliqueMouseComOCantoSuperiorEsquerdoVertice = 0;
+        }
+    };
+    /**
+     ***********************
+     * Adicionar transição * **********************
+     */
+    private VerticeView verticeOrigemParaAdicionarTransicao;
+    private EventHandler<MouseEvent> aoDetectarDragSobreVertice = new EventHandler<MouseEvent>() {
+        @Override
+        public void handle(MouseEvent t) {
+            if (modo != MODO_ADICIONAR_LIGACAO) {
+                return;
+            }
+
+            //guarda o objeto no qual iniciamos o drag
+            verticeOrigemParaAdicionarTransicao = (VerticeView) t.getSource();
+
+            //inicia o drag'n'drop
+            Dragboard db = verticeOrigemParaAdicionarTransicao.startDragAndDrop(TransferMode.ANY);
+
+            //soh funciona com as três linhas a seguir. Porque? Eu não sei.
+            ClipboardContent content = new ClipboardContent();
+            content.putString("gambiarra");
+            db.setContent(content);
+
+            //indica que este evento foi realizado
+            t.consume();
+        }
+    };
+    private EventHandler<DragEvent> aoDetectarPossivelAlvoParaSoltarODrag = new EventHandler<DragEvent>() {
+        @Override
+        public void handle(DragEvent event) {
+            //a informaçao esta sendo solta sobre o alvo
+            //aceita soltar o mouse somente se não é o mesmo nodo de origem 
+            //e possui uma string            
+            if (event.getGestureSource() != event.getSource()) {
+                event.acceptTransferModes(TransferMode.COPY_OR_MOVE);
+            }
+            event.consume();
+        }
+    };
+    private EventHandler<DragEvent> aoSoltarMouseSobreVertice = new EventHandler<DragEvent>() {
+        public void handle(DragEvent event) {
+            if (modo != MODO_ADICIONAR_LIGACAO) {
+                return;
+            }
+
+            VerticeView destino = (VerticeView) event.getSource();
+            System.out.println(verticeOrigemParaAdicionarTransicao + " -> " + destino);
+            view.adicionarTransicao(verticeOrigemParaAdicionarTransicao, destino);
+            event.setDropCompleted(true);
+
+            event.consume();
         }
     };
 
@@ -76,6 +149,7 @@ public class GrafoEditor {
         recalcularVerticesECor();
     }
 
+    //Usar apenas no remover vertice e/ou ligação
     private VerticeView procurarVertice(MouseEvent t) {
         VerticeView verticeProcurado = null;
         List<Vertice> lista = view.getVertices();
@@ -112,6 +186,15 @@ public class GrafoEditor {
             contador = 0;
         }
         VerticeView v = new VerticeView(contador);
+        //adiciona eventos para tratar a adição de ligações view
+        v.setOnDragDetected(aoDetectarDragSobreVertice);
+        v.setOnDragOver(aoDetectarPossivelAlvoParaSoltarODrag);
+        v.setOnDragDropped(aoSoltarMouseSobreVertice);
+
+        v.setOnMousePressed(aoIniciarArrastoVerticeComOMouse);
+        v.setOnMouseDragged(aoArrastarVerticeComOMouse);
+        v.setOnMouseReleased(aoLiberarVerticeArrastadoComOMouse);
+
         v.setPosicao(t.getX(), t.getY());
         v.setRotulo(contador + "");
         view.adicionarVertice(v);
@@ -125,8 +208,9 @@ public class GrafoEditor {
     public void setGrafoView(GrafoView view) {
         this.view = view;
         view.setOnMouseClicked(aoClicarMouse);
-        view.setOnMouseDragged(aoArrastarMouse);
-        
+        //view.setOnMouseDragged(aoArrastarVerticeComOMouse);
+        //setei o evento para o vertice view
+
         //  contador = view.getVertices().size() - 1;
     }
 
