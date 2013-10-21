@@ -5,11 +5,13 @@
 package br.uece.gamut.app.editor;
 
 import br.uece.gamut.Grafo;
-import br.uece.gamut.Ligacao;
+import br.uece.gamut.Transicao;
 import br.uece.gamut.Vertice;
+import br.uece.mastergraphs.model.Ligacao;
 import java.util.ArrayList;
 import java.util.List;
 import javafx.scene.layout.Region;
+import javafx.scene.shape.QuadCurve;
 
 /**
  *
@@ -30,7 +32,7 @@ public class GrafoView extends Region implements Grafo {
     }
 
     @Override
-    public List<Ligacao> getLigacoes() {
+    public List<Transicao> getLigacoes() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
@@ -53,7 +55,15 @@ public class GrafoView extends Region implements Grafo {
     }
 
     void adicionarTransicao(VerticeView verticeOrigemParaAdicionarTransicao, VerticeView destino) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        TransicaoView transicao = new TransicaoView(verticeOrigemParaAdicionarTransicao, destino);
+         
+        getChildren().add(transicao);
+        getChildren().remove(verticeOrigemParaAdicionarTransicao);
+        getChildren().add(verticeOrigemParaAdicionarTransicao);
+        getChildren().remove(destino);
+        getChildren().add(destino);
+      
+       // throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     

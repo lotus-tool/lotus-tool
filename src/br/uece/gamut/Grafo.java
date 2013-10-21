@@ -13,7 +13,7 @@ import java.util.List;
 public interface Grafo {
     
     List<Vertice> getVertices();
-    List<Ligacao> getLigacoes();
+    List<Transicao> getLigacoes();
     void adicionarVertice(Vertice v);
     
 }

@@ -4,7 +4,7 @@
  */
 package br.uece.gamut.app.editor;
 
-import br.uece.gamut.Ligacao;
+import br.uece.gamut.Transicao;
 import br.uece.gamut.Vertice;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +24,7 @@ public class VerticeView extends Region implements Vertice {
     public static final int RAIO_CIRCULO = 20;
     public static final int ESPESSURA_PERIMETRO_CIRCULO = 2;
    
-    private List<Ligacao> ligacoes = new ArrayList<>();
+    private List<Transicao> ligacoes = new ArrayList<>();
     private Text text;
 
       
@@ -52,7 +52,7 @@ public class VerticeView extends Region implements Vertice {
     }
    
     @Override
-    public List<Ligacao> getLigacoes() {
+    public List<Transicao> getLigacoes() {
         return this.ligacoes;
     }
 

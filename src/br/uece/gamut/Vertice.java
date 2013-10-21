@@ -12,6 +12,6 @@ import java.util.List;
  */
 public interface Vertice {
     
-    List<Ligacao> getLigacoes();
+    List<Transicao> getLigacoes();
     
 }

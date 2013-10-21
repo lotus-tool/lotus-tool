@@ -8,7 +8,7 @@ package br.uece.gamut;
  *
  * @author emerson
  */
-public interface Ligacao {
+public interface Transicao {
     
     Vertice getOrigem();
     Vertice getDestino();
