@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.StrokeType;
 import javafx.scene.text.Text;
@@ -21,7 +22,7 @@ import javafx.scene.text.Text;
 public class VerticeView extends Region implements Vertice {
    
     private Circle circle;    
-    public static final int RAIO_CIRCULO = 20;
+    public static final int RAIO_CIRCULO = 15;
     public static final int ESPESSURA_PERIMETRO_CIRCULO = 2;
    
     private List<Transicao> ligacoes = new ArrayList<>();
@@ -46,6 +47,9 @@ public class VerticeView extends Region implements Vertice {
         getChildren().add(text);
         
     }
+
+    
+
     
      public Circle getCircle() {
         return circle;
@@ -64,7 +68,18 @@ public class VerticeView extends Region implements Vertice {
 
     void setRotulo(String string) {
         text.setText(string);
-        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        
     }
     
+    public String getRotulo(){
+        return text.getText();
+    }
+    
+    public Paint getCor(){
+       return circle.getFill();
+    }
+    
+    public void setCor(Paint cor){
+        circle.setFill(cor);
+    }
 }

@@ -10,6 +10,7 @@ import javafx.scene.input.MouseDragEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.TransferMode;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
 import org.omg.PortableInterceptor.SYSTEM_EXCEPTION;
 
@@ -26,7 +27,7 @@ public class GrafoEditor {
     public static final int MODO_SELECIONAR_VERTICE = 4;//click
     public static final int MODO_SELECIONAR_LIGACAO = 5;//click
     public static final int MODO_REMOVER_VERTICE = 6;//click
-    public static final int MODO_REMOVER_LIGACAO = 7;//click
+    public static final int MODO_REMOVER_LIGACAO = 7;//click   
     private int modo;
     private GrafoView view;
     private int contador;
@@ -34,11 +35,20 @@ public class GrafoEditor {
         @Override
         public void handle(MouseEvent t) {
             switch (modo) {
-                case MODO_ADICIONAR_VERTICE:
+                case MODO_ADICIONAR_VERTICE:                  
                     adicionarVertice(t);
                     break;
                 case MODO_NENHUM:
-                    //Default
+                    VerticeView v1 = procurarVertice(t);
+                    if(!v1.getCor().equals(Color.YELLOW)){
+                        v1.setCor(Color.YELLOW);
+                    }else{
+                        if(v1.getRotulo().equals("0")){
+                            v1.setCor(Color.RED);
+                        }else{
+                            v1.setCor(Color.CYAN);
+                        }
+                    }
                     break;
                 case MODO_REMOVER_LIGACAO:
                     //TODO
