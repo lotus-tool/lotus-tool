@@ -8,6 +8,8 @@ import br.uece.gamut.Transicao;
 import br.uece.gamut.Vertice;
 import javafx.beans.binding.DoubleBinding;
 import javafx.beans.property.DoubleProperty;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
@@ -45,6 +47,17 @@ public class TransicaoView extends Region implements Transicao {
         transicao.startYProperty().bind(origem.layoutYProperty());
         transicao.endXProperty().bind(destino.layoutXProperty());
         transicao.endYProperty().bind(destino.layoutYProperty());
+
+        TextField tfTransicao = new TextField();
+        tfTransicao.setText("oi");
+        //.layoutXProperty().bind(new DistanciaTexto(origem.layoutXProperty(), origem.layoutYProperty(), destino.layoutXProperty(), destino.layoutYProperty()));
+       // lbTransicao.layoutYProperty().bind(new DistanciaTexto(origem.layoutXProperty(), origem.layoutYProperty(), destino.layoutXProperty(), destino.layoutYProperty()));
+        
+        tfTransicao.setLayoutX(300);
+        tfTransicao.setLayoutX(300);
+
+
+        getChildren().add(tfTransicao);
         getChildren().add(transicao);
         getChildren().add(polygon1);
 
@@ -59,6 +72,34 @@ public class TransicaoView extends Region implements Transicao {
     @Override
     public Vertice getDestino() {
         return this.destino;
+    }
+
+    private static class DistanciaTexto extends DoubleBinding {
+
+        public DoubleProperty xi;
+        public DoubleProperty yi;
+        public DoubleProperty xf;
+        public DoubleProperty yf;
+
+        public DistanciaTexto(DoubleProperty xi, DoubleProperty yi, DoubleProperty xf, DoubleProperty yf) {
+            super.bind(xi, yi, xf, yf);
+            this.xi = xi;
+            this.yi = yi;
+            this.xf = xf;
+            this.yf = yf;
+        }
+
+        @Override
+        protected double computeValue() {
+            double deltaX = Math.abs(xi.getValue() - xf.getValue());
+            double deltaY = Math.abs(yi.getValue() - yf.getValue());
+            double distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+            double c;
+            if(xi.getValue() < xf.getValue()){
+               
+            }
+            return distance/2;
+        }
     }
 
     class DistanciaLinha extends DoubleBinding {

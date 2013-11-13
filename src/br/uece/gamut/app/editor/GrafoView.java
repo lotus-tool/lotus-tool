@@ -58,10 +58,17 @@ public class GrafoView extends Region implements Grafo {
         TransicaoView transicao = new TransicaoView(verticeOrigemParaAdicionarTransicao, destino);
          
         getChildren().add(transicao);
-        getChildren().remove(verticeOrigemParaAdicionarTransicao);
+     /* removidos e adicionados no loop abaixo.
+      * getChildren().remove(verticeOrigemParaAdicionarTransicao);
         getChildren().add(verticeOrigemParaAdicionarTransicao);
         getChildren().remove(destino);
-        getChildren().add(destino);
+        getChildren().add(destino);*/
+        
+        for(Vertice x : vertices){
+            VerticeView vv = (VerticeView) x;
+            getChildren().remove(vv);
+            getChildren().add(vv);
+        }
       
        // throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }

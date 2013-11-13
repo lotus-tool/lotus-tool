@@ -42,6 +42,9 @@ public class VerticeView extends Region implements Vertice {
         getChildren().add(circle);      
        
         text = new Text();
+        System.out.println(circle.getLayoutX());
+        
+        
         text.setLayoutX(text.getLayoutBounds().getMaxX());
         text.setLayoutY(text.getLayoutBounds().getMaxY());   
         getChildren().add(text);
