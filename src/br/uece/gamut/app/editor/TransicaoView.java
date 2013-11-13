@@ -30,16 +30,20 @@ public class TransicaoView extends Region implements Transicao {
         this.origem = origem;
         this.destino = destino;
         Polygon polygon1 = new Polygon(new double[]{
-            5.0, 0.0,
-            10.0, 10.0,
-            0.0, 10.0
+            20.0, 0.0,
+            40.0, 40.0,
+            0.0, 40.0
         });
 
         polygon1.setFill(Color.BLACK);
 
-        polygon1.layoutXProperty().bind(new DistanciaLinha(origem.layoutXProperty(), origem.layoutYProperty(), destino.layoutXProperty(), destino.layoutYProperty(), 15 + RAIO_CABECA_DE_FLECHA, DistanciaLinha.FIM, DistanciaLinha.COMPONENTE_X));
+//        polygon1.layoutXProperty().bind(new DistanciaLinha(origem.layoutXProperty(), origem.layoutYProperty(), destino.layoutXProperty(), destino.layoutYProperty(), 15 + RAIO_CABECA_DE_FLECHA, DistanciaLinha.FIM, DistanciaLinha.COMPONENTE_X));
+        polygon1.layoutXProperty().bind(new PosSeta(origem.layoutXProperty(), origem.layoutYProperty(), destino.layoutXProperty(), destino.layoutYProperty()));
 
-        polygon1.layoutYProperty().bind(new DistanciaLinha(origem.layoutXProperty(), origem.layoutYProperty(), destino.layoutXProperty(), destino.layoutYProperty(), 15 + RAIO_CABECA_DE_FLECHA, DistanciaLinha.FIM, DistanciaLinha.COMPONENTE_Y));
+//        polygon1.layoutYProperty().bind(new DistanciaLinha(origem.layoutXProperty(), origem.layoutYProperty(), destino.layoutXProperty(), destino.layoutYProperty(), 15 + RAIO_CABECA_DE_FLECHA, DistanciaLinha.FIM, DistanciaLinha.COMPONENTE_Y));
+
+
+        polygon1.rotateProperty().bind(new RotacaoFlecha(origem.layoutXProperty(), origem.layoutYProperty(), destino.layoutXProperty(), destino.layoutYProperty()));
 
 
         //Line
@@ -51,8 +55,8 @@ public class TransicaoView extends Region implements Transicao {
         TextField tfTransicao = new TextField();
         tfTransicao.setText("oi");
         //.layoutXProperty().bind(new DistanciaTexto(origem.layoutXProperty(), origem.layoutYProperty(), destino.layoutXProperty(), destino.layoutYProperty()));
-       // lbTransicao.layoutYProperty().bind(new DistanciaTexto(origem.layoutXProperty(), origem.layoutYProperty(), destino.layoutXProperty(), destino.layoutYProperty()));
-        
+        // lbTransicao.layoutYProperty().bind(new DistanciaTexto(origem.layoutXProperty(), origem.layoutYProperty(), destino.layoutXProperty(), destino.layoutYProperty()));
+
         tfTransicao.setLayoutX(300);
         tfTransicao.setLayoutX(300);
 
@@ -95,10 +99,66 @@ public class TransicaoView extends Region implements Transicao {
             double deltaY = Math.abs(yi.getValue() - yf.getValue());
             double distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
             double c;
-            if(xi.getValue() < xf.getValue()){
-               
+            if (xi.getValue() < xf.getValue()) {
             }
-            return distance/2;
+            return distance / 2;
+        }
+    }
+
+    private static class RotacaoFlecha extends DoubleBinding {
+
+        private final DoubleProperty xi;
+        private final DoubleProperty yi;
+        private final DoubleProperty xf;
+        private final DoubleProperty yf;
+
+        public RotacaoFlecha(DoubleProperty xi, DoubleProperty yi, DoubleProperty xf, DoubleProperty yf) {
+            super.bind(xi, yi, xf, yf);
+            this.xi = xi;
+            this.yi = yi;
+            this.xf = xf;
+            this.yf = yf;
+        }
+
+        @Override
+        protected double computeValue() {
+            double deltaX = Math.abs(xi.getValue() - xf.getValue());
+            double deltaY = Math.abs(yi.getValue() - yf.getValue());
+            double tang = deltaY / deltaX;
+            double tangRad = Math.atan(tang);
+            double tangGrau = tangRad * 36 / 2 * Math.PI;
+            System.out.println(String.format("deltaX: %.2f deltaY: %.2f tang: %.2f tangRad: %.2f tangGrau: %.2f", deltaX, deltaY, tang, tangRad, tangGrau));
+            boolean primeiroQuadrante = xi.getValue() < xf.getValue() && yi.getValue() > yf.getValue();
+            boolean segundoQuadrante = xi.getValue() > xf.getValue() && yi.getValue() > yf.getValue();
+            boolean terceiroQuadrante = xi.getValue() > xf.getValue() && yi.getValue() < yf.getValue();
+            boolean quartoQuadrante = xi.getValue() < xf.getValue() && yi.getValue() < yf.getValue();
+            if (primeiroQuadrante) {
+                return 90 - tangGrau;
+            } else if (segundoQuadrante) {
+                return -(90 - tangGrau);
+            } else if (terceiroQuadrante) {
+                return 270 - tangGrau;
+
+            } else if (quartoQuadrante) {
+                return -(270 - tangGrau);
+            }
+            return 0;
+        }
+
+        private double radToDegree(double tangRad) {
+            return 360.0 * tangRad / 2 * Math.PI;
+        }
+    }
+
+    private static class PosSeta extends DoubleBinding {
+
+        public DoubleProperty xi;
+        public DoubleProperty yi;
+        public DoubleProperty xf;
+        public DoubleProperty yf;
+
+        public PosSeta(DoubleProperty layoutXProperty, DoubleProperty layoutYProperty, DoubleProperty layoutXProperty0, DoubleProperty layoutYProperty0) {
+        
         }
     }
 
