@@ -37,10 +37,11 @@ public class TransicaoView extends Region implements Transicao {
 
         polygon1.setFill(Color.BLACK);
 
-//        polygon1.layoutXProperty().bind(new DistanciaLinha(origem.layoutXProperty(), origem.layoutYProperty(), destino.layoutXProperty(), destino.layoutYProperty(), 15 + RAIO_CABECA_DE_FLECHA, DistanciaLinha.FIM, DistanciaLinha.COMPONENTE_X));
-        polygon1.layoutXProperty().bind(new PosSeta(origem.layoutXProperty(), origem.layoutYProperty(), destino.layoutXProperty(), destino.layoutYProperty()));
-
-//        polygon1.layoutYProperty().bind(new DistanciaLinha(origem.layoutXProperty(), origem.layoutYProperty(), destino.layoutXProperty(), destino.layoutYProperty(), 15 + RAIO_CABECA_DE_FLECHA, DistanciaLinha.FIM, DistanciaLinha.COMPONENTE_Y));
+        //     polygon1.layoutXProperty().bind(new DistanciaLinha(origem.layoutXProperty(), origem.layoutYProperty(), destino.layoutXProperty(), destino.layoutYProperty(), 15 + RAIO_CABECA_DE_FLECHA, DistanciaLinha.FIM, DistanciaLinha.COMPONENTE_X));
+        polygon1.layoutXProperty().bind(new PosSetaX(origem.layoutXProperty(), origem.layoutYProperty(), destino.layoutXProperty(), destino.layoutYProperty()));
+        polygon1.layoutYProperty().bind(new PosSetaY(origem.layoutXProperty(), origem.layoutYProperty(), destino.layoutXProperty(), destino.layoutYProperty()));
+        
+        //   polygon1.layoutYProperty().bind(new DistanciaLinha(origem.layoutXProperty(), origem.layoutYProperty(), destino.layoutXProperty(), destino.layoutYProperty(), 15 + RAIO_CABECA_DE_FLECHA, DistanciaLinha.FIM, DistanciaLinha.COMPONENTE_Y));
 
 
         polygon1.rotateProperty().bind(new RotacaoFlecha(origem.layoutXProperty(), origem.layoutYProperty(), destino.layoutXProperty(), destino.layoutYProperty()));
@@ -127,7 +128,7 @@ public class TransicaoView extends Region implements Transicao {
             double tang = deltaY / deltaX;
             double tangRad = Math.atan(tang);
             double tangGrau = tangRad * 36 / 2 * Math.PI;
-            System.out.println(String.format("deltaX: %.2f deltaY: %.2f tang: %.2f tangRad: %.2f tangGrau: %.2f", deltaX, deltaY, tang, tangRad, tangGrau));
+           // System.out.println(String.format("deltaX: %.2f deltaY: %.2f tang: %.2f tangRad: %.2f tangGrau: %.2f", deltaX, deltaY, tang, tangRad, tangGrau));
             boolean primeiroQuadrante = xi.getValue() < xf.getValue() && yi.getValue() > yf.getValue();
             boolean segundoQuadrante = xi.getValue() > xf.getValue() && yi.getValue() > yf.getValue();
             boolean terceiroQuadrante = xi.getValue() > xf.getValue() && yi.getValue() < yf.getValue();
@@ -150,15 +151,85 @@ public class TransicaoView extends Region implements Transicao {
         }
     }
 
-    private static class PosSeta extends DoubleBinding {
+    private static class PosSetaX extends DoubleBinding {
 
         public DoubleProperty xi;
         public DoubleProperty yi;
         public DoubleProperty xf;
         public DoubleProperty yf;
 
-        public PosSeta(DoubleProperty layoutXProperty, DoubleProperty layoutYProperty, DoubleProperty layoutXProperty0, DoubleProperty layoutYProperty0) {
-        
+        public PosSetaX(DoubleProperty xi, DoubleProperty yi, DoubleProperty xf, DoubleProperty yf) {
+            super.bind(xi, yi, xf, yf);
+            this.xi = xi;
+            this.yi = yi;
+            this.xf = xf;
+            this.yf = yf;
+        }
+
+        @Override
+        protected double computeValue() {
+            double deltaX = Math.abs(xi.getValue() - xf.getValue());
+            double deltaY = Math.abs(yi.getValue() - yf.getValue());
+            double distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+            double sen = deltaX/distance;
+            double xLinha = deltaX/2;
+            System.out.println("xi: " + xi.getValue() + "xi': " + sen*distance/2 );
+           
+            boolean primeiroQuadrante = xi.getValue() <= xf.getValue() && yi.getValue() >= yf.getValue();
+            boolean segundoQuadrante = xi.getValue() >= xf.getValue() && yi.getValue() >= yf.getValue();
+            boolean terceiroQuadrante = xi.getValue() >= xf.getValue() && yi.getValue() <= yf.getValue();
+            boolean quartoQuadrante = xi.getValue() <= xf.getValue() && yi.getValue() <= yf.getValue();
+            if (primeiroQuadrante || quartoQuadrante ) {
+                return xi.getValue() + xLinha;
+            } else if (segundoQuadrante ||terceiroQuadrante ) {
+                return xi.getValue() - xLinha;
+            }
+            return 0;
+            //return xi.getValue() +( sen*distance/2);
+             
+        }
+    }
+    
+    private static class PosSetaY extends DoubleBinding {
+
+        public DoubleProperty xi;
+        public DoubleProperty yi;
+        public DoubleProperty xf;
+        public DoubleProperty yf;
+
+        public PosSetaY(DoubleProperty xi, DoubleProperty yi, DoubleProperty xf, DoubleProperty yf) {
+            super.bind(xi, yi, xf, yf);
+            this.xi = xi;
+            this.yi = yi;
+            this.xf = xf;
+            this.yf = yf;
+        }
+
+        @Override
+        protected double computeValue() {
+            double deltaX = Math.abs(xi.getValue() - xf.getValue());
+            double deltaY = Math.abs(yi.getValue() - yf.getValue());
+            double yLinha = deltaY/2;
+            double distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+            double sen = deltaY/distance;
+            System.out.println("detalY: " + deltaY + " /2: " + deltaY/2);
+            //return yi.getValue() -( sen*distance/2);
+            
+            boolean primeiroQuadrante = xi.getValue() <= xf.getValue() && yi.getValue() >= yf.getValue();
+            boolean segundoQuadrante = xi.getValue() >= xf.getValue() && yi.getValue() >= yf.getValue();
+            boolean terceiroQuadrante = xi.getValue() >= xf.getValue() && yi.getValue() <= yf.getValue();
+            boolean quartoQuadrante = xi.getValue() <= xf.getValue() && yi.getValue() <= yf.getValue();
+            if (primeiroQuadrante) {
+                return yi.getValue() - yLinha;
+            } else if (segundoQuadrante) {
+                return yi.getValue() - yLinha;
+            } else if (terceiroQuadrante) {
+                return yi.getValue() + yLinha;
+            } else if (quartoQuadrante) {
+                return yi.getValue() + yLinha;
+            }
+            
+            return 0;
         }
     }
 
