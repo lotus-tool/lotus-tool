@@ -1,6 +1,5 @@
 package br.uece.gamut.app;
 
-import br.uece.mastergraphs.*;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -8,8 +7,7 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 public class Startup extends Application {
-
-    static GrafoView editor;
+    
     private static final String TITULO_APP = "GAMuT";
 	
 	@Override

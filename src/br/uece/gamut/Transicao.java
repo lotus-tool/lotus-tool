@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package br.uece.gamut;
 
 /**
@@ -12,5 +8,8 @@ public interface Transicao {
     
     Vertice getOrigem();
     Vertice getDestino();
+
+    void setTag(String chave, Object valor);
+    Object getTag(String chave);
     
 }

@@ -13,5 +13,5 @@ import java.io.InputStream;
  * @author emerson
  */
 public interface GrafoUnmarshaller {
-    public void unmarshaller(InputStream input, Grafo g) throws IOException;
+    public void unmarshaller(InputStream input, Grafo g) throws Exception;
 }

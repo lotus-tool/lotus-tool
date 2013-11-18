@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package br.uece.gamut;
 
 import java.util.List;
@@ -12,6 +8,12 @@ import java.util.List;
  */
 public interface Vertice {
     
-    List<Transicao> getLigacoes();
+    List<Transicao> getTransicoesSaida();
+    List<Transicao> getTransicoesEntrada();
+    
+    void setTag(String chave, Object valor);
+    Object getTag(String chave);
+
+    public int getID();
     
 }

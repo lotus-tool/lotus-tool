@@ -61,7 +61,7 @@
         </HBox>
       </items>
     </ToolBar>
-    <GrafoView fx:id="view" prefHeight="367.0" prefWidth="556.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="44.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="33.0" />
+    <GrafoEditor fx:id="editor" prefHeight="367.0" prefWidth="556.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="44.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="33.0" />
     <ToolBar orientation="VERTICAL" prefHeight="355.0" prefWidth="61.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="45.0">
       <items>
         <VBox prefHeight="232.0" prefWidth="47.0" spacing="15.0">

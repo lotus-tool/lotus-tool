@@ -1,24 +1,35 @@
 package br.uece.gamut.app.editor;
 
+import br.uece.gamut.Grafo;
+import br.uece.gamut.Transicao;
 import br.uece.gamut.Vertice;
+import static br.uece.gamut.app.editor.GrafoEditor.MODO_ADICIONAR_LIGACAO;
+import static br.uece.gamut.app.editor.GrafoEditor.MODO_ADICIONAR_VERTICE;
+import static br.uece.gamut.app.editor.GrafoEditor.MODO_MOVER_VERTICE;
+import static br.uece.gamut.app.editor.GrafoEditor.MODO_NENHUM;
+import static br.uece.gamut.app.editor.GrafoEditor.MODO_REMOVER_LIGACAO;
+import static br.uece.gamut.app.editor.GrafoEditor.MODO_REMOVER_VERTICE;
+import static br.uece.gamut.app.editor.GrafoEditor.TAG_COR;
+import static br.uece.gamut.app.editor.GrafoEditor.TAG_POS_X;
+import static br.uece.gamut.app.editor.GrafoEditor.TAG_POS_Y;
+import java.util.ArrayList;
 import java.util.List;
+import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
+import javafx.scene.Node;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.Dragboard;
-import javafx.scene.input.MouseDragEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.TransferMode;
+import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.Paint;
-import javafx.scene.shape.Circle;
-import org.omg.PortableInterceptor.SYSTEM_EXCEPTION;
 
 /**
  *
  * @author emerson
  */
-public class GrafoEditor {
+public class GrafoEditor extends Region implements Grafo {
 
     public static final int MODO_NENHUM = 0;//click
     public static final int MODO_MOVER_VERTICE = 1; //drag'n'drop
@@ -27,44 +38,67 @@ public class GrafoEditor {
     public static final int MODO_SELECIONAR_VERTICE = 4;//click
     public static final int MODO_SELECIONAR_LIGACAO = 5;//click
     public static final int MODO_REMOVER_VERTICE = 6;//click
-    public static final int MODO_REMOVER_LIGACAO = 7;//click   
+    public static final int MODO_REMOVER_LIGACAO = 7;//click
+    public static final String TAG_POS_X = "_x";
+    public static final String TAG_POS_Y = "_y";
+    public static final String TAG_LABEL = "_label";
+    public static final String TAG_COR = "_cor";
+    public static final String TAG_DEFAULT = "_default";
+    //private GrafoView view;
     private int modo;
-    private GrafoView view;
-    private int contador;
+    private int contadorVertices;
+    private List<Vertice> vertices = new ArrayList<>();
+    private List<Transicao> transicoes = new ArrayList<>();
+    private Object mObjetoAtualmenteSelecionado;
+
+    public GrafoEditor() {
+        setOnMouseClicked(aoClicarMouse);
+        setOnMouseMoved(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent t) {
+                for (Vertice v : vertices) {
+                    VerticeView vv = (VerticeView) v;
+                    if (vv.pontoPertenceAoObjeto(t.getX(), t.getY())) {
+                        mObjetoAtualmenteSelecionado = vv;
+                        System.out.println("vertice selecionado: " + vv);
+                        return;
+                    }
+                }
+                for (Transicao tt : transicoes) {
+                    TransicaoView tv = (TransicaoView) tt;
+                    if (tv.pontoPertenceAoObjeto(t.getX(), t.getY())) {
+                        mObjetoAtualmenteSelecionado = tv;
+                        System.out.println("transicao selecionada: " + tv);
+                        return;
+                    }
+                }                
+                mObjetoAtualmenteSelecionado = null;                
+            }
+        });
+    }
     private EventHandler<? super MouseEvent> aoClicarMouse = new EventHandler<MouseEvent>() {
         @Override
         public void handle(MouseEvent t) {
             switch (modo) {
-                case MODO_ADICIONAR_VERTICE:                  
-                    adicionarVertice(t);
+                case MODO_ADICIONAR_VERTICE:
+                    adicionarNovoVerticePeloCliqueMouse(t);
                     break;
                 case MODO_NENHUM:
-                    VerticeView v1 = procurarVertice(t);
-                    if(!v1.getCor().equals(Color.YELLOW)){
-                        v1.setCor(Color.YELLOW);
-                    }else{
-                        if(v1.getRotulo().equals("0")){
-                            v1.setCor(Color.RED);
-                        }else{
-                            v1.setCor(Color.CYAN);
-                        }
-                    }
+                    //Default
                     break;
                 case MODO_REMOVER_LIGACAO:
                     //TODO
                     break;
                 case MODO_REMOVER_VERTICE:
-                    Vertice v = (Vertice) procurarVertice(t);
+                    VerticeView v = (VerticeView) procurarVertice(t);
                     removerVertice(v);
                     break;
-
             }
         }
     };
-    /**
-     ******************
-     * Mover vertice *****************
-     */
+    ////////////////////////////////////////////////////////////////////////////
+    // Mover vertice 
+    ////////////////////////////////////////////////////////////////////////////
     private double variacaoXCliqueMouseComOCantoSuperiorEsquerdoVertice;
     private double variacaoYCliqueMouseComOCantoSuperiorEsquerdoVertice;
     private EventHandler<? super MouseEvent> aoIniciarArrastoVerticeComOMouse = new EventHandler<MouseEvent>() {
@@ -99,10 +133,9 @@ public class GrafoEditor {
             variacaoYCliqueMouseComOCantoSuperiorEsquerdoVertice = 0;
         }
     };
-    /**
-     ***********************
-     * Adicionar transição * **********************
-     */
+    ////////////////////////////////////////////////////////////////////////////
+    // Adicionar transição
+    ////////////////////////////////////////////////////////////////////////////
     private VerticeView verticeOrigemParaAdicionarTransicao;
     private EventHandler<MouseEvent> aoDetectarDragSobreVertice = new EventHandler<MouseEvent>() {
         @Override
@@ -139,30 +172,33 @@ public class GrafoEditor {
         }
     };
     private EventHandler<DragEvent> aoSoltarMouseSobreVertice = new EventHandler<DragEvent>() {
+        @Override
         public void handle(DragEvent event) {
             if (modo != MODO_ADICIONAR_LIGACAO) {
                 return;
             }
 
             VerticeView destino = (VerticeView) event.getSource();
-            System.out.println(verticeOrigemParaAdicionarTransicao + " -> " + destino);
-            view.adicionarTransicao(verticeOrigemParaAdicionarTransicao, destino);
+
+            newTransicao(verticeOrigemParaAdicionarTransicao.getID(), destino.getID());
             event.setDropCompleted(true);
 
             event.consume();
         }
     };
 
-    private void removerVertice(Vertice v) {
-        //v.removerLigacoes(); - IMPLEMENTAR
-        view.removerVerticeView(v);
+    ////////////////////////////////////////////////////////////////////////////
+    // Remover vertices
+    ////////////////////////////////////////////////////////////////////////////
+    private void removerVertice(VerticeView v) {
+        removerVerticeView(v);
         recalcularVerticesECor();
     }
 
     //Usar apenas no remover vertice e/ou ligação
     private VerticeView procurarVertice(MouseEvent t) {
         VerticeView verticeProcurado = null;
-        List<Vertice> lista = view.getVertices();
+        List<Vertice> lista = vertices;
 
         for (Vertice v : lista) {
             VerticeView vv = (VerticeView) v;
@@ -175,7 +211,6 @@ public class GrafoEditor {
                         verticeProcurado = vv;
                     }
                 }
-
             } else {
                 if (t.getX() <= vv.getLayoutX() && t.getX() >= vv.getLayoutX() - 20) {
                     if (t.getY() >= vv.getLayoutY() && t.getY() <= vv.getLayoutY() + 20) {
@@ -191,56 +226,116 @@ public class GrafoEditor {
         return verticeProcurado;
     }
 
-    private void adicionarVertice(MouseEvent t) {
-        if (view.getVertices().isEmpty()) {
-            contador = 0;
-        }
-        VerticeView v = new VerticeView(contador);
-        //adiciona eventos para tratar a adição de ligações view
-        v.setOnDragDetected(aoDetectarDragSobreVertice);
-        v.setOnDragOver(aoDetectarPossivelAlvoParaSoltarODrag);
-        v.setOnDragDropped(aoSoltarMouseSobreVertice);
-
-        v.setOnMousePressed(aoIniciarArrastoVerticeComOMouse);
-        v.setOnMouseDragged(aoArrastarVerticeComOMouse);
-        v.setOnMouseReleased(aoLiberarVerticeArrastadoComOMouse);
-
-        v.setPosicao(t.getX(), t.getY());
-        v.setRotulo(contador + "");
-        view.adicionarVertice(v);
-        contador++;
+    public void adicionarNovoVerticePeloCliqueMouse(MouseEvent t) {
+        VerticeView v = (VerticeView) newVertice(contadorVertices);
+        v.setTag(TAG_POS_X, t.getX());
+        v.setTag(TAG_POS_Y, t.getY());
+        v.setTag(TAG_LABEL, "" + contadorVertices);
+        v.setTag(TAG_DEFAULT, contadorVertices == 0);
+        contadorVertices++;
     }
 
     public void setModo(int modo) {
         this.modo = modo;
     }
 
-    public void setGrafoView(GrafoView view) {
-        this.view = view;
-        view.setOnMouseClicked(aoClicarMouse);
-        //view.setOnMouseDragged(aoArrastarVerticeComOMouse);
-        //setei o evento para o vertice view
-
-        //  contador = view.getVertices().size() - 1;
-    }
-
-    public GrafoView getGrafo() {
-        return view;
+    public Grafo getGrafo() {
+        return this;
     }
 
     private void recalcularVerticesECor() {
-        List<Vertice> lista = view.getVertices();
-        contador = 0;
-        for (Vertice vert : lista) {
-            VerticeView v1 = (VerticeView) vert;
-            v1.setRotulo(contador + "");
-            Circle c = v1.getCircle();
-            if (contador == 0) {
-                c.setFill(Color.RED);
-            } else {
-                c.setFill(Color.CYAN);
+        contadorVertices = 0;
+        for (Vertice v : vertices) {
+            VerticeView vertice = (VerticeView) v;
+            vertice.setTag(TAG_LABEL, contadorVertices + "");
+            vertice.setTag(TAG_DEFAULT, contadorVertices == 0);
+            contadorVertices++;
+        }
+    }
+
+    public void clear() {
+        getChildren().clear();
+        vertices.clear();
+        transicoes.clear();
+    }
+
+    @Override
+    public List<Vertice> getVertices() {
+        return vertices;
+    }
+
+    @Override
+    public List<Transicao> getTransicoes() {
+        return transicoes;
+    }
+
+    private void removerVerticeView(VerticeView v) {
+        ObservableList<Node> aux = getChildren();
+        for (Transicao t : v.getTransicoesSaida()) {
+            TransicaoView tt = (TransicaoView) t;
+            aux.remove(tt);
+            transicoes.remove(t);
+        }
+        for (Transicao t : v.getTransicoesEntrada()) {
+            TransicaoView tt = (TransicaoView) t;
+            aux.remove(tt);
+            transicoes.remove(t);
+        }
+        aux.remove(v);
+        vertices.remove(v);
+    }
+
+    @Override
+    public Vertice getVertice(int id) {
+        for (Vertice v : vertices) {
+            if (v.getID() == id) {
+                return v;
             }
-            contador++;
+        }
+        return null;
+    }
+
+    @Override
+    public Vertice newVertice(int id) {
+        System.out.println("Criando um novo vertico com id " + id);
+        VerticeView v = new VerticeView(id);
+
+        //adiciona eventos para tratar a adição de ligações view
+        v.setOnDragDetected(aoDetectarDragSobreVertice);
+        v.setOnDragOver(aoDetectarPossivelAlvoParaSoltarODrag);
+        v.setOnDragDropped(aoSoltarMouseSobreVertice);
+
+        //eventos para tratar da movimentação
+        v.setOnMousePressed(aoIniciarArrastoVerticeComOMouse);
+        v.setOnMouseDragged(aoArrastarVerticeComOMouse);
+        v.setOnMouseReleased(aoLiberarVerticeArrastadoComOMouse);
+
+        vertices.add(v);
+        getChildren().add(v);
+        return v;
+    }
+
+    @Override
+    public Transicao newTransicao(int idOrigem, int idDestino) {
+        System.out.println("Criando nova transicao de " + idOrigem + " para " + idDestino);
+        VerticeView o = (VerticeView) getVertice(idOrigem);
+        VerticeView d = (VerticeView) getVertice(idDestino);
+        TransicaoView t = new TransicaoView(o, d);
+        o.addTransicaoSaida(t);
+        d.addTransicaoEntrada(t);
+        transicoes.add(t);
+        getChildren().add(t);
+        t.toBack();
+        return t;
+    }
+
+    public void layoutGrafo() {
+        int i = 1;
+        for (Vertice v : vertices) {
+            v.setTag(TAG_COR, i == 1 ? Color.RED : Color.CYAN);
+            v.setTag(TAG_POS_X, i * 100.0);
+            v.setTag(TAG_POS_Y, 300.0);
+            i++;
         }
     }
 }

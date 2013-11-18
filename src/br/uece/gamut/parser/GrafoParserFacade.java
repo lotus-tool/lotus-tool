@@ -1,9 +1,6 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package br.uece.gamut.parser;
 
+import br.uece.gamut.parser.lts.LSACompiler;
 import java.io.File;
 
 /**
@@ -18,6 +15,9 @@ public class GrafoParserFacade {
      * @return 
      */
     public static GrafoUnmarshaller getUnmarshallerByFile(File f) {
+        if (f.getName().endsWith(".lts")) {
+            return new LSACompiler();
+        }
         return null;
     }
     

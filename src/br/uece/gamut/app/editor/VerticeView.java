@@ -1,88 +1,109 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package br.uece.gamut.app.editor;
 
 import br.uece.gamut.Transicao;
 import br.uece.gamut.Vertice;
+import static br.uece.gamut.app.editor.VerticeView.RAIO_CIRCULO;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import javafx.scene.control.Label;
 import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.StrokeType;
-import javafx.scene.text.Text;
 
 /**
  *
  * @author emerson
  */
 public class VerticeView extends Region implements Vertice {
-   
-    private Circle circle;    
+
+    private Circle circle;
     public static final int RAIO_CIRCULO = 15;
     public static final int ESPESSURA_PERIMETRO_CIRCULO = 2;
-   
-    private List<Transicao> ligacoes = new ArrayList<>();
-    private Text text;
+    private List<Transicao> mTransicoesSaida = new ArrayList<>();
+    private List<Transicao> mTransicoesEntrada = new ArrayList<>();
+    private Label text;
+    private int mId;
+    private Map<String, Object> mTags = new HashMap<>();
 
-      
-    public VerticeView(int contador){
-        setId("Vertice " + contador);
+    public VerticeView(int id) {
+        mId = id;
         circle = new Circle(RAIO_CIRCULO);
         circle.setStrokeType(StrokeType.INSIDE);
         circle.setStroke(Color.BLACK);
-        if(contador == 0){
-            circle.setFill(Color.RED);
-        } else{
-            circle.setFill(Color.CYAN);
-        }                
-        getChildren().add(circle);      
-       
-        text = new Text();
-        System.out.println(circle.getLayoutX());
-        
-        
-        text.setLayoutX(text.getLayoutBounds().getMaxX());
-        text.setLayoutY(text.getLayoutBounds().getMaxY());   
+        circle.setFill(Color.CYAN);
+        getChildren().add(circle);
+
+        text = new Label();  
+        text.setLayoutX(-5);
+        text.setLayoutY(-5);
         getChildren().add(text);
-        
     }
 
-    
-
-    
-     public Circle getCircle() {
+    public Circle getCircle() {
         return circle;
     }
-   
+
     @Override
-    public List<Transicao> getLigacoes() {
-        return this.ligacoes;
+    public List<Transicao> getTransicoesSaida() {
+        return mTransicoesSaida;
+    }
+    
+    @Override
+    public List<Transicao> getTransicoesEntrada() {
+        return mTransicoesEntrada;
     }
 
-    void setPosicao(double sceneX, double sceneY) {
-        setLayoutX(sceneX);
-        setLayoutY(sceneY);
-     //   throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    @Override
+    public void setTag(String chave, Object valor) {
+        switch (chave) {
+            case GrafoEditor.TAG_LABEL:
+                text.setText(valor.toString());
+                break;
+            case GrafoEditor.TAG_POS_X:
+                setLayoutX((Double) valor);
+                break;
+            case GrafoEditor.TAG_POS_Y:
+                setLayoutY((Double) valor);
+                break;
+            case GrafoEditor.TAG_COR:
+                circle.setFill((Color) valor);
+                break;
+            case GrafoEditor.TAG_DEFAULT:                
+                setTag(GrafoEditor.TAG_COR, (Boolean) valor ? Color.RED: Color.CYAN);
+                break;
+        }
+        mTags.put(chave, valor);
     }
 
-    void setRotulo(String string) {
-        text.setText(string);
-        
+    @Override
+    public Object getTag(String chave) {
+        return mTags.get(chave);
     }
-    
-    public String getRotulo(){
-        return text.getText();
+
+    @Override
+    public int getID() {
+        return mId;
     }
-    
-    public Paint getCor(){
-       return circle.getFill();
+
+    void addTransicaoSaida(TransicaoView t) {
+        mTransicoesSaida.add(t);
     }
-    
-    public void setCor(Paint cor){
-        circle.setFill(cor);
+
+    void addTransicaoEntrada(TransicaoView t) {
+        mTransicoesEntrada.add(t);
+    }
+
+    boolean pontoPertenceAoObjeto(double x, double y) {
+        double raio = circle.getRadius();
+        double dx = x - getLayoutX() ;
+        double dy = y - getLayoutY();        
+        double d2 = dx * dx + dy * dy;        
+        boolean pertence =  d2 < raio * raio;
+        //System.out.println("dx: " + dx + " dy: " + dy + " dist^2: " + d2 + " raio^2: " + (raio * raio));
+        circle.setStrokeWidth(pertence ? 2 : 1);
+        return pertence;
     }
 }

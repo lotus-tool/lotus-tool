@@ -1,76 +1,65 @@
 package br.uece.gamut.app;
 
 import br.uece.gamut.app.editor.GrafoEditor;
-import br.uece.gamut.app.editor.GrafoView;
 import br.uece.gamut.parser.GrafoMarshaller;
 import br.uece.gamut.parser.GrafoParserFacade;
 import br.uece.gamut.parser.GrafoUnmarshaller;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.net.URL;
-import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
 import br.uece.gamut.Grafo;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.scene.Cursor;
 import javafx.scene.control.Button;
 import javafx.scene.control.ToggleButton;
 import javafx.stage.FileChooser;
+import javax.swing.JOptionPane;
 
-public class MainSceneController implements Initializable {
+public class MainSceneController {
 
-    private GrafoEditor editor = new GrafoEditor();
     @FXML
-    protected GrafoView view;
-    
-    @FXML protected Button btnNovo;
-    
-    @FXML protected Button btnAbrir;
-    
-    @FXML protected Button btnSalvar;
-    
-    @FXML protected ToggleButton btnDefault;
-    
-    @FXML protected ToggleButton btnMover;
-    
-    @FXML protected ToggleButton btnAddEstado;
-    
-    @FXML protected ToggleButton btnAddLigacao;
-    
-    @FXML protected ToggleButton btnDelEstado;
-    
-    @FXML protected ToggleButton btnDelLigacao;
-    
-     ToggleButton group;
-    
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
-        //if (view == null) new throw RuntimeException("View is null!");        
-      
-        editor.setGrafoView(view);
+    protected GrafoEditor editor;
+    @FXML
+    protected Button btnNovo;
+    @FXML
+    protected Button btnAbrir;
+    @FXML
+    protected Button btnSalvar;
+    @FXML
+    protected ToggleButton btnDefault;
+    @FXML
+    protected ToggleButton btnMover;
+    @FXML
+    protected ToggleButton btnAddEstado;
+    @FXML
+    protected ToggleButton btnAddLigacao;
+    @FXML
+    protected ToggleButton btnDelEstado;
+    @FXML
+    protected ToggleButton btnDelLigacao;
+    ToggleButton group;
+
+    @FXML
+    protected void handleNovo(ActionEvent event) {
+        editor.clear();
     }
-    
+
     @FXML
-    protected void handleNovo(ActionEvent event){       
-        editor.getGrafo().clear();
-    }
-    
-    @FXML
-    protected void handleAbrir(ActionEvent event) {       
+    protected void handleAbrir(ActionEvent event) {
         File file = selecionarArquivo();
         GrafoUnmarshaller parser = GrafoParserFacade.getUnmarshallerByFile(file);
         try (FileInputStream in = new FileInputStream(file)) {
-            view.clear();
-            parser.unmarshaller(in, view);
+            editor.clear();
+            parser.unmarshaller(in, editor);
+            editor.layoutGrafo();
         } catch (Exception e) {
             mostrarDialogoErro(e);
         }
     }
 
     @FXML
-    protected void handleSalvar(ActionEvent event) {        
+    protected void handleSalvar(ActionEvent event) {
         FileChooser fileChooser = new FileChooser();
 
         FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Arquivos MasterGraphs (*.gph)", "*.gph");
@@ -82,7 +71,7 @@ public class MainSceneController implements Initializable {
         }
         try (FileOutputStream out = new FileOutputStream(file)) {
             GrafoMarshaller parser = GrafoParserFacade.getMarshallerByFile(file);
-            parser.marshaller(view, out);
+            parser.marshaller(editor, out);
             out.close();
         } catch (Exception e) {
             mostrarDialogoErro(e);
@@ -92,47 +81,46 @@ public class MainSceneController implements Initializable {
     @FXML
     protected void handleMouseDefault(ActionEvent event) {
         editor.setModo(GrafoEditor.MODO_NENHUM);
-        view.setCursor(Cursor.DEFAULT);        
+        editor.setCursor(Cursor.DEFAULT);
     }
 
     @FXML
     protected void handleMover(ActionEvent event) {
         editor.setModo(GrafoEditor.MODO_MOVER_VERTICE);
-        view.setCursor(Cursor.MOVE);
+        editor.setCursor(Cursor.MOVE);
     }
 
     @FXML
-    protected void handleAddVertice(ActionEvent event) {
-        view.setCursor(Cursor.DEFAULT); 
-        editor.setModo(GrafoEditor.MODO_ADICIONAR_VERTICE);
-        Grafo g = (Grafo) view;
-        g.getVertices();
+    protected void handleAddVertice(ActionEvent event) {        
+        editor.setCursor(Cursor.DEFAULT);
+        editor.setModo(GrafoEditor.MODO_ADICIONAR_VERTICE);        
     }
 
     @FXML
-    protected void handleAddLigacao(ActionEvent event){
-       view.setCursor(Cursor.DEFAULT); 
+    protected void handleAddLigacao(ActionEvent event) {
+        editor.setCursor(Cursor.DEFAULT);
         editor.setModo(GrafoEditor.MODO_ADICIONAR_LIGACAO);
     }
-    
+
     @FXML
-    protected void handleDelVertice(ActionEvent event){
-        view.setCursor(Cursor.DEFAULT); 
+    protected void handleDelVertice(ActionEvent event) {
+        editor.setCursor(Cursor.DEFAULT);
         editor.setModo(GrafoEditor.MODO_REMOVER_VERTICE);
     }
-    
+
     @FXML
-    protected void handleDelLigacao(ActionEvent event){
-        view.setCursor(Cursor.DEFAULT); 
+    protected void handleDelLigacao(ActionEvent event) {
+        editor.setCursor(Cursor.DEFAULT);
         editor.setModo(GrafoEditor.MODO_REMOVER_LIGACAO);
     }
 
     private void mostrarDialogoErro(Exception e) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        e.printStackTrace();
+        JOptionPane.showMessageDialog(null, e.getClass() + ": " + e.getMessage());
     }
 
     private File selecionarArquivo() {
-        view.setCursor(Cursor.DEFAULT); 
+        editor.setCursor(Cursor.DEFAULT);
         FileChooser fileChooser = new FileChooser();
         //Set extension filter
         //FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Arquivos MasterGraphs (*.gph)", "*.gph");

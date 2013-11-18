@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package br.uece.gamut;
 
 import java.util.List;
@@ -13,7 +9,11 @@ import java.util.List;
 public interface Grafo {
     
     List<Vertice> getVertices();
-    List<Transicao> getLigacoes();
-    void adicionarVertice(Vertice v);
+    List<Transicao> getTransicoes();
+    //void adicionarVertice(Vertice v);
+
+    public Vertice getVertice(int id);
+    public Vertice newVertice(int id);    
+    public Transicao newTransicao(int idOrigem, int idDestino);    
     
 }
