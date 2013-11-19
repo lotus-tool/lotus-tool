@@ -62,8 +62,8 @@ public class TransicaoView extends Region implements Transicao {
         polygon1.setFill(Color.BLACK);
 //        polygon1.layoutXProperty().bind(new PosMedia(origem.layoutXProperty(), destino.layoutXProperty(), 10.0));        
 //        polygon1.layoutYProperty().bind(new PosMedia(origem.layoutYProperty(), destino.layoutYProperty(), 10.0));        
-        polygon1.layoutXProperty().bind(new DistanciaLinha(origem.layoutXProperty(), origem.layoutYProperty(), destino.layoutXProperty(), destino.layoutYProperty(), 30, DistanciaLinha.FIM, DistanciaLinha.COMPONENTE_X));
-        polygon1.layoutYProperty().bind(new DistanciaLinha(origem.layoutXProperty(), origem.layoutYProperty(), destino.layoutXProperty(), destino.layoutYProperty(), 30, DistanciaLinha.FIM, DistanciaLinha.COMPONENTE_Y));
+        polygon1.layoutXProperty().bind(new DistanciaLinha(origem.layoutXProperty(), origem.layoutYProperty(), destino.layoutXProperty(), destino.layoutYProperty(), 60, DistanciaLinha.FIM, DistanciaLinha.COMPONENTE_X));
+        polygon1.layoutYProperty().bind(new DistanciaLinha(origem.layoutXProperty(), origem.layoutYProperty(), destino.layoutXProperty(), destino.layoutYProperty(), 60, DistanciaLinha.FIM, DistanciaLinha.COMPONENTE_Y));
         polygon1.rotateProperty().bind(new RotacaoFlecha(origem.layoutXProperty(), origem.layoutYProperty(), destino.layoutXProperty(), destino.layoutYProperty()));
         getChildren().add(polygon1);
 
@@ -106,6 +106,7 @@ public class TransicaoView extends Region implements Transicao {
         edtRotulo.layoutXProperty().bind(polygon1.layoutXProperty().subtract(txtRotulo.widthProperty().divide(2)));
         edtRotulo.layoutYProperty().bind(polygon1.layoutYProperty().subtract(txtRotulo.heightProperty()));
         edtRotulo.setVisible(false);
+        edtRotulo.setMaxSize(40, 40);
         edtRotulo.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent t) {
@@ -132,7 +133,7 @@ public class TransicaoView extends Region implements Transicao {
     public void setTag(String chave, Object valor) {
         switch (chave) {
             case GrafoEditor.TAG_LABEL:
-                txtRotulo.setText(valor.toString());
+                txtRotulo.setText("[" + valor.toString() + "] ");
                 break;
         }
         tags.put(chave, valor);

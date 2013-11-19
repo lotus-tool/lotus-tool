@@ -12,7 +12,9 @@ import br.uece.gamut.Grafo;
 import javafx.fxml.FXML;
 import javafx.scene.Cursor;
 import javafx.scene.control.Button;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.ToggleButton;
+import javafx.scene.control.ToolBar;
 import javafx.stage.FileChooser;
 import javax.swing.JOptionPane;
 
@@ -21,11 +23,13 @@ public class MainSceneController {
     @FXML
     protected GrafoEditor editor;
     @FXML
-    protected Button btnNovo;
+    protected MenuItem miFechar;
     @FXML
-    protected Button btnAbrir;
+    protected MenuItem btnNovo;
     @FXML
-    protected Button btnSalvar;
+    protected MenuItem btnAbrir;
+    @FXML
+    protected MenuItem btnSalvar;
     @FXML
     protected ToggleButton btnDefault;
     @FXML
@@ -91,9 +95,9 @@ public class MainSceneController {
     }
 
     @FXML
-    protected void handleAddVertice(ActionEvent event) {        
+    protected void handleAddVertice(ActionEvent event) {
         editor.setCursor(Cursor.DEFAULT);
-        editor.setModo(GrafoEditor.MODO_ADICIONAR_VERTICE);        
+        editor.setModo(GrafoEditor.MODO_ADICIONAR_VERTICE);
     }
 
     @FXML
@@ -127,5 +131,10 @@ public class MainSceneController {
         //fileChooser.getExtensionFilters().add(extFilter);
         //Show open file dialog
         return fileChooser.showOpenDialog(null);
+    }
+
+    @FXML
+    protected void handleFecharPrograma() {
+        System.exit(0);
     }
 }

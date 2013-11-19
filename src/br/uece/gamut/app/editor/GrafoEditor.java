@@ -255,6 +255,7 @@ public class GrafoEditor extends Region implements Grafo {
 
     public void clear() {
         getChildren().clear();
+        contadorVertices = 0;
         vertices.clear();
         transicoes.clear();
     }
