@@ -128,12 +128,20 @@ public class TransicaoView extends Region implements Transicao {
     public Vertice getDestino() {
         return this.destino;
     }
-
+      
+    public Label getTxtRotulo(){
+        return txtRotulo;
+    }
+    
+    public void setTxtRotulo(String nomeTransicao){
+        txtRotulo.setText(nomeTransicao);
+    }
+    
     @Override
     public void setTag(String chave, Object valor) {
         switch (chave) {
             case GrafoEditor.TAG_LABEL:
-                txtRotulo.setText("[" + valor.toString() + "] ");
+                txtRotulo.setText( valor.toString() );
                 break;
         }
         tags.put(chave, valor);

@@ -1,8 +1,10 @@
 package br.uece.gamut.app.editor;
 
+import JFlex.Main;
 import br.uece.gamut.Grafo;
 import br.uece.gamut.Transicao;
 import br.uece.gamut.Vertice;
+import br.uece.gamut.app.MainSceneController;
 import static br.uece.gamut.app.editor.GrafoEditor.MODO_ADICIONAR_LIGACAO;
 import static br.uece.gamut.app.editor.GrafoEditor.MODO_ADICIONAR_VERTICE;
 import static br.uece.gamut.app.editor.GrafoEditor.MODO_MOVER_VERTICE;
@@ -15,8 +17,10 @@ import static br.uece.gamut.app.editor.GrafoEditor.TAG_POS_Y;
 import java.util.ArrayList;
 import java.util.List;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
+import javafx.scene.control.ToolBar;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.Dragboard;
@@ -50,6 +54,7 @@ public class GrafoEditor extends Region implements Grafo {
     private List<Vertice> vertices = new ArrayList<>();
     private List<Transicao> transicoes = new ArrayList<>();
     private Object mObjetoAtualmenteSelecionado;
+    private Object mObjetoSelecionado;
 
     public GrafoEditor() {
         setOnMouseClicked(aoClicarMouse);
@@ -61,6 +66,7 @@ public class GrafoEditor extends Region implements Grafo {
                     if (vv.pontoPertenceAoObjeto(t.getX(), t.getY())) {
                         mObjetoAtualmenteSelecionado = vv;
                         System.out.println("vertice selecionado: " + vv);
+                        //   setObjetoNasPropriedades(MainSceneController.tbPropriedades);
                         return;
                     }
                 }
@@ -69,10 +75,12 @@ public class GrafoEditor extends Region implements Grafo {
                     if (tv.pontoPertenceAoObjeto(t.getX(), t.getY())) {
                         mObjetoAtualmenteSelecionado = tv;
                         System.out.println("transicao selecionada: " + tv);
+                        //    setObjetoNasPropriedades(MainSceneController.tbPropriedades);
                         return;
                     }
-                }                
-                mObjetoAtualmenteSelecionado = null;                
+                }
+                mObjetoAtualmenteSelecionado = null;
+                // setObjetoNasPropriedades(MainSceneController.tbPropriedades);
             }
         });
     }
@@ -84,6 +92,27 @@ public class GrafoEditor extends Region implements Grafo {
                     adicionarNovoVerticePeloCliqueMouse(t);
                     break;
                 case MODO_NENHUM:
+                /*    for (Vertice v : vertices) {                       
+                        VerticeView vv = (VerticeView) v;
+                        if (vv.pontoPertenceAoObjeto(t.getX(), t.getY())) {
+                            mObjetoSelecionado = vv;
+                            System.out.println("vertice selecionado: " + vv);
+                            setObjetoNasPropriedades(MainSceneController.tbPropriedades);
+                            return;
+                        }
+                    }*/
+                    for (Transicao tt : transicoes) {
+                        TransicaoView tv = (TransicaoView) tt;
+                        if (tv.pontoPertenceAoObjeto(t.getX(), t.getY())) {
+                            mObjetoSelecionado = tv;
+                            System.out.println("transicao selecionada: " + tv);
+                            setObjetoNasPropriedades(MainSceneController.tbPropriedades);
+                            return;
+                        }
+                    }
+                    mObjetoSelecionado = null;
+                    
+                    setObjetoNasPropriedades(MainSceneController.tbPropriedades);
                     //Default
                     break;
                 case MODO_REMOVER_LIGACAO:
@@ -337,6 +366,35 @@ public class GrafoEditor extends Region implements Grafo {
             v.setTag(TAG_POS_X, i * 100.0);
             v.setTag(TAG_POS_Y, 300.0);
             i++;
+        }
+    }
+
+    // SETAR AS PROPRIEDADES DA TRANSIÇÃO
+    public void setObjetoNasPropriedades(ToolBar tbPropriedades) {
+        if (mObjetoSelecionado == null) {
+            tbPropriedades.setVisible(false);
+  
+        } else {
+            tbPropriedades.setVisible(true);                       
+            final TransicaoView tv = (TransicaoView) mObjetoSelecionado;
+            
+            MainSceneController.setPropNome(tv.getTxtRotulo().getText());
+            
+            MainSceneController.tfNomeTransicao.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent t) {
+                tv.setTxtRotulo(MainSceneController.tfNomeTransicao.getText());
+                
+            }
+        });
+            /*MainSceneController.tfPropProb.setOnAction(new EventHandler<ActionEvent>() {
+
+                @Override
+                public void handle(ActionEvent t) {
+                
+                }
+            });*/
+          
         }
     }
 }

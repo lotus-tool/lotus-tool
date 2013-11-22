@@ -9,16 +9,23 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import javafx.event.ActionEvent;
 import br.uece.gamut.Grafo;
+import java.net.URL;
+import java.util.ResourceBundle;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
 import javafx.scene.Cursor;
 import javafx.scene.control.Button;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToolBar;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.Pane;
 import javafx.stage.FileChooser;
 import javax.swing.JOptionPane;
 
-public class MainSceneController {
+public class MainSceneController{
 
     @FXML
     protected GrafoEditor editor;
@@ -43,7 +50,13 @@ public class MainSceneController {
     @FXML
     protected ToggleButton btnDelLigacao;
     ToggleButton group;
-
+    @FXML
+    public static ToolBar tbPropriedades;
+    @FXML
+    public static TextField tfNomeTransicao;
+    @FXML
+    public static TextField tfPropProb;
+    
     @FXML
     protected void handleNovo(ActionEvent event) {
         editor.clear();
@@ -137,4 +150,21 @@ public class MainSceneController {
     protected void handleFecharPrograma() {
         System.exit(0);
     }
+    
+    public static void setPropNome(String nomeTransicao ){
+        tfNomeTransicao.setText(nomeTransicao);
+    }
+    
+    public static String getPropNome(){
+        return tfNomeTransicao.getText();
+    }
+    
+    public static void setPropProb(double probab){        
+        tfPropProb.setText(Double.toString(probab));
+    }
+    
+    public static double getPropProb(){
+        return Double.parseDouble(tfPropProb.getText());     
+    }
+
 }

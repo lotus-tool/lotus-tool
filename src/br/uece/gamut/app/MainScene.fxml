@@ -4,6 +4,7 @@
 <?import java.lang.*?>
 <?import java.util.*?>
 <?import javafx.collections.*?>
+<?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
@@ -72,7 +73,7 @@
                     </ImageView>
                   </graphic>
                   <tooltip>
-                    <Tooltip text="Criar Ligação" />
+                    <Tooltip text="Criar Transição" />
                   </tooltip>
                 </ToggleButton>
               </children>
@@ -92,7 +93,7 @@
                     <Tooltip text="Deletar Estado" />
                   </tooltip>
                 </ToggleButton>
-                <ToggleButton id="btnLigacao" fx:id="btnDelLigacao" minWidth="47.0" onAction="#handleDelLigacao" prefHeight="38.0" prefWidth="47.0">
+                <ToggleButton id="btnLigacao" fx:id="btnDelLigacao" minWidth="47.0" onAction="#handleDelLigacao" prefHeight="38.0" prefWidth="47.0" toggleGroup="$ferramentas">
                   <graphic>
                     <ImageView fitHeight="32.0" fitWidth="42.666666666666664" mouseTransparent="true" pickOnBounds="true" preserveRatio="true">
                       <image>
@@ -100,11 +101,8 @@
                       </image>
                     </ImageView>
                   </graphic>
-                  <toggleGroup>
-                    <ToggleGroup />
-                  </toggleGroup>
                   <tooltip>
-                    <Tooltip text="Deletar Ligação" />
+                    <Tooltip text="Deletar Transição" />
                   </tooltip>
                 </ToggleButton>
               </children>
@@ -138,5 +136,26 @@
         </Menu>
       </menus>
     </MenuBar>
+    <ToolBar fx:id="tbPropriedades" minHeight="384.0" prefHeight="384.0" prefWidth="145.0" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="26.0">
+      <items>
+        <VBox alignment="TOP_CENTER" prefHeight="374.0" prefWidth="121.0" spacing="5.0">
+          <children>
+            <Label text="Propriedades" />
+            <Separator minHeight="1.0" prefHeight="16.0" prefWidth="51.0" />
+            <Label text="Transição">
+              <VBox.margin>
+                <Insets fx:id="x1" />
+              </VBox.margin>
+            </Label>
+            <TextField fx:id="tfNomeTransicao" prefWidth="200.0" />
+            <Label text="Probabilidade" VBox.margin="$x1" />
+            <TextField fx:id="tfPropProb" prefWidth="200.0" />
+          </children>
+          <padding>
+            <Insets top="10.0" />
+          </padding>
+        </VBox>
+      </items>
+    </ToolBar>
   </children>
 </AnchorPane>
