@@ -105,7 +105,7 @@ public class VerticeView extends Region implements Vertice {
         double d2 = dx * dx + dy * dy;        
         boolean pertence =  d2 < raio * raio;
         //System.out.println("dx: " + dx + " dy: " + dy + " dist^2: " + d2 + " raio^2: " + (raio * raio));
-        circle.setStrokeWidth(pertence ? 2 : 1);
+        circle.setStrokeWidth(pertence ? 2 : 1);        
         return pertence;
     }
 }
