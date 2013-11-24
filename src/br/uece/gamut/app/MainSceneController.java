@@ -1,65 +1,65 @@
 package br.uece.gamut.app;
 
+import br.uece.gamut.Transicao;
+import br.uece.gamut.Vertice;
 import br.uece.gamut.app.editor.GrafoEditor;
+import br.uece.gamut.app.editor.MapEditor;
 import br.uece.gamut.parser.GrafoMarshaller;
 import br.uece.gamut.parser.GrafoParserFacade;
 import br.uece.gamut.parser.GrafoUnmarshaller;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import javafx.event.ActionEvent;
-import br.uece.gamut.Grafo;
 import java.net.URL;
 import java.util.ResourceBundle;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Cursor;
-import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TitledPane;
 import javafx.scene.control.ToggleButton;
-import javafx.scene.control.ToolBar;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.Pane;
+import javafx.scene.control.ToggleGroup;
+import javafx.scene.layout.VBox;
+import javafx.scene.text.Font;
 import javafx.stage.FileChooser;
 import javax.swing.JOptionPane;
 
-public class MainSceneController{
+public class MainSceneController implements Initializable, GrafoEditor.OnSelectionChange {
 
-    @FXML
-    protected GrafoEditor editor;
-    @FXML
-    protected MenuItem miFechar;
-    @FXML
-    protected MenuItem btnNovo;
-    @FXML
-    protected MenuItem btnAbrir;
-    @FXML
-    protected MenuItem btnSalvar;
     @FXML
     protected ToggleButton btnDefault;
     @FXML
-    protected ToggleButton btnMover;
+    protected ToggleButton btnVertice;
     @FXML
-    protected ToggleButton btnAddEstado;
+    protected ToggleButton btnTransicao;
     @FXML
-    protected ToggleButton btnAddLigacao;
+    protected ToggleButton btnApagar;
     @FXML
-    protected ToggleButton btnDelEstado;
+    protected GrafoEditor editor;
     @FXML
-    protected ToggleButton btnDelLigacao;
-    ToggleButton group;
+    protected VBox pnlPropriedadesTransicao;
     @FXML
-    public static ToolBar tbPropriedades;
+    protected TextField edtRotulo;
     @FXML
-    public static TextField tfNomeTransicao;
+    protected VBox pnlPropriedadesVertice;
     @FXML
-    public static TextField tfPropProb;
-    
+    protected CheckBox ckbDefault;
+    private Vertice mVerticeEmEdicao;
+    private Transicao mTransicaoEmEdicao;
+    @FXML
+    private TextField edtProbabilidade;
+
     @FXML
     protected void handleNovo(ActionEvent event) {
         editor.clear();
+    }
+
+    private void mostrarDialogoErro(Exception e) {
+        JOptionPane.showMessageDialog(null, e.getClass() + ": " + e.getMessage());
     }
 
     @FXML
@@ -96,44 +96,27 @@ public class MainSceneController{
     }
 
     @FXML
-    protected void handleMouseDefault(ActionEvent event) {
+    protected void handleDefault(ActionEvent event) {
         editor.setModo(GrafoEditor.MODO_NENHUM);
         editor.setCursor(Cursor.DEFAULT);
     }
 
     @FXML
-    protected void handleMover(ActionEvent event) {
-        editor.setModo(GrafoEditor.MODO_MOVER_VERTICE);
-        editor.setCursor(Cursor.MOVE);
+    protected void handleVertice(ActionEvent event) {
+        editor.setCursor(Cursor.DEFAULT);
+        editor.setModo(GrafoEditor.MODO_VERTICE);
     }
 
     @FXML
-    protected void handleAddVertice(ActionEvent event) {
+    protected void handleTransicao(ActionEvent event) {
         editor.setCursor(Cursor.DEFAULT);
-        editor.setModo(GrafoEditor.MODO_ADICIONAR_VERTICE);
+        editor.setModo(GrafoEditor.MODO_TRANSICAO);
     }
 
     @FXML
-    protected void handleAddLigacao(ActionEvent event) {
+    protected void handleApagar(ActionEvent event) {
         editor.setCursor(Cursor.DEFAULT);
-        editor.setModo(GrafoEditor.MODO_ADICIONAR_LIGACAO);
-    }
-
-    @FXML
-    protected void handleDelVertice(ActionEvent event) {
-        editor.setCursor(Cursor.DEFAULT);
-        editor.setModo(GrafoEditor.MODO_REMOVER_VERTICE);
-    }
-
-    @FXML
-    protected void handleDelLigacao(ActionEvent event) {
-        editor.setCursor(Cursor.DEFAULT);
-        editor.setModo(GrafoEditor.MODO_REMOVER_LIGACAO);
-    }
-
-    private void mostrarDialogoErro(Exception e) {
-        e.printStackTrace();
-        JOptionPane.showMessageDialog(null, e.getClass() + ": " + e.getMessage());
+        editor.setModo(GrafoEditor.MODO_REMOVER);
     }
 
     private File selecionarArquivo() {
@@ -147,24 +130,64 @@ public class MainSceneController{
     }
 
     @FXML
-    protected void handleFecharPrograma() {
+    protected void handleSair(ActionEvent event) {
         System.exit(0);
     }
-    
-    public static void setPropNome(String nomeTransicao ){
-        tfNomeTransicao.setText(nomeTransicao);
-    }
-    
-    public static String getPropNome(){
-        return tfNomeTransicao.getText();
-    }
-    
-    public static void setPropProb(double probab){        
-        tfPropProb.setText(Double.toString(probab));
-    }
-    
-    public static double getPropProb(){
-        return Double.parseDouble(tfPropProb.getText());     
+
+    @FXML
+    protected void handleSobre(ActionEvent event) {
+        System.out.println("handle sobre");
     }
 
+    @Override
+    public void initialize(URL url, ResourceBundle rb) {
+        editor.setOnSelectionChange(this);
+        
+        ToggleGroup g = new ToggleGroup();
+        btnDefault.setToggleGroup(g);
+        btnVertice.setToggleGroup(g);
+        btnTransicao.setToggleGroup(g);
+        btnApagar.setToggleGroup(g);
+        
+//        ckbDefault.setOnAction(new EventHandler<ActionEvent>() {
+//            @Override
+//            public void handle(ActionEvent t) {
+//                mVerticeEmEdicao.setTag(GrafoEditor.TAG_DEFAULT, ckbDefault.isSelected());
+//            }
+//        });
+        edtRotulo.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent t) {
+                mTransicaoEmEdicao.setTag(GrafoEditor.TAG_LABEL, edtRotulo.getText());
+            }
+        });
+        edtProbabilidade.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent t) {
+                Double d = (Double) mTransicaoEmEdicao.getTag(GrafoEditor.TAG_PROBABILIDADE);
+                try {
+                    d = Double.parseDouble(edtProbabilidade.getText());
+                } catch (Exception e) {
+                    //ignora
+                }
+                mTransicaoEmEdicao.setTag(GrafoEditor.TAG_PROBABILIDADE, d);
+            }
+        });
+        pnlPropriedadesTransicao.setVisible(mTransicaoEmEdicao != null);
+    }
+
+    @Override
+    public void onOnSelectionChange(GrafoEditor editor, int objectKind) {
+        mTransicaoEmEdicao = editor.getTransicaoSelecionada();        
+        pnlPropriedadesTransicao.setVisible(mTransicaoEmEdicao != null);
+        System.out.println("t: " + mTransicaoEmEdicao);
+        if (mTransicaoEmEdicao != null) {
+            exibirPropriedadesDaTransicao();
+        }
+    }
+
+    private void exibirPropriedadesDaTransicao() {
+        edtRotulo.setText((String) mTransicaoEmEdicao.getTag(GrafoEditor.TAG_LABEL));
+        edtProbabilidade.setText(mTransicaoEmEdicao.getTag(GrafoEditor.TAG_PROBABILIDADE).toString());
+    }
 }
