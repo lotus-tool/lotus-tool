@@ -6,6 +6,8 @@ import br.uece.gamut.Vertice;
 
 import java.util.ArrayList;
 import java.util.List;
+import javafx.beans.binding.DoubleBinding;
+import javafx.beans.property.DoubleProperty;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
@@ -16,6 +18,8 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Ellipse;
+import javafx.scene.shape.Polygon;
 
 /**
  *
@@ -30,10 +34,10 @@ public class GrafoEditor extends Region implements Grafo {
     public static final String TAG_POS_X = "_x";
     public static final String TAG_POS_Y = "_y";
     public static final String TAG_LABEL = "label";
-    public static final String TAG_COR = "_cor";      
-    public static final String TAG_DEFAULT = "default";    
+    public static final String TAG_COR = "_cor";
+    public static final String TAG_DEFAULT = "default";
     public static final String TAG_PROBABILIDADE = "probability";
-    
+
     private int modo;
     private int contadorVertices;
     private List<Vertice> vertices = new ArrayList<>();
@@ -42,6 +46,57 @@ public class GrafoEditor extends Region implements Grafo {
     private TransicaoView mTransicaoSobMouse;
     private VerticeView mVerticeSelecionado;
     private TransicaoView mTransicaoSelecionada;
+
+    private static class DistanciaElipse extends DoubleBinding {
+
+        public DoubleProperty xi;
+        public DoubleProperty yi;
+        public static final int COMPONENTE_X = 0;
+        public static final int COMPONENTE_Y = 1;
+        public int componente;
+
+        public DistanciaElipse(DoubleProperty xi, DoubleProperty yi, int componente) {
+            super.bind(xi, yi);
+            this.xi = xi;
+            this.yi = yi;
+            this.componente = componente;
+        }
+
+        @Override
+        protected double computeValue() {
+            if (componente == COMPONENTE_X) {
+                return xi.getValue() - 25;
+            } else {
+                return yi.getValue();
+            }
+
+        }
+    }
+
+    private static class DistanciaSetaElipse extends DoubleBinding {
+
+        public static final int COMPONENTE_X = 0;
+        public static final int COMPONENTE_Y = 1;
+        public DoubleProperty xi;
+        public DoubleProperty yi;
+        public int componente;
+
+        public DistanciaSetaElipse(DoubleProperty xi, DoubleProperty yi, int componente) {
+            super.bind(xi, yi);
+            this.xi = xi;
+            this.yi = yi;
+            this.componente = componente;
+        }
+
+        @Override
+        protected double computeValue() {
+            if (componente == COMPONENTE_X) {
+                return xi.getValue() - 55  ;
+            }else{
+                return yi.getValue() - 6;
+            }
+        }
+    }
 
     public interface OnSelectionChange {
 
@@ -87,7 +142,7 @@ public class GrafoEditor extends Region implements Grafo {
                 if (mVerticeSobMouse != null) {
                     setVerticeSelecionado(mVerticeSobMouse);
                     setTransicaoSelecionado(null);
-                } else {                    
+                } else {
                     setVerticeSelecionado(null);
                     setTransicaoSelecionado(mTransicaoSobMouse);
                 }
@@ -146,7 +201,7 @@ public class GrafoEditor extends Region implements Grafo {
             if (modo != MODO_VERTICE && modo != MODO_NENHUM) {
                 return;
             }
-            
+
             if (mVerticeSobMouse == null) {
                 return;
             }
@@ -214,9 +269,32 @@ public class GrafoEditor extends Region implements Grafo {
                 return;
             }
             VerticeView destino = getVerticePelaPosicaoMouse(event.getX(), event.getY());
-            newTransicao(mVerticeOrigemParaAdicionarTransicao.getID(), destino.getID());
-            event.setDropCompleted(true);
-            event.consume();
+            if (destino.getID() == mVerticeOrigemParaAdicionarTransicao.getID()) {
+                Ellipse loop = new Ellipse();
+                loop.setRadiusX(25);
+                loop.setRadiusY(20);
+                loop.setFill(null);
+                loop.setStroke(Color.BLACK);
+                loop.layoutXProperty().bind(new DistanciaElipse(destino.layoutXProperty(), destino.layoutYProperty(), 0));
+                loop.layoutYProperty().bind(new DistanciaElipse(destino.layoutXProperty(), destino.layoutYProperty(), 1));
+                Polygon mSeta = new Polygon(new double[]{
+                    5.0, 0.0,
+                    10.0, 10.0,
+                    0.0, 10.0
+                });
+                mSeta.layoutXProperty().bind(new DistanciaSetaElipse(destino.layoutXProperty(), destino.layoutYProperty(), 0));
+                mSeta.layoutYProperty().bind(new DistanciaSetaElipse(destino.layoutXProperty(), destino.layoutYProperty(), 1));
+               
+                getChildren().add(mSeta);
+                getChildren().add(loop);
+                getChildren().remove(destino);
+                getChildren().add(destino);
+
+            } else {
+                newTransicao(mVerticeOrigemParaAdicionarTransicao.getID(), destino.getID());
+                event.setDropCompleted(true);
+                event.consume();
+            }
         }
     };
 
@@ -385,14 +463,13 @@ public class GrafoEditor extends Region implements Grafo {
     public void setOnSelectionChange(OnSelectionChange listener) {
         mOnSelectionChangeListener = listener;
     }
-    
+
     public Vertice getVerticeSelecionado() {
         return mVerticeSelecionado;
     }
-    
+
     public Transicao getTransicaoSelecionada() {
         return mTransicaoSelecionada;
     }
-    
 
 }
