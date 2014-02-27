@@ -10,9 +10,9 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
+import javafx.scene.shape.Ellipse;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Polygon;
-
 
 /**
  *
@@ -26,49 +26,68 @@ public class TransicaoView extends Region implements Transicao {
     private static final Paint COR_LINHA_NORMAL = Color.BLACK;
     private static final double ESCALA_SETA_DESTAQUE = 1.5;
     private static final double ESCALA_SETA_NORMAL = 1.0;
-    
-    
+
     private Line mLinha;
     private final Label mRotulo;
     private final Polygon mSeta;
-    private Map<String, Object> tags = new HashMap<>();    
+    private Map<String, Object> tags = new HashMap<>();
     private VerticeView mDestino;
     private VerticeView mOrigem;
     private boolean mSelecionado;
     private boolean mDestacado;
-    
-    
-    
+
     public TransicaoView(final VerticeView origem, final VerticeView destino) {
         mOrigem = origem;
         mDestino = destino;
-
-        mSeta = new Polygon(new double[]{
-            5.0, 0.0,
-            10.0, 10.0,
-            0.0, 10.0
-        });
-        mSeta.setFill(COR_LINHA_NORMAL);
-        mSeta.layoutXProperty().bind(new DistanciaLinha(origem.layoutXProperty(), origem.layoutYProperty(), destino.layoutXProperty(), destino.layoutYProperty(), 60, DistanciaLinha.FIM, DistanciaLinha.COMPONENTE_X));
-        mSeta.layoutYProperty().bind(new DistanciaLinha(origem.layoutXProperty(), origem.layoutYProperty(), destino.layoutXProperty(), destino.layoutYProperty(), 60, DistanciaLinha.FIM, DistanciaLinha.COMPONENTE_Y));
-        mSeta.rotateProperty().bind(new RotacaoSeta(origem.layoutXProperty(), origem.layoutYProperty(), destino.layoutXProperty(), destino.layoutYProperty()));
-        getChildren().add(mSeta);
-
-        mLinha = new Line();
-        mLinha.startXProperty().bind(origem.layoutXProperty());
-        mLinha.startYProperty().bind(origem.layoutYProperty());
-        mLinha.endXProperty().bind(destino.layoutXProperty());
-        mLinha.endYProperty().bind(destino.layoutYProperty());
-        getChildren().add(mLinha);
-
         mRotulo = new Label();
-        mRotulo.setTextFill(COR_LINHA_NORMAL);
-        mRotulo.setText("--");
-        mRotulo.layoutXProperty().bind(mSeta.layoutXProperty().subtract(mRotulo.widthProperty().divide(2)));
-        mRotulo.layoutYProperty().bind(mSeta.layoutYProperty().subtract(mRotulo.heightProperty()));
-        getChildren().add(mRotulo);
+        mSeta = new Polygon(new double[]{
+                5.0, 0.0,
+                10.0, 10.0,
+                0.0, 10.0
+            });
         
-        tags.put(GrafoEditor.TAG_PROBABILIDADE, 0D);
+        if (origem.equals(destino)) {
+            Ellipse loop = new Ellipse();
+            loop.setRadiusX(25);
+            loop.setRadiusY(20);
+            loop.setFill(null);
+            loop.setStroke(Color.BLACK);
+            loop.layoutXProperty().bind(new DistanciaElipse(destino.layoutXProperty(), destino.layoutYProperty(), 0));
+            loop.layoutYProperty().bind(new DistanciaElipse(destino.layoutXProperty(), destino.layoutYProperty(), 1));
+            
+            mSeta.setFill(COR_LINHA_NORMAL);
+            mSeta.layoutXProperty().bind(new DistanciaSetaElipse(destino.layoutXProperty(), destino.layoutYProperty(), 0));
+            mSeta.layoutYProperty().bind(new DistanciaSetaElipse(destino.layoutXProperty(), destino.layoutYProperty(), 1));
+
+            getChildren().add(mSeta);
+            getChildren().add(loop);
+            tags.put(GrafoEditor.TAG_PROBABILIDADE, 0D); 
+            
+        } else {
+            
+            mSeta.setFill(COR_LINHA_NORMAL);
+            mSeta.layoutXProperty().bind(new DistanciaLinha(origem.layoutXProperty(), origem.layoutYProperty(), destino.layoutXProperty(), destino.layoutYProperty(), 60, DistanciaLinha.FIM, DistanciaLinha.COMPONENTE_X));
+            mSeta.layoutYProperty().bind(new DistanciaLinha(origem.layoutXProperty(), origem.layoutYProperty(), destino.layoutXProperty(), destino.layoutYProperty(), 60, DistanciaLinha.FIM, DistanciaLinha.COMPONENTE_Y));
+            mSeta.rotateProperty().bind(new RotacaoSeta(origem.layoutXProperty(), origem.layoutYProperty(), destino.layoutXProperty(), destino.layoutYProperty()));
+            getChildren().add(mSeta);
+
+            mLinha = new Line();
+            mLinha.startXProperty().bind(origem.layoutXProperty());
+            mLinha.startYProperty().bind(origem.layoutYProperty());
+            mLinha.endXProperty().bind(destino.layoutXProperty());
+            mLinha.endYProperty().bind(destino.layoutYProperty());
+            getChildren().add(mLinha);
+
+            
+            mRotulo.setTextFill(COR_LINHA_NORMAL);
+            mRotulo.setText("--");
+            mRotulo.layoutXProperty().bind(mSeta.layoutXProperty().subtract(mRotulo.widthProperty().divide(2)));
+            mRotulo.layoutYProperty().bind(mSeta.layoutYProperty().subtract(mRotulo.heightProperty()));
+            getChildren().add(mRotulo);
+
+            tags.put(GrafoEditor.TAG_PROBABILIDADE, 0D);
+            
+        }
     }
 
     @Override
@@ -92,7 +111,7 @@ public class TransicaoView extends Region implements Transicao {
     @Override
     public void setTag(String chave, Object valor) {
         tags.put(chave, valor);
-        
+
         String rotulo = (String) tags.get(GrafoEditor.TAG_LABEL);
         Double probabilidade = (Double) tags.get(GrafoEditor.TAG_PROBABILIDADE);
         mRotulo.setText(rotulo + " - " + probabilidade);
@@ -101,23 +120,23 @@ public class TransicaoView extends Region implements Transicao {
     public boolean isSelecionado() {
         return mSelecionado;
     }
-    
+
     public void setSelecionado(boolean selecionado) {
         mSelecionado = selecionado;
         mLinha.setStrokeWidth(selecionado ? ESPESSURA_LINHA_DESTAQUE : ESPESSURA_LINHA_NORMAL);
-        Paint p = selecionado ? COR_LINHA_SELECIONADA : COR_LINHA_NORMAL;        
+        Paint p = selecionado ? COR_LINHA_SELECIONADA : COR_LINHA_NORMAL;
         mLinha.setStroke(p);
         mSeta.setFill(p);
-        mRotulo.setTextFill(p);        
+        mRotulo.setTextFill(p);
     }
 
-    public void setDestacado(boolean destacado) {        
+    public void setDestacado(boolean destacado) {
         mLinha.setStrokeWidth(destacado ? ESPESSURA_LINHA_DESTAQUE : ESPESSURA_LINHA_NORMAL);
         double s = destacado ? ESCALA_SETA_DESTAQUE : ESCALA_SETA_NORMAL;
         mSeta.setScaleX(s);
         mSeta.setScaleY(s);
     }
-    
+
     @Override
     public Object getTag(String chave) {
         return tags.get(chave);
@@ -126,7 +145,7 @@ public class TransicaoView extends Region implements Transicao {
     public boolean pontoPertenceAoObjeto(double x, double y) {
         double startX = mLinha.getStartX();
         double endX = mLinha.getEndX();
-        if (x < Math.min(startX, endX) || x > Math.max(startX, endX)) {            
+        if (x < Math.min(startX, endX) || x > Math.max(startX, endX)) {
             return false;
         }
         double apx = x - startX;
@@ -140,10 +159,63 @@ public class TransicaoView extends Region implements Transicao {
 
         double cx = (mLinha.getStartX() + abx * t);
         double cy = (mLinha.getStartY() + aby * t);
-        boolean selecionado = Math.abs(x - cx) < 5 && Math.abs(y - cy) < 5;        
+        boolean selecionado = Math.abs(x - cx) < 5 && Math.abs(y - cy) < 5;
         return selecionado;
     }
+
+    private static class DistanciaElipse extends DoubleBinding {
+
+        public DoubleProperty xi;
+        public DoubleProperty yi;
+        public static final int COMPONENTE_X = 0;
+        public static final int COMPONENTE_Y = 1;
+        public int componente;
+
+        public DistanciaElipse(DoubleProperty xi, DoubleProperty yi, int componente) {
+            super.bind(xi, yi);
+            this.xi = xi;
+            this.yi = yi;
+            this.componente = componente;
+        }
+
+        @Override
+        protected double computeValue() {
+            if (componente == COMPONENTE_X) {
+                return xi.getValue() - 25;
+            } else {
+                return yi.getValue();
+            }
+
+        }
+    }
+
+    private static class DistanciaSetaElipse extends DoubleBinding {
+
+        public static final int COMPONENTE_X = 0;
+        public static final int COMPONENTE_Y = 1;
+        public DoubleProperty xi;
+        public DoubleProperty yi;
+        public int componente;
+
+        public DistanciaSetaElipse(DoubleProperty xi, DoubleProperty yi, int componente) {
+            super.bind(xi, yi);
+            this.xi = xi;
+            this.yi = yi;
+            this.componente = componente;
+        }
+
+        @Override
+        protected double computeValue() {
+            if (componente == COMPONENTE_X) {
+                return xi.getValue() - 55;
+            } else {
+                return yi.getValue() - 6;
+            }
+        }
+    }
+
 }
+
 class RotacaoSeta extends DoubleBinding {
 
     private final DoubleProperty xi;

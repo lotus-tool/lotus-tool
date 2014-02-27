@@ -10,27 +10,36 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.paint.*?>
 <?import javafx.scene.text.*?>
+<?scenebuilder-classpath-element editor?>
 
-<AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="410.0" prefWidth="607.0" xmlns:fx="http://javafx.com/fxml" fx:controller="br.uece.gamut.app.MainSceneController">
+<AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="463.0" prefWidth="607.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="br.uece.gamut.app.MainSceneController">
   <children>
-    <GrafoEditor fx:id="editor" prefHeight="367.0" prefWidth="556.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="44.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="33.0" />
     <MenuBar prefHeight="26.0" prefWidth="600.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
       <menus>
         <Menu mnemonicParsing="false" text="Arquivo">
           <items>
             <MenuItem mnemonicParsing="false" onAction="#handleNovo" text="Novo" fx:id="btnNovo" />
             <MenuItem mnemonicParsing="false" onAction="#handleAbrir" text="Abrir" fx:id="btnAbrir" />
-            <MenuItem mnemonicParsing="false" text="Salvar" fx:id="btnSalvar"/>
+            <MenuItem mnemonicParsing="false" text="Salvar" fx:id="btnSalvar" />
             <MenuItem mnemonicParsing="false" onAction="#handleSalvar" text="Salvar como..." />
             <MenuItem mnemonicParsing="false" onAction="#handleSair" text="Sair" fx:id="miFechar" />
           </items>
         </Menu>
-        <Menu mnemonicParsing="false" text="Sobre" onAction="#handleSobre" />
+        <Menu mnemonicParsing="false" onAction="#handleSobre" text="Sobre" />
       </menus>
     </MenuBar>
-    <ToolBar minWidth="33.0" orientation="VERTICAL" prefHeight="384.0" prefWidth="57.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="26.0">        
+    <ToolBar minHeight="36.0" minWidth="33.0" orientation="HORIZONTAL" prefHeight="36.0" prefWidth="607.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="26.0">
       <items>
-        <ToggleButton fx:id="btnDefault" mnemonicParsing="false" text="" onAction="#handleDefault">
+        <Button fx:id="btnAbas" mnemonicParsing="false" onAction="#criarNovaAba" text="">
+          <graphic>
+            <ImageView fitHeight="24.0" fitWidth="24.0" mouseTransparent="true" pickOnBounds="true" preserveRatio="false" smooth="false">
+              <image>
+                <Image url="@../../mastergraphs/imagens/tema1/1393488650_tab_add.png" />
+              </image>
+            </ImageView>
+          </graphic>
+        </Button>
+        <ToggleButton fx:id="btnDefault" mnemonicParsing="false" onAction="#handleDefault" text="">
           <graphic>
             <ImageView fitHeight="24.0" fitWidth="24.0" mouseTransparent="true" pickOnBounds="true" preserveRatio="false" smooth="false">
               <image>
@@ -39,7 +48,7 @@
             </ImageView>
           </graphic>
         </ToggleButton>
-        <ToggleButton fx:id="btnVertice" mnemonicParsing="false" text="" onAction="#handleVertice">
+        <ToggleButton fx:id="btnVertice" mnemonicParsing="false" onAction="#handleVertice" text="">
           <graphic>
             <ImageView fitHeight="24.0" fitWidth="24.0" mouseTransparent="true" pickOnBounds="true" preserveRatio="true">
               <image>
@@ -48,7 +57,7 @@
             </ImageView>
           </graphic>
         </ToggleButton>
-        <ToggleButton fx:id="btnTransicao" minHeight="-1.0" mnemonicParsing="false" prefHeight="-1.0" prefWidth="-1.0" text="" onAction="#handleTransicao">
+        <ToggleButton fx:id="btnTransicao" minHeight="-1.0" mnemonicParsing="false" onAction="#handleTransicao" prefHeight="-1.0" prefWidth="-1.0" text="">
           <graphic>
             <ImageView fitHeight="24.0" fitWidth="24.0" mouseTransparent="true" pickOnBounds="true" preserveRatio="true">
               <image>
@@ -57,22 +66,22 @@
             </ImageView>
           </graphic>
         </ToggleButton>
-        <ToggleButton fx:id="btnApagar" minHeight="-1.0" minWidth="-1.0" mnemonicParsing="false" prefHeight="-1.0" prefWidth="-1.0" text="" onAction="#handleApagar">
+        <ToggleButton fx:id="btnApagar" minHeight="-1.0" minWidth="-1.0" mnemonicParsing="false" onAction="#handleApagar" prefHeight="-1.0" prefWidth="-1.0" text="">
           <graphic>
             <ImageView fitHeight="24.0" fitWidth="24.0" mouseTransparent="true" pickOnBounds="true" preserveRatio="true">
               <image>
                 <Image url="@../../mastergraphs/imagens/apagar.png" />
               </image>
             </ImageView>
-          </graphic>          
+          </graphic>
         </ToggleButton>
       </items>
     </ToolBar>
-    <Accordion minWidth="126.0" prefHeight="384.0" prefWidth="151.0" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="26.0">
+    <Accordion minWidth="115.0" prefHeight="401.0" prefWidth="147.0" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="62.0">
       <expandedPane>
         <TitledPane fx:id="x2" alignment="CENTER_LEFT" animated="false" collapsible="false" expanded="true" text="Propriedades" textAlignment="LEFT">
           <content>
-            <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+            <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="361.0" prefWidth="147.0">
               <children>
                 <VBox fx:id="pnlPropriedadesTransicao" prefHeight="200.0" prefWidth="100.0" spacing="5.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                   <children>
@@ -101,7 +110,7 @@
             </AnchorPane>
           </content>
           <font>
-            <Font name="System Bold" size="12.0" />
+            <Font name="System Bold" size="12.0" fx:id="x3" />
           </font>
         </TitledPane>
       </expandedPane>
@@ -109,5 +118,19 @@
         <fx:reference source="x2" />
       </panes>
     </Accordion>
+    <TabPane fx:id="tpGrafoEditores" prefHeight="401.0" prefWidth="358.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="102.0" AnchorPane.rightAnchor="147.0" AnchorPane.topAnchor="62.0">
+      <tabs>
+        <Tab text="Untitled Tab 1">
+          <content>
+            <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="370.0" prefWidth="310.0">
+              <children>
+                <GrafoEditor fx:id="editor" prefHeight="367.0" prefWidth="556.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="44.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="33.0" />
+              </children>
+            </AnchorPane>
+          </content>
+        </Tab>
+      </tabs>
+    </TabPane>
+    <TreeView layoutX="0.0" layoutY="62.0" prefHeight="402.0" prefWidth="102.00009999999747" />
   </children>
 </AnchorPane>

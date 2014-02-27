@@ -17,8 +17,11 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Cursor;
+import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 import javafx.scene.control.ToggleButton;
@@ -30,6 +33,12 @@ import javax.swing.JOptionPane;
 
 public class MainSceneController implements Initializable, GrafoEditor.OnSelectionChange {
 
+    @FXML
+    protected Button btnAbas;
+    @FXML
+    protected TabPane tpGrafoEditores;
+    
+    
     @FXML
     protected ToggleButton btnDefault;
     @FXML
@@ -190,4 +199,13 @@ public class MainSceneController implements Initializable, GrafoEditor.OnSelecti
         edtRotulo.setText((String) mTransicaoEmEdicao.getTag(GrafoEditor.TAG_LABEL));
         edtProbabilidade.setText(mTransicaoEmEdicao.getTag(GrafoEditor.TAG_PROBABILIDADE).toString());
     }
+    
+    @FXML
+    private void criarNovaAba(ActionEvent mouseClick){
+        final Tab novaTab = new Tab();
+        novaTab.setText("novo2");
+        tpGrafoEditores.getTabs().add(novaTab);
+       
+    }
+    
 }

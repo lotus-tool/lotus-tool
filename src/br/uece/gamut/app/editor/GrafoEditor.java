@@ -16,6 +16,7 @@ import javafx.scene.input.DragEvent;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.TransferMode;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Ellipse;
@@ -25,7 +26,7 @@ import javafx.scene.shape.Polygon;
  *
  * @author emerson
  */
-public class GrafoEditor extends Region implements Grafo {
+public class GrafoEditor extends AnchorPane  implements Grafo {
 
     public static final int MODO_NENHUM = 0;
     public static final int MODO_VERTICE = 1;
@@ -46,57 +47,6 @@ public class GrafoEditor extends Region implements Grafo {
     private TransicaoView mTransicaoSobMouse;
     private VerticeView mVerticeSelecionado;
     private TransicaoView mTransicaoSelecionada;
-
-    private static class DistanciaElipse extends DoubleBinding {
-
-        public DoubleProperty xi;
-        public DoubleProperty yi;
-        public static final int COMPONENTE_X = 0;
-        public static final int COMPONENTE_Y = 1;
-        public int componente;
-
-        public DistanciaElipse(DoubleProperty xi, DoubleProperty yi, int componente) {
-            super.bind(xi, yi);
-            this.xi = xi;
-            this.yi = yi;
-            this.componente = componente;
-        }
-
-        @Override
-        protected double computeValue() {
-            if (componente == COMPONENTE_X) {
-                return xi.getValue() - 25;
-            } else {
-                return yi.getValue();
-            }
-
-        }
-    }
-
-    private static class DistanciaSetaElipse extends DoubleBinding {
-
-        public static final int COMPONENTE_X = 0;
-        public static final int COMPONENTE_Y = 1;
-        public DoubleProperty xi;
-        public DoubleProperty yi;
-        public int componente;
-
-        public DistanciaSetaElipse(DoubleProperty xi, DoubleProperty yi, int componente) {
-            super.bind(xi, yi);
-            this.xi = xi;
-            this.yi = yi;
-            this.componente = componente;
-        }
-
-        @Override
-        protected double computeValue() {
-            if (componente == COMPONENTE_X) {
-                return xi.getValue() - 55  ;
-            }else{
-                return yi.getValue() - 6;
-            }
-        }
-    }
 
     public interface OnSelectionChange {
 
@@ -269,32 +219,10 @@ public class GrafoEditor extends Region implements Grafo {
                 return;
             }
             VerticeView destino = getVerticePelaPosicaoMouse(event.getX(), event.getY());
-            if (destino.getID() == mVerticeOrigemParaAdicionarTransicao.getID()) {
-                Ellipse loop = new Ellipse();
-                loop.setRadiusX(25);
-                loop.setRadiusY(20);
-                loop.setFill(null);
-                loop.setStroke(Color.BLACK);
-                loop.layoutXProperty().bind(new DistanciaElipse(destino.layoutXProperty(), destino.layoutYProperty(), 0));
-                loop.layoutYProperty().bind(new DistanciaElipse(destino.layoutXProperty(), destino.layoutYProperty(), 1));
-                Polygon mSeta = new Polygon(new double[]{
-                    5.0, 0.0,
-                    10.0, 10.0,
-                    0.0, 10.0
-                });
-                mSeta.layoutXProperty().bind(new DistanciaSetaElipse(destino.layoutXProperty(), destino.layoutYProperty(), 0));
-                mSeta.layoutYProperty().bind(new DistanciaSetaElipse(destino.layoutXProperty(), destino.layoutYProperty(), 1));
-               
-                getChildren().add(mSeta);
-                getChildren().add(loop);
-                getChildren().remove(destino);
-                getChildren().add(destino);
 
-            } else {
-                newTransicao(mVerticeOrigemParaAdicionarTransicao.getID(), destino.getID());
-                event.setDropCompleted(true);
-                event.consume();
-            }
+            newTransicao(mVerticeOrigemParaAdicionarTransicao.getID(), destino.getID());
+            event.setDropCompleted(true);
+            event.consume();
         }
     };
 
