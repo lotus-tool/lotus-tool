@@ -4,7 +4,7 @@
  */
 package br.uece.gamut.parser;
 
-import br.uece.gamut.Grafo;
+import br.uece.gamut.model.ComponentModel;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -13,5 +13,5 @@ import java.io.InputStream;
  * @author emerson
  */
 public interface GrafoUnmarshaller {
-    public void unmarshaller(InputStream input, Grafo g) throws Exception;
+    public void unmarshaller(InputStream input, ComponentModel g) throws Exception;
 }

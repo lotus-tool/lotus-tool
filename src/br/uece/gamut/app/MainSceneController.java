@@ -1,211 +1,312 @@
 package br.uece.gamut.app;
 
-import br.uece.gamut.Transicao;
-import br.uece.gamut.Vertice;
-import br.uece.gamut.app.editor.GrafoEditor;
-import br.uece.gamut.app.editor.MapEditor;
-import br.uece.gamut.parser.GrafoMarshaller;
-import br.uece.gamut.parser.GrafoParserFacade;
-import br.uece.gamut.parser.GrafoUnmarshaller;
+import br.uece.gamut.util.EditableTab;
+import br.uece.gamut.model.ProjectModel;
+import br.uece.gamut.model.ComponentModel;
+import br.uece.gamut.model.Model;
+import br.uece.gamut.model.StateModel;
+import br.uece.gamut.model.TransitionModel;
+import br.uece.gamut.view.ComponentEditor;
+import br.uece.gamut.view.PropertyEditor;
+import br.uece.gamut.view.PropertySheet;
+import br.uece.gamut.view.View;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.net.URL;
 import java.util.ResourceBundle;
+import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.Cursor;
 import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.MenuItem;
+import javafx.scene.control.ListView;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
-import javafx.scene.control.TextField;
-import javafx.scene.control.TitledPane;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
-import javafx.scene.layout.VBox;
-import javafx.scene.text.Font;
+import javafx.scene.control.ToolBar;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.BorderPane;
 import javafx.stage.FileChooser;
 import javax.swing.JOptionPane;
 
-public class MainSceneController implements Initializable, GrafoEditor.OnSelectionChange {
+public class MainSceneController implements Initializable {
 
+    //Barra de ferramentas
     @FXML
-    protected Button btnAbas;
+    protected Button mBtnNovoComponente;
     @FXML
-    protected TabPane tpGrafoEditores;
-    
-    
+    protected Button mBtnNovoProjeto;
     @FXML
-    protected ToggleButton btnDefault;
+    protected Button mBtnAbrirProjeto;
     @FXML
-    protected ToggleButton btnVertice;
+    protected Button mBtnSalvar;
+    //Area do canvas
     @FXML
-    protected ToggleButton btnTransicao;
+    protected BorderPane mEditorWrapper;
+    //Abas de componentes
     @FXML
-    protected ToggleButton btnApagar;
+    protected TabPane mTabComponentes;
+    //Barra de edição de componente    
     @FXML
-    protected GrafoEditor editor;
+    protected ToolBar mBarFerramentas;
     @FXML
-    protected VBox pnlPropriedadesTransicao;
+    protected ToggleButton mBtnDefault;
     @FXML
-    protected TextField edtRotulo;
+    protected ToggleButton mBtnVertice;
     @FXML
-    protected VBox pnlPropriedadesVertice;
+    protected ToggleButton mBtnTransicao;
     @FXML
-    protected CheckBox ckbDefault;
-    private Vertice mVerticeEmEdicao;
-    private Transicao mTransicaoEmEdicao;
+    protected ToggleButton mBtnApagar;
     @FXML
-    private TextField edtProbabilidade;
+    private ListView mLstComponents;
+    @FXML
+    private AnchorPane mPropriedadesWrapper;
+    // Componentes Visuais
+    private PropertyEditor mPropertyEditor;
+    private ComponentEditor mEditor;
+    //Especificações e modelos
+    private ProjectModel mProjeto;
+    private boolean mProjetoModificado;
+    private File mProjetoFile;
+    private PropertySheet mStatePropertySheet;
+    private PropertySheet mTransitionPropertySheet;
+    ////////////////////////////////////////////////////////
+    // Exibição dos Componentes
+    ////////////////////////////////////////////////////////
+    private EventHandler<ActionEvent> mMudarNomeComponenteHandler = new EventHandler<ActionEvent>() {
+        @Override
+        public void handle(ActionEvent t) {
+            EditableTab tab = ((EditableTab) t.getSource());
+            ((ComponentModel) tab.getUserData()).setName(tab.getLabel());
+            mLstComponents.setItems(null);
+            mLstComponents.setItems(mProjeto.getComponents());
+            setProjetoModificado(true);
+        }
+    };
+    private ChangeListener<Tab> mAoSelecionarAba = new ChangeListener<Tab>() {
+        @Override
+        public void changed(ObservableValue<? extends Tab> ov, Tab t, Tab t1) {
+            changeComponent(t1 == null ? null : (ComponentModel) t1.getUserData());
+        }
+    };
+    private EventHandler<? super MouseEvent> mAoDuploCliqueListaComponentes = new EventHandler<MouseEvent>() {
+        @Override
+        public void handle(MouseEvent t) {
+            if (t.getButton().equals(MouseButton.PRIMARY)) {
+                if (t.getClickCount() == 2) {
+                    ComponentModel c = (ComponentModel) mLstComponents.getSelectionModel().getSelectedItem();
+                    changeComponent(c);
+                }
+            }
+        }
+    };
+    ////////////////////////////////////////////////////////
+    // Bind Editor com o painel de propriedades
+    ////////////////////////////////////////////////////////
+    private ComponentEditor.OnSelectionChange mAoSelecionarModel = new ComponentEditor.OnSelectionChange() {
+        @Override
+        public void onSelectionChange(ComponentEditor e) {
+            View v = e.getSelectedView();
+            if (v == null) {
+                mPropertyEditor.setSpec(null);
+                mPropertyEditor.setModel(null);
+            } else {
+                Model m = v.getModel();
+                if (m instanceof StateModel) {
+                    mPropertyEditor.setSpec(mStatePropertySheet);
+                } else if (m instanceof TransitionModel) {
+                    mPropertyEditor.setSpec(mTransitionPropertySheet);
+                }
+                mPropertyEditor.setModel(m);
+            }
+        }
+    };
 
-    @FXML
-    protected void handleNovo(ActionEvent event) {
-        editor.clear();
+    @Override
+    public void initialize(URL url, ResourceBundle rb) {
+        ToggleGroup g = new ToggleGroup();
+        mBtnDefault.setToggleGroup(g);
+        mBtnVertice.setToggleGroup(g);
+        mBtnTransicao.setToggleGroup(g);
+        mBtnApagar.setToggleGroup(g);
+
+        mTabComponentes.getSelectionModel().selectedItemProperty().addListener(mAoSelecionarAba);
+        mLstComponents.setOnMouseClicked(mAoDuploCliqueListaComponentes);
+
+        mEditor = new ComponentEditor();
+        mEditorWrapper.setCenter(mEditor);
+
+        mPropertyEditor = new PropertyEditor();
+        mStatePropertySheet = new PropertySheet();
+        mStatePropertySheet.newProperty("Default", "default");
+        mTransitionPropertySheet = new PropertySheet();
+        mTransitionPropertySheet.newProperty("Label", "label");
+        mTransitionPropertySheet.newProperty("Guard", "guard");
+        mTransitionPropertySheet.newProperty("Probability", "probability");
+
+        mPropriedadesWrapper.getChildren().add(mPropertyEditor);
+        AnchorPane.setTopAnchor(mPropertyEditor, 0D);
+        AnchorPane.setLeftAnchor(mPropertyEditor, 0D);
+        AnchorPane.setBottomAnchor(mPropertyEditor, 0D);
+        AnchorPane.setRightAnchor(mPropertyEditor, 0D);
+        mEditor.setOnSelectionChange(mAoSelecionarModel);
+
+        handleNovoProjeto(null);
     }
 
-    private void mostrarDialogoErro(Exception e) {
-        JOptionPane.showMessageDialog(null, e.getClass() + ": " + e.getMessage());
-    }
-
-    @FXML
-    protected void handleAbrir(ActionEvent event) {
-        File file = selecionarArquivo();
-        GrafoUnmarshaller parser = GrafoParserFacade.getUnmarshallerByFile(file);
-        try (FileInputStream in = new FileInputStream(file)) {
-            editor.clear();
-            parser.unmarshaller(in, editor);
-            editor.layoutGrafo();
-        } catch (Exception e) {
-            mostrarDialogoErro(e);
+    private void changeProject(ProjectModel p) {
+        mProjeto = p;
+        if (mProjeto != null) {
+            mLstComponents.setItems(mProjeto.getComponents());
+            mTabComponentes.getTabs().clear();
+            if (p.getComponents().size() > 0) {
+                changeComponent(p.getComponents().get(0));
+            } else {
+                changeComponent(null);
+            }
         }
     }
 
     @FXML
-    protected void handleSalvar(ActionEvent event) {
+    protected void handleNovoProjeto(ActionEvent event) {
+        if (verificarModificacoesNaoSalvas("criar um novo projeto")) {
+            return;
+        }
+        ProjectModel p = new ProjectModel();
+        p.setName("Untitled");
+        p.newComponent("Component1");
+        changeProject(p);
+        setProjetoModificado(false);
+    }
+
+    @FXML
+    protected void handleNovoComponente(ActionEvent event) {
+        mProjetoModificado = true;
+        String name = "Component" + mProjeto.getComponents().size();
+        ComponentModel c = mProjeto.newComponent(name);
+        changeComponent(c);
+        setProjetoModificado(true);
+    }
+
+    @FXML
+    protected void handleAbrirProjeto(ActionEvent event) {
+        if (verificarModificacoesNaoSalvas("abrir")) {
+            return;
+        }
         FileChooser fileChooser = new FileChooser();
-
-        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Arquivos MasterGraphs (*.gph)", "*.gph");
-        fileChooser.getExtensionFilters().add(extFilter);
-
-        File file = fileChooser.showSaveDialog(null);
+        File file = fileChooser.showOpenDialog(null);
         if (file == null) {
             return;
         }
-        try (FileOutputStream out = new FileOutputStream(file)) {
-            GrafoMarshaller parser = GrafoParserFacade.getMarshallerByFile(file);
-            parser.marshaller(editor, out);
-            out.close();
+        try (FileInputStream in = new FileInputStream(file)) {
+            ProjectModel p = GrafoSerializer.parseStream(in);
+            p.setName(file.getName());
+            changeProject(p);
+            mProjetoFile = file;
+            setProjetoModificado(false);
         } catch (Exception e) {
-            mostrarDialogoErro(e);
+            JOptionPane.showMessageDialog(null, e.getClass() + ": " + e.getMessage());
         }
     }
 
     @FXML
-    protected void handleDefault(ActionEvent event) {
-        editor.setModo(GrafoEditor.MODO_NENHUM);
-        editor.setCursor(Cursor.DEFAULT);
+    protected void handleSalvarProjeto(ActionEvent event) {
+        if (mProjetoFile == null) {
+            FileChooser fileChooser = new FileChooser();
+            mProjetoFile = fileChooser.showSaveDialog(null);
+            if (mProjetoFile == null) {
+                return;
+            }
+        }
+        try (FileOutputStream out = new FileOutputStream(mProjetoFile)) {
+            GrafoSerializer.toStream(mProjeto, out);
+            mProjeto.setName(mProjetoFile.getName());
+            setProjetoModificado(false);
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e.getClass() + ": " + e.getMessage());
+        }
     }
 
     @FXML
-    protected void handleVertice(ActionEvent event) {
-        editor.setCursor(Cursor.DEFAULT);
-        editor.setModo(GrafoEditor.MODO_VERTICE);
+    protected void handleFerramentaDefault(ActionEvent event) {
+        mEditor.setModo(ComponentEditor.MODO_NENHUM);
     }
 
     @FXML
-    protected void handleTransicao(ActionEvent event) {
-        editor.setCursor(Cursor.DEFAULT);
-        editor.setModo(GrafoEditor.MODO_TRANSICAO);
+    protected void handleFerramentaVertice(ActionEvent event) {
+        mEditor.setModo(ComponentEditor.MODO_VERTICE);
     }
 
     @FXML
-    protected void handleApagar(ActionEvent event) {
-        editor.setCursor(Cursor.DEFAULT);
-        editor.setModo(GrafoEditor.MODO_REMOVER);
+    protected void handleFerramentaTransicao(ActionEvent event) {
+        mEditor.setModo(ComponentEditor.MODO_TRANSICAO);
     }
 
-    private File selecionarArquivo() {
-        editor.setCursor(Cursor.DEFAULT);
-        FileChooser fileChooser = new FileChooser();
-        //Set extension filter
-        //FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Arquivos MasterGraphs (*.gph)", "*.gph");
-        //fileChooser.getExtensionFilters().add(extFilter);
-        //Show open file dialog
-        return fileChooser.showOpenDialog(null);
+    @FXML
+    protected void handleFerramentaApagar(ActionEvent event) {
+        mEditor.setModo(ComponentEditor.MODO_REMOVER);
     }
 
     @FXML
     protected void handleSair(ActionEvent event) {
-        System.exit(0);
+        if (verificarModificacoesNaoSalvas("fechar")) {
+            return;
+        }
+        Platform.exit();
     }
 
-    @FXML
-    protected void handleSobre(ActionEvent event) {
-        System.out.println("handle sobre");
-    }
+    private void changeComponent(ComponentModel c) {
+        int i = mProjeto.getComponents().indexOf(c);
+        mLstComponents.getSelectionModel().select(i);
+        mEditor.setModel(c);
+        mEditor.setVisible(c != null);
+        mBarFerramentas.setDisable(c == null);
+        if (c == null) {
+            return;
+        }
 
-    @Override
-    public void initialize(URL url, ResourceBundle rb) {
-        editor.setOnSelectionChange(this);
-        
-        ToggleGroup g = new ToggleGroup();
-        btnDefault.setToggleGroup(g);
-        btnVertice.setToggleGroup(g);
-        btnTransicao.setToggleGroup(g);
-        btnApagar.setToggleGroup(g);
-        
-//        ckbDefault.setOnAction(new EventHandler<ActionEvent>() {
-//            @Override
-//            public void handle(ActionEvent t) {
-//                mVerticeEmEdicao.setTag(GrafoEditor.TAG_DEFAULT, ckbDefault.isSelected());
-//            }
-//        });
-        edtRotulo.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent t) {
-                mTransicaoEmEdicao.setTag(GrafoEditor.TAG_LABEL, edtRotulo.getText());
+        //ajustar aba
+        for (Tab tab : mTabComponentes.getTabs()) {
+            if (tab.getUserData() == c) {
+                mTabComponentes.getSelectionModel().select(tab);
+                return;
             }
-        });
-        edtProbabilidade.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent t) {
-                Double d = (Double) mTransicaoEmEdicao.getTag(GrafoEditor.TAG_PROBABILIDADE);
-                try {
-                    d = Double.parseDouble(edtProbabilidade.getText());
-                } catch (Exception e) {
-                    //ignora
-                }
-                mTransicaoEmEdicao.setTag(GrafoEditor.TAG_PROBABILIDADE, d);
-            }
-        });
-        pnlPropriedadesTransicao.setVisible(mTransicaoEmEdicao != null);
+        }
+
+        EditableTab aux = new EditableTab(c.getName());
+        aux.setUserData(c);
+        aux.setOnChange(mMudarNomeComponenteHandler);
+        mTabComponentes.getTabs()
+                .add(aux);
+        mTabComponentes.getSelectionModel().select(aux);
     }
 
-    @Override
-    public void onOnSelectionChange(GrafoEditor editor, int objectKind) {
-        mTransicaoEmEdicao = editor.getTransicaoSelecionada();        
-        pnlPropriedadesTransicao.setVisible(mTransicaoEmEdicao != null);
-        System.out.println("t: " + mTransicaoEmEdicao);
-        if (mTransicaoEmEdicao != null) {
-            exibirPropriedadesDaTransicao();
+    private void setProjetoModificado(boolean a) {
+        mProjetoModificado = a;
+        if (mProjeto != null) {
+            Startup.setAppTitle((a ? "*" : "") + mProjeto.getName());
+        } else {
+            Startup.setAppTitle(null);
         }
     }
 
-    private void exibirPropriedadesDaTransicao() {
-        edtRotulo.setText((String) mTransicaoEmEdicao.getTag(GrafoEditor.TAG_LABEL));
-        edtProbabilidade.setText(mTransicaoEmEdicao.getTag(GrafoEditor.TAG_PROBABILIDADE).toString());
+    private boolean verificarModificacoesNaoSalvas(String acao) {
+        if (mProjeto != null && mProjetoModificado) {
+            String msg = "Salvar as alterações para o projeto \"" + mProjeto.getName() + "\" antes de " + acao + "?";
+            int r = JOptionPane.showConfirmDialog(null, msg, null, JOptionPane.YES_NO_CANCEL_OPTION);
+            if (r == JOptionPane.CANCEL_OPTION) {
+                return true;
+            } else if (r == JOptionPane.YES_OPTION) {
+                handleSalvarProjeto(null);
+            }
+        }
+        return false;
     }
-    
-    @FXML
-    private void criarNovaAba(ActionEvent mouseClick){
-        final Tab novaTab = new Tab();
-        novaTab.setText("novo2");
-        tpGrafoEditores.getTabs().add(novaTab);
-       
-    }
-    
 }

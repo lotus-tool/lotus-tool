@@ -1,8 +1,8 @@
 package br.uece.gamut.parser.lts.ast;
 
-import br.uece.gamut.Grafo;
-import br.uece.gamut.Transicao;
-import br.uece.gamut.app.editor.GrafoEditor;
+import br.uece.gamut.model.ComponentModel;
+import br.uece.gamut.model.TransitionModel;
+import br.uece.gamut.view.ComponentEditor;
 import br.uece.gamut.parser.lts.ASTNode;
 import br.uece.gamut.parser.lts.Visitor;
 import br.uece.gamut.parser.lts.ContextoCompilacao;
@@ -14,7 +14,7 @@ import br.uece.gamut.parser.lts.LSAVisitor;
  */
 public class NormalizarAcaoVisitor implements Visitor {
 
-    private final Grafo mGrafo;
+    private final ComponentModel mGrafo;
 
     public NormalizarAcaoVisitor(ContextoCompilacao contexto) {
         mGrafo = contexto.getGrafo();
@@ -36,7 +36,7 @@ public class NormalizarAcaoVisitor implements Visitor {
 
         System.out.println("newTransicao " + idOrigem + " " + idDestino);
         
-        Transicao t = mGrafo.newTransicao(idOrigem, idDestino);
-        t.setTag(GrafoEditor.TAG_LABEL, label);
+        TransitionModel t = mGrafo.newTransicao(idOrigem, idDestino);
+        t.setValue(ComponentEditor.TAG_LABEL, label);
     }
 }

@@ -1,9 +1,6 @@
-package br.uece.gamut.app.editor;
+package br.uece.gamut.view;
 
-import br.uece.gamut.Transicao;
-import br.uece.gamut.Vertice;
-import java.util.HashMap;
-import java.util.Map;
+import br.uece.gamut.model.TransitionModel;
 import javafx.beans.binding.DoubleBinding;
 import javafx.beans.property.DoubleProperty;
 import javafx.scene.control.Label;
@@ -14,11 +11,8 @@ import javafx.scene.shape.Ellipse;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Polygon;
 
-/**
- *
- * @author emerson
- */
-public class TransicaoView extends Region implements Transicao {
+
+public class TransitionView extends Region implements View {
 
     private static final double ESPESSURA_LINHA_DESTAQUE = 2;
     private static final double ESPESSURA_LINHA_NORMAL = 1;
@@ -26,101 +20,86 @@ public class TransicaoView extends Region implements Transicao {
     private static final Paint COR_LINHA_NORMAL = Color.BLACK;
     private static final double ESCALA_SETA_DESTAQUE = 1.5;
     private static final double ESCALA_SETA_NORMAL = 1.0;
-
-    private Line mLinha;
     private final Label mRotulo;
     private final Polygon mSeta;
-    private Map<String, Object> tags = new HashMap<>();
-    private VerticeView mDestino;
-    private VerticeView mOrigem;
+    private Line mLinha;
     private boolean mSelecionado;
-    private boolean mDestacado;
+    private TransitionModel mModel;
+    private final Ellipse mLoop;
 
-    public TransicaoView(final VerticeView origem, final VerticeView destino) {
-        mOrigem = origem;
-        mDestino = destino;
+    public TransitionView() {
         mRotulo = new Label();
         mSeta = new Polygon(new double[]{
-                5.0, 0.0,
-                10.0, 10.0,
-                0.0, 10.0
-            });
-        
-        if (origem.equals(destino)) {
-            Ellipse loop = new Ellipse();
-            loop.setRadiusX(25);
-            loop.setRadiusY(20);
-            loop.setFill(null);
-            loop.setStroke(Color.BLACK);
-            loop.layoutXProperty().bind(new DistanciaElipse(destino.layoutXProperty(), destino.layoutYProperty(), 0));
-            loop.layoutYProperty().bind(new DistanciaElipse(destino.layoutXProperty(), destino.layoutYProperty(), 1));
-            
-            mSeta.setFill(COR_LINHA_NORMAL);
+            5.0, 0.0,
+            10.0, 10.0,
+            0.0, 10.0
+        });
+
+        mLoop = new Ellipse();
+        mLoop.setRadiusX(25);
+        mLoop.setRadiusY(20);
+        mLoop.setFill(null);
+        mLoop.setStroke(Color.BLACK);
+        getChildren().add(mLoop);
+
+        mSeta.setFill(COR_LINHA_NORMAL);
+        getChildren().add(mSeta);
+
+        mLinha = new Line();
+        getChildren().add(mLinha);
+
+        mRotulo.setTextFill(COR_LINHA_NORMAL);
+        mRotulo.setText("--");
+        getChildren().add(mRotulo);
+    }
+
+    public void setModel(TransitionModel t) {
+        mModel = t;
+
+        if (mModel == null) {
+            return;
+        }
+
+        StateView origem = (StateView) mModel.getOrigem().getTag();
+        StateView destino = (StateView) mModel.getDestino().getTag();
+
+        if (origem == destino) {
+            mLoop.layoutXProperty().bind(new DistanciaElipse(destino.layoutXProperty(), destino.layoutYProperty(), 0));
+            mLoop.layoutYProperty().bind(new DistanciaElipse(destino.layoutXProperty(), destino.layoutYProperty(), 1));
             mSeta.layoutXProperty().bind(new DistanciaSetaElipse(destino.layoutXProperty(), destino.layoutYProperty(), 0));
             mSeta.layoutYProperty().bind(new DistanciaSetaElipse(destino.layoutXProperty(), destino.layoutYProperty(), 1));
 
-            getChildren().add(mSeta);
-            getChildren().add(loop);
-            tags.put(GrafoEditor.TAG_PROBABILIDADE, 0D); 
-            
+            mLoop.setVisible(true);
+            mLinha.setVisible(false);
         } else {
-            
-            mSeta.setFill(COR_LINHA_NORMAL);
             mSeta.layoutXProperty().bind(new DistanciaLinha(origem.layoutXProperty(), origem.layoutYProperty(), destino.layoutXProperty(), destino.layoutYProperty(), 60, DistanciaLinha.FIM, DistanciaLinha.COMPONENTE_X));
             mSeta.layoutYProperty().bind(new DistanciaLinha(origem.layoutXProperty(), origem.layoutYProperty(), destino.layoutXProperty(), destino.layoutYProperty(), 60, DistanciaLinha.FIM, DistanciaLinha.COMPONENTE_Y));
             mSeta.rotateProperty().bind(new RotacaoSeta(origem.layoutXProperty(), origem.layoutYProperty(), destino.layoutXProperty(), destino.layoutYProperty()));
-            getChildren().add(mSeta);
 
-            mLinha = new Line();
             mLinha.startXProperty().bind(origem.layoutXProperty());
             mLinha.startYProperty().bind(origem.layoutYProperty());
             mLinha.endXProperty().bind(destino.layoutXProperty());
             mLinha.endYProperty().bind(destino.layoutYProperty());
-            getChildren().add(mLinha);
 
-            
-            mRotulo.setTextFill(COR_LINHA_NORMAL);
-            mRotulo.setText("--");
             mRotulo.layoutXProperty().bind(mSeta.layoutXProperty().subtract(mRotulo.widthProperty().divide(2)));
             mRotulo.layoutYProperty().bind(mSeta.layoutYProperty().subtract(mRotulo.heightProperty()));
-            getChildren().add(mRotulo);
 
-            tags.put(GrafoEditor.TAG_PROBABILIDADE, 0D);
-            
+            mLoop.setVisible(false);
+            mLinha.setVisible(true);
         }
-    }
-
-    @Override
-    public Vertice getOrigem() {
-        return mOrigem;
-    }
-
-    @Override
-    public Vertice getDestino() {
-        return mDestino;
-    }
-
-    public Label getTxtRotulo() {
-        return mRotulo;
-    }
-
-    public void setTxtRotulo(String nomeTransicao) {
-        mRotulo.setText(nomeTransicao);
-    }
-
-    @Override
-    public void setTag(String chave, Object valor) {
-        tags.put(chave, valor);
-
-        String rotulo = (String) tags.get(GrafoEditor.TAG_LABEL);
-        Double probabilidade = (Double) tags.get(GrafoEditor.TAG_PROBABILIDADE);
+        String rotulo = t.getValue(ComponentEditor.TAG_LABEL);
+        String s = t.getValue(ComponentEditor.TAG_PROBABILIDADE);
+        double probabilidade = s == null ? 0 : Double.parseDouble(s);
+        
         mRotulo.setText(rotulo + " - " + probabilidade);
     }
 
+    @Override
     public boolean isSelecionado() {
         return mSelecionado;
     }
 
+    @Override
     public void setSelecionado(boolean selecionado) {
         mSelecionado = selecionado;
         mLinha.setStrokeWidth(selecionado ? ESPESSURA_LINHA_DESTAQUE : ESPESSURA_LINHA_NORMAL);
@@ -130,6 +109,7 @@ public class TransicaoView extends Region implements Transicao {
         mRotulo.setTextFill(p);
     }
 
+    @Override
     public void setDestacado(boolean destacado) {
         mLinha.setStrokeWidth(destacado ? ESPESSURA_LINHA_DESTAQUE : ESPESSURA_LINHA_NORMAL);
         double s = destacado ? ESCALA_SETA_DESTAQUE : ESCALA_SETA_NORMAL;
@@ -138,10 +118,6 @@ public class TransicaoView extends Region implements Transicao {
     }
 
     @Override
-    public Object getTag(String chave) {
-        return tags.get(chave);
-    }
-
     public boolean pontoPertenceAoObjeto(double x, double y) {
         double startX = mLinha.getStartX();
         double endX = mLinha.getEndX();
@@ -161,6 +137,16 @@ public class TransicaoView extends Region implements Transicao {
         double cy = (mLinha.getStartY() + aby * t);
         boolean selecionado = Math.abs(x - cx) < 5 && Math.abs(y - cy) < 5;
         return selecionado;
+    }
+
+    @Override
+    public void getPropriedades() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public TransitionModel getModel() {
+        return mModel;
     }
 
     private static class DistanciaElipse extends DoubleBinding {
@@ -213,9 +199,7 @@ public class TransicaoView extends Region implements Transicao {
             }
         }
     }
-
 }
-
 class RotacaoSeta extends DoubleBinding {
 
     private final DoubleProperty xi;

@@ -14,123 +14,129 @@
 
 <AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="463.0" prefWidth="607.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="br.uece.gamut.app.MainSceneController">
   <children>
-    <MenuBar prefHeight="26.0" prefWidth="600.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+    <MenuBar prefHeight="26.0" prefWidth="607.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
       <menus>
         <Menu mnemonicParsing="false" text="Arquivo">
           <items>
-            <MenuItem mnemonicParsing="false" onAction="#handleNovo" text="Novo" fx:id="btnNovo" />
-            <MenuItem mnemonicParsing="false" onAction="#handleAbrir" text="Abrir" fx:id="btnAbrir" />
+            <MenuItem mnemonicParsing="false" onAction="#handleNovoComponente" text="Novo" fx:id="btnNovo" />
+            <MenuItem mnemonicParsing="false" onAction="#handleAbrirProjeto" text="Abrir" fx:id="btnAbrir" />
             <MenuItem mnemonicParsing="false" text="Salvar" fx:id="btnSalvar" />
-            <MenuItem mnemonicParsing="false" onAction="#handleSalvar" text="Salvar como..." />
+            <MenuItem mnemonicParsing="false" onAction="#handleSalvarProjeto" text="Salvar como..." />
             <MenuItem mnemonicParsing="false" onAction="#handleSair" text="Sair" fx:id="miFechar" />
           </items>
         </Menu>
-        <Menu mnemonicParsing="false" onAction="#handleSobre" text="Sobre" />
+        <Menu mnemonicParsing="false" text="Sobre" />
       </menus>
     </MenuBar>
-    <ToolBar minHeight="36.0" minWidth="33.0" orientation="HORIZONTAL" prefHeight="36.0" prefWidth="607.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="26.0">
+    <ToolBar minHeight="36.0" minWidth="-1.0" orientation="HORIZONTAL" prefHeight="36.0" prefWidth="607.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="26.0">
       <items>
-        <Button fx:id="btnAbas" mnemonicParsing="false" onAction="#criarNovaAba" text="">
+        <Button id="btnAbas" fx:id="btnNovoComponente" cancelButton="false" defaultButton="false" graphicTextGap="4.0" mnemonicParsing="false" onAction="#handleNovoComponente" text="">
           <graphic>
-            <ImageView fitHeight="24.0" fitWidth="24.0" mouseTransparent="true" pickOnBounds="true" preserveRatio="false" smooth="false">
+            <ImageView disable="false" fitHeight="24.0" fitWidth="24.0" mouseTransparent="true" pickOnBounds="true" preserveRatio="false" smooth="false">
               <image>
-                <Image url="@../../mastergraphs/imagens/tema1/1393488650_tab_add.png" />
+                <Image url="@../resources/component-new.png" />
               </image>
             </ImageView>
           </graphic>
         </Button>
-        <ToggleButton fx:id="btnDefault" mnemonicParsing="false" onAction="#handleDefault" text="">
+        <Button id="btnNewProject" fx:id="btnNovoProjeto" mnemonicParsing="false" onAction="#handleNovoProjeto" prefWidth="39.000091552734375" text="">
           <graphic>
-            <ImageView fitHeight="24.0" fitWidth="24.0" mouseTransparent="true" pickOnBounds="true" preserveRatio="false" smooth="false">
+            <ImageView disable="false" fitHeight="24.0" fitWidth="24.0" mouseTransparent="true" pickOnBounds="true" preserveRatio="false" smooth="false">
               <image>
-                <Image url="@../../mastergraphs/imagens/default.png" />
+                <Image url="@../resources/project-new.png" />
               </image>
             </ImageView>
           </graphic>
-        </ToggleButton>
-        <ToggleButton fx:id="btnVertice" mnemonicParsing="false" onAction="#handleVertice" text="">
+        </Button>
+        <Button id="btnOpenProject" fx:id="btnAbrirProjeto" mnemonicParsing="false" onAction="#handleAbrirProjeto" text="">
           <graphic>
-            <ImageView fitHeight="24.0" fitWidth="24.0" mouseTransparent="true" pickOnBounds="true" preserveRatio="true">
+            <ImageView disable="false" fitHeight="24.0" fitWidth="24.0" mouseTransparent="true" pickOnBounds="true" preserveRatio="false" smooth="false">
               <image>
-                <Image url="@../../mastergraphs/imagens/vertice.png" />
+                <Image url="@../resources/project-open.png" />
               </image>
             </ImageView>
           </graphic>
-        </ToggleButton>
-        <ToggleButton fx:id="btnTransicao" minHeight="-1.0" mnemonicParsing="false" onAction="#handleTransicao" prefHeight="-1.0" prefWidth="-1.0" text="">
+        </Button>
+        <Button fx:id="btnSalvarProjeto" mnemonicParsing="false" onAction="#handleSalvarProjeto" text="">
           <graphic>
-            <ImageView fitHeight="24.0" fitWidth="24.0" mouseTransparent="true" pickOnBounds="true" preserveRatio="true">
+            <ImageView disable="false" fitHeight="24.0" fitWidth="24.0" mouseTransparent="true" pickOnBounds="true" preserveRatio="false" smooth="false">
               <image>
-                <Image url="@../../mastergraphs/imagens/transicao.png" />
+                <Image url="@../resources/project-save.png" />
               </image>
             </ImageView>
           </graphic>
-        </ToggleButton>
-        <ToggleButton fx:id="btnApagar" minHeight="-1.0" minWidth="-1.0" mnemonicParsing="false" onAction="#handleApagar" prefHeight="-1.0" prefWidth="-1.0" text="">
-          <graphic>
-            <ImageView fitHeight="24.0" fitWidth="24.0" mouseTransparent="true" pickOnBounds="true" preserveRatio="true">
-              <image>
-                <Image url="@../../mastergraphs/imagens/apagar.png" />
-              </image>
-            </ImageView>
-          </graphic>
-        </ToggleButton>
+        </Button>
       </items>
     </ToolBar>
-    <Accordion minWidth="115.0" prefHeight="401.0" prefWidth="147.0" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="62.0">
-      <expandedPane>
-        <TitledPane fx:id="x2" alignment="CENTER_LEFT" animated="false" collapsible="false" expanded="true" text="Propriedades" textAlignment="LEFT">
-          <content>
-            <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="361.0" prefWidth="147.0">
+    <BorderPane prefHeight="401.0" prefWidth="607.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="62.0">
+      <center>
+        <BorderPane prefHeight="200.0" prefWidth="200.0">
+          <center>
+            <BorderPane fx:id="mEditorWrapper" prefHeight="200.0" prefWidth="200.0" />
+          </center>
+          <top>
+            <VBox prefHeight="-1.0" prefWidth="-1.0">
               <children>
-                <VBox fx:id="pnlPropriedadesTransicao" prefHeight="200.0" prefWidth="100.0" spacing="5.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                  <children>
-                    <HBox id="HBox" alignment="CENTER" spacing="5.0">
-                      <children>
-                        <Label alignment="CENTER_RIGHT" prefWidth="33.0" text="Nome" HBox.hgrow="ALWAYS">
-                          <font>
-                            <Font size="11.0" fx:id="x1" />
-                          </font>
-                        </Label>
-                        <TextField fx:id="edtRotulo" prefColumnCount="8" prefWidth="100.0" HBox.hgrow="NEVER" />
-                      </children>
-                    </HBox>
-                    <HBox id="HBox" alignment="CENTER" prefWidth="147.0" spacing="5.0">
-                      <children>
-                        <Label alignment="CENTER_RIGHT" font="$x1" prefWidth="33.0" text="Prob" textAlignment="RIGHT" textOverrun="CLIP" HBox.hgrow="ALWAYS" />
-                        <TextField fx:id="edtProbabilidade" prefColumnCount="8" prefWidth="100.0" HBox.hgrow="NEVER" />
-                      </children>
-                    </HBox>
-                  </children>
-                  <padding>
-                    <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                  </padding>
-                </VBox>
+                <TabPane id="tpGrafoEditores" fx:id="mTabComponentes" disable="false" prefHeight="36.0" prefWidth="358.0" rotateGraphic="false" side="TOP" tabClosingPolicy="ALL_TABS" />
+                <ToolBar fx:id="mBarFerramentas">
+                  <items>
+                    <ToggleButton id="btnDefault" fx:id="mBtnDefault" mnemonicParsing="false" onAction="#handleFerramentaDefault" text="">
+                      <graphic>
+                        <ImageView fitHeight="24.0" fitWidth="24.0" mouseTransparent="true" pickOnBounds="true" preserveRatio="false" smooth="false">
+                          <image>
+                            <Image url="@../../mastergraphs/imagens/default.png" />
+                          </image>
+                        </ImageView>
+                      </graphic>
+                    </ToggleButton>
+                    <ToggleButton id="btnVertice" fx:id="mBtnVertice" mnemonicParsing="false" onAction="#handleFerramentaVertice" text="">
+                      <graphic>
+                        <ImageView fitHeight="24.0" fitWidth="24.0" mouseTransparent="true" pickOnBounds="true" preserveRatio="true">
+                          <image>
+                            <Image url="@../../mastergraphs/imagens/vertice.png" />
+                          </image>
+                        </ImageView>
+                      </graphic>
+                    </ToggleButton>
+                    <ToggleButton id="btnTransicao" fx:id="mBtnTransicao" minHeight="-1.0" mnemonicParsing="false" onAction="#handleFerramentaTransicao" prefHeight="-1.0" prefWidth="-1.0" text="">
+                      <graphic>
+                        <ImageView fitHeight="24.0" fitWidth="24.0" mouseTransparent="true" pickOnBounds="true" preserveRatio="true">
+                          <image>
+                            <Image url="@../../mastergraphs/imagens/transicao.png" />
+                          </image>
+                        </ImageView>
+                      </graphic>
+                    </ToggleButton>
+                    <ToggleButton id="btnApagar" fx:id="mBtnApagar" minHeight="-1.0" minWidth="-1.0" mnemonicParsing="false" onAction="#handleFerramentaApagar" prefHeight="-1.0" prefWidth="-1.0" text="">
+                      <graphic>
+                        <ImageView fitHeight="24.0" fitWidth="24.0" mouseTransparent="true" pickOnBounds="true" preserveRatio="true">
+                          <image>
+                            <Image url="@../../mastergraphs/imagens/apagar.png" />
+                          </image>
+                        </ImageView>
+                      </graphic>
+                    </ToggleButton>
+                  </items>
+                </ToolBar>
               </children>
-            </AnchorPane>
-          </content>
-          <font>
-            <Font name="System Bold" size="12.0" fx:id="x3" />
-          </font>
-        </TitledPane>
-      </expandedPane>
-      <panes>
-        <fx:reference source="x2" />
-      </panes>
-    </Accordion>
-    <TabPane fx:id="tpGrafoEditores" prefHeight="401.0" prefWidth="358.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="102.0" AnchorPane.rightAnchor="147.0" AnchorPane.topAnchor="62.0">
-      <tabs>
-        <Tab text="Untitled Tab 1">
-          <content>
-            <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="370.0" prefWidth="310.0">
-              <children>
-                <GrafoEditor fx:id="editor" prefHeight="367.0" prefWidth="556.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="44.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="33.0" />
-              </children>
-            </AnchorPane>
-          </content>
-        </Tab>
-      </tabs>
-    </TabPane>
-    <TreeView layoutX="0.0" layoutY="62.0" prefHeight="402.0" prefWidth="102.00009999999747" />
+            </VBox>
+          </top>
+        </BorderPane>
+      </center>
+      <left>
+        <VBox prefHeight="200.0" prefWidth="100.0">
+          <children>
+            <Label text="Componentes" VBox.vgrow="NEVER">
+              <VBox.margin>
+                <Insets />
+              </VBox.margin>
+            </Label>
+            <ListView fx:id="mLstComponents" prefHeight="59.0" prefWidth="603.0" VBox.vgrow="ALWAYS" />
+            <Label minWidth="-1.0" text="Propriedades" VBox.vgrow="NEVER" />
+            <AnchorPane id="Content" fx:id="mPropriedadesWrapper" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" VBox.vgrow="ALWAYS" />
+          </children>
+        </VBox>
+      </left>
+    </BorderPane>
   </children>
 </AnchorPane>

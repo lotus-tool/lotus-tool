@@ -4,8 +4,8 @@
  */
 package br.uece.gamut.parser.lts.ast;
 
-import br.uece.gamut.Grafo;
-import br.uece.gamut.Vertice;
+import br.uece.gamut.model.ComponentModel;
+import br.uece.gamut.model.StateModel;
 import br.uece.gamut.parser.lts.ASTNode;
 import br.uece.gamut.parser.lts.Visitor;
 import br.uece.gamut.parser.lts.ContextoCompilacao;
@@ -19,7 +19,7 @@ import java.util.Map;
 public class CriarVerticesBaseProcessLabelsVisitor implements Visitor {
     
     private final Map<String, Integer> mTabelaSimbolos;
-    private final Grafo mGrafo;
+    private final ComponentModel mGrafo;
     private final ContextoCompilacao mContexto;
         
     public CriarVerticesBaseProcessLabelsVisitor(ContextoCompilacao contexto) {
@@ -35,8 +35,8 @@ public class CriarVerticesBaseProcessLabelsVisitor implements Visitor {
         Integer id = mTabelaSimbolos.get(nome);
         if (id == null) {
             id = mContexto.gerarNovoId();
-            Vertice v = mGrafo.newVertice(id);
-            v.setTag("label", nome);
+            StateModel v = mGrafo.newVertice(id);
+            v.setValue("label", nome);
             id = v.getID();
             mTabelaSimbolos.put(nome, id);            
         }

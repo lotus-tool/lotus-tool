@@ -8,7 +8,7 @@ import br.uece.gamut.parser.lts.ast.ResolverBaseProcessVisitor;
 import br.uece.gamut.parser.lts.ast.RemoverTailsVisitor;
 import br.uece.gamut.parser.lts.ast.CriarVerticesAuxiliaresVisitor;
 import br.uece.gamut.parser.lts.ast.CriarVerticesBaseProcessLabelsVisitor;
-import br.uece.gamut.Grafo;
+import br.uece.gamut.model.ComponentModel;
 import br.uece.gamut.parser.GrafoUnmarshaller;
 import br.uece.gamut.parser.lts.ast.GraphvizVisitor;
 import java.io.FileOutputStream;
@@ -20,7 +20,7 @@ import java.util.Map;
 public class LSACompiler implements ContextoCompilacao, GrafoUnmarshaller {
     
     private Map<String, Integer> mTabelaSimbolos;
-    private Grafo mGrafo;
+    private ComponentModel mGrafo;
     private int novoId = 1;
     private boolean mDebug = true;           
 
@@ -30,7 +30,7 @@ public class LSACompiler implements ContextoCompilacao, GrafoUnmarshaller {
     }
 
     @Override
-    public Grafo getGrafo() {
+    public ComponentModel getGrafo() {
         return mGrafo;
     }
 
@@ -40,7 +40,7 @@ public class LSACompiler implements ContextoCompilacao, GrafoUnmarshaller {
     }
 
     @Override
-    public void unmarshaller(InputStream input, Grafo g) throws Exception {
+    public void unmarshaller(InputStream input, ComponentModel g) throws Exception {
         mGrafo = g;
         mTabelaSimbolos = new HashMap<>();
         

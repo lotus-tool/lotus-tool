@@ -7,15 +7,18 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 public class Startup extends Application {
+
+    private static Stage mStage;
     
-    private static final String TITULO_APP = "GAMuT";
-	
-	@Override
-	public void start(Stage stage) throws Exception {
-		Parent root = FXMLLoader.load(getClass().getResource("MainScene.fxml"));		
-		stage.setTitle(TITULO_APP);
-		stage.setScene(new Scene(root, 600, 500));
-		stage.show();
-	}	
-	
+    public static void setAppTitle(String text) {
+        mStage.setTitle(text == null ? "GAMuT" : (text + " - GAMuT"));
+    }    
+
+    @Override
+    public void start(Stage stage) throws Exception {
+        mStage = stage;
+        Parent root = FXMLLoader.load(getClass().getResource("MainScene.fxml"));
+        stage.setScene(new Scene(root, 600, 500));
+        stage.show();
+    }
 }

@@ -1,6 +1,6 @@
 package br.uece.gamut.parser.lts;
 
-import br.uece.gamut.Grafo;
+import br.uece.gamut.model.ComponentModel;
 import java.util.Map;
 
 /**
@@ -16,7 +16,7 @@ public interface ContextoCompilacao {
     
     Map<String, Integer> getTabelaSimbolos();
 
-    Grafo getGrafo();
+    ComponentModel getGrafo();
     
     int gerarNovoId();
 }
