@@ -48,8 +48,7 @@ public class TransitionView extends Region implements View {
         mLinha = new Line();
         getChildren().add(mLinha);
 
-        mRotulo.setTextFill(COR_LINHA_NORMAL);
-        mRotulo.setText("--");
+        mRotulo.setTextFill(COR_LINHA_NORMAL);        
         getChildren().add(mRotulo);
     }
 
@@ -87,11 +86,7 @@ public class TransitionView extends Region implements View {
             mLoop.setVisible(false);
             mLinha.setVisible(true);
         }
-        String rotulo = t.getValue(ComponentEditor.TAG_LABEL);
-        String s = t.getValue(ComponentEditor.TAG_PROBABILIDADE);
-        double probabilidade = s == null ? 0 : Double.parseDouble(s);
-        
-        mRotulo.setText(rotulo + " - " + probabilidade);
+        refresh();
     }
 
     @Override
@@ -147,6 +142,24 @@ public class TransitionView extends Region implements View {
     @Override
     public TransitionModel getModel() {
         return mModel;
+    }
+
+    public void refresh() {        
+        String rotulo = mModel.getValue(ComponentEditor.TAG_LABEL);
+        String probabilidade = mModel.getValue(ComponentEditor.TAG_PROBABILIDADE);
+        String guarda = mModel.getValue(ComponentEditor.TAG_GUARD);
+        
+        String s = "";
+        if (rotulo != null) {
+            s += rotulo;
+        }
+        if (probabilidade != null) {
+            s += " " + probabilidade;
+        }
+        if (guarda != null) {
+            s += " [" + guarda + "]";
+        }
+        mRotulo.setText(s);
     }
 
     private static class DistanciaElipse extends DoubleBinding {

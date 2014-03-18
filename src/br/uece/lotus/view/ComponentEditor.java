@@ -36,7 +36,9 @@ public class ComponentEditor extends AnchorPane {
     public static final String TAG_LABEL = "_label";
     public static final String TAG_DEFAULT = "_default";
     public static final String TAG_PROBABILIDADE = "_probability";
+    public static final String TAG_GUARD = "_guard";
     private int mModoAtual;
+    
     //model
     private ComponentModel mModel;
     private List<View> mComponents = new ArrayList<>();

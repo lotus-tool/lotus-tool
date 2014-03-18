@@ -1,5 +1,6 @@
 package br.uece.lotus.model;
 
+import br.uece.lotus.view.TransitionView;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -29,6 +30,7 @@ public class TransitionModel implements Model {
     @Override
     public void setValue(String chave, String valor) {
         mValues.put(chave, valor);
+        ((TransitionView) mTag).refresh();
     }
 
     @Override

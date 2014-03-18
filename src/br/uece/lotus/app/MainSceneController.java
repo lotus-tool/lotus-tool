@@ -148,9 +148,9 @@ public class MainSceneController implements Initializable {
         mStatePropertySheet = new PropertySheet();
         mStatePropertySheet.newProperty("Default", "default");
         mTransitionPropertySheet = new PropertySheet();
-        mTransitionPropertySheet.newProperty("Label", "label");
-        mTransitionPropertySheet.newProperty("Guard", "guard");
-        mTransitionPropertySheet.newProperty("Probability", "probability");
+        mTransitionPropertySheet.newProperty("Label", ComponentEditor.TAG_LABEL);
+        mTransitionPropertySheet.newProperty("Guard", ComponentEditor.TAG_GUARD);
+        mTransitionPropertySheet.newProperty("Probability", ComponentEditor.TAG_PROBABILIDADE);
 
         mPropriedadesWrapper.getChildren().add(mPropertyEditor);
         AnchorPane.setTopAnchor(mPropertyEditor, 0D);
