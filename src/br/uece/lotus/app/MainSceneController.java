@@ -213,6 +213,7 @@ public class MainSceneController implements Initializable {
             mProjetoFile = file;
             setProjetoModificado(false);
         } catch (Exception e) {
+            e.printStackTrace();
             JOptionPane.showMessageDialog(null, e.getClass() + ": " + e.getMessage());
         }
     }

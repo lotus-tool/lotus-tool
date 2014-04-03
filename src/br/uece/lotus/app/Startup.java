@@ -11,7 +11,7 @@ public class Startup extends Application {
     private static Stage mStage;
     
     public static void setAppTitle(String text) {
-        mStage.setTitle(text == null ? "GAMuT" : (text + " - GAMuT"));
+        mStage.setTitle(text == null ? "LoTuS" : (text + " - LoTuS"));
     }    
 
     @Override

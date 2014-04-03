@@ -149,16 +149,22 @@ public class TransitionView extends Region implements View {
         String probabilidade = mModel.getValue(ComponentEditor.TAG_PROBABILIDADE);
         String guarda = mModel.getValue(ComponentEditor.TAG_GUARD);
         
+        
         String s = "";
-        if (rotulo != null) {
-            s += rotulo;
-        }
-        if (probabilidade != null) {
-            s += " " + probabilidade;
-        }
+        
+        
         if (guarda != null) {
-            s += " [" + guarda + "]";
+            s += "[" + guarda + "]";
         }
+        
+        if (probabilidade != null) {
+            s += " (" + probabilidade + ")";
+        }
+        
+        if (rotulo != null) {
+            s += " " + rotulo;
+        }
+        
         mRotulo.setText(s);
     }
 

@@ -18,6 +18,7 @@ public class XMLWritter {
 
     public XMLWritter(OutputStream stream) {
         mOut = new PrintStream(stream);
+        mOut.println("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
     }
 
     private void ident(int n) {

@@ -39,31 +39,56 @@ public class GrafoSerializer {
             xml.begin("component");
             xml.attr("name", c.getName());
 
+            xml.begin("states");
+            
             for (StateModel v : c.getVertices()) {
                 xml.begin("state");
                 xml.attr("id", v.getID());
-                for (Map.Entry<String, String> prop : v.getValues().entrySet()) {
-                    xml.begin("property");
-                    xml.attr("name", prop.getKey());
-                    xml.attr("value", prop.getValue());
-                    xml.end();
-                }
+                String s = v.getValue(ComponentEditor.TAG_POS_X);
+                xml.attr("x", s == null ? "" : s);
+                
+                s = v.getValue(ComponentEditor.TAG_POS_Y);
+                xml.attr("y", s == null ? "" : s);
+                
+                s = v.getValue(ComponentEditor.TAG_LABEL);
+                xml.attr("label", s == null ? "" : s);
+                
+                s = v.getValue(ComponentEditor.TAG_DEFAULT);
+                xml.attr("default", s == null ? "" : s);
+//                for (Map.Entry<String, String> prop : v.getValues().entrySet()) {
+//                    xml.begin("property");
+//                    xml.attr("name", prop.getKey());
+//                    xml.attr("value", prop.getValue());
+//                    xml.end();
+//                }
                 xml.end();
             }
+            
+            xml.end();
+            xml.begin("transitions");
 
             for (TransitionModel t : c.getTransicoes()) {
                 xml.begin("transition");
                 xml.attr("from", t.getOrigem().getID());
-                xml.attr("to", t.getDestino().getID());
-                System.out.println(t.getValue(ComponentEditor.TAG_LABEL));
-                for (Map.Entry<String, String> prop : t.getValues().entrySet()) {
-                    xml.begin("property");
-                    xml.attr("name", prop.getKey());
-                    xml.attr("value", prop.getValue());
-                    xml.end();
-                }
+                xml.attr("to", t.getDestino().getID());                
+                
+                String s = t.getValue(ComponentEditor.TAG_PROBABILIDADE);                
+                xml.attr("prob", s == null ? "" : s);
+                s = t.getValue(ComponentEditor.TAG_LABEL);
+                xml.attr("label", s == null ? "" : s);
+                s = t.getValue(ComponentEditor.TAG_GUARD);
+                xml.attr("guard", s == null ? "" : s);
+                
+//                System.out.println(t.getValue(ComponentEditor.TAG_LABEL));
+//                for (Map.Entry<String, String> prop : t.getValues().entrySet()) {
+//                    xml.begin("property");
+//                    xml.attr("name", prop.getKey());
+//                    xml.attr("value", prop.getValue());
+//                    xml.end();
+//                }
                 xml.end();
             }
+            xml.end();
 
             xml.end();
         }
@@ -90,10 +115,10 @@ public class GrafoSerializer {
                     parseTransicaoTag(attributes);
                     break;
                 }
-                case "property": {
-                    parsePropertyTag(attributes);
-                    break;
-                }
+//                case "property": {
+//                    parsePropertyTag(attributes);
+//                    break;
+//                }
             }
         }
     };
@@ -120,6 +145,10 @@ public class GrafoSerializer {
         mVerticeModel = new StateModel();
         mTransicaoModel = null;
         mVerticeModel.setID(Integer.parseInt(attributes.getValue("id")));
+        mVerticeModel.setValue(ComponentEditor.TAG_LABEL, attributes.getValue("label"));
+        mVerticeModel.setValue(ComponentEditor.TAG_POS_X, attributes.getValue("x"));
+        mVerticeModel.setValue(ComponentEditor.TAG_POS_Y, attributes.getValue("y"));
+        mVerticeModel.setValue(ComponentEditor.TAG_DEFAULT, attributes.getValue("default"));
         mComponent.add(mVerticeModel);
     }
 
@@ -131,15 +160,21 @@ public class GrafoSerializer {
         origem.getTransicoesSaida().add(mTransicaoModel);
         destino.getTransicoesEntrada().add(mTransicaoModel);
         mTransicaoModel.setOrigem(origem);
-        mTransicaoModel.setDestino(destino);
+        mTransicaoModel.setDestino(destino);        
+        String s = attributes.getValue("label");
+        mTransicaoModel.setValue(ComponentEditor.TAG_LABEL, s.trim().isEmpty() ? null : s);
+        s = attributes.getValue("prob");
+        mTransicaoModel.setValue(ComponentEditor.TAG_PROBABILIDADE, s.trim().isEmpty() ? null : s);
+        s = attributes.getValue("guard");
+        mTransicaoModel.setValue(ComponentEditor.TAG_GUARD, s.trim().isEmpty() ? null : s);
         mComponent.add(mTransicaoModel);
     }
     
-    private static void parsePropertyTag(Attributes attributes) {
-        if (mVerticeModel != null) {
-            mVerticeModel.setValue(attributes.getValue("name"), attributes.getValue("value"));
-        } else if (mTransicaoModel != null) {
-            mTransicaoModel.setValue(attributes.getValue("name"), attributes.getValue("value"));
-        }
-    }
+//    private static void parsePropertyTag(Attributes attributes) {
+//        if (mVerticeModel != null) {
+//            mVerticeModel.setValue(attributes.getValue("name"), attributes.getValue("value"));
+//        } else if (mTransicaoModel != null) {
+//            mTransicaoModel.setValue(attributes.getValue("name"), attributes.getValue("value"));
+//        }
+//    }
 }

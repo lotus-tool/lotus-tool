@@ -30,7 +30,10 @@ public class TransitionModel implements Model {
     @Override
     public void setValue(String chave, String valor) {
         mValues.put(chave, valor);
-        ((TransitionView) mTag).refresh();
+        TransitionView v = ((TransitionView) mTag);
+        if (v != null) {
+            v.refresh();
+        }
     }
 
     @Override
