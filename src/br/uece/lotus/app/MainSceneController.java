@@ -6,7 +6,7 @@ import br.uece.lotus.model.ComponentModel;
 import br.uece.lotus.model.Model;
 import br.uece.lotus.model.StateModel;
 import br.uece.lotus.model.TransitionModel;
-import br.uece.lotus.plugins.GeracaoCasosTeste;
+import br.uece.lotus.plugins.laryssa.GeracaoCasosTesteImpl;
 import br.uece.lotus.view.ComponentEditor;
 import br.uece.lotus.view.PropertyEditor;
 import br.uece.lotus.view.PropertySheet;
@@ -25,6 +25,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
+import javafx.scene.control.Menu;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.ToggleButton;
@@ -34,12 +35,20 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
 import javafx.stage.FileChooser;
 import javax.swing.JOptionPane;
 
 public class MainSceneController implements Initializable {
 
+    public static Menu menu;
+    public static ToolBar barraFerramentas;
+    //Menu
+    @FXML
+    protected Menu mMnuPrincipal;
     //Barra de ferramentas
+    @FXML
+    protected ToolBar mPnlFerramentas;
     @FXML
     protected Button mBtnNovoComponente;
     @FXML
@@ -158,6 +167,9 @@ public class MainSceneController implements Initializable {
         AnchorPane.setBottomAnchor(mPropertyEditor, 0D);
         AnchorPane.setRightAnchor(mPropertyEditor, 0D);
         mEditor.setOnSelectionChange(mAoSelecionarModel);
+
+        menu = mMnuPrincipal;
+        barraFerramentas = mBarFerramentas;
 
         handleNovoProjeto(null);
     }
@@ -311,9 +323,26 @@ public class MainSceneController implements Initializable {
         }
         return false;
     }
-    
+
     @FXML
     protected void handleGeracaoCasosTestes() {
-        new GeracaoCasosTeste().run();
+//        new GeracaoCasosTesteImpl().run();
+    }
+
+    private static Menu getMenu() {
+        return menu;
+    }
+
+    private static ToolBar getBarraFerramentas() {
+        return barraFerramentas;
+    }
+
+    @FXML
+    protected void handleComposicaoParalela() {
+        ComponentModel c1 = mProjeto.getComponents().get(0);
+        ComponentModel c2 = mProjeto.getComponents().get(1);
+        ComponentModel result = new ComposicaoParalela().composite(c1, c2);
+        result.setName(c1.getName() + "_" + c2.getName());
+        mProjeto.getComponents().add(result);
     }
 }
