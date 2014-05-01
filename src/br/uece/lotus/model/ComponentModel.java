@@ -1,5 +1,6 @@
 package br.uece.lotus.model;
 
+import br.uece.lotus.view.ComponentEditor;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -75,7 +76,7 @@ public class ComponentModel {
         }
         for (TransitionModel tt : model.getTransicoesSaida()) {
             mTransicoes.remove(tt);
-        }
+        }       
         mVertices.remove(model);
     }
 

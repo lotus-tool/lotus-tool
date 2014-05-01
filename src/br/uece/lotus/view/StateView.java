@@ -2,6 +2,7 @@ package br.uece.lotus.view;
 
 import br.uece.lotus.model.Model;
 import br.uece.lotus.model.StateModel;
+import static br.uece.lotus.view.ComponentEditor.TAG_DEFAULT;
 import javafx.scene.control.Label;
 import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
@@ -26,13 +27,13 @@ public class StateView extends Region implements View {
         circle.setStroke(Color.BLACK);
         circle.setFill(mCorAtual = Color.CYAN);
         getChildren().add(circle);
-
+        
         text = new Label();
         text.setLayoutX(-2);
         text.setLayoutY(-8);
         getChildren().add(text);
     }
-
+    
     @Override
     public void setSelecionado(boolean selecionado) {
         circle.setFill(selecionado ? COR_SELECIONADO : mCorAtual);        
@@ -55,6 +56,8 @@ public class StateView extends Region implements View {
             return;
         }
         text.setText(v.getValue(ComponentEditor.TAG_LABEL));
+        System.out.println(v.getValue(ComponentEditor.TAG_LABEL));
+        circle.setFill(v.getValue(ComponentEditor.TAG_LABEL).equals("0") ? Color.RED : Color.CYAN);
         setLayoutX(Double.parseDouble(v.getValue(ComponentEditor.TAG_POS_X)));
         setLayoutY(Double.parseDouble(v.getValue(ComponentEditor.TAG_POS_Y)));        
     }

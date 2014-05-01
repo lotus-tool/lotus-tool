@@ -37,8 +37,10 @@ public class ComponentEditor extends AnchorPane {
     public static final String TAG_DEFAULT = "_default";
     public static final String TAG_PROBABILIDADE = "_probability";
     public static final String TAG_GUARD = "_guard";
+    public static final String TAG_COLOR = "CYAN";
+
     private int mModoAtual;
-    
+
     //model
     private ComponentModel mModel;
     private List<View> mComponents = new ArrayList<>();
@@ -112,12 +114,14 @@ public class ComponentEditor extends AnchorPane {
                     model.setValue(TAG_POS_Y, String.valueOf(t.getY()));
                     model.setValue(TAG_LABEL, String.valueOf(id));
                     model.setValue(TAG_DEFAULT, String.valueOf(id == 1));
+                    model.setValue(TAG_COLOR, String.valueOf(id == 1 ? Color.RED : Color.CYAN));
                     mModel.add(model);
                 }
             } else if (mModoAtual == MODO_REMOVER) {
                 if (mComponentSobMouse instanceof StateView) {
                     StateModel model = ((StateView) mComponentSobMouse).getModel();
                     mModel.remove(model);
+
                 } else if (mComponentSobMouse instanceof TransitionView) {
                     TransitionModel model = ((TransitionView) mComponentSobMouse).getModel();
                     mModel.remove(model);
@@ -184,7 +188,7 @@ public class ComponentEditor extends AnchorPane {
 
             v.setLayoutX(t.getSceneX() + variacaoXCliqueMouseComOCantoSuperiorEsquerdoVertice);
             v.setLayoutY(t.getSceneY() + variacaoYCliqueMouseComOCantoSuperiorEsquerdoVertice);
-            
+
             StateModel m = v.getModel();
             m.setValue(ComponentEditor.TAG_POS_X, String.valueOf(v.getLayoutX()));
             m.setValue(ComponentEditor.TAG_POS_Y, String.valueOf(v.getLayoutY()));
@@ -318,8 +322,23 @@ public class ComponentEditor extends AnchorPane {
         aux.remove(view);
         mComponents.remove(view);
         view.setModel(null);
+        for (StateModel smRecalculate : mModel.getVertices()) {
+            StateView svRecalculate = (StateView) smRecalculate.getTag();
+            aux.remove(svRecalculate);
+            mComponents.remove(svRecalculate);
+
+        }
         recalcularVerticesECor();
+
+        for (StateModel smRecalculate : mModel.getVertices()) {
+            //StateView svRecalculate = (StateView) smRecalculate.getTag();
+            System.out.println(smRecalculate.getValue(TAG_LABEL));
+            adicionarVertice(smRecalculate);
+
+        }
+
         mReciclagemVertices.add(view);
+
     }
 
     private void removerTransicao(TransitionModel model) {
@@ -357,8 +376,10 @@ public class ComponentEditor extends AnchorPane {
     private void recalcularVerticesECor() {
         int i = 0;
         for (StateModel v : mModel.getVertices()) {
+
             v.setValue(TAG_LABEL, String.valueOf(i));
             v.setValue(TAG_DEFAULT, String.valueOf(i == 1));
+            v.setValue(TAG_COLOR, String.valueOf(i == 1 ? Color.RED : Color.CYAN));
             i++;
         }
     }
