@@ -13,7 +13,7 @@
 
 <AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="463.0" prefWidth="607.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="br.uece.lotus.app.MainSceneController">
   <children>
-    <MenuBar prefHeight="26.0" prefWidth="607.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+    <MenuBar id="mMnuPrincipal" prefHeight="26.0" prefWidth="607.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
       <menus>
         <Menu mnemonicParsing="false" text="Arquivo">
           <items>
@@ -26,13 +26,14 @@
         </Menu>
         <Menu mnemonicParsing="false" text="Plugins">
           <items>
+            <MenuItem id="mMnuComposicaoParalela" mnemonicParsing="false" onAction="#handleComposicaoParalela" text="Composiçao Paralela" />
             <MenuItem mnemonicParsing="false" onAction="#handleGeracaoCasosTestes" text="Geraçao de casos de teste" />
           </items>
         </Menu>
         <Menu mnemonicParsing="false" text="Sobre" />
       </menus>
     </MenuBar>
-    <ToolBar minHeight="36.0" minWidth="-1.0" orientation="HORIZONTAL" prefHeight="36.0" prefWidth="607.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="26.0">
+    <ToolBar id="mPnlFerramentas" minHeight="36.0" minWidth="-1.0" orientation="HORIZONTAL" prefHeight="36.0" prefWidth="607.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="26.0">
       <items>
         <Button id="btnAbas" fx:id="btnNovoComponente" cancelButton="false" defaultButton="false" graphicTextGap="4.0" mnemonicParsing="false" onAction="#handleNovoComponente" text="">
           <graphic>

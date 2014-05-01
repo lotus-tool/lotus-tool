@@ -50,4 +50,12 @@ public class StateModel implements Model {
     public Map<String, String> getValues() {
         return mValues;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) return false;
+        if (!(obj instanceof StateModel)) return false;
+        return ((StateModel)obj).mID == this.mID;
+    }
+
 }
