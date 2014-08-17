@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.net.*?>
+<?import java.util.*?>
+<?import javafx.collections.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.input.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.paint.*?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="br.uece.seed.app.MainSceneController">
+  <children>
+    <MenuBar fx:id="mMnuPrincipal" prefHeight="26.0" prefWidth="607.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+    <BorderPane id="root" prefHeight="574.0" prefWidth="800.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="28.0">
+      <center>
+        <TabPane fx:id="mTabCenter" prefHeight="200.0" prefWidth="200.0" style=" -fx-border-color: #d0d0d0;" tabClosingPolicy="ALL_TABS">
+          <BorderPane.margin>
+            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+          </BorderPane.margin>
+        </TabPane>
+      </center>
+      <left>
+        <TabPane fx:id="mTabLeft" prefHeight="200.0" prefWidth="200.0" style=" -fx-border-color: #d0d0d0;" tabClosingPolicy="UNAVAILABLE">
+          <BorderPane.margin>
+            <Insets bottom="5.0" left="5.0" top="5.0" />
+          </BorderPane.margin>
+        </TabPane>
+      </left>
+      <padding>
+        <Insets />
+      </padding>
+      <right>
+        <TabPane fx:id="mTabRight" maxWidth="1.7976931348623157E308" prefHeight="200.0" prefWidth="200.0" style=" -fx-border-color: #d0d0d0;" tabClosingPolicy="UNAVAILABLE">
+          <BorderPane.margin>
+            <Insets bottom="5.0" right="5.0" top="5.0" />
+          </BorderPane.margin>
+        </TabPane>
+      </right>
+      <top>
+        <ToolBar fx:id="mToolbar" style="">          
+        </ToolBar>
+      </top>
+    </BorderPane>
+  </children>
+  <stylesheets>
+    <URL value="@base.css" />
+  </stylesheets>
+</AnchorPane>

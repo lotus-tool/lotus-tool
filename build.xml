@@ -53,4 +53,9 @@
     nbproject/build-impl.xml and nbproject/jfx-impl.xml.
 
     -->
+        
+    <target name="-post-jfx-jar">
+        <copy file="${dist.jar}" tofile="/home/emerson/bin/lotus/lib/lotus.jar" />
+    </target>
+    
 </project>
