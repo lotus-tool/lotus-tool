@@ -1,4 +1,4 @@
-LoTuS
+gamut
 =====
 
-LoTuS description
+Graphical Behavior Modelling Tool (GAMuT)
