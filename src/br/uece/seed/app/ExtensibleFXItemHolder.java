@@ -21,14 +21,29 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-
 package br.uece.seed.app;
+
+import java.util.Comparator;
+import javafx.scene.Node;
+import javafx.scene.control.MenuItem;
 
 /**
  *
  * @author emerson
  */
 public class ExtensibleFXItemHolder {
+
+    public static Comparator<? super Node> NODE_COMPARATOR = (Node o1, Node o2) -> {
+        Integer x = ((ExtensibleFXItemHolder) o1.getUserData()).weight;
+        Integer y = ((ExtensibleFXItemHolder) o2.getUserData()).weight;
+        return x.compareTo(y);
+    };
+    public static Comparator<? super MenuItem> MENUITEM_COMPARATOR = (MenuItem o1, MenuItem o2) -> {
+        Integer x = ((ExtensibleFXItemHolder) o1.getUserData()).weight;
+        Integer y = ((ExtensibleFXItemHolder) o2.getUserData()).weight;
+        return x.compareTo(y);
+    };
+
     public String name;
     public int weight;
 }

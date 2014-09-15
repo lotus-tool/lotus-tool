@@ -29,7 +29,6 @@ import br.uece.lotus.Transition;
 import br.uece.lotus.viewer.BasicComponentViewer;
 import br.uece.lotus.viewer.StateView;
 import br.uece.lotus.viewer.View;
-import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;

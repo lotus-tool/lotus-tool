@@ -29,7 +29,13 @@ package br.uece.lotus.properties;
  * @author emerson
  */
 public interface PropertiesEditor {
-    
+    /** 
+     * Notify the project editor that some object is in editing mode. 
+     * The editor will find a property sheet for that object. The property sheet 
+     * contains the properties definitions for that kind of object.
+     * 
+     * @param obj The object that start the edition mode.
+     */
     void edit(Object obj);
     
 }

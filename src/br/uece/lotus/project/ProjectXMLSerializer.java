@@ -37,7 +37,7 @@ import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 import org.xml.sax.helpers.XMLReaderFactory;
 
-public class XMLSerializer implements ProjectSerializer {
+public class ProjectXMLSerializer implements ProjectSerializer {
 
     private static Project mProjeto;
     private static Component mComponent;
@@ -123,12 +123,6 @@ public class XMLSerializer implements ProjectSerializer {
         }
     };
 
-    /**
-     *
-     * @param stream
-     * @return
-     * @throws Exception
-     */
     @Override
     public Project parseStream(InputStream stream) throws Exception {
         XMLReader xr = XMLReaderFactory.createXMLReader();
@@ -148,21 +142,20 @@ public class XMLSerializer implements ProjectSerializer {
         mProjeto.addComponent(mComponent);
     }
 
-    private static void parseStateTag(Attributes attributes) {
-        mState = new State();        
-        mState.setID(Integer.parseInt(attributes.getValue("id")));
+    private static void parseStateTag(Attributes attributes) {        
+        int id = Integer.parseInt(attributes.getValue("id"));
+        mState = mComponent.newState(id);
         mState.setLayoutX(Double.parseDouble(attributes.getValue("x")));
         mState.setLayoutY(Double.parseDouble(attributes.getValue("y")));        
         if (Boolean.parseBoolean(attributes.getValue("initial"))) {
-            mComponent.setInitialState(mState);
+            mState.setAsInitial();
         }
         if (Boolean.parseBoolean(attributes.getValue("final"))) {
-            mComponent.setFinalState(mState);
+            mState.setFinal(true);
         }
         if (Boolean.parseBoolean(attributes.getValue("error"))) {
-            mComponent.setErrorState(mState);
-        }
-        mComponent.add(mState);
+            mState.setError(true);
+        }        
     }
 
     private static void parseTransitionTag(Attributes attributes) {                

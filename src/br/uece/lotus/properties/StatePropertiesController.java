@@ -100,6 +100,7 @@ public class StatePropertiesController implements State.Listener, ChangeListener
     private void updateEditors() {
         mEdtPositionX.setText(String.valueOf(mState.getLayoutX()));
         mEdtPositionY.setText(String.valueOf(mState.getLayoutY()));
+        mEdtPositionX.requestFocus();
     }
 
 }

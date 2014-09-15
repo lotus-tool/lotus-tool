@@ -28,6 +28,8 @@ import br.uece.lotus.State;
 import br.uece.lotus.Transition;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.collections.ObservableList;
@@ -47,7 +49,12 @@ public class BasicComponentViewer extends AnchorPane implements Component.Listen
 
     private Component mComponent;
     private ContextMenu mStateContextMenu;
+    private List<Listener> mListeners = new ArrayList<>();
 
+    public interface Listener {
+        void onTransitionViewCreated(BasicComponentViewer v, TransitionView tv);
+    }
+    
     public BasicComponentViewer() {
         setStyle("-fx-background-color: white;");
     }
@@ -169,6 +176,9 @@ public class BasicComponentViewer extends AnchorPane implements Component.Listen
                 } else {
                     view.toBack();
                 }
+                for (Listener l: mListeners) {
+                    l.onTransitionViewCreated(this, view);
+                }
             }
         }
 
@@ -208,4 +218,13 @@ public class BasicComponentViewer extends AnchorPane implements Component.Listen
         }
         return null;
     }
+    
+    public void addListener(Listener l) {
+        mListeners.add(l);
+    }
+    
+    public void removeListener(Listener l) {
+        mListeners.remove(l);
+    }
+
 }

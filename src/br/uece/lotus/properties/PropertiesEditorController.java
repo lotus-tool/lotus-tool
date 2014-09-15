@@ -47,7 +47,7 @@ public class PropertiesEditorController implements Initializable {
 
     private final TransitionsPropertiesController mTransitionsPropertiesController = new TransitionsPropertiesController();
 
-    public void changeObject(Object o) {
+    public void changeObject(Object o) {        
         mStatePropertiesController.setVisible(false);
         mStatePropertiesController.changeState(null);
         mTransitionsPropertiesController.setVisible(false);

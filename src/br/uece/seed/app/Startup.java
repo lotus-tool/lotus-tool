@@ -21,16 +21,17 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-
 package br.uece.seed.app;
 
+import br.uece.lotus.Component;
 import br.uece.lotus.about.AboutPlugin;
-import br.uece.lotus.project.v2.BasicPlugin;
-import br.uece.lotus.designer.ComponentDesignerPlugin;
+import br.uece.lotus.project.BasicPlugin;
+import br.uece.lotus.designer.ComponentDesignerManagerPlugin;
 import br.uece.lotus.model.AlgorithmsPlugins;
-import br.uece.lotus.project.v2.ProjectExplorerPlugin;
+import br.uece.lotus.project.ProjectExplorerPlugin;
 import br.uece.lotus.properties.PropertiesEditorPlugin;
 import br.uece.lotus.simulator.SimulatorPlugin;
+import br.uece.lotus.tools.ToolsPlugin;
 import br.uece.seed.ext.ExtensionManager;
 import br.uece.seed.ext.JarModule;
 import br.uece.seed.ext.Module;
@@ -60,6 +61,8 @@ public class Startup extends Application {
     public void start(Stage stage) throws Exception {
         mStage = stage;
 
+        Component c = new Component();
+
         URL location = getClass().getResource("/br/uece/seed/app/resources/MainScene.fxml");
         FXMLLoader fxmlLoader = new FXMLLoader();
         fxmlLoader.setLocation(location);
@@ -70,19 +73,19 @@ public class Startup extends Application {
         ExtensionManager extensionManager = new ExtensionManager();
         Plugin p = (Plugin) controller;
         extensionManager.registerPlugin(p);
-//        extensionManager.registerPlugin(new ProjectExplorerImpl());
         extensionManager.registerPlugin(new ProjectExplorerPlugin());
         extensionManager.registerPlugin(new AboutPlugin());
-        extensionManager.registerPlugin(new ComponentDesignerPlugin());
+        extensionManager.registerPlugin(new ComponentDesignerManagerPlugin());
         extensionManager.registerPlugin(new BasicPlugin());
+        extensionManager.registerPlugin(new ToolsPlugin());
         extensionManager.registerPlugin(new PropertiesEditorPlugin());
         extensionManager.registerPlugin(new SimulatorPlugin());
         extensionManager.registerPlugin(new AlgorithmsPlugins());
-        
+
         registerModules(extensionManager);
         extensionManager.start();
         Scene scene = new Scene(root, 700, 500);
-                
+
         stage.setScene(scene);
         stage.show();
     }
@@ -95,7 +98,6 @@ public class Startup extends Application {
             return;
         }
         for (File arq : arqs) {
-            logger.log(Level.INFO, arq.getName());
             if (arq.getName().endsWith(".jar")) {
                 try {
                     Module m = new JarModule(arq);

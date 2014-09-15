@@ -30,6 +30,19 @@ import java.util.Map;
 
 public class State {
 
+    private final Component mComponent;
+
+    public void setAsInitial() {
+        mComponent.setInitialState(this);
+    }
+
+    void markInitial(boolean b) {
+        mInitial = b;
+        for (Listener l : mListeners) {
+            l.onChange(this);
+        }
+    }
+
     public interface Listener {
 
         void onChange(State state);
@@ -59,6 +72,10 @@ public class State {
     private boolean mInitial;
     private boolean mError;
     private boolean mFinal;
+
+    State(Component c) {
+        mComponent = c;
+    }
 
     public void setID(int id) {
         mID = id;
@@ -171,18 +188,11 @@ public class State {
         return mInitial;
     }
 
-    void setInitial(boolean value) {
-        mInitial = value;
-        for (Listener l : mListeners) {
-            l.onChange(this);
-        }
-    }
-
     public boolean isError() {
         return mError;
     }
 
-    void setError(boolean value) {
+    public void setError(boolean value) {
         mError = value;
         for (Listener l : mListeners) {
             l.onChange(this);
@@ -193,7 +203,7 @@ public class State {
         return mFinal;
     }
 
-    void setFinal(boolean value) {
+    public void setFinal(boolean value) {
         mFinal = value;
         for (Listener l : mListeners) {
             l.onChange(this);
@@ -266,22 +276,19 @@ public class State {
         mValues.put(key, value);
     }
 
-    @Override
-    protected State clone() throws CloneNotSupportedException {
-        State s = new State();
-        s.mID = mID;
-        s.mInitial = mInitial;
-        s.mError = mError;
-        s.mFinal = mFinal;
-        s.mBorderColor = mBorderColor;
-        s.mBorderWidth = mBorderWidth;
-        s.mColor = mColor;
-        s.mLabel = mLabel;
-        s.mLayoutX = mLayoutX;
-        s.mLayoutY = mLayoutY;
-        s.mTextColor = mTextColor;
-        s.mTextSize = mTextSize;
-        return s;
+    void copy(State s) {
+        mID = s.mID;
+        mInitial = s.mInitial;
+        mError = s.mError;
+        mFinal = s.mFinal;
+        mBorderColor = s.mBorderColor;
+        mBorderWidth = s.mBorderWidth;
+        mColor = s.mColor;
+        mLabel = s.mLabel;
+        mLayoutX = s.mLayoutX;
+        mLayoutY = s.mLayoutY;
+        mTextColor = s.mTextColor;
+        mTextSize = s.mTextSize;
     }
 
     public Transition getTransitionTo(State s) {

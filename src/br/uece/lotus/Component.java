@@ -102,7 +102,7 @@ public class Component {
     }
 
     public State newState(int id) {
-        State v = new State();
+        State v = new State(this);
         v.setID(id);
         add(v);
         return v;
@@ -191,11 +191,11 @@ public class Component {
 
     public void setInitialState(State initialState) {
         if (mInitialState != null) {
-            mInitialState.setInitial(false);
+            mInitialState.markInitial(false);
         }
         mInitialState = initialState;
         if (mInitialState != null) {
-            mInitialState.setInitial(true);
+            mInitialState.markInitial(true);
         }
     }
 
@@ -241,7 +241,7 @@ public class Component {
                 State s = stack.remove(0);
                 State ss = c.getStateByID(s.getID());
                 if (ss == null) {
-                    ss = s.clone();
+                    ss.copy(s);
                     c.mStates.add(ss);
                 }
                 unvisitedStates.remove(s);
@@ -251,7 +251,7 @@ public class Component {
                     if (unvisitedStates.contains(ts)) {
                         tss = c.getStateByID(ts.getID());
                         if (tss == null) {
-                            tss = ts.clone();
+                            tss.copy(ts);
                             c.mStates.add(tss);
                         }
                         unvisitedStates.remove(ts);

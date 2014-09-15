@@ -21,37 +21,28 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package br.uece.lotus.project.v2;
+
+package br.uece.lotus.designer;
 
 import br.uece.lotus.Component;
-import br.uece.lotus.Project;
-import br.uece.seed.app.ExtensibleMenu;
-import java.util.List;
 
 /**
  *
  * @author emerson
  */
-public interface ProjectExplorer {
+public interface ComponentDesignerManager {
+    
+    public interface Listener {
+        void onCreateComponentDesigner(ComponentDesigner componentDesigner);
+    }
+    
+    void show(Component c);
 
-    ExtensibleMenu getMenu();
+    public void hide(Component component);
 
-    ExtensibleMenu getProjectMenu();
-
-    ExtensibleMenu getComponentMenu();
-
-    void open(Project p);
-
-    void close(Project p);
-
-    Project getSelectedProject();
-
-    Component getSelectedComponent();
-
-    List<Component> getSelectedComponents();
-
-    List<Project> getSelectedProjects();
-
-    List<Project> getAllProjects();
-
+    public void hideAll();    
+    
+    void addListener(Listener l);
+    void removeListener(Listener l);
+    
 }

@@ -24,8 +24,8 @@
 package br.uece.lotus.model;
 
 import br.uece.lotus.Component;
-import br.uece.lotus.designer.ComponentDesigner;
-import br.uece.lotus.project.v2.ProjectExplorer;
+import br.uece.lotus.designer.ComponentDesignerManager;
+import br.uece.lotus.project.ProjectExplorer;
 import br.uece.seed.app.UserInterface;
 import br.uece.seed.ext.ExtensionManager;
 import br.uece.seed.ext.Plugin;
@@ -39,7 +39,7 @@ import javax.swing.JOptionPane;
 public class AlgorithmsPlugins extends Plugin {
 
     private ProjectExplorer mProjectExplorer;
-    private ComponentDesigner mComponentDesigner;
+    private ComponentDesignerManager mComponentDesigner;
     private Runnable mDoParallelComposition = () -> {
         List<Component> c = mProjectExplorer.getSelectedComponents();
         if (c.size() != 2) {
@@ -58,7 +58,7 @@ public class AlgorithmsPlugins extends Plugin {
     public void onStart(ExtensionManager extensionManager) throws Exception {
         mUserInterface = extensionManager.get(UserInterface.class);        
         mProjectExplorer = extensionManager.get(ProjectExplorer.class);
-        mComponentDesigner = extensionManager.get(ComponentDesigner.class);
+        mComponentDesigner = extensionManager.get(ComponentDesignerManager.class);
 
         mProjectExplorer.getComponentMenu().addItem(Integer.MIN_VALUE + 1, "-", null);
         mProjectExplorer.getComponentMenu().addItem(Integer.MIN_VALUE + 1, "Parallel composition", mDoParallelComposition);

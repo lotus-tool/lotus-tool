@@ -84,7 +84,6 @@ public class ElipseTransitionView extends TransitionView {
         mCurva.levelProperty().set(n);
 
 //        mCurva.setStyle("-fx-border-width: 1px; -fx-border-color: red;");
-
         mCurva.layoutXProperty().bind(origemView.layoutXProperty().add(origemView.heightProperty().divide(2)));
         mCurva.layoutYProperty().bind(origemView.layoutYProperty().subtract(mCurva.heightProperty()).add(origemView.heightProperty().divide(2)));
 
@@ -93,10 +92,11 @@ public class ElipseTransitionView extends TransitionView {
         r.angleProperty().bind(new CartesianCase(origemView, destinoView)
                 .firstAndSecond(-90)
                 .thirthAndFourth(90)
+                .secondAndThirth(angle.add(180))
                 .first(angle)
                 .second(angle.add(180))
                 .thirth(angle.add(180))
-                .fourth(angle)
+                .fourth(angle)                
         );
         r.setAxis(Rotate.Z_AXIS);
         r.pivotYProperty().bind(mCurva.heightProperty());
@@ -427,13 +427,15 @@ class CartesianCase extends DoubleBinding {
     private DoubleExpression mFirstBinding;
     private DoubleExpression mSecondBinding;
     private DoubleExpression mThirthBinding;
-    private DoubleExpression mFourthBinding;
+    private DoubleExpression mFourthBinding;    
     private double mFirstValue;
     private double mSecondValue;
     private double mThirthValue;
     private double mFourthValue;
     private double mFirstAndSecondValue;
-    private double mTerceiroAndQuartoValue;
+    private double mTerceiroAndQuartoValue;    
+    private DoubleBinding mSecondAndThirthBinding;
+    private double mSecondAndThirthValue;
 
     public CartesianCase(Node a, Node b) {
         super.bind(a.layoutXProperty(), a.layoutYProperty(), b.layoutXProperty(), b.layoutYProperty());
@@ -450,8 +452,10 @@ class CartesianCase extends DoubleBinding {
         boolean terceiroQuadrante = mXa.getValue() >= mXb.getValue() && mYa.getValue() <= mYb.getValue();
         boolean quartoQuadrante = mXa.getValue() <= mXb.getValue() && mYa.getValue() <= mYb.getValue();
 
-//      System.out.printf("%s, %s, %s, %s\n", primeiroQuadrante, segundoQuadrante, terceiroQuadrante, quartoQuadrante);
-        if (primeiroQuadrante && segundoQuadrante) {
+        System.out.printf("%s, %s, %s, %s\n", primeiroQuadrante, segundoQuadrante, terceiroQuadrante, quartoQuadrante);
+        if (segundoQuadrante && terceiroQuadrante) {
+            return mSecondAndThirthBinding != null ? mSecondAndThirthBinding.get() : mSecondAndThirthValue;
+        } else if (primeiroQuadrante && segundoQuadrante) {
             return mFirstAndSecondBinding != null ? mFirstAndSecondBinding.get() : mFirstAndSecondValue;
         } else if (terceiroQuadrante && quartoQuadrante) {
             return mTerceiroAndQuartoBinding != null ? mTerceiroAndQuartoBinding.get() : mTerceiroAndQuartoValue;
@@ -530,6 +534,11 @@ class CartesianCase extends DoubleBinding {
 
     public CartesianCase thirthAndFourth(double v) {
         mTerceiroAndQuartoValue = v;
+        return this;
+    }
+    
+    public CartesianCase secondAndThirth(DoubleBinding add) {
+        mSecondAndThirthBinding = add;
         return this;
     }
 

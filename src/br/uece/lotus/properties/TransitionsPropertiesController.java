@@ -25,7 +25,6 @@
 package br.uece.lotus.properties;
 
 import br.uece.lotus.Transition;
-import java.util.List;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
@@ -117,10 +116,12 @@ public class TransitionsPropertiesController implements Transition.Listener, Cha
     }
 
     private void updateEditors() {
+        System.out.println("updating editors");
         mEdtLabel.setText(mTransition.getLabel());
         mEdtGuard.setText(mTransition.getGuard());
         Double d = mTransition.getProbability();
         mEdtProbability.setText(d == null ? "" : String.valueOf(d));
+        mEdtLabel.requestFocus();
     }
 
     private void aplicarProbabilidade() {

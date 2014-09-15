@@ -26,7 +26,13 @@ package br.uece.lotus.about;
 import br.uece.seed.app.UserInterface;
 import br.uece.seed.ext.ExtensionManager;
 import br.uece.seed.ext.Plugin;
-import javax.swing.JOptionPane;
+import java.io.IOException;
+import java.net.URL;
+import javafx.fxml.FXMLLoader;
+import javafx.fxml.JavaFXBuilderFactory;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
 
 /**
  *
@@ -41,7 +47,20 @@ public class AboutPlugin extends Plugin {
     public void onStart(ExtensionManager extensionManager) throws Exception {
         mUserInterface = extensionManager.get(UserInterface.class);
         mUserInterface.getMainMenu().addItem(Integer.MAX_VALUE, "Help/About", () -> {
-            JOptionPane.showMessageDialog(null, ABOUT_MESSAGE);
+            try {
+                URL location = getClass().getResource("/br/uece/lotus/about/About.fxml");
+                FXMLLoader loader = new FXMLLoader();
+                loader.setClassLoader(getClass().getClassLoader());
+                loader.setLocation(location);
+                loader.setBuilderFactory(new JavaFXBuilderFactory());
+                Parent root = (Parent) loader.load(location.openStream());
+                Stage stage = new Stage();
+                stage.setScene(new Scene(root));
+                stage.show();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
         });
     }
 

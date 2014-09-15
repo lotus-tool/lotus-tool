@@ -24,7 +24,7 @@
 package br.uece.lotus.simulator;
 
 import br.uece.lotus.Component;
-import br.uece.lotus.project.v2.ProjectExplorer;
+import br.uece.lotus.project.ProjectExplorer;
 import br.uece.lotus.properties.PropertiesEditor;
 import br.uece.seed.app.UserInterface;
 import br.uece.seed.ext.ExtensionManager;

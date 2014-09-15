@@ -51,11 +51,7 @@ public class ExtensibleFXToolbar implements ExtensibleToolbar, ToolbarItemBuilde
     @Override
     public void inject(Node n) {
         mToolbar.getItems().add(n);
-        mToolbar.getItems().sort((Node o1, Node o2) -> {
-            Integer x = ((ExtensibleFXItemHolder) o1.getUserData()).weight;
-            Integer y = ((ExtensibleFXItemHolder) o2.getUserData()).weight;
-            return x.compareTo(y);
-        });
+        mToolbar.getItems().sort(ExtensibleFXItemHolder.NODE_COMPARATOR);
     }
 
 }

@@ -39,13 +39,10 @@ public class JarModule implements Module {
     private final File mJar;
     private final ClassLoader mClassLoader;
     private List<Plugin> mPlugins;
-//    private final File mCacheFile;
 
     public JarModule(File jar) throws Exception {
         mJar = jar;
-//        mCacheFile = new File(jar.getCanonicalPath() + ".cache");
-//        mClassLoader = new JarClassLoader(mJar);
-        mClassLoader = this.getClass().getClassLoader();
+        mClassLoader = new JarClassLoader(mJar);
     }
 
     @Override
@@ -76,8 +73,7 @@ public class JarModule implements Module {
         List<Plugin> aux = new ArrayList<>();
         try {
             List<String> canditatesPluginClass;
-            canditatesPluginClass = discoverAllJarClasses();
-            //System.out.println(canditatesPluginClass);
+            canditatesPluginClass = discoverAllJarClasses();            
             for (String className : canditatesPluginClass) {
                 try {
                     Class<?> pluginClass = mClassLoader.loadClass(className);

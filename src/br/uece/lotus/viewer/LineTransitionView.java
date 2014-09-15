@@ -92,6 +92,9 @@ public class LineTransitionView extends TransitionView {
                 .second(Geom.angle(origem, destino).add(180))
                 .thirth(Geom.angle(origem, destino).add(180))
                 .fourth(Geom.angle(origem, destino))
+                .firstAndSecond(Geom.angle(origem, destino).add(180))
+                .secondAndThirth(Geom.angle(origem, destino).add(180))
+                .thirthAndFourth(Geom.angle(origem, destino))
         );
         
         mLinha.startXProperty().bind(origem.layoutXProperty().add(origem.widthProperty().divide(2)));
@@ -159,8 +162,9 @@ public class LineTransitionView extends TransitionView {
             boolean terceiroQuadrante = xi.getValue() >= xf.getValue() && yi.getValue() <= yf.getValue();
             boolean quartoQuadrante = xi.getValue() <= xf.getValue() && yi.getValue() <= yf.getValue();
 //            System.out.printf("deltaX: %f deltaY: %f\n", deltaX, deltaY);
-//            System.out.printf("1: %s 2: %s 3: %s 4:%s\n", "" + primeiroQuadrante, "" + segundoQuadrante, "" + terceiroQuadrante, "" + quartoQuadrante);
+//            System.out.printf("1: %s 2: %s 3: %s 4:%s\n", "" + primeiroQuadrante, "" + segundoQuadrante, "" + terceiroQuadrante, "" + quartoQuadrante);                        
             if (componente == COMPONENTE_X) {
+//                double distanciaDesejada = deltaX / 2.0;
                 if (primeiroQuadrante && quartoQuadrante) {
                     return xf.getValue() - distanciaDesejada - DEFAULT_OFFSET_X;
                 } else if (segundoQuadrante && terceiroQuadrante) {
@@ -171,6 +175,7 @@ public class LineTransitionView extends TransitionView {
                     return xf.getValue() + (distanciaDesejada / distance * deltaX) - DEFAULT_OFFSET_X;
                 }
             } else if (componente == COMPONENTE_Y) {
+//                double distanciaDesejada = deltaY / 2.0;
                 if (primeiroQuadrante && segundoQuadrante) {
                     return yf.getValue() + distanciaDesejada - DEFAULT_OFFSET_Y;
                 } else if (terceiroQuadrante && quartoQuadrante) {

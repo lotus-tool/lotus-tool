@@ -63,10 +63,7 @@ public class ExtensionManager {
     }
 
     public <T> T get(Class<?> aClass) {
-        for (Plugin p : mPlugins) {
-            //System.out.println(p);
-            //System.out.println(aClass);
-            //System.out.println(aClass.getName() + " = " + p.getClass() + "?");
+        for (Plugin p : mPlugins) {            
             if (aClass.isAssignableFrom(p.getClass())) {
                 return (T) p;
             }

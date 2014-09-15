@@ -30,6 +30,8 @@ import br.uece.lotus.viewer.BasicComponentViewer;
 import br.uece.lotus.viewer.StateView;
 import br.uece.lotus.viewer.TransitionView;
 import br.uece.lotus.viewer.View;
+import br.uece.seed.app.ExtensibleFXToolbar;
+import br.uece.seed.app.ExtensibleToolbar;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -53,6 +55,7 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.HBox;
 import javafx.stage.FileChooser;
 import javax.swing.JOptionPane;
 
@@ -60,7 +63,7 @@ import javax.swing.JOptionPane;
  *
  * @author emerson
  */
-public class DesignerWindow extends AnchorPane {
+public class ComponentDesignerImpl extends AnchorPane implements ComponentDesigner {
 
     public static final int MODO_NENHUM = 0;
     public static final int MODO_VERTICE = 1;
@@ -73,7 +76,28 @@ public class DesignerWindow extends AnchorPane {
     private final ToggleButton mBtnState;
     private final ToggleButton mBtnTransition;
     private final ToggleButton mBtnEraser;
+    
+    private final ToolBar mStateToolbar;
+    private final ToolBar mTransitionToolbar;
+    private final ExtensibleToolbar mExtensibleStateToolbar;
+    private final ExtensibleToolbar mExtensibleTransitionToolbar;    
+    
     private final ScrollPane mScrollPanel;
+    private boolean mExibirPropriedadesTransicao;           
+    
+    private BasicComponentViewer.Listener mViewerListener = new BasicComponentViewer.Listener() {
+        @Override
+        public void onTransitionViewCreated(BasicComponentViewer v, TransitionView tv) {
+            if (mExibirPropriedadesTransicao) {
+                setComponenteSelecionado(tv);
+            }
+            mExibirPropriedadesTransicao = false;
+        }
+    };
+    private String mDefaultTransitionColor;
+    private String mDefaultTransitionTextColor;
+    private Integer mDefaultTransitionWidth;
+    private String mDefaultTransitionLabel;
 
     private void applyNormalStateStyle(State s) {
         String oldLabel = (String) s.getValue("oldLabel");
@@ -105,9 +129,39 @@ public class DesignerWindow extends AnchorPane {
         s.setLabel("-1");
     }
 
+    @Override
+    public ExtensibleToolbar getTransitionContextToolbar() {
+        return mExtensibleTransitionToolbar;
+    }
+
+    @Override
+    public ExtensibleToolbar getStateContextToolbar() {
+        return mExtensibleStateToolbar;
+    }
+
+    @Override
+    public void setDefaultTransitionLabel(String label) {
+        mDefaultTransitionLabel = label;
+    }
+
+    @Override
+    public void setDefaultTransitionWidth(Integer width) {
+        mDefaultTransitionWidth = width;
+    }
+
+    @Override
+    public void setDefaultTransitionTextColor(String color) {
+        mDefaultTransitionTextColor = color;
+    }
+
+    @Override
+    public void setDefaultTransitionColor(String color) {
+        mDefaultTransitionColor = color;
+    }
+
     public interface Listener {
 
-        void onSelectionChange(DesignerWindow v);
+        void onSelectionChange(ComponentDesignerImpl v);
     }
 
     private int mModoAtual;
@@ -117,7 +171,7 @@ public class DesignerWindow extends AnchorPane {
     private View mComponentSelecionado;
     private final List<Listener> mListeners = new ArrayList<>();
 
-    public DesignerWindow(BasicComponentViewer viewer) {
+    public ComponentDesignerImpl(BasicComponentViewer viewer) {
 
         mToolbar = new ToolBar();
         mToggleGroup = new ToggleGroup();
@@ -146,15 +200,31 @@ public class DesignerWindow extends AnchorPane {
         });
         mBtnEraser.setToggleGroup(mToggleGroup);
 
-        mToolbar.getItems().addAll(mBtnArrow, mBtnState, mBtnTransition, mBtnEraser);
-        AnchorPane.setTopAnchor(mToolbar, 0D);
-        AnchorPane.setLeftAnchor(mToolbar, 0D);
-        AnchorPane.setRightAnchor(mToolbar, 0D);
-        getChildren().add(mToolbar);
+        mToolbar.getItems().addAll(mBtnArrow, mBtnState, mBtnTransition, mBtnEraser);        
+//        AnchorPane.setTopAnchor(mToolbar, 0D);
+//        AnchorPane.setLeftAnchor(mToolbar, 0D);
+//        AnchorPane.setRightAnchor(mToolbar, 0D);
+//        getChildren().add(mToolbar);
 
+        mStateToolbar = new ToolBar();
+        mStateToolbar.setVisible(false);
+        mTransitionToolbar = new ToolBar();
+        mTransitionToolbar.setVisible(false);
+//        getChildren().add(mStateToolbar);
+//        getChildren().add(mTransitionToolbar);
+        mExtensibleStateToolbar = new ExtensibleFXToolbar(mStateToolbar);
+        mExtensibleTransitionToolbar = new ExtensibleFXToolbar(mTransitionToolbar);
+        
+        HBox aux = new HBox(mToolbar, mStateToolbar, mTransitionToolbar);
+        getChildren().add(aux);
+        AnchorPane.setTopAnchor(aux, 0D);
+        AnchorPane.setLeftAnchor(aux, 0D);
+        AnchorPane.setRightAnchor(aux, 0D);
+        
         mComponentContextMenu = new ContextMenu();
 
         mViewer = viewer;
+        mViewer.addListener(mViewerListener);
         mViewer.setStateContextMenu(mComponentContextMenu);
         mViewer.setOnMouseClicked(aoClicarMouse);
         mViewer.setOnMouseMoved(aoMoverMouse);
@@ -165,7 +235,7 @@ public class DesignerWindow extends AnchorPane {
 
         mViewer.setOnMousePressed(aoIniciarArrastoVerticeComOMouse);
         mViewer.setOnMouseDragged(aoArrastarVerticeComOMouse);
-        mViewer.setOnMouseReleased(aoLiberarVerticeArrastadoComOMouse);
+        mViewer.setOnMouseReleased(aoLiberarVerticeArrastadoComOMouse);        
 //        mViewer.setPrefSize(500, 500);        
         mScrollPanel = new ScrollPane(mViewer);
         AnchorPane.setTopAnchor(mScrollPanel, 44D);
@@ -247,15 +317,13 @@ public class DesignerWindow extends AnchorPane {
                 if (mModoAtual == MODO_VERTICE) {
                     if (!(mComponentSobMouse instanceof StateView)) {
                         int id = mViewer.getComponent().getStatesCount();
-                        State s = new State();
-                        s.setID(id);
+                        State s = mViewer.getComponent().newState(id);
                         s.setLayoutX(e.getX());
                         s.setLayoutY(e.getY());
                         s.setLabel(String.valueOf(id));
                         if (mViewer.getComponent().getStatesCount() == 0) {
                             mViewer.getComponent().setInitialState(s);
                         }
-                        mViewer.getComponent().add(s);
                     }
                 } else if (mModoAtual == MODO_REMOVER) {
                     if (mComponentSobMouse instanceof StateView) {
@@ -378,7 +446,7 @@ public class DesignerWindow extends AnchorPane {
             event.consume();
         }
     };
-    private final EventHandler<DragEvent> aoSoltarMouseSobreVertice = new EventHandler<DragEvent>() {
+    private final EventHandler<DragEvent> aoSoltarMouseSobreVertice = new EventHandler<DragEvent>() {        
         @Override
         public void handle(DragEvent event) {
             if (mModoAtual != MODO_TRANSICAO) {
@@ -388,12 +456,30 @@ public class DesignerWindow extends AnchorPane {
             if (mVerticeDestinoParaAdicionarTransicao != null) {
                 State o = mVerticeOrigemParaAdicionarTransicao.getState();
                 State d = mVerticeDestinoParaAdicionarTransicao.getState();
-                mViewer.getComponent().newTransition(o, d);
+                mExibirPropriedadesTransicao = true;
+                Transition t = mViewer.getComponent().newTransition(o, d);
+                applyDefaults(t);
             }
 
             event.setDropCompleted(true);
             event.consume();
         }
+
+        private void applyDefaults(Transition t) {
+            if (mDefaultTransitionLabel != null) {
+                t.setLabel(mDefaultTransitionLabel);
+            }
+            if (mDefaultTransitionColor != null) {
+                t.setColor(mDefaultTransitionColor);
+            }
+            if (mDefaultTransitionTextColor != null) {
+                t.setTextColor(mDefaultTransitionTextColor);
+            }
+            if (mDefaultTransitionWidth != null) {
+                t.setWidth(mDefaultTransitionWidth);
+            }
+        }
+
     };
 
     public Component getComponent() {
@@ -406,7 +492,9 @@ public class DesignerWindow extends AnchorPane {
 
     public void setModo(int modo) {
         this.mModoAtual = modo;
-        mViewer.setCursor(Cursor.DEFAULT);
+        mViewer.setCursor(Cursor.DEFAULT);        
+        mStateToolbar.setVisible(mModoAtual == MODO_VERTICE);        
+        mTransitionToolbar.setVisible(mModoAtual == MODO_TRANSICAO);                
     }
 
     private View getComponentePelaPosicaoMouse(double x, double y) {

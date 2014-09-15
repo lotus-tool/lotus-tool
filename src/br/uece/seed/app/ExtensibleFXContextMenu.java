@@ -23,6 +23,7 @@
  */
 package br.uece.seed.app;
 
+import java.util.Comparator;
 import java.util.List;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Menu;
@@ -73,6 +74,7 @@ public class ExtensibleFXContextMenu implements ExtensibleMenu, MenuItemBuilderF
             atual = proximo.getItems();
         }                
         atual.add(item);
+        atual.sort(ExtensibleFXItemHolder.MENUITEM_COMPARATOR);
     }
 
     private Menu findMenuItem(List<MenuItem> lst, String name) {

@@ -33,14 +33,25 @@ import java.util.List;
  * @author emerson
  */
 public interface ProjectExplorer {
-        
+
     ExtensibleMenu getMenu();
+
     ExtensibleMenu getProjectMenu();
+
     ExtensibleMenu getComponentMenu();
-    
+
+    void open(Project p);
+
+    void close(Project p);
+
     Project getSelectedProject();
+
     Component getSelectedComponent();
+
     List<Component> getSelectedComponents();
-    void changeProject(Project p);
+
+    List<Project> getSelectedProjects();
+
+    List<Project> getAllProjects();
 
 }

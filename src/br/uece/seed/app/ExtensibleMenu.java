@@ -24,6 +24,8 @@
 package br.uece.seed.app;
 
 import java.io.InputStream;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCombination;
 
 /**
  *
@@ -36,11 +38,14 @@ public interface ExtensibleMenu {
         ItemBuilder setGraphic(InputStream graphic);
         ItemBuilder setWeight(int weight);
         ItemBuilder setAction(Runnable action);
+        ItemBuilder setAccelerator(KeyCode key, KeyCombination.Modifier... modifiers);
         ItemBuilder hideText(boolean v);
         void create();
     }
     
+    ItemBuilder newItem(String path);
+    
     @Deprecated
     void addItem(int weight, String path, Runnable action);
-    ItemBuilder newItem(String path);
+    
 }

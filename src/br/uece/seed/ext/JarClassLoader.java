@@ -33,10 +33,12 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class JarClassLoader extends ClassLoader {
 
-    private static final File CACHE_FILE = new File("modules.cache");
+    private static final Logger logger = Logger.getLogger(JarModule.class.getName());    
     private final HashMap<String, Class> classes = new HashMap<>();
     private final JarFile mJar;
     private final File mJarFile;
@@ -49,9 +51,8 @@ public class JarClassLoader extends ClassLoader {
 
     @Override
     public Class loadClass(String className) throws ClassNotFoundException {
-        System.out.println("loadClass: " + className);
-        Class c = findClass(className);
-        System.out.println("\tc: " + c);
+        logger.log(Level.FINEST, "loading class {0}...", className);
+        Class c = findClass(className);        
         return c;
     }
 
@@ -72,8 +73,7 @@ public class JarClassLoader extends ClassLoader {
         }
 
         try {
-            String path = className.replaceAll("\\.", "/") + ".class";
-            System.out.println(path);
+            String path = className.replaceAll("\\.", "/") + ".class";            
             JarEntry entry = mJar.getJarEntry(path);
             if (entry == null) {
                 return null;
@@ -97,15 +97,15 @@ public class JarClassLoader extends ClassLoader {
 
     @Override
     public URL getResource(String name) {        
-        String aux = "jar:file:" + mJarFile.getAbsolutePath() + "!" + name;
-        System.out.println("getResource: " + aux);
+        String aux = "jar:file:" + mJarFile.getAbsolutePath() + "!/" + name;
+        logger.log(Level.FINEST, "getting resource {0}...", aux);
         URL foo = null;
         try {
             foo = new URL(aux);
         } catch (MalformedURLException e) {
-            e.printStackTrace();
+            logger.log(Level.WARNING, "Invalid Resource URL !", e);
         }
         return foo;
-    }
-
+    }    
+    
 }

@@ -26,7 +26,7 @@ package br.uece.lotus.designer;
 import br.uece.lotus.Component;
 import br.uece.lotus.State;
 import br.uece.lotus.Transition;
-import br.uece.lotus.project.v2.ProjectExplorer;
+import br.uece.lotus.project.ProjectExplorer;
 import br.uece.lotus.properties.PropertiesEditor;
 import br.uece.lotus.viewer.BasicComponentViewer;
 import br.uece.seed.app.UserInterface;
@@ -39,12 +39,13 @@ import java.util.List;
  *
  * @author emerson
  */
-public class ComponentDesignerPlugin extends Plugin implements ComponentDesigner {
+public class ComponentDesignerManagerPlugin extends Plugin implements ComponentDesignerManager {
 
     private UserInterface mUserInterface;
     private ProjectExplorer mProjectExplorer;
     private PropertiesEditor mPropertiesEditor;
-    private final DesignerWindow.Listener mBindDesignerWithPropertiesEditor;
+    private final ComponentDesignerImpl.Listener mBindDesignerWithPropertiesEditor;
+    private final List<Listener> mListeners = new ArrayList<>();
     private List<Integer> mIds = new ArrayList<Integer>();
     private Component.Listener mComponentListener = new Component.Listener() {
 
@@ -67,7 +68,7 @@ public class ComponentDesignerPlugin extends Plugin implements ComponentDesigner
         }
 
         @Override
-        public void onTransitionCreated(Component component, Transition state) {
+        public void onTransitionCreated(Component component, Transition t) {
 
         }
 
@@ -77,8 +78,8 @@ public class ComponentDesignerPlugin extends Plugin implements ComponentDesigner
         }
     };
 
-    public ComponentDesignerPlugin() {
-        mBindDesignerWithPropertiesEditor = (DesignerWindow v) -> {
+    public ComponentDesignerManagerPlugin() {
+        mBindDesignerWithPropertiesEditor = (ComponentDesignerImpl v) -> {
             mPropertiesEditor.edit(v.getSelectedView());
         };
     }
@@ -107,15 +108,18 @@ public class ComponentDesignerPlugin extends Plugin implements ComponentDesigner
         Integer tabId = (Integer) c.getValue("tab.id");
         if (tabId == null) {
             c.addListener(mComponentListener);
-            DesignerWindow d = new DesignerWindow(new BasicComponentViewer());
+            ComponentDesignerImpl d = new ComponentDesignerImpl(new BasicComponentViewer());
             d.setComponent(c);
             if (mPropertiesEditor != null) {
-                ((DesignerWindow) d).addListener(mBindDesignerWithPropertiesEditor);
+                ((ComponentDesignerImpl) d).addListener(mBindDesignerWithPropertiesEditor);
             }
             tabId = mUserInterface.getCenterPanel().newTab(c.getName(), d, true);
             c.setValue("tab.id", tabId);
             c.setValue("gui", d);
             mIds.add(tabId);
+            for (Listener l: mListeners) {
+                l.onCreateComponentDesigner(d);
+            }
         }
         mUserInterface.getCenterPanel().showTab(tabId);
     }
@@ -134,5 +138,16 @@ public class ComponentDesignerPlugin extends Plugin implements ComponentDesigner
             mUserInterface.getCenterPanel().closeTab(id);
         }
     }
+    
+    @Override
+    public void addListener(Listener l) {
+        mListeners.add(l);
+    }
+    
+    @Override
+    public void removeListener(Listener l) {
+        mListeners.remove(l);
+    }
+    
 
 }

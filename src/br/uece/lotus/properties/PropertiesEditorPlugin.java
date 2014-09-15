@@ -58,8 +58,7 @@ public class PropertiesEditorPlugin extends Plugin implements PropertiesEditor {
     
     
     @Override
-    public void edit(Object obj) {
-        System.out.println("edit");
+    public void edit(Object obj) {                
         mPropertiesEditorController.changeObject(obj);
     }
     

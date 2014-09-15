@@ -29,6 +29,10 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination.Modifier;
+import javax.swing.SwingUtilities;
 
 /**
  *
@@ -38,6 +42,7 @@ public class MenuItemBuilderFX implements ExtensibleMenu.ItemBuilder {
 
     private final Container mContainer;
     private boolean mHideText;
+    private KeyCodeCombination mAccelerator;
 
     interface Container {
         void inject(String path, MenuItem b);
@@ -88,6 +93,12 @@ public class MenuItemBuilderFX implements ExtensibleMenu.ItemBuilder {
     }
 
     @Override
+    public ExtensibleMenu.ItemBuilder setAccelerator(KeyCode key, Modifier... modifiers) {
+        mAccelerator = new KeyCodeCombination(key, modifiers);
+        return this;
+    }
+    
+    @Override
     public ExtensibleMenu.ItemBuilder hideText(boolean v) {
         mHideText = v;
         return this;
@@ -113,6 +124,10 @@ public class MenuItemBuilderFX implements ExtensibleMenu.ItemBuilder {
             }
             if (mGraphic != null) {
                 item.setGraphic(new ImageView(new Image(mGraphic)));
+            }
+            if (mAccelerator != null) {
+                item.setMnemonicParsing(true);
+                item.setAccelerator(mAccelerator);
             }
             if (mAction != null) {
                 item.setOnAction((ActionEvent e) -> {

@@ -25,249 +25,307 @@ package br.uece.lotus.project;
 
 import br.uece.lotus.Component;
 import br.uece.lotus.Project;
-import br.uece.lotus.State;
-import br.uece.lotus.designer.ComponentDesigner;
-import br.uece.lotus.model.BasicLayouterImpl;
+import br.uece.seed.app.ExtensibleMenu;
 import br.uece.seed.app.UserInterface;
 import br.uece.seed.ext.ExtensionManager;
+import br.uece.seed.ext.JarModule;
 import br.uece.seed.ext.Plugin;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import javafx.application.Platform;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCombination;
 import javafx.stage.FileChooser;
 import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 
 public class BasicPlugin extends Plugin {
 
+    private static final Logger logger = Logger.getLogger(JarModule.class.getName());
     private File mProjectFile;
     private UserInterface mUserInterface;
-    private br.uece.lotus.project.v2.ProjectExplorer mProjectExplorer;
-    private ComponentDesigner mComponentDesigner;
-    private int mComponentId;
+    private ProjectExplorer mProjectExplorer;
+    private FileChooser mFileChooser;
+    private Map<Project, File> mProjectsFiles = new HashMap<>();
 
-    private Runnable mCriarProjetoRandomico = () -> {                
-        Project p = new Project();        
-        int n = Integer.parseInt(JOptionPane.showInputDialog("qtd componentes"));
-        int m = Integer.parseInt(JOptionPane.showInputDialog("qtd estados"));
-        int o = Integer.parseInt(JOptionPane.showInputDialog("qtd transicoes por estado"));
-        for (int i = 0; i < n; i++) {
-            Component c = new Component();
-            c.setName("c" + i);
-            
-            for (int j = 0; j < m; j++) {
-                State s = c.newState(j);
-            }
-            for (State s : c.getStates()) {     
-                int k = 0;
-                for (State s2 : c.getStates()) {
-                    c.newTransition(s, s2);                    
-                    if (k < o) {
-                        continue;
-                    }
-                    k++;
-                    break;
-                }
-            }
-            c.setInitialState(c.getStateByID(0));
-            new BasicLayouterImpl().layout(c);
-            p.addComponent(c);
-        }
-//        mProjectExplorer.changeProject(p);
-        mProjectExplorer.open(p);
-    };
-    private Runnable mCriarNovoComponente = () -> {
-        Project p = mProjectExplorer.getSelectedProject();
-        if (p == null) {
-            JOptionPane.showMessageDialog(null, "There is no project avaliable!");
-            return;
-        }
-        Component c = new Component();
-        c.setName("Component" + mComponentId++);
-        p.addComponent(c);
-        mComponentDesigner.show(c);
-    };
-    private Runnable mNovoProjeto = () -> {
-        Project p = new Project();
-        p.setName("Untitled");
-//        mProjectExplorer.changeProject(p);
-        mProjectExplorer.open(p);
-        mUserInterface.setTitle(p.getName() + " - LoTuS");
-        Component c = new Component();
-        c.setName("Component" + mComponentId++);
-        p.addComponent(c);
-        mComponentDesigner.hideAll();
-        mComponentDesigner.show(c);
-    };
-    private Runnable mOpenProject = () -> {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Open project");
-        fileChooser.setInitialDirectory(
-                new File(System.getProperty("user.home"))
-        );
-        fileChooser.getExtensionFilters().addAll(
-                new FileChooser.ExtensionFilter("LoTus files (*.xml)", "*.xml"),
-                new FileChooser.ExtensionFilter("All files", "*")
-        );
-        File file = fileChooser.showOpenDialog(null);
-        if (file == null) {
-            return;
-        }
-        mComponentDesigner.hideAll();
-        try (FileInputStream in = new FileInputStream(file)) {
-            Project p = new XMLSerializer().parseStream(in);
-            p.setName(file.getName());
-//            mProjectExplorer.changeProject(p);
-            mProjectExplorer.open(p);
-            mUserInterface.setTitle(p.getName() + " - LoTuS");
-            mProjectFile = file;
-        } catch (Exception e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(null, e.getClass() + ": " + e.getMessage());
-        }
-    };
-    private Runnable mSaveProject = () -> {
-        Project p = mProjectExplorer.getSelectedProject();
-        if (mProjectFile == null) {
+    private Runnable mNewComponent = () -> {
+        SwingUtilities.invokeLater(() -> {
+            Project p = mProjectExplorer.getSelectedProject();
             if (p == null) {
-                JOptionPane.showMessageDialog(null, "There is no project avaliable!");
+                JOptionPane.showMessageDialog(null, "Please select a project!");
                 return;
             }
-            FileChooser fileChooser = new FileChooser();
-            fileChooser.setTitle("Save project");
-            fileChooser.setInitialDirectory(
+            String name = JOptionPane.showInputDialog(null, "Enter the new component's name", "Component" + (p.getComponentsCount() + 1));
+            if (name == null) {
+                return;
+            }
+            Component c = new Component();
+            c.setName(name);
+            p.addComponent(c);
+        });
+    };
+    private Runnable mNewProject = () -> {
+        SwingUtilities.invokeLater(() -> {
+            String name = JOptionPane.showInputDialog(null, "Enter the new project's name", "Untitled");
+            if (name == null) {
+                return;
+            }
+            Project p = new Project();
+            p.setName(name);
+            Component c = new Component();
+            c.setName("Component" + (p.getComponentsCount() + 1));
+            p.addComponent(c);
+            mProjectExplorer.open(p);
+        });
+    };
+    private Runnable mRenameProject = () -> {
+        SwingUtilities.invokeLater(() -> {
+            Project p = mProjectExplorer.getSelectedProject();
+            String novoNome = JOptionPane.showInputDialog(null, "Enter the new name for \"" + p.getName() + "\"", "Rename project", JOptionPane.QUESTION_MESSAGE);
+            if (novoNome != null) {
+                p.setName(novoNome);
+            }
+        });
+    };
+    private Runnable mRenameComponent = () -> {
+        SwingUtilities.invokeLater(() -> {
+            Component c = mProjectExplorer.getSelectedComponent();
+            String novoNome = JOptionPane.showInputDialog(null, "Enter the new name for \"" + c.getName() + "\"", "Rename component", JOptionPane.QUESTION_MESSAGE);
+            if (novoNome != null) {
+                c.setName(novoNome);
+            }
+        });
+    };
+    private Runnable mRemoveComponent = () -> {
+        SwingUtilities.invokeLater(() -> {
+            Project p = mProjectExplorer.getSelectedProject();
+            Component c = mProjectExplorer.getSelectedComponent();
+            if (c == null) {
+                JOptionPane.showMessageDialog(null, "Select a component!");
+                return;
+            }
+            int r = JOptionPane.showConfirmDialog(null, "Do you really want to remove the component " + c.getName() + "?", "Remove component", JOptionPane.YES_NO_OPTION);
+            if (r == JOptionPane.YES_OPTION) {
+                p.removeComponent(c);
+            }
+        });
+    };
+    private Runnable mCloseProject = () -> {
+        Project p = mProjectExplorer.getSelectedProject();
+        if (p == null) {
+            JOptionPane.showMessageDialog(null, "Please select a project!");
+            return;
+        }
+        mProjectExplorer.close(p);
+    };
+    private Runnable mCloseOthersProjects = () -> {
+        Project projetoSelecionado = mProjectExplorer.getSelectedProject();
+        if (projetoSelecionado == null) {
+            JOptionPane.showMessageDialog(null, "Please select a project!");
+            return;
+        }
+        Project[] todosProjetos =  mProjectExplorer.getAllProjects().toArray(new Project[0]);
+        for (Project projeto: todosProjetos) {
+            if (projeto != projetoSelecionado) {
+                mProjectExplorer.close(projeto);
+            }
+        }
+    };
+    private Runnable mCloseAllProjects = () -> {
+        for (Project p: mProjectExplorer.getAllProjects()) {
+            mProjectExplorer.close(p);
+        }
+    };
+
+    private FileChooser getFileChooser(String title) {
+        if (mFileChooser == null) {
+            mFileChooser = new FileChooser();
+            mFileChooser.setInitialDirectory(
                     new File(System.getProperty("user.home"))
             );
-            fileChooser.getExtensionFilters().addAll(
+            mFileChooser.getExtensionFilters().addAll(
                     new FileChooser.ExtensionFilter("LoTus files (*.xml)", "*.xml"),
                     new FileChooser.ExtensionFilter("All files", "*")
             );
-            mProjectFile = fileChooser.showSaveDialog(null);
-            if (mProjectFile == null) {
+        }
+        mFileChooser.setTitle(title);
+        return mFileChooser;
+    }
+    private Runnable mOpenProject = () -> {
+        File file = getFileChooser("Open project").showOpenDialog(null);
+        if (file == null) {
+            return;
+        }
+        try (FileInputStream in = new FileInputStream(file)) {
+            Project p = new ProjectXMLSerializer().parseStream(in);
+            p.setName(file.getName());
+            mProjectExplorer.open(p);
+            mProjectsFiles.put(p, file);
+        } catch (Exception e) {
+            showException(e);
+        }
+    };
+    private final Runnable mSaveProject = () -> {
+        Project p = mProjectExplorer.getSelectedProject();
+        if (p == null) {
+            JOptionPane.showMessageDialog(null, "Please select a project!");
+            return;
+        }
+        File f = mProjectsFiles.get(p);
+        if (f == null) {
+            f = getFileChooser("Save project").showSaveDialog(null);
+            if (f == null) {
                 return;
             }
         }
-        try (FileOutputStream out = new FileOutputStream(mProjectFile)) {
-            new XMLSerializer().toStream(p, out);
-            p.setName(mProjectFile.getName());
+        try (FileOutputStream out = new FileOutputStream(f)) {
+            new ProjectXMLSerializer().toStream(p, out);
+            p.setName(f.getName());
+            mProjectsFiles.put(p, f);
         } catch (Exception e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(null, e.getClass() + ": " + e.getMessage());
+            showException(e);
         }
     };
+    private final Runnable mSaveAsProject = () -> {
+        Project p = mProjectExplorer.getSelectedProject();
+        if (p == null) {
+            JOptionPane.showMessageDialog(null, "Please select a project!");
+            return;
+        }
+        File f = getFileChooser("Save project as").showSaveDialog(null);
+        if (f == null) {
+            return;
+        }
+        try (FileOutputStream out = new FileOutputStream(f)) {
+            new ProjectXMLSerializer().toStream(p, out);
+            p.setName(f.getName());
+            mProjectsFiles.put(p, f);
+        } catch (Exception e) {
+            showException(e);
+        }
+    };
+
+    private void showException(Exception e) {
+        logger.log(Level.WARNING, "Exception", e);
+        SwingUtilities.invokeLater(() -> {
+            JOptionPane.showMessageDialog(null, e.getClass() + ": " + e.getMessage());
+        });
+    }
 
     @Override
     public void onStart(ExtensionManager extensionManager) throws Exception {
         mUserInterface = extensionManager.get(UserInterface.class);
-        mProjectExplorer = extensionManager.get(br.uece.lotus.project.v2.ProjectExplorer.class);
-        mComponentDesigner = extensionManager.get(ComponentDesigner.class);
+        mProjectExplorer = extensionManager.get(br.uece.lotus.project.ProjectExplorer.class);
 
-        mUserInterface.setTitle("LoTuS");
+        ExtensibleMenu mMainMenu = mUserInterface.getMainMenu();
 
-        mUserInterface.getMainMenu().addItem(Integer.MIN_VALUE,
-                "File/New project", mNovoProjeto);
-        mUserInterface.getMainMenu().addItem(Integer.MIN_VALUE,
-                "File/New random project", mCriarProjetoRandomico);        
-        mUserInterface.getMainMenu().addItem(Integer.MIN_VALUE,
-                "File/New component", mCriarNovoComponente);
-        mUserInterface.getMainMenu().addItem(Integer.MIN_VALUE,
-                "File/Open project", mOpenProject);
-        mUserInterface.getMainMenu().addItem(Integer.MIN_VALUE,
-                "File/Save project", mSaveProject);
+        mMainMenu.newItem("File/New Project...")
+                .setWeight(Integer.MIN_VALUE)
+                .setAccelerator(KeyCode.N, KeyCombination.CONTROL_DOWN, KeyCombination.SHIFT_DOWN)
+                .setAction(mNewProject)
+                .create();
+        mMainMenu.newItem("File/New Component...")
+                .setWeight(Integer.MIN_VALUE)
+                .setAccelerator(KeyCode.N, KeyCombination.CONTROL_DOWN)
+                .setAction(mNewComponent)
+                .create();
+        mMainMenu.newItem("File/-")
+                .setWeight(Integer.MIN_VALUE)
+                .showSeparator(true)
+                .create();
+        mMainMenu.newItem("File/Open...")
+                .setWeight(Integer.MIN_VALUE)
+                .setAccelerator(KeyCode.O, KeyCombination.CONTROL_DOWN)
+                .setAction(mOpenProject)
+                .create();
+        mMainMenu.newItem("File/-")
+                .setWeight(Integer.MIN_VALUE)
+                .showSeparator(true)
+                .create();
+        mMainMenu.newItem("File/Close Project...")
+                .setWeight(Integer.MIN_VALUE)
+                .setAction(mCloseProject)
+                .create();
+        mMainMenu.newItem("File/Close Others Projects...")
+                .setWeight(Integer.MIN_VALUE)
+                .setAction(mCloseOthersProjects)
+                .create();
+        mMainMenu.newItem("File/Close All Projects...")
+                .setWeight(Integer.MIN_VALUE)
+                .setAction(mCloseAllProjects)
+                .create();
+//        mMainMenu.newItem("File/Open Recent")
+//                .setWeight(Integer.MIN_VALUE)
+//                .setAction(mOpenProject)
+//                .create();
+        mMainMenu.newItem("File/-")
+                .setWeight(Integer.MIN_VALUE)
+                .showSeparator(true)
+                .create();
+        mMainMenu.newItem("File/Save")
+                .setWeight(Integer.MIN_VALUE)
+                .setAccelerator(KeyCode.S, KeyCombination.CONTROL_DOWN)
+                .setAction(mSaveProject)
+                .create();
+        mMainMenu.newItem("File/Save as...")
+                .setWeight(Integer.MIN_VALUE)
+                .setAction(mSaveAsProject)
+                .create();
+        mMainMenu.newItem("File/Save all")
+                .setWeight(Integer.MIN_VALUE)
+                .setAccelerator(KeyCode.S, KeyCombination.CONTROL_DOWN, KeyCombination.SHIFT_DOWN)
+                .setAction(mSaveProject)
+                .create();
+        mMainMenu.newItem("File/-")
+                .setWeight(Integer.MAX_VALUE)
+                .showSeparator(true)
+                .create();
+        mMainMenu.newItem("File/Quit")
+                .setWeight(Integer.MAX_VALUE)
+                .create();
 
-        mUserInterface.getToolBar().addItem(Integer.MIN_VALUE, "New Project", mNovoProjeto);
-        mUserInterface.getToolBar().addItem(Integer.MIN_VALUE, "New Component", mCriarNovoComponente);
-        mUserInterface.getToolBar().addItem(Integer.MIN_VALUE, "Open", mOpenProject);
-        mUserInterface.getToolBar().addItem(Integer.MIN_VALUE, "Save", mSaveProject);
+        mUserInterface.getToolBar().newItem("New Component")
+                .hideText(true)
+                .setGraphic(getClass().getResourceAsStream("res/ic_component_new.png"))
+                .setWeight(Integer.MIN_VALUE)
+                .setAction(mNewComponent)
+                .create();
 
-        mUserInterface.getMainMenu().addItem(Integer.MIN_VALUE,
-                "File/Save project as...", () -> {
-                    Project p = mProjectExplorer.getSelectedProject();
-                    if (p == null) {
-                        JOptionPane.showMessageDialog(null, "There is no project avaliable!");
-                        return;
-                    }
-                    FileChooser fileChooser = new FileChooser();
-                    fileChooser.setTitle("Save project as");
-                    fileChooser.setInitialDirectory(
-                            new File(System.getProperty("user.home"))
-                    );
-                    fileChooser.getExtensionFilters().addAll(
-                            new FileChooser.ExtensionFilter("LoTus files (*.xml)", "*.xml"),
-                            new FileChooser.ExtensionFilter("All files", "*")
-                    );
-                    mProjectFile = fileChooser.showSaveDialog(null);
-                    if (mProjectFile == null) {
-                        return;
-                    }
-                    try (FileOutputStream out = new FileOutputStream(mProjectFile)) {
-                        new XMLSerializer().toStream(p, out);
-                        p.setName(mProjectFile.getName());
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        JOptionPane.showMessageDialog(null, e.getClass() + ": " + e.getMessage());
-                    }
-                });
+        mUserInterface.getToolBar().newItem("New Project")
+                .hideText(true)
+                .setGraphic(getClass().getResourceAsStream("res/ic_project_new.png"))
+                .setWeight(Integer.MIN_VALUE)
+                .setAction(mNewProject)
+                .create();
+        mUserInterface.getToolBar().newItem("Open Project")
+                .hideText(true)
+                .setGraphic(getClass().getResourceAsStream("res/ic_project_open.png"))
+                .setWeight(Integer.MIN_VALUE)
+                .setAction(mOpenProject)
+                .create();
+        mUserInterface.getToolBar().newItem("Save All")
+                .hideText(true)
+                .setGraphic(getClass().getResourceAsStream("res/ic_project_save.png"))
+                .setWeight(Integer.MIN_VALUE)
+                .setAction(mSaveProject)
+                .create();
 
-        mUserInterface.getMainMenu().addItem(Integer.MAX_VALUE,
-                "File/Exit", () -> {
-                    Platform.exit();
-                });
+        mProjectExplorer.getMenu().addItem(Integer.MIN_VALUE, "New project", mNewProject);
+        mProjectExplorer.getMenu().addItem(Integer.MIN_VALUE, "Open project...", mOpenProject);        
+        
+        mProjectExplorer.getProjectMenu().addItem(Integer.MIN_VALUE, "New Component", mNewComponent);
+        mProjectExplorer.getProjectMenu().addItem(Integer.MIN_VALUE, "Rename...", mRenameProject);
+        mProjectExplorer.getProjectMenu().addItem(Integer.MIN_VALUE, "-", null);
+        mProjectExplorer.getProjectMenu().addItem(Integer.MIN_VALUE, "Close project...", mCloseProject);        
 
-        mProjectExplorer.getComponentMenu().addItem(Integer.MIN_VALUE, "New component...", mCriarNovoComponente);
-
-        mProjectExplorer.getComponentMenu().addItem(Integer.MIN_VALUE,
-                "Rename component...", () -> {
-                    Component c = mProjectExplorer.getSelectedComponent();
-                    if (c == null) {
-                        JOptionPane.showMessageDialog(null, "Select a component!");
-                        return;
-                    }
-                    String novoNome = JOptionPane.showInputDialog(null, "Enter with a new name for " + c.getName() + ":");
-                    if (novoNome != null) {
-                        c.setName(novoNome);
-                    }
-                }
-        );
-        mProjectExplorer.getComponentMenu().addItem(Integer.MIN_VALUE,
-                "Remove component...", () -> {
-                    Project p = mProjectExplorer.getSelectedProject();
-                    if (p == null) {
-                        JOptionPane.showMessageDialog(null, "There is no project avaliable!");
-                        return;
-                    }
-                    Component c = mProjectExplorer.getSelectedComponent();
-                    if (c == null) {
-                        JOptionPane.showMessageDialog(null, "Select a component!");
-                        return;
-                    }
-                    int r = JOptionPane.showConfirmDialog(null, "Do you really want to remove the component " + c.getName() + "?", null, JOptionPane.YES_NO_OPTION);
-                    if (r == JOptionPane.YES_OPTION) {
-                        p.removeComponent(c);
-                    }
-                }
-        );
-//        mProjectExplorer.getComponentMenu().addItem(Integer.MIN_VALUE,
-//                "Save as PNG", () -> {
-//                    FileChooser fileChooser = new FileChooser();
-//                    fileChooser.setTitle("Save as PNG");
-//                    fileChooser.setInitialDirectory(
-//                            new File(System.getProperty("user.home"))
-//                    );
-//                    fileChooser.getExtensionFilters().addAll(
-//                            new FileChooser.ExtensionFilter("PNG Image (*.png)", "*.png")                            
-//                    );
-//                    File arq = fileChooser.showSaveDialog(null);
-//                    if (arq == null) {
-//                        return;
-//                    }
-//                    Component c = mProjectExplorer.getSelectedComponent();                     
-//                    mComponentDesigner.show(c);
-////                    BasicComponentEditor v = (BasicComponentEditor) c.getValue("designer");
-////                    v.saveAsPng(arq);
-//                    JOptionPane.showMessageDialog(null, "PNG Image successfuly saved!");
-//                }
-//        );
+        mProjectExplorer.getComponentMenu().addItem(Integer.MIN_VALUE, "Rename...", mRenameComponent);
+        mProjectExplorer.getComponentMenu().addItem(Integer.MIN_VALUE, "Remove...", mRemoveComponent);
 
     }
 

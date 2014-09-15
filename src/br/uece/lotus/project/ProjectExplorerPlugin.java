@@ -21,13 +21,13 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package br.uece.lotus.project.v2;
+package br.uece.lotus.project;
 
 import br.uece.lotus.Component;
 import br.uece.lotus.Project;
 import br.uece.lotus.State;
 import br.uece.lotus.Transition;
-import br.uece.lotus.designer.ComponentDesigner;
+import br.uece.lotus.designer.ComponentDesignerManager;
 import br.uece.seed.app.ExtensibleFXContextMenu;
 import br.uece.seed.app.ExtensibleMenu;
 import br.uece.seed.app.UserInterface;
@@ -73,7 +73,7 @@ public final class ProjectExplorerPlugin extends Plugin implements ProjectExplor
         public void onComponentCreated(Project project, Component component) {
             TreeItem<Wrapper> r = findItem(mProjectView.getRoot(), project);
             r.getChildren().add(new TreeItem<>(new Wrapper(component), new ImageView(
-                    new Image(getClass().getResourceAsStream("ic_component.png"))
+                    new Image(getClass().getResourceAsStream("res/ic_component.png"))
             )));
         }
 
@@ -119,7 +119,7 @@ public final class ProjectExplorerPlugin extends Plugin implements ProjectExplor
 
         }
     };
-    private ComponentDesigner mComponentDesigner;
+    private ComponentDesignerManager mComponentDesigner;
 
     public ProjectExplorerPlugin() {
         mMnuComponent = new ContextMenu();
@@ -159,7 +159,7 @@ public final class ProjectExplorerPlugin extends Plugin implements ProjectExplor
     @Override
     public void onStart(ExtensionManager extensionManager) throws Exception {
         mUserInterface = extensionManager.get(UserInterface.class);
-        mComponentDesigner = extensionManager.get(ComponentDesigner.class);
+        mComponentDesigner = extensionManager.get(ComponentDesignerManager.class);
         AnchorPane.setTopAnchor(mProjectView, 0D);
         AnchorPane.setRightAnchor(mProjectView, 0D);
         AnchorPane.setBottomAnchor(mProjectView, 0D);
@@ -195,13 +195,13 @@ public final class ProjectExplorerPlugin extends Plugin implements ProjectExplor
         if (itm == null) {
             p.addListener(mProjectListener);
             itm = new TreeItem<>(new Wrapper(p), new ImageView(
-                    new Image(getClass().getResourceAsStream("ic_project.png"))
+                    new Image(getClass().getResourceAsStream("res/ic_project.png"))
             ));
             List<TreeItem<Wrapper>> aux = itm.getChildren();
             for (Component c : p.getComponents()) {
                 c.addListener(mComponentListener);
                 TreeItem<Wrapper> itm2 = new TreeItem<>(new Wrapper(c), new ImageView(
-                        new Image(getClass().getResourceAsStream("ic_component.png"))
+                        new Image(getClass().getResourceAsStream("res/ic_component.png"))
                 ));
                 aux.add(itm2);
             }

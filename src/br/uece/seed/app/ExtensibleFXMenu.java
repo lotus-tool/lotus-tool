@@ -23,6 +23,7 @@
  */
 package br.uece.seed.app;
 
+import java.util.Comparator;
 import java.util.List;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
@@ -52,11 +53,13 @@ public class ExtensibleFXMenu implements ExtensibleMenu, MenuItemBuilderFX.Conta
                 h.name = strPath;
                 h.weight = ((ExtensibleFXItemHolder) item.getUserData()).weight;
                 proximo.setUserData(h);
-                atual.add(proximo);
+                atual.add(proximo);                
+                atual.sort(ExtensibleFXItemHolder.MENUITEM_COMPARATOR);
             }
             atual = proximo.getItems();
         }
         atual.add(item);
+        atual.sort(ExtensibleFXItemHolder.MENUITEM_COMPARATOR);
     }
 
     private Menu findMenuItem(List<MenuItem> lst, String name) {

@@ -24,7 +24,7 @@
 
 package br.uece.lotus.designer;
 
-import br.uece.lotus.Component;
+import br.uece.seed.app.ExtensibleToolbar;
 
 /**
  *
@@ -32,10 +32,12 @@ import br.uece.lotus.Component;
  */
 public interface ComponentDesigner {
     
-    void show(Component c);
-
-    public void hide(Component component);
-
-    public void hideAll();
+    public ExtensibleToolbar getTransitionContextToolbar();
+    public ExtensibleToolbar getStateContextToolbar();
+    
+    public void setDefaultTransitionLabel(String label);
+    public void setDefaultTransitionWidth(Integer width);
+    public void setDefaultTransitionTextColor(String color);
+    public void setDefaultTransitionColor(String color);
     
 }
