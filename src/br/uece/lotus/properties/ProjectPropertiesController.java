@@ -32,7 +32,6 @@ import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
 public class ProjectPropertiesController implements Project.Listener, ChangeListener<String> {
@@ -66,8 +65,9 @@ public class ProjectPropertiesController implements Project.Listener, ChangeList
         if (mProject != null) {
             mProject.removeListener(this);
         }
-        mProject = p;
+        mProject = p;        
         if (mProject != null) {
+            mEdtName.setText(p.getName());
             mProject.addListener(this);
         }
     }
@@ -81,7 +81,7 @@ public class ProjectPropertiesController implements Project.Listener, ChangeList
 
     @Override
     public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-        if (mProject == null || mEmEdicao) {
+        if (mProject == null || mEmEdicao || newValue.trim().isEmpty()) {
             return;
         }
         if (observable == mEdtName.textProperty()) {

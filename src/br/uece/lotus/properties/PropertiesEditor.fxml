@@ -71,9 +71,22 @@
                     <TextField fx:id="mEdtPositionY" alignment="TOP_LEFT" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-1.0" prefHeight="25.0" prefWidth="-1.0" HBox.hgrow="ALWAYS" />
                   </children>
                   <padding>
-                    <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                    <Insets left="5.0" right="5.0" top="5.0" />
                   </padding>
                 </HBox>
+                        <HBox maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="-1.0" spacing="5.0">
+                           <children>
+                              <Label alignment="CENTER_RIGHT" contentDisplay="LEFT" maxHeight="1.7976931348623157E308" minWidth="-Infinity" prefHeight="-1.0" prefWidth="70.0" text="Name" textAlignment="LEFT" underline="false" wrapText="false">
+                                 <font>
+                                    <Font size="12.0" fx:id="x11" />
+                                 </font>
+                              </Label>
+                              <TextField fx:id="mEdtName" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-1.0" prefHeight="25.0" prefWidth="-1.0" HBox.hgrow="ALWAYS" />
+                           </children>
+                           <padding>
+                              <Insets left="5.0" right="5.0" top="5.0" />
+                           </padding>
+                        </HBox>
               </children>
             </VBox>
           </children>

@@ -30,72 +30,45 @@ import br.uece.lotus.Transition;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
-import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.Parent;
-import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 
 public class ComponentPropertiesController implements Component.Listener, ChangeListener<String> {
 
-    private ChoiceBox mCbxDefault;
-    private ChoiceBox mCbxError;
     private TextField mEdtName;
 
     private Component mComponent;
     private boolean mEmEdicao;
-    private final ChangeListener<State> mAoMudarComboBox = new ChangeListener<State>() {
-        @Override
-        public void changed(ObservableValue observable, State oldValue, State newValue) {
-            if (mComponent == null || mEmEdicao) {
-                return;
-            }
-            if (observable == mCbxDefault.getSelectionModel().selectedItemProperty()) {
-                mComponent.setInitialState(newValue);
-            } else if (observable == mCbxError.getSelectionModel().selectedItemProperty()) {
-                mComponent.setErrorState(newValue);
-            }
-        }
-    };
-    private Parent mPropertyNameWrapper;
     private VBox mGrandParent;
-    private Parent mPropertyDefaulWrapper;
-    private Parent mPropertyErrorWrapper;
+    private Parent mPropertyWrapper;
 
-    public void init(ChoiceBox cbxDefault, ChoiceBox cbxError, TextField edtName) {
-        mCbxDefault = cbxDefault;
-        mCbxError = cbxError;
-        mEdtName = edtName;
-
+    public void init(TextField edtName) {
         mGrandParent = (VBox) edtName.getParent().getParent();
-        mPropertyNameWrapper = edtName.getParent();
-        mPropertyDefaulWrapper = cbxDefault.getParent();
-        mPropertyErrorWrapper = cbxError.getParent();        
-        
+        mPropertyWrapper = edtName.getParent();
+        mEdtName = edtName;
         mEdtName.textProperty().addListener(this);
-        mCbxDefault.getSelectionModel().selectedItemProperty().addListener(mAoMudarComboBox);
-        mCbxError.getSelectionModel().selectedItemProperty().addListener(mAoMudarComboBox);
     }
-    
+
     public void setVisible(boolean v) {
-        Node[] aux = {mPropertyNameWrapper, mPropertyDefaulWrapper, mPropertyErrorWrapper};
         final ObservableList<Node> children = mGrandParent.getChildren();
         if (v) {
-            if (!children.contains(mPropertyNameWrapper)) {
-                children.addAll(aux);
+            if (!children.contains(mPropertyWrapper)) {
+                children.add(mPropertyWrapper);
             }
         } else {
-            children.removeAll(aux);
+            children.remove(mPropertyWrapper);
         }
     }
 
-    public void changeComponent(Component s) {
+    public void changeComponent(Component c) {
         if (mComponent != null) {
             mComponent.removeListener(this);
         }
-        mComponent = s;
+        mComponent = c;        
         if (mComponent != null) {
+            mEdtName.setText(c.getName());
             mComponent.addListener(this);
         }
     }
@@ -104,39 +77,37 @@ public class ComponentPropertiesController implements Component.Listener, Change
     public void onChange(Component component) {
         mEmEdicao = true;
         mEdtName.setText(component.getName());
-        mCbxDefault.getSelectionModel().select(component.getInitialState());
-        mCbxError.getSelectionModel().select(component.getErrorState());
         mEmEdicao = false;
     }
 
     @Override
     public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-        if (mComponent == null || mEmEdicao) {
+        if (mComponent == null || mEmEdicao || newValue.trim().isEmpty()) {
             return;
         }
         if (observable == mEdtName.textProperty()) {
             mComponent.setName(newValue);
         }
-    }
+    }    
 
     @Override
     public void onStateCreated(Component component, State state) {
-        mCbxDefault.getItems().add(state);
+        
     }
 
     @Override
     public void onStateRemoved(Component component, State state) {
-        mCbxDefault.getItems().remove(state);
+        
     }
 
     @Override
     public void onTransitionCreated(Component component, Transition state) {
-        //ignora
+        
     }
 
     @Override
     public void onTransitionRemoved(Component component, Transition state) {
-        //ignora
+        
     }
 
 }

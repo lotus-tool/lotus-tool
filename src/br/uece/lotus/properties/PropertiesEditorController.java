@@ -23,6 +23,8 @@
  */
 package br.uece.lotus.properties;
 
+import br.uece.lotus.Component;
+import br.uece.lotus.Project;
 import br.uece.lotus.viewer.StateView;
 import br.uece.lotus.viewer.TransitionView;
 import java.net.URL;
@@ -43,17 +45,31 @@ public class PropertiesEditorController implements Initializable {
     private TextField mEdtGuard;
     @FXML
     private TextField mEdtProbability;
+    @FXML
+    private TextField mEdtName;
+    
     private final StatePropertiesController mStatePropertiesController = new StatePropertiesController();
-
     private final TransitionsPropertiesController mTransitionsPropertiesController = new TransitionsPropertiesController();
+    private final ProjectPropertiesController mProjectPropertiesController = new ProjectPropertiesController();
+    private final ComponentPropertiesController mComponentPropertiesController = new ComponentPropertiesController();
 
-    public void changeObject(Object o) {        
+    public void changeObject(Object o) { 
+        mProjectPropertiesController.setVisible(false);
+        mProjectPropertiesController.changeProject(null);
+        mComponentPropertiesController.setVisible(false);
+        mComponentPropertiesController.changeComponent(null);
         mStatePropertiesController.setVisible(false);
         mStatePropertiesController.changeState(null);
         mTransitionsPropertiesController.setVisible(false);
         mTransitionsPropertiesController.changeTransition(null);
 
-        if (o instanceof StateView) {
+        if (o instanceof Project) {
+            mProjectPropertiesController.setVisible(true);
+            mProjectPropertiesController.changeProject((Project) o);
+        } else if (o instanceof Component) {
+            mComponentPropertiesController.setVisible(true);
+            mComponentPropertiesController.changeComponent((Component) o);
+        } else if (o instanceof StateView) {
             mStatePropertiesController.setVisible(true);
             mStatePropertiesController.changeState(((StateView) o).getState());
         } else if (o instanceof TransitionView) {
@@ -63,8 +79,9 @@ public class PropertiesEditorController implements Initializable {
     }
 
     @Override
-    public void initialize(URL location, ResourceBundle resources) {
-        //System.out.println("init");
+    public void initialize(URL location, ResourceBundle resources) {        
+        mProjectPropertiesController.init(mEdtName);
+        mComponentPropertiesController.init(mEdtName);
         mStatePropertiesController.init(mEdtPositionX, mEdtPositionY);
         mTransitionsPropertiesController.init(mEdtLabel, mEdtGuard, mEdtProbability);
         changeObject(null);

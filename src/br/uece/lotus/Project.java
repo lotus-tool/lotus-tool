@@ -24,9 +24,13 @@
 package br.uece.lotus;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Project {
+    
+    private final Map<String, Object> mValues = new HashMap<String, Object>();
 
     public interface Listener {
 
@@ -103,6 +107,14 @@ public class Project {
 
     public void removeListener(Listener l) {
         mListeners.remove(l);
+    }
+    
+    public Object getValue(String key) {
+        return mValues.get(key);
+    }
+
+    public void setValue(String key, Object value) {
+        mValues.put(key, value);
     }
 
 }

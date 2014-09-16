@@ -28,6 +28,7 @@ import br.uece.lotus.Project;
 import br.uece.lotus.State;
 import br.uece.lotus.Transition;
 import br.uece.lotus.designer.ComponentDesignerManager;
+import br.uece.lotus.properties.PropertiesEditor;
 import br.uece.seed.app.ExtensibleFXContextMenu;
 import br.uece.seed.app.ExtensibleMenu;
 import br.uece.seed.app.UserInterface;
@@ -35,6 +36,9 @@ import br.uece.seed.ext.ExtensionManager;
 import br.uece.seed.ext.Plugin;
 import java.util.ArrayList;
 import java.util.List;
+import javafx.beans.InvalidationListener;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
@@ -120,8 +124,14 @@ public final class ProjectExplorerPlugin extends Plugin implements ProjectExplor
         }
     };
     private ComponentDesignerManager mComponentDesigner;
+    private PropertiesEditor mPropertyEditor;
+    private final List<Listener> mListeners;
+    private final ChangeListener<TreeItem<Wrapper>> mEditarSelecaoNoPainelDePropriedades = (ObservableValue<? extends TreeItem<Wrapper>> observable, TreeItem<Wrapper> oldValue, TreeItem<Wrapper> newValue) -> {
+        mPropertyEditor.edit(newValue.getValue().getObject());
+    };
 
     public ProjectExplorerPlugin() {
+        mListeners = new ArrayList<>();
         mMnuComponent = new ContextMenu();
         mMnuProject = new ContextMenu();
         mMnuWorkspace = new ContextMenu();
@@ -153,25 +163,20 @@ public final class ProjectExplorerPlugin extends Plugin implements ProjectExplor
                 mMnuWorkspace.hide();
             }
         });
-//        mProjectView.setCellFactory((TreeView<Wrapper> param) -> new ItemTreeCell());
+        mProjectView.getSelectionModel().selectedItemProperty().addListener(mEditarSelecaoNoPainelDePropriedades);
     }
 
     @Override
     public void onStart(ExtensionManager extensionManager) throws Exception {
         mUserInterface = extensionManager.get(UserInterface.class);
         mComponentDesigner = extensionManager.get(ComponentDesignerManager.class);
+        mPropertyEditor = extensionManager.get(PropertiesEditor.class);
+
         AnchorPane.setTopAnchor(mProjectView, 0D);
         AnchorPane.setRightAnchor(mProjectView, 0D);
         AnchorPane.setBottomAnchor(mProjectView, 0D);
         AnchorPane.setLeftAnchor(mProjectView, 0D);
         mUserInterface.getLeftPanel().newTab("Projects", mProjectView, false);
-        //todo: mProjectView.getScene() is null!
-//        System.out.println("mProjectView.getScene(): " + mProjectView.getScene());
-//        mProjectView.getScene().setOnMouseReleased((MouseEvent mouseEvent) -> {
-//            mMnuComponent.hide();
-//            mMnuProject.hide();
-//            mMnuWorkspace.hide();
-//        });
     }
 
     @Override
@@ -290,6 +295,16 @@ public final class ProjectExplorerPlugin extends Plugin implements ProjectExplor
         return aux;
     }
 
+    @Override
+    public void addListener(Listener l) {
+        mListeners.add(l);
+    }
+
+    @Override
+    public void removeListener(Listener l) {
+        mListeners.remove(l);
+    }
+
 }
 
 class Wrapper {
@@ -316,18 +331,4 @@ class Wrapper {
     public String toString() {
         return (mObj instanceof Project) ? ((Project) mObj).getName() : ((Component) mObj).getName();
     }
-
 }
-
-//class ItemTreeCell extends TreeCell<Wrapper> {
-//
-//    @Override
-//    protected void updateItem(Wrapper obj, boolean empty) {
-//        super.updateItem(obj, empty);
-//        if (!empty && obj != null) {
-//            setText(obj.toString());
-//        } else {
-//            setText(null);
-//        }
-//    }
-//}

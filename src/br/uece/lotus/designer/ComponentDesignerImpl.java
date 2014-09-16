@@ -76,15 +76,15 @@ public class ComponentDesignerImpl extends AnchorPane implements ComponentDesign
     private final ToggleButton mBtnState;
     private final ToggleButton mBtnTransition;
     private final ToggleButton mBtnEraser;
-    
+
     private final ToolBar mStateToolbar;
     private final ToolBar mTransitionToolbar;
     private final ExtensibleToolbar mExtensibleStateToolbar;
-    private final ExtensibleToolbar mExtensibleTransitionToolbar;    
-    
+    private final ExtensibleToolbar mExtensibleTransitionToolbar;
+
     private final ScrollPane mScrollPanel;
-    private boolean mExibirPropriedadesTransicao;           
-    
+    private boolean mExibirPropriedadesTransicao;
+
     private BasicComponentViewer.Listener mViewerListener = new BasicComponentViewer.Listener() {
         @Override
         public void onTransitionViewCreated(BasicComponentViewer v, TransitionView tv) {
@@ -97,37 +97,48 @@ public class ComponentDesignerImpl extends AnchorPane implements ComponentDesign
     private String mDefaultTransitionColor;
     private String mDefaultTransitionTextColor;
     private Integer mDefaultTransitionWidth;
-    private String mDefaultTransitionLabel;
-
-    private void applyNormalStateStyle(State s) {
-        String oldLabel = (String) s.getValue("oldLabel");
-        if (oldLabel != null) {
-            s.setLabel(oldLabel);
+    private String mDefaultTransitionLabel;    
+    private EventHandler<ActionEvent> mSetStateAsInitial = new EventHandler<ActionEvent>() {
+        @Override
+        public void handle(ActionEvent event) {
+            if (mComponentSelecionado == null) {
+                return;
+            }
+            State s = ((StateView) mComponentSelecionado).getState();
+            s.setAsInitial();
         }
-        s.setColor("aqua");
-    }
-
-    private void applyInitialStateStyle(State s) {
-        String oldLabel = (String) s.getValue("oldLabel");
-        if (oldLabel != null) {
-            s.setLabel(oldLabel);
+    };
+    private EventHandler<ActionEvent> mSetStateAsNormal = new EventHandler<ActionEvent>() {
+        @Override
+        public void handle(ActionEvent event) {
+            if (mComponentSelecionado == null) {
+                return;
+            }
+            State s = ((StateView) mComponentSelecionado).getState();
+            s.setFinal(false);
+            s.setError(false);
         }
-        s.setColor("yellow");
-    }
-
-    private void applyFinalStateStyle(State s) {
-        String oldLabel = (String) s.getValue("oldLabel");
-        if (oldLabel != null) {
-            s.setLabel(oldLabel);
+    };
+    private EventHandler<ActionEvent> mSetStateAsError = new EventHandler<ActionEvent>() {
+        @Override
+        public void handle(ActionEvent event) {
+            if (mComponentSelecionado == null) {
+                return;
+            }
+            State s = ((StateView) mComponentSelecionado).getState();
+            s.setError(true);
         }
-        s.setColor("gray");
-    }
-
-    private void applyErrorStateStyle(State s) {
-        s.setColor("red");
-        s.setValue("oldLabel", s.getLabel());
-        s.setLabel("-1");
-    }
+    };
+    private EventHandler<ActionEvent> mSetStateAsFinal = new EventHandler<ActionEvent>() {
+        @Override
+        public void handle(ActionEvent event) {
+            if (mComponentSelecionado == null) {
+                return;
+            }
+            State s = ((StateView) mComponentSelecionado).getState();
+            s.setFinal(true);
+        }
+    };
 
     @Override
     public ExtensibleToolbar getTransitionContextToolbar() {
@@ -172,7 +183,6 @@ public class ComponentDesignerImpl extends AnchorPane implements ComponentDesign
     private final List<Listener> mListeners = new ArrayList<>();
 
     public ComponentDesignerImpl(BasicComponentViewer viewer) {
-
         mToolbar = new ToolBar();
         mToggleGroup = new ToggleGroup();
         mBtnArrow = new ToggleButton();
@@ -200,11 +210,7 @@ public class ComponentDesignerImpl extends AnchorPane implements ComponentDesign
         });
         mBtnEraser.setToggleGroup(mToggleGroup);
 
-        mToolbar.getItems().addAll(mBtnArrow, mBtnState, mBtnTransition, mBtnEraser);        
-//        AnchorPane.setTopAnchor(mToolbar, 0D);
-//        AnchorPane.setLeftAnchor(mToolbar, 0D);
-//        AnchorPane.setRightAnchor(mToolbar, 0D);
-//        getChildren().add(mToolbar);
+        mToolbar.getItems().addAll(mBtnArrow, mBtnState, mBtnTransition, mBtnEraser);
 
         mStateToolbar = new ToolBar();
         mStateToolbar.setVisible(false);
@@ -214,13 +220,13 @@ public class ComponentDesignerImpl extends AnchorPane implements ComponentDesign
 //        getChildren().add(mTransitionToolbar);
         mExtensibleStateToolbar = new ExtensibleFXToolbar(mStateToolbar);
         mExtensibleTransitionToolbar = new ExtensibleFXToolbar(mTransitionToolbar);
-        
+
         HBox aux = new HBox(mToolbar, mStateToolbar, mTransitionToolbar);
         getChildren().add(aux);
         AnchorPane.setTopAnchor(aux, 0D);
         AnchorPane.setLeftAnchor(aux, 0D);
         AnchorPane.setRightAnchor(aux, 0D);
-        
+
         mComponentContextMenu = new ContextMenu();
 
         mViewer = viewer;
@@ -235,7 +241,7 @@ public class ComponentDesignerImpl extends AnchorPane implements ComponentDesign
 
         mViewer.setOnMousePressed(aoIniciarArrastoVerticeComOMouse);
         mViewer.setOnMouseDragged(aoArrastarVerticeComOMouse);
-        mViewer.setOnMouseReleased(aoLiberarVerticeArrastadoComOMouse);        
+        mViewer.setOnMouseReleased(aoLiberarVerticeArrastadoComOMouse);
 //        mViewer.setPrefSize(500, 500);        
         mScrollPanel = new ScrollPane(mViewer);
         AnchorPane.setTopAnchor(mScrollPanel, 44D);
@@ -245,39 +251,15 @@ public class ComponentDesignerImpl extends AnchorPane implements ComponentDesign
         getChildren().add(mScrollPanel);
         mViewer.minHeightProperty().bind(mScrollPanel.heightProperty());
         mViewer.minWidthProperty().bind(mScrollPanel.widthProperty());
-        MenuItem mSetAsInitialMenuItem = new MenuItem("Set as initial");
-        mSetAsInitialMenuItem.setOnAction((ActionEvent event) -> {
-            Component c = mViewer.getComponent();
-            State initial = c.getInitialState();
-            if (initial != null) {
-                applyNormalStateStyle(initial);
-            }
-            State s = ((StateView) mComponentSelecionado).getState();
-            c.setInitialState(s);
-            applyInitialStateStyle(s);
-        });
+        MenuItem mSetAsInitialMenuItem = new MenuItem("Set as initial");        
+        mSetAsInitialMenuItem.setOnAction(mSetStateAsInitial);
+        MenuItem mSetAsNormalMenuItem = new MenuItem("Set as normal");
+        mSetAsNormalMenuItem.setOnAction(mSetStateAsNormal);
         MenuItem mSetAsFinalMenuItem = new MenuItem("Set as final");
-        mSetAsFinalMenuItem.setOnAction((ActionEvent event) -> {
-            Component c = mViewer.getComponent();
-            State finalState = c.getFinalState();
-            if (finalState != null) {
-                applyNormalStateStyle(finalState);
-            }
-            State s = ((StateView) mComponentSelecionado).getState();
-            c.setFinalState(s);
-            applyFinalStateStyle(s);
-        });
+        mSetAsFinalMenuItem.setOnAction(mSetStateAsError);
         MenuItem mSetAsErrorMenuItem = new MenuItem("Set as error");
-        mSetAsErrorMenuItem.setOnAction((ActionEvent event) -> {
-            Component c = mViewer.getComponent();
-            State error = c.getErrorState();
-            if (error != null) {
-                applyNormalStateStyle(error);
-            }
-            State s = ((StateView) mComponentSelecionado).getState();
-            c.setErrorState(s);
-            applyErrorStateStyle(s);
-        });
+        mSetAsErrorMenuItem.setOnAction(mSetStateAsFinal);
+        
         MenuItem mSaveAsPNG = new MenuItem("Save as PNG");
         mSaveAsPNG.setOnAction((ActionEvent event) -> {
             FileChooser fileChooser = new FileChooser();
@@ -296,7 +278,7 @@ public class ComponentDesignerImpl extends AnchorPane implements ComponentDesign
             mViewer.saveAsPng(arq);
             JOptionPane.showMessageDialog(null, "PNG Image successfuly saved!");
         });
-        mComponentContextMenu.getItems().addAll(mSetAsInitialMenuItem, mSetAsFinalMenuItem, mSetAsErrorMenuItem, new SeparatorMenuItem(), mSaveAsPNG);
+        mComponentContextMenu.getItems().addAll(mSetAsInitialMenuItem, new SeparatorMenuItem(), mSetAsNormalMenuItem, mSetAsFinalMenuItem, mSetAsErrorMenuItem, new SeparatorMenuItem(), mSaveAsPNG);
 
     }
     ////////////////////////////////////////////////////////////////////////////
@@ -446,7 +428,7 @@ public class ComponentDesignerImpl extends AnchorPane implements ComponentDesign
             event.consume();
         }
     };
-    private final EventHandler<DragEvent> aoSoltarMouseSobreVertice = new EventHandler<DragEvent>() {        
+    private final EventHandler<DragEvent> aoSoltarMouseSobreVertice = new EventHandler<DragEvent>() {
         @Override
         public void handle(DragEvent event) {
             if (mModoAtual != MODO_TRANSICAO) {
@@ -492,9 +474,9 @@ public class ComponentDesignerImpl extends AnchorPane implements ComponentDesign
 
     public void setModo(int modo) {
         this.mModoAtual = modo;
-        mViewer.setCursor(Cursor.DEFAULT);        
-        mStateToolbar.setVisible(mModoAtual == MODO_VERTICE);        
-        mTransitionToolbar.setVisible(mModoAtual == MODO_TRANSICAO);                
+        mViewer.setCursor(Cursor.DEFAULT);
+        mStateToolbar.setVisible(mModoAtual == MODO_VERTICE);
+        mTransitionToolbar.setVisible(mModoAtual == MODO_TRANSICAO);
     }
 
     private View getComponentePelaPosicaoMouse(double x, double y) {
@@ -531,6 +513,7 @@ public class ComponentDesignerImpl extends AnchorPane implements ComponentDesign
     }
 
     private void applySelectedStyles(View v) {
+        System.out.println("applyselectedstyles " + v);
         if (v instanceof StateView) {
             State s = ((StateView) v).getState();
             s.setBorderWidth(2);
@@ -547,6 +530,7 @@ public class ComponentDesignerImpl extends AnchorPane implements ComponentDesign
     }
 
     private void removeSelectedStyles(View v) {
+        System.out.println("removeselectedstyles " + v);
         if (v instanceof StateView) {
             State s = ((StateView) v).getState();
             s.setBorderWidth(1);
@@ -555,12 +539,14 @@ public class ComponentDesignerImpl extends AnchorPane implements ComponentDesign
             s.setTextSyle(State.TEXTSTYLE_NORMAL);
         } else if (v instanceof TransitionView) {
             Transition t = ((TransitionView) v).getTransition();
+            if (t == null) {
+                return;
+            }
             t.setWidth(1);
             t.setColor("black");
             t.setTextColor("black");
             t.setTextSyle(State.TEXTSTYLE_NORMAL);
         }
-
     }
 
     public void addListener(Listener l) {

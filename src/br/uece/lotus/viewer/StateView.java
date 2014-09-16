@@ -51,8 +51,6 @@ public class StateView extends Region implements View, State.Listener {
         mCircle.setLayoutY(RAIO_CIRCULO);
 
         mText = new Label();
-//        mText.setLayoutX(0);
-//        mText.setLayoutY(0);
         mText.layoutXProperty().bind(mCircle.layoutXProperty().subtract(mText.widthProperty().divide(2)));
         mText.layoutYProperty().bind(mCircle.layoutYProperty().subtract(mText.heightProperty().divide(2)));
         getChildren().add(mText);

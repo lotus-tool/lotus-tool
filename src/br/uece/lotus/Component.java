@@ -105,6 +105,9 @@ public class Component {
         State v = new State(this);
         v.setID(id);
         add(v);
+        if (mInitialState == null) {
+            setInitialState(v);
+        }
         return v;
     }
 
@@ -241,6 +244,7 @@ public class Component {
                 State s = stack.remove(0);
                 State ss = c.getStateByID(s.getID());
                 if (ss == null) {
+                    ss = c.newState(s.getID());
                     ss.copy(s);
                     c.mStates.add(ss);
                 }
@@ -251,6 +255,7 @@ public class Component {
                     if (unvisitedStates.contains(ts)) {
                         tss = c.getStateByID(ts.getID());
                         if (tss == null) {
+                            tss = c.newState(ts.getID());
                             tss.copy(ts);
                             c.mStates.add(tss);
                         }

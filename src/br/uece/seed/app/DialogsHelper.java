@@ -21,46 +21,27 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package br.uece.lotus.project;
+package br.uece.seed.app;
 
-import br.uece.lotus.Component;
-import br.uece.lotus.Project;
-import br.uece.seed.app.ExtensibleMenu;
-import java.util.List;
+import br.uece.seed.ext.Plugin;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 
 /**
  *
  * @author emerson
  */
-public interface ProjectExplorer {
+public class DialogsHelper extends Plugin {
 
-    interface Listener {
+    private static final Logger logger = Logger.getLogger(DialogsHelper.class.getName());
 
-        void onChange(ProjectExplorer projectExplorere);
+    public void showException(Exception e) {
+        logger.log(Level.WARNING, "Exception", e);
+        SwingUtilities.invokeLater(() -> {
+            JOptionPane.showMessageDialog(null, e.getClass() + ": " + e.getMessage());
+        });
     }
-
-    ExtensibleMenu getMenu();
-
-    ExtensibleMenu getProjectMenu();
-
-    ExtensibleMenu getComponentMenu();
-
-    void open(Project p);
-
-    void close(Project p);
-
-    Project getSelectedProject();
-
-    Component getSelectedComponent();
-
-    List<Component> getSelectedComponents();
-
-    List<Project> getSelectedProjects();
-
-    List<Project> getAllProjects();
-
-    void addListener(Listener l);
-
-    void removeListener(Listener l);
 
 }

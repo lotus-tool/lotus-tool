@@ -28,6 +28,7 @@ import br.uece.lotus.about.AboutPlugin;
 import br.uece.lotus.project.BasicPlugin;
 import br.uece.lotus.designer.ComponentDesignerManagerPlugin;
 import br.uece.lotus.model.AlgorithmsPlugins;
+import br.uece.lotus.project.ProjectDialogsHelper;
 import br.uece.lotus.project.ProjectExplorerPlugin;
 import br.uece.lotus.properties.PropertiesEditorPlugin;
 import br.uece.lotus.simulator.SimulatorPlugin;
@@ -73,12 +74,15 @@ public class Startup extends Application {
         ExtensionManager extensionManager = new ExtensionManager();
         Plugin p = (Plugin) controller;
         extensionManager.registerPlugin(p);
+        extensionManager.registerPlugin(new DialogsHelper());
+        extensionManager.registerPlugin(new ProjectDialogsHelper());
+        
+        extensionManager.registerPlugin(new PropertiesEditorPlugin());
         extensionManager.registerPlugin(new ProjectExplorerPlugin());
         extensionManager.registerPlugin(new AboutPlugin());
         extensionManager.registerPlugin(new ComponentDesignerManagerPlugin());
         extensionManager.registerPlugin(new BasicPlugin());
-        extensionManager.registerPlugin(new ToolsPlugin());
-        extensionManager.registerPlugin(new PropertiesEditorPlugin());
+        extensionManager.registerPlugin(new ToolsPlugin());        
         extensionManager.registerPlugin(new SimulatorPlugin());
         extensionManager.registerPlugin(new AlgorithmsPlugins());
 

@@ -21,7 +21,6 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-
 package br.uece.lotus.properties;
 
 import br.uece.lotus.Transition;
@@ -47,12 +46,12 @@ public class TransitionsPropertiesController implements Transition.Listener, Cha
     private Parent mPropertyProbabilityWrapper;
     private VBox mGrandParent;
 
-    void init(TextField edtLabel, TextField edtGuard, TextField edtProbability) {        
+    void init(TextField edtLabel, TextField edtGuard, TextField edtProbability) {
         mPropertyLabelWrapper = edtLabel.getParent();
         mPropertyGuardWrapper = edtGuard.getParent();
         mPropertyProbabilityWrapper = edtProbability.getParent();
         mGrandParent = (VBox) mPropertyLabelWrapper.getParent();
-                
+
         mEdtLabel = edtLabel;
         mEdtGuard = edtGuard;
         mEdtProbability = edtProbability;
@@ -65,12 +64,24 @@ public class TransitionsPropertiesController implements Transition.Listener, Cha
             aplicarProbabilidade();
             mEdtProbability.selectAll();
         });
-        mEdtLabel.textProperty()
-                .addListener(this);
-        mEdtGuard.textProperty()
-                .addListener(this);
-        mEdtProbability.textProperty()
-                .addListener(this);
+        mEdtLabel.focusedProperty().addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {
+            if (!newValue) {
+                mTransition.setLabel(mEdtLabel.getText());
+            }
+        });
+        mEdtLabel.setOnAction((ActionEvent event) -> {
+            mTransition.setLabel(mEdtLabel.getText());
+            mEdtLabel.selectAll();
+        });
+        mEdtGuard.focusedProperty().addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {
+            if (!newValue || mTransition == null || mEmEdicao) {
+                mTransition.setGuard(mEdtGuard.getText());
+            }
+        });
+        mEdtGuard.setOnAction((ActionEvent event) -> {
+            mTransition.setGuard(mEdtGuard.getText());
+            mEdtGuard.selectAll();
+        });
     }
 
     public void setVisible(boolean v) {
@@ -80,7 +91,7 @@ public class TransitionsPropertiesController implements Transition.Listener, Cha
             if (!children.contains(mPropertyLabelWrapper)) {
                 children.addAll(aux);
             }
-        } else {            
+        } else {
             children.removeAll(aux);
         }
     }
@@ -93,14 +104,13 @@ public class TransitionsPropertiesController implements Transition.Listener, Cha
         if (mTransition != null) {
             updateEditors();
             mTransition.addListener(this);
+            mEdtLabel.requestFocus();
         }
     }
 
     @Override
-    public void onChange(Transition transition) {
-        mEmEdicao = true;
-        updateEditors();
-        mEmEdicao = false;
+    public void onChange(Transition transition) {        
+        updateEditors();        
     }
 
     @Override
@@ -115,13 +125,11 @@ public class TransitionsPropertiesController implements Transition.Listener, Cha
         }
     }
 
-    private void updateEditors() {
-        System.out.println("updating editors");
+    private void updateEditors() {        
         mEdtLabel.setText(mTransition.getLabel());
         mEdtGuard.setText(mTransition.getGuard());
         Double d = mTransition.getProbability();
-        mEdtProbability.setText(d == null ? "" : String.valueOf(d));
-        mEdtLabel.requestFocus();
+        mEdtProbability.setText(d == null ? "" : String.valueOf(d));        
     }
 
     private void aplicarProbabilidade() {

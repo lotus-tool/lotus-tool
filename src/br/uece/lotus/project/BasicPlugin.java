@@ -28,32 +28,22 @@ import br.uece.lotus.Project;
 import br.uece.seed.app.ExtensibleMenu;
 import br.uece.seed.app.UserInterface;
 import br.uece.seed.ext.ExtensionManager;
-import br.uece.seed.ext.JarModule;
 import br.uece.seed.ext.Plugin;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCombination;
-import javafx.stage.FileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
 public class BasicPlugin extends Plugin {
 
-    private static final Logger logger = Logger.getLogger(JarModule.class.getName());
-    private File mProjectFile;
+    private static final String EXTENSION_DESCRIPTION = "LoTuS files (*.xml)";
+    private static final String EXTENSION = "*.xml";
+                
     private UserInterface mUserInterface;
-    private ProjectExplorer mProjectExplorer;
-    private FileChooser mFileChooser;
-    private Map<Project, File> mProjectsFiles = new HashMap<>();
-
+    private ProjectExplorer mProjectExplorer;        
+    private ProjectDialogsHelper mProjectDialogsHelper;
+    private ProjectSerializer mProjectSerializer = new ProjectXMLSerializer();
+    
     private Runnable mNewComponent = () -> {
         SwingUtilities.invokeLater(() -> {
             Project p = mProjectExplorer.getSelectedProject();
@@ -142,34 +132,10 @@ public class BasicPlugin extends Plugin {
             mProjectExplorer.close(p);
         }
     };
-
-    private FileChooser getFileChooser(String title) {
-        if (mFileChooser == null) {
-            mFileChooser = new FileChooser();
-            mFileChooser.setInitialDirectory(
-                    new File(System.getProperty("user.home"))
-            );
-            mFileChooser.getExtensionFilters().addAll(
-                    new FileChooser.ExtensionFilter("LoTus files (*.xml)", "*.xml"),
-                    new FileChooser.ExtensionFilter("All files", "*")
-            );
-        }
-        mFileChooser.setTitle(title);
-        return mFileChooser;
-    }
-    private Runnable mOpenProject = () -> {
-        File file = getFileChooser("Open project").showOpenDialog(null);
-        if (file == null) {
-            return;
-        }
-        try (FileInputStream in = new FileInputStream(file)) {
-            Project p = new ProjectXMLSerializer().parseStream(in);
-            p.setName(file.getName());
-            mProjectExplorer.open(p);
-            mProjectsFiles.put(p, file);
-        } catch (Exception e) {
-            showException(e);
-        }
+    
+    private Runnable mOpenProject = () -> {        
+        Project p = mProjectDialogsHelper.open(mProjectSerializer, "Open project", EXTENSION_DESCRIPTION, EXTENSION);   
+        mProjectExplorer.open(p);
     };
     private final Runnable mSaveProject = () -> {
         Project p = mProjectExplorer.getSelectedProject();
@@ -177,51 +143,22 @@ public class BasicPlugin extends Plugin {
             JOptionPane.showMessageDialog(null, "Please select a project!");
             return;
         }
-        File f = mProjectsFiles.get(p);
-        if (f == null) {
-            f = getFileChooser("Save project").showSaveDialog(null);
-            if (f == null) {
-                return;
-            }
-        }
-        try (FileOutputStream out = new FileOutputStream(f)) {
-            new ProjectXMLSerializer().toStream(p, out);
-            p.setName(f.getName());
-            mProjectsFiles.put(p, f);
-        } catch (Exception e) {
-            showException(e);
-        }
+        mProjectDialogsHelper.save(p, mProjectSerializer, "Save project", EXTENSION_DESCRIPTION, EXTENSION);
     };
     private final Runnable mSaveAsProject = () -> {
-        Project p = mProjectExplorer.getSelectedProject();
+       Project p = mProjectExplorer.getSelectedProject();
         if (p == null) {
             JOptionPane.showMessageDialog(null, "Please select a project!");
             return;
         }
-        File f = getFileChooser("Save project as").showSaveDialog(null);
-        if (f == null) {
-            return;
-        }
-        try (FileOutputStream out = new FileOutputStream(f)) {
-            new ProjectXMLSerializer().toStream(p, out);
-            p.setName(f.getName());
-            mProjectsFiles.put(p, f);
-        } catch (Exception e) {
-            showException(e);
-        }
+        mProjectDialogsHelper.save(p, mProjectSerializer, "Save project as", EXTENSION_DESCRIPTION, EXTENSION);
     };
-
-    private void showException(Exception e) {
-        logger.log(Level.WARNING, "Exception", e);
-        SwingUtilities.invokeLater(() -> {
-            JOptionPane.showMessageDialog(null, e.getClass() + ": " + e.getMessage());
-        });
-    }
 
     @Override
     public void onStart(ExtensionManager extensionManager) throws Exception {
         mUserInterface = extensionManager.get(UserInterface.class);
-        mProjectExplorer = extensionManager.get(br.uece.lotus.project.ProjectExplorer.class);
+        mProjectExplorer = extensionManager.get(ProjectExplorer.class);
+        mProjectDialogsHelper = extensionManager.get(ProjectDialogsHelper.class);        
 
         ExtensibleMenu mMainMenu = mUserInterface.getMainMenu();
 

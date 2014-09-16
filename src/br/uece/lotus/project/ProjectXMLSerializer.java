@@ -49,6 +49,7 @@ public class ProjectXMLSerializer implements ProjectSerializer {
         XMLWritter xml = new XMLWritter(stream);
         xml.begin("project");
         xml.attr("version", "1.0");
+        xml.attr("name", p.getName());
         for (Component c : p.getComponents()) {
             xml.begin("component");
             xml.attr("name", c.getName());
@@ -104,7 +105,7 @@ public class ProjectXMLSerializer implements ProjectSerializer {
         public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
             switch (qName) {
                 case "project": {
-                    parseProjectTag();
+                    parseProjectTag(attributes);
                     break;
                 }
                 case "component": {
@@ -131,8 +132,9 @@ public class ProjectXMLSerializer implements ProjectSerializer {
         return mProjeto;
     }
 
-    private static void parseProjectTag() {
+    private static void parseProjectTag(Attributes attributes) {
         mProjeto = new Project();
+        mProjeto.setName(attributes.getValue("name"));
     }
     
 
