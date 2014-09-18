@@ -66,7 +66,7 @@ public class Component {
     }
 
     public void setName(String name) {
-        mName = name;        
+        mName = name;
         for (Listener l : mListeners) {
             l.onChange(this);
         }
@@ -142,6 +142,22 @@ public class Component {
 
     public Transition newTransition(int idSrc, int idDst) {
         return newTransition(getStateByID(idSrc), getStateByID(idDst));
+    }
+
+    public Transition.Builder buildTransition(State src, State dst) {
+        if (src == null) {
+            throw new IllegalArgumentException("src state can't be null!");
+        }
+        if (dst == null) {
+            throw new IllegalArgumentException("dst state can't be null!");
+        }
+        Transition t = new Transition(src, dst);
+        return new Transition.Builder(this, t);
+    }
+
+    public Transition.Builder buildTransition(int idSrc, int idDst) {       
+        Transition t = new Transition(getStateByID(idSrc), getStateByID(idDst));
+        return new Transition.Builder(this, t);
     }
 
     public void remove(State state) {

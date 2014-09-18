@@ -21,7 +21,6 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-
 package br.uece.lotus.project;
 
 import br.uece.lotus.Component;
@@ -55,41 +54,47 @@ public class ProjectXMLSerializer implements ProjectSerializer {
             xml.attr("name", c.getName());
 
             xml.begin("states");
-            
+
             for (State v : c.getStates()) {
                 xml.begin("state");
-                xml.attr("id", v.getID());                
+                xml.attr("id", v.getID());
                 xml.attr("x", v.getLayoutX());
-                xml.attr("y", v.getLayoutY());                                
+                xml.attr("y", v.getLayoutY());
 
                 if (v.isInitial()) {
                     xml.attr("initial", "true");
-                }               
+                }
                 if (v.isError()) {
                     xml.attr("error", "true");
-                }                
+                }
                 if (v.isFinal()) {
                     xml.attr("final", "true");
                 }
+
                 xml.end();
             }
-            
+
             xml.end();
             xml.begin("transitions");
 
             for (Transition t : c.getTransitions()) {
                 xml.begin("transition");
                 xml.attr("from", t.getSource().getID());
-                xml.attr("to", t.getDestiny().getID()); 
+                xml.attr("to", t.getDestiny().getID());
                 Double d = t.getProbability();
                 if (d != null) {
-                    xml.attr("prob", t.getProbability());   
+                    xml.attr("prob", t.getProbability());
                 }
                 String s = t.getLabel();
                 xml.attr("label", s == null ? "" : s);
                 s = t.getGuard();
                 if (s != null) {
                     xml.attr("guard", s);
+                }
+
+                Integer i = (Integer) t.getValue("view.type");
+                if (i != null) {
+                    xml.attr("view-type", String.valueOf(i));
                 }
                 xml.end();
             }
@@ -99,7 +104,7 @@ public class ProjectXMLSerializer implements ProjectSerializer {
         }
         xml.end();
     }
-    
+
     private static final DefaultHandler handler = new DefaultHandler() {
         @Override
         public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
@@ -136,7 +141,6 @@ public class ProjectXMLSerializer implements ProjectSerializer {
         mProjeto = new Project();
         mProjeto.setName(attributes.getValue("name"));
     }
-    
 
     private static void parseComponentTag(Attributes attributes) {
         mComponent = new Component();
@@ -144,11 +148,11 @@ public class ProjectXMLSerializer implements ProjectSerializer {
         mProjeto.addComponent(mComponent);
     }
 
-    private static void parseStateTag(Attributes attributes) {        
+    private static void parseStateTag(Attributes attributes) {
         int id = Integer.parseInt(attributes.getValue("id"));
         mState = mComponent.newState(id);
         mState.setLayoutX(Double.parseDouble(attributes.getValue("x")));
-        mState.setLayoutY(Double.parseDouble(attributes.getValue("y")));        
+        mState.setLayoutY(Double.parseDouble(attributes.getValue("y")));
         if (Boolean.parseBoolean(attributes.getValue("initial"))) {
             mState.setAsInitial();
         }
@@ -157,15 +161,18 @@ public class ProjectXMLSerializer implements ProjectSerializer {
         }
         if (Boolean.parseBoolean(attributes.getValue("error"))) {
             mState.setError(true);
-        }        
+        }
     }
 
-    private static void parseTransitionTag(Attributes attributes) {                
-        mTransition = mComponent.newTransition(Integer.parseInt(attributes.getValue("from")), Integer.parseInt(attributes.getValue("to")));
-        mTransition.setLabel(attributes.getValue("label"));
+    private static void parseTransitionTag(Attributes attributes) {
         String s = attributes.getValue("prob");
-        mTransition.setProbability(s == null ? null : Double.parseDouble(s));
-        mTransition.setGuard(attributes.getValue("guard"));
+        String viewType = attributes.getValue("view-type");
+        mTransition = mComponent.buildTransition(Integer.parseInt(attributes.getValue("from")), Integer.parseInt(attributes.getValue("to")))
+                .setLabel(attributes.getValue("label"))
+                .setProbability(s == null ? null : Double.parseDouble(s))
+                .setGuard(attributes.getValue("guard"))
+                .setValue("view.type", viewType == null ? null : Integer.parseInt(viewType))
+                .create();
     }
-    
+
 }

@@ -166,7 +166,8 @@ public class BasicComponentViewer extends AnchorPane implements Component.Listen
         TransitionView view;
         synchronized (this) {
             if (t.getValue("view") == null) {
-                view = TransitionViewFactory.create(t);
+                Integer type = (Integer) t.getValue("view.type");                
+                view = TransitionViewFactory.create(t, type == null ? TransitionViewFactory.Type.LINEAR : type);
 //                System.out.println(view.getClass().getSimpleName());
                 getChildren().add(view);
                 view.setTransition(t);

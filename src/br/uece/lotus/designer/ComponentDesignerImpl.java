@@ -29,6 +29,7 @@ import br.uece.lotus.Transition;
 import br.uece.lotus.viewer.BasicComponentViewer;
 import br.uece.lotus.viewer.StateView;
 import br.uece.lotus.viewer.TransitionView;
+import br.uece.lotus.viewer.TransitionViewFactory;
 import br.uece.lotus.viewer.View;
 import br.uece.seed.app.ExtensibleFXToolbar;
 import br.uece.seed.app.ExtensibleToolbar;
@@ -74,7 +75,8 @@ public class ComponentDesignerImpl extends AnchorPane implements ComponentDesign
     private final ToggleGroup mToggleGroup;
     private final ToggleButton mBtnArrow;
     private final ToggleButton mBtnState;
-    private final ToggleButton mBtnTransition;
+    private final ToggleButton mBtnTransitionLine;
+    private final ToggleButton mBtnTransitionArc;
     private final ToggleButton mBtnEraser;
 
     private final ToolBar mStateToolbar;
@@ -139,6 +141,7 @@ public class ComponentDesignerImpl extends AnchorPane implements ComponentDesign
             s.setFinal(true);
         }
     };
+    private int mTransitionViewType;
 
     @Override
     public ExtensibleToolbar getTransitionContextToolbar() {
@@ -197,12 +200,22 @@ public class ComponentDesignerImpl extends AnchorPane implements ComponentDesign
             setModo(MODO_VERTICE);
         });
         mBtnState.setToggleGroup(mToggleGroup);
-        mBtnTransition = new ToggleButton();
-        mBtnTransition.setGraphic(new ImageView(new Image(getClass().getResourceAsStream("ic_transition.png"))));
-        mBtnTransition.setOnAction((ActionEvent e) -> {
+        mBtnTransitionLine = new ToggleButton();
+        mBtnTransitionLine.setGraphic(new ImageView(new Image(getClass().getResourceAsStream("ic_transition.png"))));
+        mBtnTransitionLine.setOnAction((ActionEvent e) -> {
+            mTransitionViewType = TransitionViewFactory.Type.LINEAR;
             setModo(MODO_TRANSICAO);
         });
-        mBtnTransition.setToggleGroup(mToggleGroup);
+        mBtnTransitionLine.setToggleGroup(mToggleGroup);
+        
+        mBtnTransitionArc = new ToggleButton();
+        mBtnTransitionArc.setGraphic(new ImageView(new Image(getClass().getResourceAsStream("ic_transition.png"))));
+        mBtnTransitionArc.setOnAction((ActionEvent e) -> {
+            mTransitionViewType = TransitionViewFactory.Type.SEMI_CIRCLE;
+            setModo(MODO_TRANSICAO);
+        });
+        mBtnTransitionArc.setToggleGroup(mToggleGroup);
+        
         mBtnEraser = new ToggleButton();
         mBtnEraser.setGraphic(new ImageView(new Image(getClass().getResourceAsStream("ic_eraser.png"))));
         mBtnEraser.setOnAction((ActionEvent e) -> {
@@ -210,7 +223,7 @@ public class ComponentDesignerImpl extends AnchorPane implements ComponentDesign
         });
         mBtnEraser.setToggleGroup(mToggleGroup);
 
-        mToolbar.getItems().addAll(mBtnArrow, mBtnState, mBtnTransition, mBtnEraser);
+        mToolbar.getItems().addAll(mBtnArrow, mBtnState, mBtnTransitionLine, mBtnTransitionArc, mBtnEraser);
 
         mStateToolbar = new ToolBar();
         mStateToolbar.setVisible(false);
@@ -439,7 +452,9 @@ public class ComponentDesignerImpl extends AnchorPane implements ComponentDesign
                 State o = mVerticeOrigemParaAdicionarTransicao.getState();
                 State d = mVerticeDestinoParaAdicionarTransicao.getState();
                 mExibirPropriedadesTransicao = true;
-                Transition t = mViewer.getComponent().newTransition(o, d);
+                Transition t = mViewer.getComponent().buildTransition(o, d)
+                    .setValue("view.type", mTransitionViewType)
+                    .create();
                 applyDefaults(t);
             }
 

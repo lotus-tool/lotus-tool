@@ -30,6 +30,42 @@ import java.util.Map;
 import java.util.Objects;
 
 public class Transition {
+
+    public static class Builder {
+        private final Component mComponent;
+        private final Transition mTransition;
+
+        Builder(Component c, Transition t) {
+            mComponent = c;
+            mTransition = t;
+        }
+        
+        public Builder setValue(String s, Object o) {
+            mTransition.setValue(s, o);
+            return this;
+        }
+        
+        public Transition create() {
+            mComponent.add(mTransition);
+            return mTransition;
+        }
+
+        public Builder setLabel(String label) {
+            mTransition.setLabel(label);
+            return this;
+        }
+
+        public Builder setProbability(Double probability) {
+            mTransition.setProbability(probability);
+            return this;            
+        }
+
+        public Builder setGuard(String guard) {
+            mTransition.setGuard(guard);
+            return this;
+        }
+               
+    }
     public interface Listener {
 
         void onChange(Transition transition);
