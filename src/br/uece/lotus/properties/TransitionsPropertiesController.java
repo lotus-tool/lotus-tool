@@ -109,8 +109,8 @@ public class TransitionsPropertiesController implements Transition.Listener, Cha
     }
 
     @Override
-    public void onChange(Transition transition) {        
-        updateEditors();        
+    public void onChange(Transition transition) {
+        updateEditors();
     }
 
     @Override
@@ -125,16 +125,21 @@ public class TransitionsPropertiesController implements Transition.Listener, Cha
         }
     }
 
-    private void updateEditors() {        
+    private void updateEditors() {
         mEdtLabel.setText(mTransition.getLabel());
         mEdtGuard.setText(mTransition.getGuard());
         Double d = mTransition.getProbability();
-        mEdtProbability.setText(d == null ? "" : String.valueOf(d));        
+        mEdtProbability.setText(d == null ? "" : String.valueOf(d));
     }
 
     private void aplicarProbabilidade() {
+
         try {
-            mTransition.setProbability(Double.parseDouble(mEdtProbability.getText()));
+            String s = mEdtProbability.getText().trim();
+            if (s.isEmpty()) {
+                mTransition.setProbability(null);
+            }
+            mTransition.setProbability(Double.parseDouble(s));
         } catch (NumberFormatException e) {
             //ignora
         }

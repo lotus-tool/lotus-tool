@@ -50,26 +50,27 @@ public class PropertiesEditorController implements Initializable {
     
     private final StatePropertiesController mStatePropertiesController = new StatePropertiesController();
     private final TransitionsPropertiesController mTransitionsPropertiesController = new TransitionsPropertiesController();
-    private final ProjectPropertiesController mProjectPropertiesController = new ProjectPropertiesController();
-    private final ComponentPropertiesController mComponentPropertiesController = new ComponentPropertiesController();
+//    private final ProjectPropertiesController mProjectPropertiesController = new ProjectPropertiesController();
+//    private final ComponentPropertiesController mComponentPropertiesController = new ComponentPropertiesController();
 
     public void changeObject(Object o) { 
-        mProjectPropertiesController.setVisible(false);
-        mProjectPropertiesController.changeProject(null);
-        mComponentPropertiesController.setVisible(false);
-        mComponentPropertiesController.changeComponent(null);
+//        mProjectPropertiesController.setVisible(false);
+//        mProjectPropertiesController.changeProject(null);
+//        mComponentPropertiesController.setVisible(false);
+//        mComponentPropertiesController.changeComponent(null);
         mStatePropertiesController.setVisible(false);
         mStatePropertiesController.changeState(null);
         mTransitionsPropertiesController.setVisible(false);
         mTransitionsPropertiesController.changeTransition(null);
 
-        if (o instanceof Project) {
-            mProjectPropertiesController.setVisible(true);
-            mProjectPropertiesController.changeProject((Project) o);
-        } else if (o instanceof Component) {
-            mComponentPropertiesController.setVisible(true);
-            mComponentPropertiesController.changeComponent((Component) o);
-        } else if (o instanceof StateView) {
+//        if (o instanceof Project) {
+//            mProjectPropertiesController.setVisible(true);
+//            mProjectPropertiesController.changeProject((Project) o);
+//        } else if (o instanceof Component) {
+//            mComponentPropertiesController.setVisible(true);
+//            mComponentPropertiesController.changeComponent((Component) o);
+//        } else 
+            if (o instanceof StateView) {
             mStatePropertiesController.setVisible(true);
             mStatePropertiesController.changeState(((StateView) o).getState());
         } else if (o instanceof TransitionView) {
@@ -80,8 +81,8 @@ public class PropertiesEditorController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {        
-        mProjectPropertiesController.init(mEdtName);
-        mComponentPropertiesController.init(mEdtName);
+//        mProjectPropertiesController.init(mEdtName);
+//        mComponentPropertiesController.init(mEdtName);
         mStatePropertiesController.init(mEdtPositionX, mEdtPositionY);
         mTransitionsPropertiesController.init(mEdtLabel, mEdtGuard, mEdtProbability);
         changeObject(null);
