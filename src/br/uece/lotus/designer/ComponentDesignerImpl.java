@@ -255,9 +255,9 @@ public class ComponentDesignerImpl extends AnchorPane implements ComponentDesign
         mSetAsInitialMenuItem.setOnAction(mSetStateAsInitial);
         MenuItem mSetAsNormalMenuItem = new MenuItem("Set as normal");
         mSetAsNormalMenuItem.setOnAction(mSetStateAsNormal);
-        MenuItem mSetAsFinalMenuItem = new MenuItem("Set as final");
+        MenuItem mSetAsFinalMenuItem = new MenuItem("Set as error");
         mSetAsFinalMenuItem.setOnAction(mSetStateAsError);
-        MenuItem mSetAsErrorMenuItem = new MenuItem("Set as error");
+        MenuItem mSetAsErrorMenuItem = new MenuItem("Set as final");
         mSetAsErrorMenuItem.setOnAction(mSetStateAsFinal);
         
         MenuItem mSaveAsPNG = new MenuItem("Save as PNG");
