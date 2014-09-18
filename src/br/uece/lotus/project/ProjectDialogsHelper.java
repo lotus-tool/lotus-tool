@@ -64,6 +64,9 @@ public class ProjectDialogsHelper extends Plugin {
         try (FileInputStream in = new FileInputStream(file)) {
             p = serializer.parseStream(in);
             p.setValue("file", file);
+            if (p.getName() == null || p.getName().trim().isEmpty()) {
+                p.setName("Untitled");
+            }
         } catch (Exception e) {
             mDialogsHelper.showException(e);
         }
