@@ -284,6 +284,7 @@ public class Component {
                     tt.setLabel(t.getLabel());
                     tt.setProbability(t.getProbability());
                     tt.setGuard(t.getGuard());
+                    tt.setValue("view.type", t.getValue("view.type"));
                 }
             }
         }

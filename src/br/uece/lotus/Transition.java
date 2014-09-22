@@ -248,9 +248,8 @@ public class Transition {
         t.mTextSize = mTextSize;
         t.mTextStyle = mTextStyle;
         t.mWidth = mWidth;
+        t.setValue("view.type", getValue("view.type"));
         return t;
     }
-    
-    
 
 }
