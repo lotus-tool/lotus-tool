@@ -201,7 +201,7 @@ public class ComponentDesignerImpl extends AnchorPane implements ComponentDesign
         });
         mBtnState.setToggleGroup(mToggleGroup);
         mBtnTransitionLine = new ToggleButton();
-        mBtnTransitionLine.setGraphic(new ImageView(new Image(getClass().getResourceAsStream("ic_transition.png"))));
+        mBtnTransitionLine.setGraphic(new ImageView(new Image(getClass().getResourceAsStream("ic_transition_line.png"))));
         mBtnTransitionLine.setOnAction((ActionEvent e) -> {
             mTransitionViewType = TransitionViewFactory.Type.LINEAR;
             setModo(MODO_TRANSICAO);
@@ -209,7 +209,7 @@ public class ComponentDesignerImpl extends AnchorPane implements ComponentDesign
         mBtnTransitionLine.setToggleGroup(mToggleGroup);
         
         mBtnTransitionArc = new ToggleButton();
-        mBtnTransitionArc.setGraphic(new ImageView(new Image(getClass().getResourceAsStream("ic_transition.png"))));
+        mBtnTransitionArc.setGraphic(new ImageView(new Image(getClass().getResourceAsStream("ic_transition_semicircle.png"))));
         mBtnTransitionArc.setOnAction((ActionEvent e) -> {
             mTransitionViewType = TransitionViewFactory.Type.SEMI_CIRCLE;
             setModo(MODO_TRANSICAO);
