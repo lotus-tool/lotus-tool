@@ -27,8 +27,8 @@ public class ToolsPlugin extends Plugin {
 
     private ExtensibleMenu mMainMenu;
     private static final int MENU_WEIGHT = 123;
-    private ProjectSerializer mLTSASerializer;
-    private ProjectSerializer mPrismSerializer;
+    private ProjectSerializer mLTSASerializer = new LTSASerializer();
+    private ProjectSerializer mPrismSerializer = new PrismSerializer();
     
     private final Runnable mExportToLTSA = new Runnable() {
         @Override

@@ -7,6 +7,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.HashMap;
 import java.util.Map;
@@ -26,12 +28,12 @@ public class LTSAParser {
     private Component mComponent;
     private final Map<String, State> mStates = new HashMap<>();
 
-    public Component parseFile(File file) throws FileNotFoundException, IOException {
+    public Component parseFile(InputStream input) throws FileNotFoundException, IOException {
         mComponent = new Component();        
-        try (Reader r = new FileReader(file)) {
+        try (Reader r = new InputStreamReader(input)) {
             SimpleScanner sc = new SimpleScanner(r);
             while (true) {
-                String estadoOrigem = sc.next(STATE_ID);
+                String estadoOrigem = sc.next(STATE_ID);                
                 sc.next(EQUALS);
                 if (sc.has(OPEN_PARENTESIS)) {
                     sc.next(OPEN_PARENTESIS);
@@ -71,6 +73,7 @@ public class LTSAParser {
     private void alias(String estadoOrigem, String nome) {
         State s = getOrCreateState(estadoOrigem);
         mStates.put(nome, s);
+        mComponent.setName(estadoOrigem);
     }
 
     private State getOrCreateState(String estadoOrigem) {

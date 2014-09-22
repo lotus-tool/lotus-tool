@@ -37,7 +37,11 @@ public class LTSASerializer implements ProjectSerializer {
     
     @Override
     public Project parseStream(InputStream stream) throws Exception {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        Project p = new Project();
+        LTSAParser parser = new LTSAParser();
+        Component c = parser.parseFile(stream);
+        p.addComponent(c);
+        return p;
     }
 
     @Override
