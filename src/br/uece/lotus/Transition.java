@@ -64,6 +64,11 @@ public class Transition {
             mTransition.setGuard(guard);
             return this;
         }
+        
+        public Builder setViewType(int type) {
+            mTransition.setValue("view.type", type);
+            return this;
+        }
                
     }
     public interface Listener {
