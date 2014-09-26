@@ -40,6 +40,7 @@ import javafx.beans.InvalidationListener;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.ContextMenu;
+import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.image.Image;
@@ -143,6 +144,7 @@ public final class ProjectExplorerPlugin extends Plugin implements ProjectExplor
         mProjectView = new TreeView<>();
         mProjectView.setRoot(new TreeItem<>());
         mProjectView.setShowRoot(false);
+        mProjectView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         mProjectView.setOnMouseClicked((MouseEvent e) -> {
             if (MouseButton.SECONDARY.equals(e.getButton())) {
                 if (getSelectedComponent() != null) {
