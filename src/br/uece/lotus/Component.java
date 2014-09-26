@@ -31,6 +31,7 @@ import java.util.Map;
 public class Component {
 
     private final Map<String, Object> mValues = new HashMap<>();
+    private boolean mAutoUpdateLabels;
 
     public Object getValue(String key) {
         return mValues.get(key);
@@ -155,7 +156,7 @@ public class Component {
         return new Transition.Builder(this, t);
     }
 
-    public Transition.Builder buildTransition(int idSrc, int idDst) {       
+    public Transition.Builder buildTransition(int idSrc, int idDst) {
         Transition t = new Transition(getStateByID(idSrc), getStateByID(idDst));
         return new Transition.Builder(this, t);
     }
@@ -175,12 +176,14 @@ public class Component {
             if (mStates.size() > 0) {
                 setInitialState(mStates.get(0));
             }
-        }
-
+        }        
         updateStateLabels();
     }
 
     private void updateStateLabels() {
+        if (!mAutoUpdateLabels) {
+            return;
+        }
         int i = 0;
         for (State v : mStates) {
             v.setLabel(String.valueOf(i++));
@@ -299,6 +302,10 @@ public class Component {
             c.setErrorState(c.getStateByID(mErrorState.getID()));
         }
         return c;
+    }
+
+    public void setAutoUpdateLabels(boolean value) {
+        mAutoUpdateLabels = value;
     }
 
 }
