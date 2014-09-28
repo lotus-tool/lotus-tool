@@ -60,6 +60,7 @@ public class ProjectXMLSerializer implements ProjectSerializer {
                 xml.attr("id", v.getID());
                 xml.attr("x", v.getLayoutX());
                 xml.attr("y", v.getLayoutY());
+                xml.attr("label", v.getLabel());
 
                 if (v.isInitial()) {
                     xml.attr("initial", "true");
@@ -144,6 +145,7 @@ public class ProjectXMLSerializer implements ProjectSerializer {
 
     private static void parseComponentTag(Attributes attributes) {
         mComponent = new Component();
+        mComponent.setAutoUpdateLabels(false);
         mComponent.setName(attributes.getValue("name"));
         mProjeto.addComponent(mComponent);
     }
@@ -162,6 +164,7 @@ public class ProjectXMLSerializer implements ProjectSerializer {
         if (Boolean.parseBoolean(attributes.getValue("error"))) {
             mState.setError(true);
         }
+        mState.setLabel(attributes.getValue("label"));
     }
 
     private static void parseTransitionTag(Attributes attributes) {
