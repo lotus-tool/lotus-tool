@@ -84,7 +84,7 @@ public class Startup extends Application {
         extensionManager.registerPlugin(new BasicPlugin());
         extensionManager.registerPlugin(new ToolsPlugin());        
         extensionManager.registerPlugin(new SimulatorPlugin());
-        extensionManager.registerPlugin(new AlgorithmsPlugins());
+//        extensionManager.registerPlugin(new AlgorithmsPlugins());
 
         registerModules(extensionManager);
         extensionManager.start();
