@@ -92,6 +92,7 @@ public class Startup extends Application {
 
         stage.setScene(scene);
         stage.show();
+        stage.setTitle("LoTuS");
     }
 
     private void registerModules(ExtensionManager extensionManager) {
