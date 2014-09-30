@@ -3,9 +3,8 @@ package br.uece.lotus.tools;
 import br.uece.lotus.Component;
 import br.uece.lotus.State;
 import br.uece.lotus.Transition;
-import java.io.File;
+import br.uece.lotus.viewer.TransitionViewFactory;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -15,8 +14,8 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 public class LTSAParser {
-    
-    private static final Pattern STATE_ID = Pattern.compile("[a-zA-Z][a-zA-Z:0-9._]*");
+
+    private static final Pattern STATE_ID = Pattern.compile("[a-zA-Z][a-zA-Z:0-9._\\[\\]]*");
     private static final Pattern EQUALS = Pattern.compile(Pattern.quote("="));
     private static final Pattern OPEN_PARENTESIS = Pattern.compile(Pattern.quote("("));
     private static final Pattern CLOSE_PARENTESIS = Pattern.compile(Pattern.quote(")"));
@@ -29,15 +28,15 @@ public class LTSAParser {
     private final Map<String, State> mStates = new HashMap<>();
 
     public Component parseFile(InputStream input) throws FileNotFoundException, IOException {
-        mComponent = new Component();        
+        mComponent = new Component();
         try (Reader r = new InputStreamReader(input)) {
             SimpleScanner sc = new SimpleScanner(r);
             while (true) {
-                String estadoOrigem = sc.next(STATE_ID);                
+                String estadoOrigem = sc.next(STATE_ID);
                 sc.next(EQUALS);
                 if (sc.has(OPEN_PARENTESIS)) {
                     sc.next(OPEN_PARENTESIS);
-                    while (true) {                        
+                    while (true) {
                         String acao = sc.next(ACTION_ID);
                         sc.next(ACTION_OPERATOR);
                         String estadoDestino = sc.next(STATE_ID);
@@ -59,15 +58,21 @@ public class LTSAParser {
                 sc.next(COMMA);
             }
         }
-        mComponent.setInitialState(mComponent.getStateByID(0));        
+        mComponent.setInitialState(mComponent.getStateByID(0));
+        new LTSALayouter().layout(mComponent);
+        if (mComponent.getName() == null) {
+            mComponent.setName("Untitled");
+        }
         return mComponent;
     }
 
     private void adicionarTransicao(String estadoOrigem, String acao, String estadoDestino) {
         State src = getOrCreateState(estadoOrigem);
         State dst = getOrCreateState(estadoDestino);
-        Transition t = mComponent.newTransition(src, dst);
-        t.setLabel(acao);
+        mComponent.buildTransition(src, dst)
+                .setLabel(acao)
+                .setViewType(TransitionViewFactory.Type.SEMI_CIRCLE)
+                .create();
     }
 
     private void alias(String estadoOrigem, String nome) {
@@ -80,7 +85,7 @@ public class LTSAParser {
         State s = mStates.get(estadoOrigem);
         if (s == null) {
             s = mComponent.newState(mComponent.getStatesCount());
-            mStates.put(estadoOrigem, s);            
+            mStates.put(estadoOrigem, s);
         }
         return s;
     }
