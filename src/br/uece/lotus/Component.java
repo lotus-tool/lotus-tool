@@ -31,7 +31,7 @@ import java.util.Map;
 public class Component {
 
     private final Map<String, Object> mValues = new HashMap<>();
-    private boolean mAutoUpdateLabels;
+    private boolean mAutoUpdateLabels = true;
 
     public Object getValue(String key) {
         return mValues.get(key);
