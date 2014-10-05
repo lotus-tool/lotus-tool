@@ -87,7 +87,7 @@ public class ProjectDialogsHelper extends Plugin {
         }
         try (FileOutputStream out = new FileOutputStream(f)) {
             serializer.toStream(project, out);
-            project.setValue("file", f);            
+            project.setValue("file", f);
         } catch (Exception e) {
             mDialogsHelper.showException(e);
         }
@@ -97,19 +97,20 @@ public class ProjectDialogsHelper extends Plugin {
         if (mFileChooser == null) {
             mFileChooser = new FileChooser();
             mFileChooser.setInitialDirectory(
-                    new File(System.getProperty("user.home"))
-            );
-            mFileChooser.setInitialFileName(defaultFileName);
-            mFileChooser.getExtensionFilters().addAll(
-                    new FileChooser.ExtensionFilter(extensionDescription, extension),
-                    new FileChooser.ExtensionFilter("All files", "*")
+                new File(System.getProperty("user.home"))
             );
         }
+        mFileChooser.setInitialFileName(defaultFileName);
+        mFileChooser.getExtensionFilters().clear();
+        mFileChooser.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter(extensionDescription, extension),
+                new FileChooser.ExtensionFilter("All files", "*")
+        );
         mFileChooser.setTitle(title);
         return mFileChooser;
     }
 
-    private String removeExtension(String name) {        
+    private String removeExtension(String name) {
         int i = name.lastIndexOf('.');
         if (i > 0) {
             return name.substring(0, i - 1);
