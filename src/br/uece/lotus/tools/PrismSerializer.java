@@ -75,8 +75,8 @@ public class PrismSerializer implements ProjectSerializer {
         nome = nome.substring(0, nome.length() - 4);
         out.println("module " + nome);
         out.println("");       
-        int indiceDefaultState = c.getStateIndex(c.getInitialState()) + 1;
-        out.printf("%s: [1..%d] init %d;\n", stateVarName, c.getStatesCount(), indiceDefaultState);
+        int indiceDefaultState = c.getStateIndex(c.getInitialState());
+        out.printf("%s: [0..%d] init %d;\n", stateVarName, c.getStatesCount() - 1, indiceDefaultState);
         out.println("");
 
         int stateIndex = 0;
@@ -91,7 +91,7 @@ public class PrismSerializer implements ProjectSerializer {
             for (Transition t : s.getOutgoingTransitions()) {
                 double prob = t.getProbability() == null ? defaultProbability : t.getProbability();
 //                    double prob = t.getProbability();
-                int aux = c.getStateIndex(t.getDestiny()) + 1;
+                int aux = c.getStateIndex(t.getDestiny());
                 if (transitionIndex > 0) {
                     out.print(" +");
                 }
