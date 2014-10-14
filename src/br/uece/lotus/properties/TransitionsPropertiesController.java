@@ -74,7 +74,7 @@ public class TransitionsPropertiesController implements Transition.Listener, Cha
             mEdtLabel.selectAll();
         });
         mEdtGuard.focusedProperty().addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {
-            if (!newValue || mTransition == null || mEmEdicao) {
+            if (!newValue || mTransition == null) {
                 mTransition.setGuard(mEdtGuard.getText());
             }
         });
@@ -115,7 +115,7 @@ public class TransitionsPropertiesController implements Transition.Listener, Cha
 
     @Override
     public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-        if (mTransition == null || mEmEdicao) {
+        if (mTransition == null) {
             return;
         }
         if (observable == mEdtLabel.textProperty()) {
@@ -133,7 +133,6 @@ public class TransitionsPropertiesController implements Transition.Listener, Cha
     }
 
     private void aplicarProbabilidade() {
-
         try {
             String s = mEdtProbability.getText().trim();
             if (s.isEmpty()) {

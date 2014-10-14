@@ -74,20 +74,19 @@ public class StatePropertiesController implements State.Listener, ChangeListener
         mState = s;
         if (mState != null) {
             updateEditors();
+            mEdtPositionX.requestFocus();
             mState.addListener(this);
         }
     }
 
     @Override
-    public void onChange(State state) {
-        mEmEdicao = true;
-        updateEditors();
-        mEmEdicao = false;
+    public void onChange(State state) {        
+        updateEditors();        
     }
 
     @Override
     public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-        if (mState == null || mEmEdicao) {
+        if (mState == null) {
             return;
         }
         if (observable == mEdtPositionX.textProperty()) {
@@ -100,7 +99,7 @@ public class StatePropertiesController implements State.Listener, ChangeListener
     private void updateEditors() {
         mEdtPositionX.setText(String.valueOf(mState.getLayoutX()));
         mEdtPositionY.setText(String.valueOf(mState.getLayoutY()));
-        mEdtPositionX.requestFocus();
+        //mEdtPositionX.requestFocus();
     }
 
 }
