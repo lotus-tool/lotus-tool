@@ -76,6 +76,7 @@ public abstract class DefaultWindowManagerPlugin<T extends Window> extends Plugi
 
         }
     };    
+    private boolean mOnStartCalled;
 
     protected abstract T onCreate();
     protected abstract void onShow(T window, Component c);
@@ -84,32 +85,40 @@ public abstract class DefaultWindowManagerPlugin<T extends Window> extends Plugi
     @Override
     public void onStart(ExtensionManager extensionManager) throws Exception {
         mCenterPanel = ((UserInterface)extensionManager.get(UserInterface.class)).getCenterPanel();        
+        mOnStartCalled = true;
     }
    
     @Override
     public void show(Component component) {
+        checkIfStartedProperly();
         T window = mComponentWindowsMap.get(component);
         if (window == null) {
             window = onCreate();
             for (Listener l : mListeners) {
                 l.onCreateWindow(window);
-            }
-            window.setComponent(component);
+            }            
             component.addListener(mComponentListener);
             mComponentWindowsMap.put(component, (T) window);
         }
+        onShow(window, component);
         Integer id = mComponentWindowsIds.get(component);        
-        boolean visivel = id != null && mCenterPanel.isShowing(id);
+        boolean visivel = id != null && mCenterPanel.isShowing(id);        
         if (!visivel || id == null) {            
             id = mCenterPanel.newTab(window.getTitle(), window.getNode(), true);
             mComponentWindowsIds.put(component, id);
-        }
-        onShow(window, component);
+        }        
         mCenterPanel.showTab(id);
+    }
+
+    private void checkIfStartedProperly() throws IllegalStateException {
+        if (!mOnStartCalled) {
+            throw new IllegalStateException("super.onStart() not called in your plugin!");
+        }
     }
 
     @Override
     public void hide(Component component) {
+        checkIfStartedProperly();
         Integer id = mComponentWindowsIds.get(component);
         if (id != null) {
             T w = mComponentWindowsMap.get(component);
@@ -123,6 +132,7 @@ public abstract class DefaultWindowManagerPlugin<T extends Window> extends Plugi
 
     @Override
     public void hideAll() {
+        checkIfStartedProperly();
         List<Component> snapshot = new ArrayList<>(mComponentWindowsMap.keySet());
         for (Component c : snapshot) {
             hide(c);

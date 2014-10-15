@@ -175,7 +175,8 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
 
     @Override
     public String getTitle() {
-        return mViewer.getComponent().getName();
+        Component c = mViewer.getComponent();
+        return c.getName();
     }
 
     @Override

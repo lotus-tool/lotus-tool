@@ -24,11 +24,13 @@
 package br.uece.lotus.simulator;
 
 import br.uece.lotus.Component;
+import br.uece.lotus.helpers.window.DefaultWindowManagerPlugin;
 import br.uece.lotus.project.ProjectExplorer;
 import br.uece.lotus.properties.PropertiesEditor;
+import br.uece.seed.app.ExtensibleMenu;
+import br.uece.seed.app.ExtensibleToolbar;
 import br.uece.seed.app.UserInterface;
 import br.uece.seed.ext.ExtensionManager;
-import br.uece.seed.ext.Plugin;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
@@ -37,48 +39,62 @@ import javax.swing.JOptionPane;
  *
  * @author emerson
  */
-public class SimulatorPlugin extends Plugin implements Simulator {
+public class SimulatorWindowManager extends DefaultWindowManagerPlugin<SimulatorWindow> {
 
     private UserInterface mUserInterface;
-    private ProjectExplorer mProjectExplorer;
-    private PropertiesEditor mPropertiesEditor;
+    private ProjectExplorer mProjectExplorer;    
     private final Runnable mOpenSimulator = () -> {
-        try {
-            Component c = mProjectExplorer.getSelectedComponent();
-            if (c == null) {
-                JOptionPane.showMessageDialog(null, "Select a component!");
-                return;
-            }
-            show(c.clone(), true);
-        } catch (CloneNotSupportedException ex) {
-            Logger.getLogger(SimulatorPlugin.class.getName()).log(Level.SEVERE, null, ex);
+        Component c = mProjectExplorer.getSelectedComponent();
+        if (c == null) {
+            JOptionPane.showMessageDialog(null, "Select a component!");
+            return;
         }
+        show(c);
     };
 
     @Override
     public void onStart(ExtensionManager extensionManager) throws Exception {
+        super.onStart(extensionManager);
         mUserInterface = extensionManager.get(UserInterface.class);
         mProjectExplorer = extensionManager.get(ProjectExplorer.class);
-
-        mProjectExplorer.getComponentMenu()
-                .addItem(Integer.MAX_VALUE, "-", null);
-        mProjectExplorer.getComponentMenu()
-                .addItem(Integer.MAX_VALUE, "Simulate", mOpenSimulator);
-        mUserInterface.getToolBar().addItem(Integer.MAX_VALUE, "-", null);
-        mUserInterface.getToolBar().addItem(Integer.MAX_VALUE, "Simulate", mOpenSimulator);
-
+        
+        final ExtensibleMenu componentMenu = mProjectExplorer.getComponentMenu();
+        componentMenu.newItem("-")
+                .setWeight(Integer.MAX_VALUE)
+                .showSeparator(true)
+                .create();
+        componentMenu.newItem("Simulator")
+                .setWeight(Integer.MAX_VALUE)
+                .setAction(mOpenSimulator)
+                .create();
+        
+        final ExtensibleToolbar toolBar = mUserInterface.getToolBar();
+        toolBar.newItem("-")
+                .setWeight(Integer.MAX_VALUE)
+                .showSeparator(true)                
+                .create();
+        toolBar.newItem("Simulate")
+                .setWeight(Integer.MAX_VALUE)
+                .setAction(mOpenSimulator)
+                .create();
     }
 
     @Override
-    public void show(Component c, boolean editable) {
-//        Integer tabId = (Integer) c.getValue("tab.id");
-//        if (tabId == null) {
-        SimulatorWindow w = new SimulatorWindow();
-        w.setComponent(c);
-        int id = mUserInterface.getCenterPanel().newTab(c.getName() + " - [Simulator]", w, true);
-//            c.setValue("tab.id", tabId);
-//            c.setValue("gui", w);
-//        }
-        mUserInterface.getCenterPanel().showTab(id);
+    protected SimulatorWindow onCreate() {
+        return new SimulatorWindow();
+    }
+
+    @Override
+    protected void onShow(SimulatorWindow window, Component c) {
+        try {
+            window.setComponent(c.clone());
+        } catch (CloneNotSupportedException ex) {
+            Logger.getLogger(SimulatorWindowManager.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    @Override
+    protected void onHide(SimulatorWindow window) {
+
     }
 }

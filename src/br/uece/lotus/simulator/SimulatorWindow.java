@@ -26,6 +26,7 @@ package br.uece.lotus.simulator;
 import br.uece.lotus.Component;
 import br.uece.lotus.State;
 import br.uece.lotus.Transition;
+import br.uece.lotus.helpers.window.Window;
 import br.uece.lotus.viewer.BasicComponentViewer;
 import br.uece.lotus.viewer.StateView;
 import br.uece.lotus.viewer.View;
@@ -33,6 +34,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
@@ -48,7 +50,7 @@ import javax.swing.JOptionPane;
  *
  * @author emerson
  */
-public class SimulatorWindow extends AnchorPane {
+public class SimulatorWindow extends AnchorPane implements Window {
 
     private int mStepCount;
     private State mCurrentState;
@@ -59,7 +61,7 @@ public class SimulatorWindow extends AnchorPane {
     private final BasicComponentViewer mViewer;
     private final TableView<Step> mTableView;
     private final Label mPathLabel;
-    private EventHandler<? super MouseEvent> aoClicarMouse = new EventHandler<MouseEvent>() {
+    private final EventHandler<? super MouseEvent> aoClicarMouse = new EventHandler<MouseEvent>() {
         @Override
         public void handle(MouseEvent e) {
             View v = mViewer.getViewByMouseCoordinates(e.getX(), e.getY());
@@ -117,11 +119,11 @@ public class SimulatorWindow extends AnchorPane {
         AnchorPane.setBottomAnchor(mScrollPanel, 222D);
         mViewer.minHeightProperty().bind(mScrollPanel.heightProperty());
         mViewer.minWidthProperty().bind(mScrollPanel.widthProperty());
-        getChildren().add(mScrollPanel);        
+        getChildren().add(mScrollPanel);
 
         mBtnStart = new Button("Start");
         mBtnStart.setOnAction((ActionEvent e) -> {
-            start();            
+            start();
         });
 //        mBtnBackStep = new Button("Back");
 
@@ -149,7 +151,7 @@ public class SimulatorWindow extends AnchorPane {
         mToCol.setPrefWidth(100);
         mToCol.setCellValueFactory(new PropertyValueFactory<>("to"));
         mTableView.getColumns().addAll(mActionCol, mFromCol, mToCol);
-        mTableView.setItems(mSteps);        
+        mTableView.setItems(mSteps);
 
         mPathLabel = new Label("");
         mPathLabel.setPrefHeight(22);
@@ -218,11 +220,6 @@ public class SimulatorWindow extends AnchorPane {
         t.setWidth(1);
     }
 
-    public void setComponent(Component c) {
-        mViewer.setComponent(c);
-        start();
-    }
-
     private void applyChoiceStyle(Transition t) {
         t.setColor("blue");
         t.setTextSyle(Transition.TEXTSTYLE_BOLD);
@@ -236,6 +233,28 @@ public class SimulatorWindow extends AnchorPane {
         s.setTextSyle(Transition.TEXTSTYLE_BOLD);
         s.setTextColor("blue");
         s.setBorderWidth(2);
+    }
+
+    @Override
+    public Component getComponent() {
+        return mViewer.getComponent();
+    }
+
+    @Override
+    public void setComponent(Component c) {        
+        mViewer.setComponent(c);
+        start();        
+    }
+
+    @Override
+    public String getTitle() {
+        Component c = mViewer.getComponent();
+        return c.getName() + " [Simulator]";
+    }
+
+    @Override
+    public Node getNode() {
+        return this;
     }
 
     public static class Step {

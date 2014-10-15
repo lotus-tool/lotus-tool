@@ -48,6 +48,7 @@ public interface ExtensibleToolbar {
         void create();
     }
 
+    @Deprecated
     void addItem(int weight, String name, Runnable action);
 
     ItemBuilder newItem(String name);

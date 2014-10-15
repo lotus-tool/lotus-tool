@@ -77,7 +77,7 @@ public class DesignerWindowManager extends DefaultWindowManagerPlugin<DesignerWi
 
     @Override
     protected void onShow(DesignerWindow window, Component c) {
-
+        window.setComponent(c);
     }
 
     @Override
