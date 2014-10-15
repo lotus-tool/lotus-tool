@@ -39,7 +39,7 @@ import java.util.List;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Cursor;
-import javafx.scene.control.Button;
+import javafx.scene.Node;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
@@ -64,7 +64,7 @@ import javax.swing.JOptionPane;
  *
  * @author emerson
  */
-public class ComponentDesignerImpl extends AnchorPane implements ComponentDesigner {
+public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
 
     public static final int MODO_NENHUM = 0;
     public static final int MODO_VERTICE = 1;
@@ -173,9 +173,19 @@ public class ComponentDesignerImpl extends AnchorPane implements ComponentDesign
         mDefaultTransitionColor = color;
     }
 
+    @Override
+    public String getTitle() {
+        return mViewer.getComponent().getName();
+    }
+
+    @Override
+    public Node getNode() {
+        return this;
+    }
+
     public interface Listener {
 
-        void onSelectionChange(ComponentDesignerImpl v);
+        void onSelectionChange(DesignerWindowImpl v);
     }
 
     private int mModoAtual;
@@ -185,7 +195,7 @@ public class ComponentDesignerImpl extends AnchorPane implements ComponentDesign
     private View mComponentSelecionado;
     private final List<Listener> mListeners = new ArrayList<>();
 
-    public ComponentDesignerImpl(BasicComponentViewer viewer) {
+    public DesignerWindowImpl(BasicComponentViewer viewer) {
         mToolbar = new ToolBar();
         mToggleGroup = new ToggleGroup();
         mBtnArrow = new ToggleButton();
@@ -479,10 +489,12 @@ public class ComponentDesignerImpl extends AnchorPane implements ComponentDesign
 
     };
 
+    @Override
     public Component getComponent() {
         return mViewer.getComponent();
     }
 
+    @Override
     public void setComponent(Component component) {
         mViewer.setComponent(component);
     }
@@ -527,8 +539,7 @@ public class ComponentDesignerImpl extends AnchorPane implements ComponentDesign
         return mComponentSelecionado;
     }
 
-    private void applySelectedStyles(View v) {
-        System.out.println("applyselectedstyles " + v);
+    private void applySelectedStyles(View v) {        
         if (v instanceof StateView) {
             State s = ((StateView) v).getState();
             s.setBorderWidth(2);
@@ -544,8 +555,7 @@ public class ComponentDesignerImpl extends AnchorPane implements ComponentDesign
         }
     }
 
-    private void removeSelectedStyles(View v) {
-        System.out.println("removeselectedstyles " + v);
+    private void removeSelectedStyles(View v) {        
         if (v instanceof StateView) {
             State s = ((StateView) v).getState();
             s.setBorderWidth(1);

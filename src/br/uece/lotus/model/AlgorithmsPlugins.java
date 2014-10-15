@@ -24,7 +24,8 @@
 package br.uece.lotus.model;
 
 import br.uece.lotus.Component;
-import br.uece.lotus.designer.ComponentDesignerManager;
+import br.uece.lotus.designer.DesignerWindowImpl;
+import br.uece.lotus.designer.DesignerWindowManager;
 import br.uece.lotus.project.ProjectExplorer;
 import br.uece.seed.app.UserInterface;
 import br.uece.seed.ext.ExtensionManager;
@@ -39,8 +40,8 @@ import javax.swing.JOptionPane;
 public class AlgorithmsPlugins extends Plugin {
 
     private ProjectExplorer mProjectExplorer;
-    private ComponentDesignerManager mComponentDesigner;
-    private Runnable mDoParallelComposition = () -> {
+    private DesignerWindowManager mDesignerWindow;
+    private final Runnable mDoParallelComposition = () -> {
         List<Component> c = mProjectExplorer.getSelectedComponents();
         if (c.size() != 2) {
             JOptionPane.showMessageDialog(null, "select at lest 2 components!");
@@ -50,15 +51,13 @@ public class AlgorithmsPlugins extends Plugin {
         r.setName("||" + c.get(0).getName() + "_" + c.get(1).getName());
         new BasicLayouterImpl().layout(r);
         mProjectExplorer.getSelectedProject().addComponent(r);
-        mComponentDesigner.show(r);
-    };
-    private UserInterface mUserInterface;
+        mDesignerWindow.show(r);
+    };    
 
     @Override
-    public void onStart(ExtensionManager extensionManager) throws Exception {
-        mUserInterface = extensionManager.get(UserInterface.class);        
+    public void onStart(ExtensionManager extensionManager) throws Exception {        
         mProjectExplorer = extensionManager.get(ProjectExplorer.class);
-        mComponentDesigner = extensionManager.get(ComponentDesignerManager.class);
+        mDesignerWindow = extensionManager.get(DesignerWindowManager.class);
 
         mProjectExplorer.getComponentMenu().addItem(Integer.MIN_VALUE + 1, "-", null);
         mProjectExplorer.getComponentMenu().addItem(Integer.MIN_VALUE + 1, "Parallel composition", mDoParallelComposition);

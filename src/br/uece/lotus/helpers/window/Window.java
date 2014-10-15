@@ -21,23 +21,23 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package br.uece.seed.app;
+package br.uece.lotus.helpers.window;
 
+import br.uece.lotus.Component;
 import javafx.scene.Node;
 
 /**
  *
  * @author emerson
  */
-public interface ExtensibleTabPane {
+public interface Window {
 
-    int newTab(String name, Node content, boolean closable);
+    Component getComponent();
 
-    void showTab(int id);
+    void setComponent(Component component);
 
-    void closeTab(int id);    
-    
-    boolean isShowing(int id);
-    
-    public void renameTab(Integer id, String name);
+    String getTitle();
+
+    Node getNode();
+
 }

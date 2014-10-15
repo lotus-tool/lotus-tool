@@ -24,6 +24,8 @@
 package br.uece.seed.app;
 
 import javafx.application.Platform;
+import javafx.event.Event;
+import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
@@ -36,21 +38,28 @@ public class ExtensibleFXTabPane implements ExtensibleTabPane {
 
     private final TabPane mTabPane;
     private int counter;
+    private final EventHandler<Event> mOnClose;
 
     public ExtensibleFXTabPane(TabPane tabPane) {
         mTabPane = tabPane;
+        mOnClose = (Event e) -> {
+            Tab t = (Tab) e.getSource();
+            mTabPane.getTabs().remove(t);            
+        };
     }
 
     @Override
     public int newTab(String name, Node content, boolean closable) {
+        int id = counter++;
         Platform.runLater(() -> {
             Tab t = new Tab(name);
             t.setContent(content);
             t.setClosable(closable);
-            t.setUserData(counter);
+            t.setUserData(id);
+            t.setOnClosed(mOnClose);
             mTabPane.getTabs().add(t);
         });
-        return counter++;
+        return id;
     }
 
     @Override
@@ -74,8 +83,8 @@ public class ExtensibleFXTabPane implements ExtensibleTabPane {
     }
 
     private Tab getTabById(int id) {
-        for (Tab t : mTabPane.getTabs()) {
-            if (((Integer) t.getUserData()) == id) {
+        for (Tab t : mTabPane.getTabs()) {            
+            if (((Integer) t.getUserData()).equals(id)) {
                 return t;
             }
         }
@@ -90,6 +99,12 @@ public class ExtensibleFXTabPane implements ExtensibleTabPane {
                 tab.setText(name);
             }
         });
+    }
+
+    @Override
+    public boolean isShowing(int id) {
+        Tab t = getTabById(id);        
+        return t != null;
     }
 
 }

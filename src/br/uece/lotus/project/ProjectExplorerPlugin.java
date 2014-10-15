@@ -27,7 +27,7 @@ import br.uece.lotus.Component;
 import br.uece.lotus.Project;
 import br.uece.lotus.State;
 import br.uece.lotus.Transition;
-import br.uece.lotus.designer.ComponentDesignerManager;
+import br.uece.lotus.designer.DesignerWindowManager;
 import br.uece.lotus.properties.PropertiesEditor;
 import br.uece.seed.app.ExtensibleFXContextMenu;
 import br.uece.seed.app.ExtensibleMenu;
@@ -36,7 +36,6 @@ import br.uece.seed.ext.ExtensionManager;
 import br.uece.seed.ext.Plugin;
 import java.util.ArrayList;
 import java.util.List;
-import javafx.beans.InvalidationListener;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.ContextMenu;
@@ -124,7 +123,7 @@ public final class ProjectExplorerPlugin extends Plugin implements ProjectExplor
 
         }
     };
-    private ComponentDesignerManager mComponentDesigner;
+    private DesignerWindowManager mComponentDesigner;
     private PropertiesEditor mPropertyEditor;
     private final List<Listener> mListeners;
     private final ChangeListener<TreeItem<Wrapper>> mEditarSelecaoNoPainelDePropriedades = (ObservableValue<? extends TreeItem<Wrapper>> observable, TreeItem<Wrapper> oldValue, TreeItem<Wrapper> newValue) -> {
@@ -171,7 +170,7 @@ public final class ProjectExplorerPlugin extends Plugin implements ProjectExplor
     @Override
     public void onStart(ExtensionManager extensionManager) throws Exception {
         mUserInterface = extensionManager.get(UserInterface.class);
-        mComponentDesigner = extensionManager.get(ComponentDesignerManager.class);
+        mComponentDesigner = extensionManager.get(DesignerWindowManager.class);
         mPropertyEditor = extensionManager.get(PropertiesEditor.class);
 
         AnchorPane.setTopAnchor(mProjectView, 0D);

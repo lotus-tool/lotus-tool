@@ -24,16 +24,19 @@
 
 package br.uece.lotus.designer;
 
+import br.uece.lotus.helpers.window.Window;
 import br.uece.seed.app.ExtensibleToolbar;
 
 /**
  *
  * @author emerson
  */
-public interface ComponentDesigner {
+public interface DesignerWindow extends Window {
     
     public ExtensibleToolbar getTransitionContextToolbar();
     public ExtensibleToolbar getStateContextToolbar();
+    
+    public Object getSelectedView();
     
     public void setDefaultTransitionLabel(String label);
     public void setDefaultTransitionWidth(Integer width);

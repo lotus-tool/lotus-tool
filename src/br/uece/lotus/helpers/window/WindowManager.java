@@ -21,8 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-
-package br.uece.lotus.designer;
+package br.uece.lotus.helpers.window;
 
 import br.uece.lotus.Component;
 
@@ -30,19 +29,17 @@ import br.uece.lotus.Component;
  *
  * @author emerson
  */
-public interface ComponentDesignerManager {
-    
+public interface WindowManager {
+
     public interface Listener {
-        void onCreateComponentDesigner(ComponentDesigner componentDesigner);
+        void onCreateWindow(Window window);
     }
     
-    void show(Component c);
+    public void show(Component component);
 
     public void hide(Component component);
+    public void hideAll();
 
-    public void hideAll();    
-    
-    void addListener(Listener l);
-    void removeListener(Listener l);
-    
+    public void addListener(Listener l);
+
 }
