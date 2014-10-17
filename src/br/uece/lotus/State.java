@@ -267,6 +267,10 @@ public class State {
     public int getOutgoingTransitionsCount() {
         return mTransicoesSaida.size();
     }
+    
+    public int getIncomingTransitionsCount() {
+        return mTransicoesEntrada.size();
+    }
 
     public Object getValue(String key) {
         return mValues.get(key);
