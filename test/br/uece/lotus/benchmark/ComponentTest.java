@@ -71,6 +71,7 @@ public class ComponentTest {
             Component c2 = c.clone();            
             assertTrue("states count different", c2.getStatesCount() == c.getStatesCount());
             assertTrue("transitions count different", c2.getTransitionsCount() == c.getTransitionsCount());
+            assertTrue("transitions count different", c2.getInitialState().getID() == c.getInitialState().getID());            
             assertTrue("equals components not equals", c2.equals(c));
         } catch (CloneNotSupportedException ex) {
             Assert.assertTrue(ex.getMessage(), false);

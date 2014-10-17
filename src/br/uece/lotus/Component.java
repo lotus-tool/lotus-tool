@@ -42,6 +42,19 @@ public class Component {
         mValues.put(key, value);
     }
 
+    private void copyState(State from, State to) {
+        to.setLabel(from.getLabel());
+        to.setLayoutX(from.getLayoutX());
+        to.setLayoutY(from.getLayoutY());
+    }
+
+    private void copyTransition(Transition from, Transition to) {        
+        to.setLabel(from.getLabel());
+        to.setProbability(from.getProbability());
+        to.setGuard(from.getGuard());
+        to.setValue("view.type", from.getValue("view.type"));
+    }
+
     public interface Listener {
 
         void onChange(Component component);
@@ -177,7 +190,7 @@ public class Component {
             if (mStates.size() > 0) {
                 setInitialState(mStates.get(0));
             }
-        }        
+        }
         updateStateLabels();
     }
 
@@ -254,44 +267,17 @@ public class Component {
     public Component clone() throws CloneNotSupportedException {
         Component c = new Component();
         c.mName = mName;
-
-        List<State> unvisitedStates = new ArrayList<>(mStates);
-        List<State> stack = new ArrayList<>();
-
-        while (!unvisitedStates.isEmpty()) {
-            stack.add(unvisitedStates.get(0));
-            while (!stack.isEmpty()) {
-                State s = stack.remove(0);
-                State ss = c.getStateByID(s.getID());
-                if (ss == null) {
-                    ss = c.newState(s.getID());
-                    ss.copy(s);
-                    c.mStates.add(ss);
-                }
-                unvisitedStates.remove(s);
-                for (Transition t : s.getOutgoingTransitions()) {
-                    State ts = t.getDestiny();
-                    State tss;
-                    if (unvisitedStates.contains(ts)) {
-                        tss = c.getStateByID(ts.getID());
-                        if (tss == null) {
-                            tss = c.newState(ts.getID());
-                            tss.copy(ts);
-                            c.mStates.add(tss);
-                        }
-                        unvisitedStates.remove(ts);
-                        stack.add(0, ts);
-                    } else {
-                        tss = c.getStateByID(ts.getID());
-                    }
-                    Transition tt = c.newTransition(ss, tss);
-                    tt.setLabel(t.getLabel());
-                    tt.setProbability(t.getProbability());
-                    tt.setGuard(t.getGuard());
-                    tt.setValue("view.type", t.getValue("view.type"));
-                }
-            }
+        c.mAutoUpdateLabels = mAutoUpdateLabels;
+        for (State oldState : mStates) {
+            State newState = c.newState(oldState.getID());
+            copyState(oldState, newState);
         }
+        for (Transition oldTransition : mTransitions) {
+            int src = oldTransition.getSource().getID();
+            int dst = oldTransition.getDestiny().getID();
+            Transition newTransition = c.newTransition(src, dst);
+            copyTransition(oldTransition, newTransition);
+        }        
 
         if (mInitialState != null) {
             c.setInitialState(c.getStateByID(mInitialState.getID()));
@@ -351,6 +337,4 @@ public class Component {
         return true;
     }
 
-    
-    
 }
