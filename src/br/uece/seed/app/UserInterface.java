@@ -37,4 +37,6 @@ public interface UserInterface {
 
     ExtensibleTabPane getRightPanel();
     
+    ExtensibleTabPane getBottomPanel();
+    
 }

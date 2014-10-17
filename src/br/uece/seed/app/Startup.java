@@ -26,12 +26,11 @@ package br.uece.seed.app;
 import br.uece.lotus.Component;
 import br.uece.lotus.about.AboutPlugin;
 import br.uece.lotus.project.BasicPlugin;
-import br.uece.lotus.designer.ComponentDesignerManagerPlugin;
-import br.uece.lotus.model.AlgorithmsPlugins;
+import br.uece.lotus.designer.DesignerWindowManager;
 import br.uece.lotus.project.ProjectDialogsHelper;
 import br.uece.lotus.project.ProjectExplorerPlugin;
 import br.uece.lotus.properties.PropertiesEditorPlugin;
-import br.uece.lotus.simulator.SimulatorPlugin;
+import br.uece.lotus.simulator.SimulatorWindowManager;
 import br.uece.lotus.tools.ToolsPlugin;
 import br.uece.seed.ext.ExtensionManager;
 import br.uece.seed.ext.JarModule;
@@ -80,10 +79,10 @@ public class Startup extends Application {
         extensionManager.registerPlugin(new PropertiesEditorPlugin());
         extensionManager.registerPlugin(new ProjectExplorerPlugin());
         extensionManager.registerPlugin(new AboutPlugin());
-        extensionManager.registerPlugin(new ComponentDesignerManagerPlugin());
+        extensionManager.registerPlugin(new DesignerWindowManager());
         extensionManager.registerPlugin(new BasicPlugin());
         extensionManager.registerPlugin(new ToolsPlugin());        
-        extensionManager.registerPlugin(new SimulatorPlugin());
+        extensionManager.registerPlugin(new SimulatorWindowManager());
 //        extensionManager.registerPlugin(new AlgorithmsPlugins());
 
         registerModules(extensionManager);
@@ -92,7 +91,7 @@ public class Startup extends Application {
 
         stage.setScene(scene);
         stage.show();
-        stage.setTitle("LoTuS");
+        stage.setTitle("LoTuS 2.9 (alpha)");
     }
 
     private void registerModules(ExtensionManager extensionManager) {

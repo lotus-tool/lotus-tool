@@ -43,6 +43,8 @@ public class MainSceneController extends Plugin implements Initializable, UserIn
     @FXML
     protected TabPane mTabRight;
     @FXML
+    protected TabPane mTabBottom;
+    @FXML
     protected ToolBar mToolbar;
     
     private ExtensibleMenu mExtensibleMainMenu;
@@ -50,6 +52,7 @@ public class MainSceneController extends Plugin implements Initializable, UserIn
     private ExtensibleTabPane mExtensibleCenterPanel;
     private ExtensibleTabPane mExtensibleRightPanel;
     private ExtensibleToolbar mExtensibleToolbar;
+    private ExtensibleFXTabPane mExtensibleBottomPanel;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -57,6 +60,7 @@ public class MainSceneController extends Plugin implements Initializable, UserIn
         mExtensibleLeftPanel = new ExtensibleFXTabPane(mTabLeft);
         mExtensibleCenterPanel = new ExtensibleFXTabPane(mTabCenter);
         mExtensibleRightPanel = new ExtensibleFXTabPane(mTabRight);
+        mExtensibleBottomPanel = new ExtensibleFXTabPane(mTabBottom);
         mExtensibleToolbar = new ExtensibleFXToolbar(mToolbar);
     }
 
@@ -83,6 +87,11 @@ public class MainSceneController extends Plugin implements Initializable, UserIn
     @Override
     public ExtensibleTabPane getRightPanel() {
         return mExtensibleRightPanel;
+    }
+
+    @Override
+    public ExtensibleTabPane getBottomPanel() {
+        return mExtensibleBottomPanel;
     }
 
     @Override

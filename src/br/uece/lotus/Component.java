@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class Component {
 
@@ -308,4 +309,48 @@ public class Component {
         mAutoUpdateLabels = value;
     }
 
+    @Override
+    public int hashCode() {
+        int hash = 3;
+        hash = 59 * hash + Objects.hashCode(this.mName);
+        hash = 59 * hash + Objects.hashCode(this.mInitialState);
+        hash = 59 * hash + Objects.hashCode(this.mFinalState);
+        hash = 59 * hash + Objects.hashCode(this.mErrorState);
+        hash = 59 * hash + Objects.hashCode(this.mStates);
+        hash = 59 * hash + Objects.hashCode(this.mTransitions);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Component other = (Component) obj;
+        if (!Objects.equals(this.mName, other.mName)) {
+            return false;
+        }
+        if (!Objects.equals(this.mInitialState, other.mInitialState)) {
+            return false;
+        }
+        if (!Objects.equals(this.mFinalState, other.mFinalState)) {
+            return false;
+        }
+        if (!Objects.equals(this.mErrorState, other.mErrorState)) {
+            return false;
+        }
+        if (!Objects.equals(this.mStates, other.mStates)) {
+            return false;
+        }
+        if (!Objects.equals(this.mTransitions, other.mTransitions)) {
+            return false;
+        }
+        return true;
+    }
+
+    
+    
 }
