@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import java.lang.*?>
+<?import java.net.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane id="AnchorPane" prefHeight="276.0" prefWidth="528.0" styleClass="mainFxmlClass" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="br.uece.lotus.annotator.AnnotatorManagerWindowController">    
+   <children>
+      <HBox maxWidth="1.7976931348623157E308" spacing="5.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <Button mnemonicParsing="false" onAction="#handleNew" text="New..." />
+            <Button mnemonicParsing="false" onAction="#handleRemove" text="Remove" />
+            <Button mnemonicParsing="false" onAction="#handleStart" text="Start all" />
+         </children>
+         <padding>
+            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+         </padding>
+      </HBox>
+      <ListView fx:id="mLstProfile" layoutX="4.0" layoutY="37.0" prefHeight="237.0" prefWidth="520.0" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="35.0" />
+   </children>
+</AnchorPane>
