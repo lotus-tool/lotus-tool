@@ -14,8 +14,8 @@
   </properties>
   
   <scm>
-    <connection>scm:git:https://emersonclima@github.com/LoTuS.git</connection>
-    <developerConnection>scm:git:https://emersonclima@github.com/LoTuS.git</developerConnection>
+    <connection>scm:git:https://emersonclima@github.com/emersonclima/LoTuS.git</connection>
+    <developerConnection>scm:git:https://emersonclima@github.com/emersonclima/LoTuS.git</developerConnection>
   </scm>
 
   <distributionManagement>    
