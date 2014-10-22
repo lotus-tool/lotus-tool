@@ -228,7 +228,7 @@ class TransicaoEmArco extends Region implements ChangeListener<Number> {
 
         getChildren().addAll(mRotulo, mSeta, mArc);
         mArc.radiusXProperty().bind(Geom.distance(origem, destino).divide(2));
-        mArc.radiusYProperty().bind(Geom.distance(origem, destino).divide(2));
+        mArc.radiusYProperty().bind(Geom.distance(origem, destino).divide(4));
 //        mArc.radiusYProperty().addListener(this);
         mArc.centerXProperty().bind(mArc.radiusXProperty());
         mArc.centerYProperty().bind(mArc.radiusYProperty().add(17));

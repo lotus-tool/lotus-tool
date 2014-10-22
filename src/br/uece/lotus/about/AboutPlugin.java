@@ -42,26 +42,30 @@ public class AboutPlugin extends Plugin {
 
     private UserInterface mUserInterface;
     private static final String ABOUT_MESSAGE = "LoTuS - Labeled Transitions System";
+    final Runnable mAbout = () -> {
+        try {
+            URL location = getClass().getResource("/br/uece/lotus/about/About.fxml");
+            FXMLLoader loader = new FXMLLoader();
+            loader.setClassLoader(getClass().getClassLoader());
+            loader.setLocation(location);
+            loader.setBuilderFactory(new JavaFXBuilderFactory());
+            Parent root = (Parent) loader.load(location.openStream());
+            Stage stage = new Stage();
+            stage.setScene(new Scene(root));
+            stage.setTitle("About LoTuS");
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    };
 
     @Override
     public void onStart(ExtensionManager extensionManager) throws Exception {
         mUserInterface = extensionManager.get(UserInterface.class);
-        mUserInterface.getMainMenu().addItem(Integer.MAX_VALUE, "Help/About", () -> {
-            try {
-                URL location = getClass().getResource("/br/uece/lotus/about/About.fxml");
-                FXMLLoader loader = new FXMLLoader();
-                loader.setClassLoader(getClass().getClassLoader());
-                loader.setLocation(location);
-                loader.setBuilderFactory(new JavaFXBuilderFactory());
-                Parent root = (Parent) loader.load(location.openStream());
-                Stage stage = new Stage();
-                stage.setScene(new Scene(root));
-                stage.show();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-        });
+        mUserInterface.getMainMenu().newItem("Help/About")
+                .setWeight(Integer.MAX_VALUE)
+                .setAction(mAbout).create();        
     }
 
 }

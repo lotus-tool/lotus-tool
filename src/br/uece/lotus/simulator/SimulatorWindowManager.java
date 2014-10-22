@@ -74,6 +74,8 @@ public class SimulatorWindowManager extends DefaultWindowManagerPlugin<Simulator
                 .showSeparator(true)                
                 .create();
         toolBar.newItem("Simulate")
+                .hideText(true)
+                .setGraphic(getClass().getResourceAsStream("ic_simulator.png"))
                 .setWeight(Integer.MAX_VALUE)
                 .setAction(mOpenSimulator)
                 .create();

@@ -30,7 +30,7 @@ public class AnnotatorPlugin extends Plugin {
         mProjectExplorer = (ProjectExplorer) extensionManager.get(ProjectExplorer.class);
         
         mUserInterface.getMainMenu().newItem("Model/Probabilistic Annotator")
-                .setWeight(Integer.MAX_VALUE)
+                .setWeight(Integer.MIN_VALUE + 13)
                 .setAction(() -> {
                     try {
                         URL location = getClass().getResource("/br/uece/lotus/annotator/AnnotatorManagerWindow.fxml");

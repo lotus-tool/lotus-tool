@@ -232,6 +232,7 @@ public class BasicPlugin extends Plugin {
                 .setGraphic(getClass().getResourceAsStream("res/ic_component_new.png"))
                 .setWeight(Integer.MIN_VALUE)
                 .setAction(mNewComponent)
+                .setTooltip("New component")
                 .create();
 
         mUserInterface.getToolBar().newItem("New Project")
@@ -239,18 +240,21 @@ public class BasicPlugin extends Plugin {
                 .setGraphic(getClass().getResourceAsStream("res/ic_project_new.png"))
                 .setWeight(Integer.MIN_VALUE)
                 .setAction(mNewProject)
+                .setTooltip("New project")
                 .create();
         mUserInterface.getToolBar().newItem("Open Project")
                 .hideText(true)
                 .setGraphic(getClass().getResourceAsStream("res/ic_project_open.png"))
                 .setWeight(Integer.MIN_VALUE)
                 .setAction(mOpenProject)
+                .setTooltip("Open project")
                 .create();
         mUserInterface.getToolBar().newItem("Save All")
                 .hideText(true)
-                .setGraphic(getClass().getResourceAsStream("res/ic_project_save.png"))
+                .setGraphic(getClass().getResourceAsStream("res/ic_project_saveAll.png"))
                 .setWeight(Integer.MIN_VALUE)
                 .setAction(mSaveProject)
+                .setTooltip("Save all")
                 .create();
 
         mProjectExplorer.getMenu().addItem(Integer.MIN_VALUE, "New project", mNewProject);

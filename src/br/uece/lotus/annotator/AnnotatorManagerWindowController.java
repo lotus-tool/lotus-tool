@@ -56,6 +56,7 @@ public class AnnotatorManagerWindowController implements Initializable {
             c.setProjectExplorer(mProjectExplorer);
             Stage ss = new Stage(StageStyle.UTILITY);
             ss.setScene(new Scene(root));
+            ss.setTitle("New annotation profile");
             ss.show();
         } catch (IOException e) {
             e.printStackTrace();

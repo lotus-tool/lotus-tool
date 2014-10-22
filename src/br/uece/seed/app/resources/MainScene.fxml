@@ -45,7 +45,7 @@
                 </ToolBar>
             </top>
             <bottom>
-                <TabPane fx:id="mTabBottom" maxWidth="1.7976931348623157E308" prefHeight="103.0" prefWidth="790.0" style=" -fx-border-color: #d0d0d0;" tabClosingPolicy="UNAVAILABLE">
+                <TabPane fx:id="mTabBottom" maxWidth="1.7976931348623157E308" prefHeight="140.0" prefWidth="790.0" style=" -fx-border-color: #d0d0d0;" tabClosingPolicy="UNAVAILABLE">
                     <BorderPane.margin>
                         <Insets bottom="5.0" left="5.0" right="5.0" />
                     </BorderPane.margin>
