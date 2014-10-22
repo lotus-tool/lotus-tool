@@ -3,7 +3,7 @@
   <groupId>br.uece.lotus</groupId>
   <artifactId>lotus-app</artifactId>
   <packaging>jar</packaging>
-  <version>2.12_alpha</version>
+  <version>2.13_alpha-SNAPSHOT</version>
   <name>lotus-app</name>
   <url>http://maven.apache.org</url>
   
