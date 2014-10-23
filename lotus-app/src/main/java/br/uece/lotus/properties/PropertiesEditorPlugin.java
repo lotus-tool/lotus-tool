@@ -45,7 +45,7 @@ public class PropertiesEditorPlugin extends Plugin implements PropertiesEditor {
     public void onStart(ExtensionManager extensionManager) throws Exception {
         mUserInterface = extensionManager.get(UserInterface.class);
         
-        URL location = getClass().getResource("/br/uece/lotus/properties/PropertiesEditor.fxml");
+        URL location = getClass().getResource("/fxml/PropertiesEditor.fxml");
         FXMLLoader fxmlLoader = new FXMLLoader();
         fxmlLoader.setClassLoader(getClass().getClassLoader());
         fxmlLoader.setLocation(location);

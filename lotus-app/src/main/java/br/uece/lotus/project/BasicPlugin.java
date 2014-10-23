@@ -229,7 +229,7 @@ public class BasicPlugin extends Plugin {
 
         mUserInterface.getToolBar().newItem("New Component")
                 .hideText(true)
-                .setGraphic(getClass().getResourceAsStream("res/ic_component_new.png"))
+                .setGraphic(getClass().getResourceAsStream("/images/ic_component_new.png"))
                 .setWeight(Integer.MIN_VALUE)
                 .setAction(mNewComponent)
                 .setTooltip("New component")
@@ -237,21 +237,21 @@ public class BasicPlugin extends Plugin {
 
         mUserInterface.getToolBar().newItem("New Project")
                 .hideText(true)
-                .setGraphic(getClass().getResourceAsStream("res/ic_project_new.png"))
+                .setGraphic(getClass().getResourceAsStream("/images/ic_project_new.png"))
                 .setWeight(Integer.MIN_VALUE)
                 .setAction(mNewProject)
                 .setTooltip("New project")
                 .create();
         mUserInterface.getToolBar().newItem("Open Project")
                 .hideText(true)
-                .setGraphic(getClass().getResourceAsStream("res/ic_project_open.png"))
+                .setGraphic(getClass().getResourceAsStream("/images/ic_project_open.png"))
                 .setWeight(Integer.MIN_VALUE)
                 .setAction(mOpenProject)
                 .setTooltip("Open project")
                 .create();
         mUserInterface.getToolBar().newItem("Save All")
                 .hideText(true)
-                .setGraphic(getClass().getResourceAsStream("res/ic_project_saveAll.png"))
+                .setGraphic(getClass().getResourceAsStream("/images/ic_project_saveAll.png"))
                 .setWeight(Integer.MIN_VALUE)
                 .setAction(mSaveProject)
                 .setTooltip("Save all")

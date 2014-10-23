@@ -44,7 +44,7 @@ public class AboutPlugin extends Plugin {
     private static final String ABOUT_MESSAGE = "LoTuS - Labeled Transitions System";
     final Runnable mAbout = () -> {
         try {
-            URL location = getClass().getResource("/br/uece/lotus/about/About.fxml");
+            URL location = getClass().getResource("/fxml/About.fxml");
             FXMLLoader loader = new FXMLLoader();
             loader.setClassLoader(getClass().getClassLoader());
             loader.setLocation(location);

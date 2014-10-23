@@ -33,7 +33,7 @@ public class AnnotatorPlugin extends Plugin {
                 .setWeight(Integer.MIN_VALUE + 13)
                 .setAction(() -> {
                     try {
-                        URL location = getClass().getResource("/br/uece/lotus/annotator/AnnotatorManagerWindow.fxml");
+                        URL location = getClass().getResource("/fxml/AnnotatorManagerWindow.fxml");
                         FXMLLoader loader = new FXMLLoader();
                         loader.setClassLoader(getClass().getClassLoader());
                         loader.setLocation(location);

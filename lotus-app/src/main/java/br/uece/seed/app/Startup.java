@@ -54,6 +54,10 @@ public class Startup extends Application {
     private static Stage mStage;
     private static File extensionsPath;
 
+    public static void main(String[] args) {
+        launch(args);
+    }
+
     public static Stage getStage() {
         return mStage;
     }
@@ -64,7 +68,7 @@ public class Startup extends Application {
 
         Component c = new Component();
 
-        URL location = getClass().getResource("/br/uece/seed/app/resources/MainScene.fxml");
+        URL location = getClass().getResource("/fxml/MainScene.fxml");
         FXMLLoader fxmlLoader = new FXMLLoader();
         fxmlLoader.setLocation(location);
         fxmlLoader.setBuilderFactory(new JavaFXBuilderFactory());
@@ -97,7 +101,12 @@ public class Startup extends Application {
     }
 
     private void registerModules(ExtensionManager extensionManager) {
-        extensionsPath = new File(System.getProperty("lotus.extensions.path"));
+        String aux = System.getProperty("lotus.extensions.path");
+        if (aux == null) {
+            logger.log(Level.INFO, "No extension path defined");
+            return;
+        }
+        extensionsPath = new File(aux);
         logger.log(Level.INFO, "Searching for plugins at {0}...", extensionsPath.getAbsolutePath());
         File[] arqs = extensionsPath.listFiles();
         if (arqs == null) {

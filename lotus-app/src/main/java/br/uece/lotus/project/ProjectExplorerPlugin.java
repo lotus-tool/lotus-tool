@@ -77,7 +77,7 @@ public final class ProjectExplorerPlugin extends Plugin implements ProjectExplor
         public void onComponentCreated(Project project, Component component) {
             TreeItem<Wrapper> r = findItem(mProjectView.getRoot(), project);
             r.getChildren().add(new TreeItem<>(new Wrapper(component), new ImageView(
-                    new Image(getClass().getResourceAsStream("res/ic_component.png"))
+                    new Image(getClass().getResourceAsStream("/images/ic_component.png"))
             )));
         }
 
@@ -201,13 +201,13 @@ public final class ProjectExplorerPlugin extends Plugin implements ProjectExplor
         if (itm == null) {
             p.addListener(mProjectListener);
             itm = new TreeItem<>(new Wrapper(p), new ImageView(
-                    new Image(getClass().getResourceAsStream("res/ic_project.png"))
+                    new Image(getClass().getResourceAsStream("/images/ic_project.png"))
             ));
             List<TreeItem<Wrapper>> aux = itm.getChildren();
             for (Component c : p.getComponents()) {
                 c.addListener(mComponentListener);
                 TreeItem<Wrapper> itm2 = new TreeItem<>(new Wrapper(c), new ImageView(
-                        new Image(getClass().getResourceAsStream("res/ic_component.png"))
+                        new Image(getClass().getResourceAsStream("/images/ic_component.png"))
                 ));
                 aux.add(itm2);
             }

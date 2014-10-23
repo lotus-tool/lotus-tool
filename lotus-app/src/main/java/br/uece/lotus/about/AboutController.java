@@ -49,17 +49,17 @@ public class AboutController implements Initializable {
         
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        try (InputStream inVersion = getClass().getResourceAsStream("/br/uece/lotus/about/version.txt")) {
+        try (InputStream inVersion = getClass().getResourceAsStream("/strings/version.txt")) {
             mLblVersion.setText(convertStreamToString(inVersion));            
         } catch (IOException e) {
             e.printStackTrace();
         }
-        try (InputStream inLicense = getClass().getResourceAsStream("/br/uece/lotus/about/license.txt")) {
+        try (InputStream inLicense = getClass().getResourceAsStream("/strings/license.txt")) {
             mTxtLicense.setText(convertStreamToString(inLicense));            
         } catch (IOException e) {
             e.printStackTrace();
         }
-        try (InputStream inTeam = getClass().getResourceAsStream("/br/uece/lotus/about/team.txt")) {
+        try (InputStream inTeam = getClass().getResourceAsStream("/strings/team.txt")) {
             mTxtTeam.setText(convertStreamToString(inTeam));            
         } catch (IOException e) {
             e.printStackTrace();

@@ -46,7 +46,7 @@ public class AnnotatorManagerWindowController implements Initializable {
     @FXML
     public void handleNew() {
         try {
-            URL location = getClass().getResource("/br/uece/lotus/annotator/AnnotatorProfileWindow.fxml");
+            URL location = getClass().getResource("/fxml/AnnotatorProfileWindow.fxml");
             FXMLLoader loader = new FXMLLoader();
             loader.setClassLoader(getClass().getClassLoader());
             loader.setLocation(location);

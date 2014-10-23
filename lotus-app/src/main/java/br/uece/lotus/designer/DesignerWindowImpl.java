@@ -200,19 +200,19 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
         mToolbar = new ToolBar();
         mToggleGroup = new ToggleGroup();
         mBtnArrow = new ToggleButton();
-        mBtnArrow.setGraphic(new ImageView(new Image(getClass().getResourceAsStream("ic_arrow.png"))));
+        mBtnArrow.setGraphic(new ImageView(new Image(getClass().getResourceAsStream("/images/ic_arrow.png"))));
         mBtnArrow.setOnAction((ActionEvent e) -> {
             setModo(MODO_NENHUM);
         });
         mBtnArrow.setToggleGroup(mToggleGroup);
         mBtnState = new ToggleButton();
-        mBtnState.setGraphic(new ImageView(new Image(getClass().getResourceAsStream("ic_state.png"))));
+        mBtnState.setGraphic(new ImageView(new Image(getClass().getResourceAsStream("/images/ic_state.png"))));
         mBtnState.setOnAction((ActionEvent e) -> {
             setModo(MODO_VERTICE);
         });
         mBtnState.setToggleGroup(mToggleGroup);
         mBtnTransitionLine = new ToggleButton();
-        mBtnTransitionLine.setGraphic(new ImageView(new Image(getClass().getResourceAsStream("ic_transition_line.png"))));
+        mBtnTransitionLine.setGraphic(new ImageView(new Image(getClass().getResourceAsStream("/images/ic_transition_line.png"))));
         mBtnTransitionLine.setOnAction((ActionEvent e) -> {
             mTransitionViewType = TransitionViewFactory.Type.LINEAR;
             setModo(MODO_TRANSICAO);
@@ -220,7 +220,7 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
         mBtnTransitionLine.setToggleGroup(mToggleGroup);
         
         mBtnTransitionArc = new ToggleButton();
-        mBtnTransitionArc.setGraphic(new ImageView(new Image(getClass().getResourceAsStream("ic_transition_semicircle.png"))));
+        mBtnTransitionArc.setGraphic(new ImageView(new Image(getClass().getResourceAsStream("/images/ic_transition_semicircle.png"))));
         mBtnTransitionArc.setOnAction((ActionEvent e) -> {
             mTransitionViewType = TransitionViewFactory.Type.SEMI_CIRCLE;
             setModo(MODO_TRANSICAO);
@@ -228,7 +228,7 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
         mBtnTransitionArc.setToggleGroup(mToggleGroup);
         
         mBtnEraser = new ToggleButton();
-        mBtnEraser.setGraphic(new ImageView(new Image(getClass().getResourceAsStream("ic_eraser.png"))));
+        mBtnEraser.setGraphic(new ImageView(new Image(getClass().getResourceAsStream("/images/ic_eraser.png"))));
         mBtnEraser.setOnAction((ActionEvent e) -> {
             setModo(MODO_REMOVER);
         });

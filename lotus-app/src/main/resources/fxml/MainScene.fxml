@@ -54,6 +54,6 @@
         </BorderPane>
     </children>
     <stylesheets>
-        <URL value="@base.css" />
+        <URL value="@/styles/base.css" />
     </stylesheets>
 </AnchorPane>
