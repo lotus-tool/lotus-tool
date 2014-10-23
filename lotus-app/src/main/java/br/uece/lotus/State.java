@@ -24,6 +24,7 @@
 package br.uece.lotus;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -210,12 +211,12 @@ public class State {
         }
     }
 
-    public Iterable<Transition> getIncomingTransitions() {
-        return mTransicoesEntrada;
+    public List<Transition> getIncomingTransitions() {
+        return Collections.unmodifiableList(mTransicoesEntrada);
     }
 
-    public Iterable<Transition> getOutgoingTransitions() {
-        return mTransicoesSaida;
+    public List<Transition> getOutgoingTransitions() {    	
+        return Collections.unmodifiableList(mTransicoesSaida);
     }
 
     @Override

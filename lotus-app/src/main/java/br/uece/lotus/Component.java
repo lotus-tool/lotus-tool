@@ -176,12 +176,13 @@ public class Component {
     }
 
     public void remove(State state) {
-        for (Transition t : state.getOutgoingTransitions()) {
-            mTransitions.remove(t);
+    	List<Transition> transitions = new ArrayList<>();
+    	transitions.addAll(state.getOutgoingTransitions());
+    	transitions.addAll(state.getIncomingTransitions());
+        for (Transition t : transitions) {
+            remove(t);
         }
-        for (Transition t : state.getIncomingTransitions()) {
-            mTransitions.remove(t);
-        }
+        
         mStates.remove(state);
         for (Listener l : mListeners) {
             l.onStateRemoved(this, state);
@@ -205,8 +206,8 @@ public class Component {
     }
 
     public void remove(Transition transition) {
-        transition.getSource().removeIncomingTransition(transition);
-        transition.getDestiny().removeOutgoingTransition(transition);
+        transition.getSource().removeOutgoingTransition(transition);
+        transition.getDestiny().removeIncomingTransition(transition);
         mTransitions.remove(transition);
         for (Listener l : mListeners) {
             l.onTransitionRemoved(this, transition);

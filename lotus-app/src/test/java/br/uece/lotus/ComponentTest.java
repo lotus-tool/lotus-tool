@@ -38,47 +38,26 @@ import org.junit.Test;
  */
 public class ComponentTest {
     
-    public ComponentTest() {
-    }
-    
-    @BeforeClass
-    public static void setUpClass() {
-    }
-    
-    @AfterClass
-    public static void tearDownClass() {
-    }
+    private Component COMPONENT;
     
     @Before
     public void setUp() {
-        
+    	COMPONENT = new Component();
+    	COMPONENT.newState(0);
+    	COMPONENT.newState(1);
+    	COMPONENT.newState(2);
+    	COMPONENT.newState(3);
+    	COMPONENT.newState(4);
+    	COMPONENT.newState(5);
+    	COMPONENT.newState(6);
+    	COMPONENT.newTransition(0, 3);
+    	COMPONENT.newTransition(1, 3);
+    	COMPONENT.newTransition(2, 3);
+    	COMPONENT.newTransition(3, 4);
+    	COMPONENT.newTransition(3, 5);
+    	COMPONENT.newTransition(3, 6);
     }
     
-    @After
-    public void tearDown() {
-    }
-
-    // TODO add test methods here.
-    // The methods must be annotated with annotation @Test. For example:
-    //
-    // @Test
-    // public void hello() {}
-    
-    @Test
-    public void cloneAndEqualsTest() {
-        Component c = createRandomComponent(1000, 0.02);
-        try {
-            Component c2 = c.clone();            
-            assertTrue("states count different", c2.getStatesCount() == c.getStatesCount());
-            assertTrue("transitions count different", c2.getTransitionsCount() == c.getTransitionsCount());
-            assertTrue("transitions count different", c2.getInitialState().getID() == c.getInitialState().getID());            
-            assertTrue("equals components not equals", c2.equals(c));
-        } catch (CloneNotSupportedException ex) {
-            Assert.assertTrue(ex.getMessage(), false);
-        }
-        
-    }
-
     private Component createRandomComponent(int stateFactor, double transitionFactor) {
         Component c = new Component();
         c.newState(0);
@@ -105,5 +84,59 @@ public class ComponentTest {
         }
         return c;
     }
+        
+    @Test
+    public void cloneAndEqualsTest() {
+        Component c = createRandomComponent(1000, 0.02);
+        try {
+            Component c2 = c.clone();            
+            assertTrue("states count different", c2.getStatesCount() == c.getStatesCount());
+            assertTrue("transitions count different", c2.getTransitionsCount() == c.getTransitionsCount());
+            assertTrue("transitions count different", c2.getInitialState().getID() == c.getInitialState().getID());            
+            assertTrue("equals components not equals", c2.equals(c));
+        } catch (CloneNotSupportedException ex) {
+            Assert.assertTrue(ex.getMessage(), false);
+        }
+        
+    }
+    
+    @Test
+    public void removeStateTest() {    	    	  
+    	assertTrue(COMPONENT.getStateByID(0).getOutgoingTransitionsCount() == 1);
+    	assertTrue(COMPONENT.getStateByID(1).getOutgoingTransitionsCount() == 1);
+    	assertTrue(COMPONENT.getStateByID(2).getOutgoingTransitionsCount() == 1);
+    	assertTrue(COMPONENT.getStateByID(3).getOutgoingTransitionsCount() == 3);
+    	assertTrue(COMPONENT.getStateByID(4).getOutgoingTransitionsCount() == 0);
+    	assertTrue(COMPONENT.getStateByID(5).getOutgoingTransitionsCount() == 0);
+    	assertTrue(COMPONENT.getStateByID(6).getOutgoingTransitionsCount() == 0);
+    	
+    	assertTrue(COMPONENT.getStateByID(0).getIncomingTransitionsCount() == 0);
+    	assertTrue(COMPONENT.getStateByID(1).getIncomingTransitionsCount() == 0);
+    	assertTrue(COMPONENT.getStateByID(2).getIncomingTransitionsCount() == 0);
+    	assertTrue(COMPONENT.getStateByID(3).getIncomingTransitionsCount() == 3);
+    	assertTrue(COMPONENT.getStateByID(4).getIncomingTransitionsCount() == 1);
+    	assertTrue(COMPONENT.getStateByID(5).getIncomingTransitionsCount() == 1);
+    	assertTrue(COMPONENT.getStateByID(6).getIncomingTransitionsCount() == 1);
+    	
+    	COMPONENT.remove(COMPONENT.getStateByID(3));
+    	
+    	assertTrue(COMPONENT.getStateByID(0).getOutgoingTransitionsCount() == 0);
+    	assertTrue(COMPONENT.getStateByID(1).getOutgoingTransitionsCount() == 0);
+    	assertTrue(COMPONENT.getStateByID(2).getOutgoingTransitionsCount() == 0);
+    	assertTrue(COMPONENT.getStateByID(3) == null);
+    	assertTrue(COMPONENT.getStateByID(4).getOutgoingTransitionsCount() == 0);
+    	assertTrue(COMPONENT.getStateByID(5).getOutgoingTransitionsCount() == 0);
+    	assertTrue(COMPONENT.getStateByID(6).getOutgoingTransitionsCount() == 0);
+    	
+    	assertTrue(COMPONENT.getStateByID(0).getIncomingTransitionsCount() == 0);
+    	assertTrue(COMPONENT.getStateByID(1).getIncomingTransitionsCount() == 0);
+    	assertTrue(COMPONENT.getStateByID(2).getIncomingTransitionsCount() == 0);
+    	assertTrue(COMPONENT.getStateByID(3) == null);
+    	assertTrue(COMPONENT.getStateByID(4).getIncomingTransitionsCount() == 0);
+    	assertTrue(COMPONENT.getStateByID(5).getIncomingTransitionsCount() == 0);
+    	assertTrue(COMPONENT.getStateByID(6).getIncomingTransitionsCount() == 0);    	
+    }
     
 }
+
+
