@@ -1,14 +1,16 @@
 #!/bin/sh
-LOTUS_PATH="$(dirname "$0")"
-LOTUS_JAR=$LOTUS_PATH/lotus.jar
-EXTENSIONS_PATH=$LOTUS_PATH/extensions
+LOTUS_HOME="$(dirname "$0")"
+LOTUS_JAR=`find -maxdepth 1 -name "lotus-app-*.jar"`
+LOTUS_EXTENSIONS_PATH=$LOTUS_HOME/extensions
 
 if [ "$1" = "--debug" ]; then
 	DEBUG="-Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005"
 fi
 
 if [ -n "$JAVA_HOME" ]; then
-  $JAVA_HOME/bin/java $DEBUG -Dlotus.extensions.path="$EXTENSIONS_PATH" -jar "$LOTUS_JAR" "$@"
+	JAVA_CMD="$JAVA_HOME/bin/java"
 else
-  java -jar "$LOTUS" "$@"
+	JAVA_CMD="java"
 fi
+
+$JAVA_CMD $DEBUG -Dlotus.extensions.path="$LOTUS_EXTENSIONS_PATH" -jar "$LOTUS_HOME/$LOTUS_JAR" "$@"
