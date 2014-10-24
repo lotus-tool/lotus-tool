@@ -7,7 +7,7 @@
   </formats>
   <fileSets>
     <fileSet>
-      <directory>${project.basedir}/package</directory>
+      <directory>${project.basedir}/dist</directory>
       <outputDirectory>/</outputDirectory>      
     </fileSet>
     <fileSet>
