@@ -1,0 +1,5 @@
+@set LOTUS_PATH=..
+@set LOTUS_JAR=%LOTUS_PATH%\lotus.jar
+@set LOTUS_EXTENSIONS_PATH=%LOTUS_PATH%\extensions
+
+java -Dlotus.extensions.path="%LOTUS_EXTENSIONS_PATH%" -jar "%LOTUS_JAR%" %*
