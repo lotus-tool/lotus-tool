@@ -78,6 +78,7 @@ public class SimulatorWindowManager extends DefaultWindowManagerPlugin<Simulator
                 .setGraphic(getClass().getResourceAsStream("/images/ic_simulator.png"))
                 .setWeight(Integer.MAX_VALUE)
                 .setAction(mOpenSimulator)
+                .setTooltip("Simulate")
                 .create();
     }
 

@@ -24,11 +24,13 @@
 package br.uece.seed.app;
 
 import java.io.InputStream;
+
 import javafx.event.ActionEvent;
 import javafx.geometry.Orientation;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Separator;
+import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
@@ -52,7 +54,7 @@ public class ToolbarItemBuilderFX implements ExtensibleToolbar.ItemBuilder {
     private Runnable mAction;
     private String mText;
     private String mPath = "";
-    private String tooltip;
+    private String mTooltip;
 
     public ToolbarItemBuilderFX(String name, Container container) {
         mContainer = container;
@@ -91,7 +93,7 @@ public class ToolbarItemBuilderFX implements ExtensibleToolbar.ItemBuilder {
 
     @Override
     public ExtensibleToolbar.ItemBuilder setTooltip(String tooltip) {
-        this.tooltip = tooltip;
+        mTooltip = tooltip;
         return this;
     }
 
@@ -116,6 +118,9 @@ public class ToolbarItemBuilderFX implements ExtensibleToolbar.ItemBuilder {
                 aux.setOnAction((ActionEvent e) -> {
                     mAction.run();
                 });
+            }
+            if (mTooltip != null) {            	
+            	aux.setTooltip(new Tooltip(mTooltip));
             }
             item = aux;
         }

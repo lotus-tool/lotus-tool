@@ -64,9 +64,7 @@ public class Startup extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
-        mStage = stage;
-
-        Component c = new Component();
+        mStage = stage;        
 
         URL location = getClass().getResource("/fxml/MainScene.fxml");
         FXMLLoader fxmlLoader = new FXMLLoader();
