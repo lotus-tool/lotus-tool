@@ -24,7 +24,7 @@
                 </TabPane>
             </center>
             <left>
-                <TabPane fx:id="mTabLeft" prefHeight="200.0" prefWidth="200.0" style=" -fx-border-color: #d0d0d0;" tabClosingPolicy="UNAVAILABLE">
+                <TabPane fx:id="mTabLeft" prefHeight="200.0" prefWidth="200.0" style=" -fx-border-color: #d0d0d0;" tabClosingPolicy="ALL_TABS">
                     <BorderPane.margin>
                         <Insets bottom="5.0" left="5.0" top="5.0" />
                     </BorderPane.margin>
@@ -34,7 +34,7 @@
                 <Insets />
             </padding>
             <right>
-                <TabPane fx:id="mTabRight" maxWidth="1.7976931348623157E308" prefHeight="200.0" prefWidth="200.0" style=" -fx-border-color: #d0d0d0;" tabClosingPolicy="UNAVAILABLE">
+                <TabPane fx:id="mTabRight" maxWidth="1.7976931348623157E308" prefHeight="200.0" prefWidth="200.0" style=" -fx-border-color: #d0d0d0;" tabClosingPolicy="ALL_TABS">
                     <BorderPane.margin>
                         <Insets bottom="5.0" right="5.0" top="5.0" />
                     </BorderPane.margin>
@@ -45,7 +45,7 @@
                 </ToolBar>
             </top>
             <bottom>
-                <TabPane fx:id="mTabBottom" maxWidth="1.7976931348623157E308" prefHeight="140.0" prefWidth="790.0" style=" -fx-border-color: #d0d0d0;" tabClosingPolicy="UNAVAILABLE">
+                <TabPane fx:id="mTabBottom" maxWidth="0.0" maxHeight="0.0" prefHeight="140.0" prefWidth="790.0" style=" -fx-border-color: #d0d0d0;" tabClosingPolicy="ALL_TABS">
                     <BorderPane.margin>
                         <Insets bottom="5.0" left="5.0" right="5.0" />
                     </BorderPane.margin>

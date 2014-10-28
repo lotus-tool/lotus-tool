@@ -29,6 +29,7 @@ import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
+import javafx.scene.layout.Region;
 
 /**
  *
@@ -44,7 +45,10 @@ public class ExtensibleFXTabPane implements ExtensibleTabPane {
         mTabPane = tabPane;
         mOnClose = (Event e) -> {
             Tab t = (Tab) e.getSource();
-            mTabPane.getTabs().remove(t);            
+            mTabPane.getTabs().remove(t);   
+            if (mTabPane.getTabs().size() == 0) {
+            	mTabPane.setMaxSize(0, 0);
+            }
         };
     }
 
@@ -58,6 +62,9 @@ public class ExtensibleFXTabPane implements ExtensibleTabPane {
             t.setUserData(id);
             t.setOnClosed(mOnClose);
             mTabPane.getTabs().add(t);
+            if (mTabPane.getTabs().size() > 0) {
+            	mTabPane.setMaxSize(Region.USE_PREF_SIZE, Region.USE_PREF_SIZE);
+            }
         });
         return id;
     }
@@ -78,6 +85,9 @@ public class ExtensibleFXTabPane implements ExtensibleTabPane {
             Tab t = getTabById(id);
             if (t != null) {
                 mTabPane.getTabs().remove(t);
+            }
+            if (mTabPane.getTabs().size() == 0) {
+            	mTabPane.setMaxSize(0, 0);
             }
         });
     }
