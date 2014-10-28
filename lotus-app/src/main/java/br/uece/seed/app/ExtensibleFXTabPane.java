@@ -63,7 +63,7 @@ public class ExtensibleFXTabPane implements ExtensibleTabPane {
             t.setOnClosed(mOnClose);
             mTabPane.getTabs().add(t);
             if (mTabPane.getTabs().size() > 0) {
-            	mTabPane.setMaxSize(Region.USE_PREF_SIZE, Region.USE_PREF_SIZE);
+            	mTabPane.setMaxSize(Integer.MAX_VALUE, Integer.MAX_VALUE);
             }
         });
         return id;
