@@ -211,11 +211,19 @@ public class State {
         }
     }
 
-    public List<Transition> getIncomingTransitions() {
+    public Iterable<Transition> getIncomingTransitions() {
+        return mTransicoesEntrada;
+    }
+
+    public Iterable<Transition> getOutgoingTransitions() {    	
+        return mTransicoesSaida;
+    }
+    
+    public List<Transition> getIncomingTransitionsList() {
         return Collections.unmodifiableList(mTransicoesEntrada);
     }
 
-    public List<Transition> getOutgoingTransitions() {    	
+    public List<Transition> getOutgoingTransitionsList() {    	
         return Collections.unmodifiableList(mTransicoesSaida);
     }
 

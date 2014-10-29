@@ -37,10 +37,13 @@ import br.uece.seed.ext.ExtensionManager;
 import br.uece.seed.ext.JarModule;
 import br.uece.seed.ext.Module;
 import br.uece.seed.ext.Plugin;
+
 import java.io.File;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.JavaFXBuilderFactory;
@@ -50,75 +53,86 @@ import javafx.stage.Stage;
 
 public class Startup extends Application {
 
-    private static final Logger logger = Logger.getLogger(Startup.class.getName());
-    private static Stage mStage;
-    private static File extensionsPath;
+	private static final Logger logger = Logger.getLogger(Startup.class
+			.getName());
+	private static Stage mStage;
+	private static File extensionsPath;
 
-    public static void main(String[] args) {
-        launch(args);
-    }
+	public static void main(String[] args) {
+		launch(args);
+	}
 
-    public static Stage getStage() {
-        return mStage;
-    }
+	public static Stage getStage() {
+		return mStage;
+	}
 
-    @Override
-    public void start(Stage stage) throws Exception {
-        mStage = stage;        
+	@Override
+	public void start(Stage stage) throws Exception {
+		mStage = stage;
 
-        URL location = getClass().getResource("/fxml/MainScene.fxml");
-        FXMLLoader fxmlLoader = new FXMLLoader();
-        fxmlLoader.setLocation(location);
-        fxmlLoader.setBuilderFactory(new JavaFXBuilderFactory());
-        Parent root = (Parent) fxmlLoader.load(location.openStream());
-        MainSceneController controller = fxmlLoader.getController();
+		URL location = getClass().getResource("/fxml/MainScene.fxml");
+		FXMLLoader fxmlLoader = new FXMLLoader();
+		fxmlLoader.setLocation(location);
+		fxmlLoader.setBuilderFactory(new JavaFXBuilderFactory());
+		Parent root = (Parent) fxmlLoader.load(location.openStream());
+		MainSceneController controller = fxmlLoader.getController();
 
-        ExtensionManager extensionManager = new ExtensionManager();
-        Plugin p = (Plugin) controller;
-        extensionManager.registerPlugin(p);
-        extensionManager.registerPlugin(new DialogsHelper());
-        extensionManager.registerPlugin(new ProjectDialogsHelper());
-        
-        extensionManager.registerPlugin(new PropertiesEditorPlugin());
-        extensionManager.registerPlugin(new ProjectExplorerPlugin());
-        extensionManager.registerPlugin(new AboutPlugin());
-        extensionManager.registerPlugin(new DesignerWindowManager());
-        extensionManager.registerPlugin(new BasicPlugin());
-        extensionManager.registerPlugin(new ToolsPlugin());        
-        extensionManager.registerPlugin(new SimulatorWindowManager());
-        extensionManager.registerPlugin(new AnnotatorPlugin());
-//        extensionManager.registerPlugin(new AlgorithmsPlugins());
+		ExtensionManager extensionManager = new ExtensionManager();
+		Plugin p = (Plugin) controller;
+		extensionManager.registerPlugin(p);
+		extensionManager.registerPlugin(new DialogsHelper());
+		extensionManager.registerPlugin(new ProjectDialogsHelper());
 
-        registerModules(extensionManager);
-        extensionManager.start();
-        Scene scene = new Scene(root, 700, 500);
+		extensionManager.registerPlugin(new PropertiesEditorPlugin());
+		extensionManager.registerPlugin(new ProjectExplorerPlugin());
+		extensionManager.registerPlugin(new AboutPlugin());
+		extensionManager.registerPlugin(new DesignerWindowManager());
+		extensionManager.registerPlugin(new BasicPlugin());
+		extensionManager.registerPlugin(new ToolsPlugin());
+		extensionManager.registerPlugin(new SimulatorWindowManager());
+		extensionManager.registerPlugin(new AnnotatorPlugin());
+		// extensionManager.registerPlugin(new AlgorithmsPlugins());
 
-        stage.setScene(scene);
-        stage.show();
-        stage.setTitle("LoTuS 2.13 (alpha)");
-    }
+		registerModules(extensionManager);
+		extensionManager.start();
+		Scene scene = new Scene(root, 700, 500);
 
-    private void registerModules(ExtensionManager extensionManager) {
-        String aux = System.getProperty("lotus.extensions.path");
-        if (aux == null) {
-            logger.log(Level.INFO, "No extension path defined");
-            return;
-        }
-        extensionsPath = new File(aux);
-        logger.log(Level.INFO, "Searching for plugins at {0}...", extensionsPath.getAbsolutePath());
-        File[] arqs = extensionsPath.listFiles();
-        if (arqs == null) {
-            return;
-        }
-        for (File arq : arqs) {
-            if (arq.getName().endsWith(".jar")) {
-                try {
-                    Module m = new JarModule(arq);
-                    extensionManager.registerModule(m);
-                } catch (Exception e) {
-                    logger.log(Level.WARNING, "Fail at module loading!", e);
-                }
-            }
-        }
-    }
+		stage.setScene(scene);
+		stage.show();
+		stage.setTitle("LoTuS 2.13 (alpha)");
+	}
+
+	private void registerModules(ExtensionManager extensionManager) {
+		// String aux = System.getProperty("lotus.extensions.path");
+		// if (aux == null) {
+		// logger.log(Level.INFO, "No extension path defined");
+		// return;
+		// }
+		File homePath;
+		try {
+			homePath = new File(Startup.class.getProtectionDomain()
+					.getCodeSource().getLocation().toURI().getPath()).getParentFile();
+
+			extensionsPath = new File(homePath, "extensions");
+			logger.log(Level.INFO, "Searching for plugins at {0}...",
+					extensionsPath.getAbsolutePath());
+			File[] arqs = extensionsPath.listFiles();
+			if (arqs == null) {
+				return;
+			}
+			for (File arq : arqs) {
+				if (arq.getName().endsWith(".jar")) {
+					try {
+						Module m = new JarModule(arq);
+						extensionManager.registerModule(m);
+					} catch (Exception e) {
+						logger.log(Level.WARNING, "Fail at module loading!", e);
+					}
+				}
+			}
+		} catch (URISyntaxException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+	}
 }

@@ -177,8 +177,8 @@ public class Component {
 
     public void remove(State state) {
     	List<Transition> transitions = new ArrayList<>();
-    	transitions.addAll(state.getOutgoingTransitions());
-    	transitions.addAll(state.getIncomingTransitions());
+    	transitions.addAll(state.getOutgoingTransitionsList());
+    	transitions.addAll(state.getIncomingTransitionsList());
         for (Transition t : transitions) {
             remove(t);
         }
