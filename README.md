@@ -9,31 +9,24 @@ LoTuS is a open-source tool to graphic behaviour modelling of software using LTS
 2. Dependencies
 ---------------
 
-LoTuS requires JRE 8. Check your java version with:
+LoTuS requires JRE 8 with JavaFX 2.0. Check your java version with:
 
-java -version
+$ java -version
 
-If needed, install the JRE on your system: Install JRE 8 
+If needed, install the JRE on your system.
+If you are using OpenJDK, check if you have OpenFX too.
 
-3. Running
-----------
-
-Linux in normal:
-	$ ./lotus
-Linux in debug:	
-	$ ./lotus --debug
-	
-4. Directories
---------------
-
-- examples
-	contains sample files
-- extensions
-	thirty-part plugins, plugins shoul be placed here
-- lib
-	contains all code needed to run LoTuS
-
-5. Web Site
+3. Building
 -----------
 
-More information can be found at http://jeri.larces.uece.br/lotus
+Use the maven to build the project:
+
+$ mvn clean install
+
+The distributable application will be generated at subdir target/jfx/
+	
+4. More Information
+-------------------
+
+More information can be found at the lotus web site: http://jeri.larces.uece.br/lotus
+
