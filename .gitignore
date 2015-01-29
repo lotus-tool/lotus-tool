@@ -2,6 +2,7 @@
 /build/
 /dist/
 /lotus-app/target/
+/.idea
 
 .classpath
 .project
