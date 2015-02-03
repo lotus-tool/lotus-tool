@@ -1,11 +1,11 @@
+package br.uece.lotus.simulator;
+
 import java.util.LinkedList;
 import java.util.Queue;
 
 /**
- *
- * @author erick
+ * Created by erickbs7 on 29/01/15.
  */
-
 public class ExecutorSimulatorCommands {
 	private Queue<SimulatorCommand> madeOperations;
 	private Queue<SimulatorCommand> unmadeOperations;
@@ -18,23 +18,31 @@ public class ExecutorSimulatorCommands {
 	public void executeCommand(SimulatorCommand command) {
 		command.doOperation();
 		madeOperations.offer(command);
-		unmadeOpeartions.clear();
+		unmadeOperations.clear();
 	}
 
 	public void unmakeOperation() {
 		if(!madeOperations.isEmpty()) {
-			SimulatorCommand command = madeOperations.pool();
-			command.undoOperations();
+			SimulatorCommand command = madeOperations.poll();
+			command.undoOperation();
 			unmadeOperations.offer(command);
 		}
 	}
 
 	public void remakeOperation() {
 		if(!unmadeOperations.isEmpty()) {
-			SimulatorCommand command = new SimulatorCommand();
+			SimulatorCommand command = unmadeOperations.poll();
 			command.doOperation();
 			madeOperations.offer(command);
 		}
+	}
+
+	public void cleanMadeOperations() {
+		madeOperations.clear();
+	}
+
+	public void cleanUnmadeOperations() {
+		unmadeOperations.clear();
 	}
 
 }
