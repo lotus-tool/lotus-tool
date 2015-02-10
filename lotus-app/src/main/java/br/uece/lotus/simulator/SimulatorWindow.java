@@ -53,16 +53,17 @@ import javax.swing.*;
  */
 public class SimulatorWindow extends AnchorPane implements Window {
 
-    private int mStepCount;
-    private State mCurrentState;
+    private SimulatorContext mSimulatorContext;
 
+//    private int mStepCount;
+//    private State mCurrentState;
+//    private final Label mPathLabel;
     private final ToolBar mToolbar;
     private final Button mBtnStart;
     private final Button mBtnMakeStep;
     private final Button mBtnUnmakeStep;
     private final BasicComponentViewer mViewer;
     private final TableView<Step> mTableView;
-    private final Label mPathLabel;
     private final ExecutorSimulatorCommands mExecutorCommands;
 
     private final EventHandler<? super MouseEvent> onMouseClick = new EventHandler<MouseEvent>() {
@@ -73,13 +74,14 @@ public class SimulatorWindow extends AnchorPane implements Window {
                 return;
             }
             State s = ((StateView) v).getState();
-            Transition t = mCurrentState.getTransitionTo(s);
+            Transition t = mSimulatorContext.getmCurrentState().getTransitionTo(s);
             if (t == null) {
+                System.out.println(mSimulatorContext.getmCurrentState().getLabel());
                 System.out.println("-- selecione um estado valido!");
                 return;
             }
 
-            mExecutorCommands.executeCommand(new MakeStepCommand(mCurrentState, s, mPathLabel));
+            mExecutorCommands.executeCommand(new MakeStepCommand(mSimulatorContext, s));
 
 //            for (Transition tt : mCurrentState.getOutgoingTransitions()) {
 //                if (tt == t) {
@@ -114,14 +116,22 @@ public class SimulatorWindow extends AnchorPane implements Window {
     private final ScrollPane mScrollPanel;
 
     public SimulatorWindow() {
-        mViewer = new BasicComponentViewer();
 //        AnchorPane.setTopAnchor(mViewer, 38D);
 //        AnchorPane.setLeftAnchor(mViewer, 0D);
 //        AnchorPane.setRightAnchor(mViewer, 0D);
 //        AnchorPane.setBottomAnchor(mViewer, 222D);
-        mExecutorCommands = new ExecutorSimulatorCommands();
+
+        mViewer = new BasicComponentViewer();
         mViewer.setOnMouseClicked(onMouseClick);
-        mScrollPanel = new ScrollPane(mViewer);0
+        mScrollPanel = new ScrollPane(mViewer);
+
+        mSimulatorContext = new SimulatorContext();
+//        mCurrentState = mSimulatorContext.getmCurrentState();
+//        mPathLabel = mSimulatorContext.getmPathLabel();
+//        mStepCount = mSimulatorContext.getmStepCount();
+
+        mExecutorCommands = new ExecutorSimulatorCommands();
+
         AnchorPane.setTopAnchor(mScrollPanel, 38D);
         AnchorPane.setLeftAnchor(mScrollPanel, 0D);
         AnchorPane.setRightAnchor(mScrollPanel, 0D);
@@ -130,7 +140,9 @@ public class SimulatorWindow extends AnchorPane implements Window {
         mViewer.minWidthProperty().bind(mScrollPanel.widthProperty());
         getChildren().add(mScrollPanel);
 
-        mPathLabel = new Label("");
+        mSimulatorContext.setmPathLabel(new Label(""));
+        Label mPathLabel = mSimulatorContext.getmPathLabel();
+//        mPathLabel = new Label("");
         mPathLabel.setPrefHeight(22);
         AnchorPane.setLeftAnchor(mPathLabel, 0D);
         AnchorPane.setRightAnchor(mPathLabel, 0D);
@@ -144,25 +156,28 @@ public class SimulatorWindow extends AnchorPane implements Window {
 
         mBtnUnmakeStep = new Button("Previous Step");
         mBtnUnmakeStep.setOnAction((ActionEvent e) -> {
-            if (mCurrentState.isInitial()) {
-                JOptionPane.showMessageDialog(null, "Estado inicial atingido!");
-            } else {
+            if (!mSimulatorContext.getmCurrentState().isInitial()) {
                 mExecutorCommands.unmakeOperation();
+            }
+            else {
+                JOptionPane.showMessageDialog(null, "Estado inicial atingido!");
             }
         });
 
         mBtnMakeStep = new Button("Next Step");
         mBtnMakeStep.setOnAction((ActionEvent e) -> {
-            mExecutorCommands.executeCommand(new MakeStepCommand(mCurrentState, mPathLabel));
+            mExecutorCommands.executeCommand(new MakeStepCommand(mSimulatorContext));
+            State mCurrentState = mSimulatorContext.getmCurrentState();
             if (mCurrentState.isFinal() || mCurrentState.isError() || mCurrentState.getOutgoingTransitionsCount() == 0) {
                 mBtnStart.setText("Start");
-                mBtnMakeStep.setVisible(false);
-                mBtnUnmakeStep.setVisible(false);
+//                mBtnMakeStep.setVisible(false);
+//                mBtnUnmakeStep.setVisible(false);
+
             }
         });
 
-        mBtnMakeStep.setVisible(false);
-        mBtnUnmakeStep.setVisible(false);
+//        mBtnMakeStep.setVisible(false);
+//        mBtnUnmakeStep.setVisible(false);
 
         mToolbar = new ToolBar();
         mToolbar.getItems().addAll(mBtnStart, mBtnMakeStep, mBtnUnmakeStep);
@@ -195,14 +210,18 @@ public class SimulatorWindow extends AnchorPane implements Window {
         mBtnStart.setText("Restart");
         mExecutorCommands.cleanMadeOperations();
         mExecutorCommands.cleanUnmadeOperations();
-        mBtnMakeStep.setVisible(true);
-        mBtnUnmakeStep.setVisible(true);
-        mStepCount = 0;
-        mSteps.clear();
-        mPathLabel.setText("");
-        mCurrentState = mViewer.getComponent().getInitialState();
+//        mBtnMakeStep.setVisible(true);
+//        mBtnUnmakeStep.setVisible(true);
+//        mStepCount = 0;
+//        mSteps.clear();
+//        mPathLabel.setText("");
+//        mCurrentState = mViewer.getComponent().getInitialState();
 
-        if (mCurrentState == null) {
+        mSimulatorContext.setmStepCount(0);
+        mSimulatorContext.setmPathLabel(new Label(""));
+        mSimulatorContext.setmCurrentState(mViewer.getComponent().getInitialState());
+
+        if (mSimulatorContext.getmCurrentState() == null) {
             JOptionPane.showMessageDialog(null, "O componente não possui um estado inicial!");
             return;
         }
@@ -215,9 +234,9 @@ public class SimulatorWindow extends AnchorPane implements Window {
             SimulatorUtils.applyDisabledStyle(t);
         }
 
-        SimulatorUtils.showChoices(mCurrentState);
-        mSteps.add(new Step("", "", mCurrentState.getLabel()));
-        mPathLabel.setText(mCurrentState.getLabel());
+        SimulatorUtils.showChoices(mSimulatorContext.getmCurrentState());
+        mSteps.add(new Step("", "", mSimulatorContext.getmCurrentState().getLabel()));
+        mSimulatorContext.getmPathLabel().setText(mSimulatorContext.getmCurrentState().getLabel());
     }
 
 //    private void showChoices() {

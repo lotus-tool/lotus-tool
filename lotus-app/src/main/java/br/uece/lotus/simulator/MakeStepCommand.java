@@ -12,23 +12,27 @@ import java.util.*;
 public class MakeStepCommand implements SimulatorCommand {
 
 	private State mPreviousState;
-	private State mCurrentState;
+	private State mState;
+	private String mPreviousPathLabel;
+
+	private State mSimulatorCurrentState;
 	private State mStateSelectedByMouse;
 	private Label mPathLabel;
-//	private String previousPathLabel;
+	private SimulatorContext mSimulatorContext;
 
-
-	public MakeStepCommand(State previousState, Label pathLabel) {
-		mPreviousState = previousState;
-		mPathLabel = pathLabel;
-		// previousPathLabel = mPathLabel.getText();
+	public MakeStepCommand(SimulatorContext simulatorContext) {
+		mSimulatorContext = simulatorContext;
+		mSimulatorCurrentState = simulatorContext.getmCurrentState();
+		mPathLabel = simulatorContext.getmPathLabel();
+		mPreviousPathLabel = mPathLabel.getText();
 	}
 
-	public MakeStepCommand(State previousState, State stateSelectedByMouse, Label pathLabel) {
-		mPreviousState = previousState;
+	public MakeStepCommand(SimulatorContext simulatorContext, State stateSelectedByMouse) {
+		mSimulatorContext = simulatorContext;
+		mSimulatorCurrentState = simulatorContext.getmCurrentState();
+		mPathLabel = simulatorContext.getmPathLabel();
+		mPreviousPathLabel = mPathLabel.getText();
 		mStateSelectedByMouse = stateSelectedByMouse;
-		mPathLabel = pathLabel;
-		// previousPathLabel = mPathLabel.getText();
 	}
 
 	@Override
@@ -38,10 +42,10 @@ public class MakeStepCommand implements SimulatorCommand {
 		if (mStateSelectedByMouse == null) {
 			t = selectTransitionByProbability();
 		} else {
-			t = mPreviousState.getTransitionTo(mStateSelectedByMouse);
+			t = mSimulatorCurrentState.getTransitionTo(mStateSelectedByMouse);
 		}
 
-		for (Transition tt : mPreviousState.getOutgoingTransitionsList()) {
+		for (Transition tt : mSimulatorCurrentState.getOutgoingTransitionsList()) {
 			if (tt == t) {
 				SimulatorUtils.applyEnableStyle(t);
 			} else {
@@ -51,41 +55,46 @@ public class MakeStepCommand implements SimulatorCommand {
 		}
 		// Criar classe separada para Step ????
 		//		mSteps.add(new Step(t.getLabel(), mCurrentState.getLabel(), s.getLabel()));
-		mPathLabel.setText(mPathLabel.getText() + " > " + t.getLabel());
-		mCurrentState = t.getDestiny();
 
-		if (mCurrentState.isFinal() || mCurrentState.isError()) {
+		mPathLabel.setText(mPathLabel.getText() + " > " + t.getLabel());
+		mState = t.getDestiny();
+		mPreviousState = t.getSource();
+		mSimulatorContext.setmCurrentState(mState);
+
+		if (mState.isFinal() || mState.isError()) {
 			mPathLabel.setText(mPathLabel.getText() + " > ENDED");
-			SimulatorUtils.applyEnableStyle(mCurrentState);
-		} else if (mCurrentState.getOutgoingTransitionsCount() == 0) {
+			SimulatorUtils.applyEnableStyle(mState);
+		} else if (mState.getOutgoingTransitionsCount() == 0) {
 			mPathLabel.setText(mPathLabel.getText() + " > DEADLOCK!");
-			SimulatorUtils.applyEnableStyle(mCurrentState);
+			SimulatorUtils.applyEnableStyle(mState);
 		} else {
-			SimulatorUtils.showChoices(mCurrentState);
+			SimulatorUtils.showChoices(mState);
 		}
 	}
 
 	@Override
 	public void undoOperation() {
-		if (mCurrentState.isFinal() || mCurrentState.isError() || mCurrentState.getOutgoingTransitionsCount() == 0) {
-			// Retirar palavra do final até ">". (Expressões regulares?)
-			SimulatorUtils.applyDisabledStyle(mCurrentState);
+		if (mState.isFinal() || mState.isError() || mState.getOutgoingTransitionsCount() == 0) {
+			mPathLabel.setText(mPreviousPathLabel);
+			SimulatorUtils.applyDisabledStyle(mState);
 		} else {
-			SimulatorUtils.hideChoices(mCurrentState);
+			SimulatorUtils.hideChoices(mState);
 		}
 
-		mCurrentState = mPreviousState;
-		// Retornar mPathLabel para o estado anterior. (Expressões regulares?)
+		mSimulatorContext.setmCurrentState(mPreviousState);
+		SimulatorUtils.showChoices(mSimulatorCurrentState);
 		// mSteps.remove(mStep.size());
 
-		for (Transition tt : mCurrentState.getOutgoingTransitionsList()) {
-			SimulatorUtils.applyEnableStyle(tt);
-		}
 	}
 
+	//TODO - Lançar execeção quando as transições do componente não estiverem com probabilidades inconsistentes.
 	private Transition selectTransitionByProbability() {
-		List<Transition> transitionList = mPreviousState.getOutgoingTransitionsList();
+		List<Transition> transitionList = new ArrayList<>();
 		Random randomGenerator = new Random();
+
+		for (Transition t : mSimulatorCurrentState.getOutgoingTransitionsList()) {
+			transitionList.add(t);
+		}
 
 		Collections.sort(transitionList, new Comparator<Transition>() {
 			@Override
@@ -104,5 +113,4 @@ public class MakeStepCommand implements SimulatorCommand {
 
 		return null;
 	}
-
 }
