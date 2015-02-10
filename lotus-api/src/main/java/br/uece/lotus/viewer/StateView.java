@@ -26,6 +26,7 @@ package br.uece.lotus.viewer;
 import br.uece.lotus.State;
 import javafx.scene.control.Label;
 import javafx.scene.layout.Region;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 
 public class StateView extends Region implements View, State.Listener {
@@ -34,6 +35,7 @@ public class StateView extends Region implements View, State.Listener {
     static final int ESPESSURA_PERIMETRO_CIRCULO = 2;    
 
     private final Circle mCircle;
+    private final Circle mSecondCircle;
     private final Label mText;
 
     private State mState;
@@ -46,9 +48,15 @@ public class StateView extends Region implements View, State.Listener {
 
     public StateView() {
         mCircle = new Circle(RAIO_CIRCULO);
-        getChildren().add(mCircle);
+        mSecondCircle = new Circle(RAIO_CIRCULO - 3);
+        mSecondCircle.setFill(null);
+
+        getChildren().addAll(mCircle, mSecondCircle);
+
         mCircle.setLayoutX(RAIO_CIRCULO);
         mCircle.setLayoutY(RAIO_CIRCULO);
+        mSecondCircle.setLayoutX(RAIO_CIRCULO);
+        mSecondCircle.setLayoutY(RAIO_CIRCULO);
 
         mText = new Label();
         mText.layoutXProperty().bind(mCircle.layoutXProperty().subtract(mText.widthProperty().divide(2)));
@@ -82,6 +90,10 @@ public class StateView extends Region implements View, State.Listener {
         style += "-fx-stroke: " + (mState.getBorderColor() == null ? "black" : mState.getBorderColor()) + ";";
         style += "-fx-stroke-width: " + (mState.getBorderWidth() == null ? "1" : mState.getBorderWidth()) + ";";
         mCircle.setStyle(style);
+
+        if (mState.isFinal()) {
+            mSecondCircle.setStroke(Color.BLACK);
+        }
 
         style = "-fx-text-fill: " + (mState.getTextColor() == null ? "black" : mState.getTextColor()) + ";";
         style += "-fx-font-weight: " + (mState.getTextStyle() == null ? "normal" : mState.getTextStyle()) + ";";
