@@ -1,5 +1,6 @@
 package br.uece.lotus.simulator;
 
+import java.util.Deque;
 import java.util.LinkedList;
 import java.util.Queue;
 
@@ -7,8 +8,8 @@ import java.util.Queue;
  * Created by erickbs7 on 29/01/15.
  */
 public class ExecutorSimulatorCommands {
-	private Queue<SimulatorCommand> madeOperations;
-	private Queue<SimulatorCommand> unmadeOperations;
+	private Deque<SimulatorCommand> madeOperations;
+	private Deque<SimulatorCommand> unmadeOperations;
 
 	public ExecutorSimulatorCommands() {
 		madeOperations = new LinkedList<>();
@@ -17,23 +18,23 @@ public class ExecutorSimulatorCommands {
 
 	public void executeCommand(SimulatorCommand command) {
 		command.doOperation();
-		madeOperations.offer(command);
+		madeOperations.addLast(command);
 		unmadeOperations.clear();
 	}
 
 	public void unmakeOperation() {
 		if(!madeOperations.isEmpty()) {
-			SimulatorCommand command = madeOperations.poll();
+			SimulatorCommand command = madeOperations.removeLast();
 			command.undoOperation();
-			unmadeOperations.offer(command);
+			unmadeOperations.addLast(command);
 		}
 	}
 
 	public void remakeOperation() {
 		if(!unmadeOperations.isEmpty()) {
-			SimulatorCommand command = unmadeOperations.poll();
+			SimulatorCommand command = unmadeOperations.removeLast();
 			command.doOperation();
-			madeOperations.offer(command);
+			madeOperations.addLast(command);
 		}
 	}
 
