@@ -141,13 +141,12 @@ public class SimulatorWindow extends AnchorPane implements Window {
         getChildren().add(mScrollPanel);
 
         mSimulatorContext.setmPathLabel(new Label(""));
-        Label mPathLabel = mSimulatorContext.getmPathLabel();
 //        mPathLabel = new Label("");
-        mPathLabel.setPrefHeight(22);
-        AnchorPane.setLeftAnchor(mPathLabel, 0D);
-        AnchorPane.setRightAnchor(mPathLabel, 0D);
-        AnchorPane.setBottomAnchor(mPathLabel, 200D);
-        getChildren().add(mPathLabel);
+        mSimulatorContext.getmPathLabel().setPrefHeight(22);
+        AnchorPane.setLeftAnchor(mSimulatorContext.getmPathLabel(), 0D);
+        AnchorPane.setRightAnchor(mSimulatorContext.getmPathLabel(), 0D);
+        AnchorPane.setBottomAnchor(mSimulatorContext.getmPathLabel(), 200D);
+        getChildren().add(mSimulatorContext.getmPathLabel());
 
         mBtnStart = new Button("Start");
         mBtnStart.setOnAction((ActionEvent e) -> {
@@ -160,7 +159,7 @@ public class SimulatorWindow extends AnchorPane implements Window {
                 mExecutorCommands.unmakeOperation();
             }
             else {
-                JOptionPane.showMessageDialog(null, "Estado inicial atingido!");
+                JOptionPane.showMessageDialog(null, "Intial state was reached!");
             }
         });
 
@@ -218,7 +217,7 @@ public class SimulatorWindow extends AnchorPane implements Window {
 //        mCurrentState = mViewer.getComponent().getInitialState();
 
         mSimulatorContext.setmStepCount(0);
-        mSimulatorContext.setmPathLabel(new Label(""));
+        mSimulatorContext.getmPathLabel().setText("");
         mSimulatorContext.setmCurrentState(mViewer.getComponent().getInitialState());
 
         if (mSimulatorContext.getmCurrentState() == null) {

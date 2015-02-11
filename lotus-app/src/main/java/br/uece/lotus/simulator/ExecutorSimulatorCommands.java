@@ -2,7 +2,6 @@ package br.uece.lotus.simulator;
 
 import java.util.Deque;
 import java.util.LinkedList;
-import java.util.Queue;
 
 /**
  * Created by erickbs7 on 29/01/15.
