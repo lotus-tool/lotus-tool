@@ -38,22 +38,31 @@ import java.util.ArrayList;
 import java.util.List;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.event.EventType;
+import javafx.geometry.Bounds;
+import javafx.geometry.Point2D;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
+import javafx.scene.control.Button;
 import javafx.scene.control.ContextMenu;
+import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.ToolBar;
+import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.Dragboard;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.input.ScrollEvent;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
@@ -78,6 +87,7 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
     private final ToggleButton mBtnTransitionLine;
     private final ToggleButton mBtnTransitionArc;
     private final ToggleButton mBtnEraser;
+    private final MenuButton mBtnZoom;
 
     private final ToolBar mStateToolbar;
     private final ToolBar mTransitionToolbar;
@@ -195,6 +205,7 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
     private View mComponentSobMouse;
     private View mComponentSelecionado;
     private final List<Listener> mListeners = new ArrayList<>();
+    private double mViewerScaleXPadrao,mViewerScaleYPadrao,mViewerTranslateXPadrao,mViewerTranslateYPadrao;
 
     public DesignerWindowImpl(BasicComponentViewer viewer) {
         mToolbar = new ToolBar();
@@ -233,8 +244,37 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
             setModo(MODO_REMOVER);
         });
         mBtnEraser.setToggleGroup(mToggleGroup);
+        
+        mBtnZoom = new MenuButton();
+        mBtnZoom.setGraphic(new ImageView(new Image(getClass().getResourceAsStream("/images/ic_zoom.png"))));
+        MenuItem zoomMais = new MenuItem("", new ImageView(new Image(getClass().getResourceAsStream("/images/ic_zoom_mais.png"))));
+        zoomMais.setOnAction(new EventHandler<ActionEvent>() {
+            public void handle(ActionEvent event) {
+                mViewer.setScaleX(mViewer.getScaleX() * 1.5);
+                mViewer.setScaleY(mViewer.getScaleY() * 1.5);
+            }
+        });
+        MenuItem zoomMenos = new MenuItem("", new ImageView(new Image(getClass().getResourceAsStream("/images/ic_zoom_menos.png"))));
+        zoomMenos.setOnAction(new EventHandler<ActionEvent>() {
+            public void handle(ActionEvent event) {
+                mViewer.setScaleX(mViewer.getScaleX() * 1/1.5);
+                mViewer.setScaleY(mViewer.getScaleY() * 1/1.5);
+            }
+        });
+        MenuItem zoomReset = new MenuItem("", new ImageView(new Image(getClass().getResourceAsStream("/images/ic_zoom_reset.png"))));
+        zoomReset.setOnAction(new EventHandler<ActionEvent>() {
+            public void handle(ActionEvent event) {
+                mViewer.setScaleX(mViewerScaleXPadrao);
+                mViewer.setScaleY(mViewerScaleYPadrao);
+                mViewer.setTranslateX(mViewerTranslateXPadrao);
+                mViewer.setTranslateY(mViewerTranslateYPadrao);
+            }
+        });
+        Tooltip zoomMore = new Tooltip("Ctrl + MouseScroll ↑\nCtrl + MouseScroll ↓\nCtrl + Mouse Button Middle");
+        Tooltip.install(mBtnZoom, zoomMore);
+        mBtnZoom.getItems().addAll(zoomMais,zoomMenos,zoomReset);
 
-        mToolbar.getItems().addAll(mBtnArrow, mBtnState, mBtnTransitionLine, mBtnTransitionArc, mBtnEraser);
+        mToolbar.getItems().addAll(mBtnArrow, mBtnState, mBtnTransitionLine, mBtnTransitionArc, mBtnEraser, mBtnZoom);
 
         mStateToolbar = new ToolBar();
         mStateToolbar.setVisible(false);
@@ -275,6 +315,10 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
         getChildren().add(mScrollPanel);
         mViewer.minHeightProperty().bind(mScrollPanel.heightProperty());
         mViewer.minWidthProperty().bind(mScrollPanel.widthProperty());
+        mViewerScaleXPadrao = mViewer.getScaleX();
+        mViewerScaleYPadrao = mViewer.getScaleY();
+        mViewerTranslateXPadrao = mViewer.getTranslateX();
+        mViewerTranslateYPadrao = mViewer.getTranslateY();
         MenuItem mSetAsInitialMenuItem = new MenuItem("Set as initial");        
         mSetAsInitialMenuItem.setOnAction(mSetStateAsInitial);
         MenuItem mSetAsNormalMenuItem = new MenuItem("Set as normal");
@@ -302,6 +346,7 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
             mViewer.saveAsPng(arq);
             JOptionPane.showMessageDialog(null, "PNG Image successfuly saved!");
         });
+        mViewer.setOnScroll(zoom);
         mComponentContextMenu.getItems().addAll(mSetAsInitialMenuItem, new SeparatorMenuItem(), mSetAsNormalMenuItem, mSetAsFinalMenuItem, mSetAsErrorMenuItem, new SeparatorMenuItem(), mSaveAsPNG);
 
     }
@@ -316,7 +361,14 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
                 mComponentContextMenu.show(mViewer, e.getScreenX(), e.getScreenY());
                 return;
             }
-
+            
+            if(e.isControlDown() && e.getButton() == MouseButton.MIDDLE){
+                mViewer.setScaleX(mViewerScaleXPadrao);
+                mViewer.setScaleY(mViewerScaleYPadrao);
+                mViewer.setTranslateX(mViewerTranslateXPadrao);
+                mViewer.setTranslateY(mViewerTranslateYPadrao);
+            }
+            
             if (mModoAtual == MODO_NENHUM) {
                 setComponenteSelecionado(mComponentSobMouse);
             } else {
@@ -343,7 +395,7 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
             }
         }
     };
-    ////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
 // Mover o mouse
 ////////////////////////////////////////////////////////////////////////////
     private EventHandler<? super MouseEvent> aoMoverMouse = new EventHandler<MouseEvent>() {
@@ -489,6 +541,38 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
         }
 
     };
+///////////////////////////////////////////////////////////////////////////////
+//                             ZOOM                                     //////
+/////////////////////////////////////////////////////////////////////////////
+    private EventHandler<? super ScrollEvent> zoom = new EventHandler<ScrollEvent>() {
+
+        @Override
+        public void handle(ScrollEvent event) {
+            if(event.isControlDown()){
+                final double SCALE_DELTA = 1.1;
+                double scaleFactor = (event.getDeltaY() > 0) ? SCALE_DELTA : 1/SCALE_DELTA;
+                zoom(mViewer, event.getX(), event.getY(),scaleFactor);
+            }
+        }
+    };
+    
+    private void zoom(Node node, double centerX, double centerY, double factor) {  
+        final Point2D center = node.localToParent(centerX, centerY);  
+        final Bounds bounds = node.getBoundsInParent();  
+        final double w = bounds.getWidth();  
+        final double h = bounds.getHeight();  
+
+        final double dw = w * (factor - 1);  
+        final double xr = 2 * (w / 2 - (center.getX() - bounds.getMinX())) / w;  
+
+        final double dh = h * (factor - 1);  
+        final double yr = 2 * (h / 2 - (center.getY() - bounds.getMinY())) / h;  
+
+        node.setScaleX(node.getScaleX() * factor);  
+        node.setScaleY(node.getScaleY() * factor);  
+        node.setTranslateX(node.getTranslateX() + xr * dw / 2);  
+        node.setTranslateY(node.getTranslateY() + yr * dh / 2);  
+    }
 
     @Override
     public Component getComponent() {
