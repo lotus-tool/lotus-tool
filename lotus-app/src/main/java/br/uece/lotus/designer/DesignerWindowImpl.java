@@ -38,12 +38,10 @@ import java.util.ArrayList;
 import java.util.List;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.event.EventType;
 import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
-import javafx.scene.control.Button;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
@@ -53,13 +51,12 @@ import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.ToolBar;
 import javafx.scene.control.Tooltip;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.Dragboard;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
@@ -149,6 +146,16 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
             }
             State s = ((StateView) mComponentSelecionado).getState();
             s.setFinal(true);
+        }
+    };
+        private  EventHandler<ActionEvent> mSetColor = new EventHandler<ActionEvent>() {
+        @Override
+        public void handle(ActionEvent event) {
+            if (mComponentSelecionado == null) {
+                return;
+            }
+            State s = ((StateView) mComponentSelecionado).getState();
+            s.setColor((String) ((MenuItem)event.getSource()).getUserData());
         }
     };
     private int mTransitionViewType;
@@ -327,6 +334,7 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
         mSetAsFinalMenuItem.setOnAction(mSetStateAsError);
         MenuItem mSetAsErrorMenuItem = new MenuItem("Set as final");
         mSetAsErrorMenuItem.setOnAction(mSetStateAsFinal);
+
         
         MenuItem mSaveAsPNG = new MenuItem("Save as PNG");
         mSaveAsPNG.setOnAction((ActionEvent event) -> {
@@ -348,6 +356,49 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
         });
         mViewer.setOnScroll(zoom);
         mComponentContextMenu.getItems().addAll(mSetAsInitialMenuItem, new SeparatorMenuItem(), mSetAsNormalMenuItem, mSetAsFinalMenuItem, mSetAsErrorMenuItem, new SeparatorMenuItem(), mSaveAsPNG);
+
+        Menu menuColor = new Menu("Colors");
+        MenuItem defaultColor = new MenuItem("Default");
+        defaultColor.setOnAction(mSetColor);
+
+        MenuItem pinkColor = new MenuItem("Pink");
+        pinkColor.setUserData("#FF0066");
+        pinkColor.setOnAction(mSetColor);
+
+        MenuItem purpleColor = new MenuItem("Purple");
+        purpleColor.setUserData("#660033");
+        purpleColor.setOnAction(mSetColor);
+
+        MenuItem grayColor = new MenuItem("Gray");
+        grayColor.setUserData("#999966");
+        grayColor.setOnAction(mSetColor);
+
+        MenuItem redColor = new MenuItem("Red");
+        redColor.setUserData("#FF0000");
+        redColor.setOnAction(mSetColor);
+
+        MenuItem yellowColor = new MenuItem("Yellow");
+        yellowColor.setUserData("#FFFF00");
+        yellowColor.setOnAction(mSetColor);
+
+        MenuItem blueColor = new MenuItem("Blue");
+        blueColor.setUserData("#0000ff");
+        blueColor.setOnAction(mSetColor);
+
+        MenuItem blackColor = new MenuItem("Black");
+        blackColor.setUserData("#000000");
+        blackColor.setOnAction(mSetColor);
+
+        MenuItem greenColor = new MenuItem("Green");
+        greenColor.setUserData("#00ff00");
+        greenColor.setOnAction(mSetColor);
+
+        MenuItem whiteColor = new MenuItem("White");
+        whiteColor.setUserData("#FFFFFF");
+        whiteColor.setOnAction(mSetColor);
+        menuColor.getItems().addAll(defaultColor,new SeparatorMenuItem(),greenColor, blueColor,blackColor,yellowColor,whiteColor,redColor,grayColor,pinkColor,purpleColor);
+        mComponentContextMenu.getItems().addAll(new SeparatorMenuItem(), menuColor);
+
 
     }
     ////////////////////////////////////////////////////////////////////////////
