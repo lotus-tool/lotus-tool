@@ -35,12 +35,7 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.ToolBar;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
@@ -52,6 +47,9 @@ import javax.swing.*;
  * @author emerson
  */
 public class SimulatorWindow extends AnchorPane implements Window {
+    private final int MOUSE_STEP = 1;
+    private final int RANDOM_PROBABILISTIC_STEP = 2;
+    private final int RANDOM_STEP = 3;
 
     private SimulatorContext mSimulatorContext;
 
@@ -73,15 +71,19 @@ public class SimulatorWindow extends AnchorPane implements Window {
             if (!(v instanceof StateView)) {
                 return;
             }
+
             State s = ((StateView) v).getState();
             Transition t = mSimulatorContext.getmCurrentState().getTransitionTo(s);
+
             if (t == null) {
                 System.out.println(mSimulatorContext.getmCurrentState().getLabel());
-                System.out.println("-- selecione um estado valido!");
+                System.out.println("-- select a valid state!");
                 return;
             }
 
-            mExecutorCommands.executeCommand(new MakeStepCommand(mSimulatorContext, s));
+            MakeStepCommand madeStep = new MakeStepCommand(mSimulatorContext, s, MOUSE_STEP);
+            mExecutorCommands.executeCommand(madeStep);
+            mSteps.add(new Step(madeStep.getmTransistionLabel(), madeStep.getmPreviousStateLabel(), madeStep.getmStateLabel()));
 
 //            for (Transition tt : mCurrentState.getOutgoingTransitions()) {
 //                if (tt == t) {
@@ -157,26 +159,28 @@ public class SimulatorWindow extends AnchorPane implements Window {
         mBtnUnmakeStep.setOnAction((ActionEvent e) -> {
             if (!mSimulatorContext.getmCurrentState().isInitial()) {
                 mExecutorCommands.unmakeOperation();
+                mSteps.remove(mSteps.size() - 1);
             }
             else {
-                JOptionPane.showMessageDialog(null, "Intial state was reached!");
+                JOptionPane.showMessageDialog(null, "Initial state reached!", "Invalid Operation", JOptionPane.ERROR_MESSAGE);
             }
         });
 
-        mBtnMakeStep = new Button("Next Step");
+        mBtnMakeStep = new Button("Random Step");
         mBtnMakeStep.setOnAction((ActionEvent e) -> {
-            mExecutorCommands.executeCommand(new MakeStepCommand(mSimulatorContext));
+
             State mCurrentState = mSimulatorContext.getmCurrentState();
             if (mCurrentState.isFinal() || mCurrentState.isError() || mCurrentState.getOutgoingTransitionsCount() == 0) {
                 mBtnStart.setText("Start");
-//                mBtnMakeStep.setVisible(false);
-//                mBtnUnmakeStep.setVisible(false);
-
+                JOptionPane.showMessageDialog(null, "Error state or final reached!", "Invalid Operation", JOptionPane.ERROR_MESSAGE);
+            } else {
+                MakeStepCommand madeStep = new MakeStepCommand(mSimulatorContext, RANDOM_PROBABILISTIC_STEP);
+                mExecutorCommands.executeCommand(madeStep);
+                mSteps.add(new Step(madeStep.getmTransistionLabel(), madeStep.getmPreviousStateLabel(), madeStep.getmStateLabel()));
             }
         });
 
-//        mBtnMakeStep.setVisible(false);
-//        mBtnUnmakeStep.setVisible(false);
+
 
         mToolbar = new ToolBar();
         mToolbar.getItems().addAll(mBtnStart, mBtnMakeStep, mBtnUnmakeStep);
@@ -202,17 +206,15 @@ public class SimulatorWindow extends AnchorPane implements Window {
         mToCol.setPrefWidth(100);
         mToCol.setCellValueFactory(new PropertyValueFactory<>("to"));
         mTableView.getColumns().addAll(mActionCol, mFromCol, mToCol);
-//        mTableView.setItems(mSteps);
+        mTableView.setItems(mSteps);
     }
 
     private void start() {
         mBtnStart.setText("Restart");
         mExecutorCommands.cleanMadeOperations();
         mExecutorCommands.cleanUnmadeOperations();
-//        mBtnMakeStep.setVisible(true);
-//        mBtnUnmakeStep.setVisible(true);
 //        mStepCount = 0;
-//        mSteps.clear();
+        mSteps.clear();
 //        mPathLabel.setText("");
 //        mCurrentState = mViewer.getComponent().getInitialState();
 

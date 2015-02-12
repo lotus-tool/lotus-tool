@@ -10,7 +10,7 @@ public class SimulatorContext {
 	private State mCurrentState;
 	private Label mPathLabel;
 	private int mStepCount;
-	// Observable list with step objects stay in this class?
+
 
 	public State getmCurrentState() {
 		return mCurrentState;
@@ -34,5 +34,42 @@ public class SimulatorContext {
 
 	public void setmStepCount(int mStepCount) {
 		this.mStepCount = mStepCount;
+	}
+
+	public static class Step {
+		private String mAction;
+		private String mFrom;
+		private String mTo;
+
+		Step(String action, String from, String to) {
+			mAction = action;
+			mFrom = from;
+			mTo = to;
+		}
+
+		public String getAction() {
+			return mAction;
+		}
+
+		public void setAction(String action) {
+			this.mAction = action;
+		}
+
+		public String getFrom() {
+			return mFrom;
+		}
+
+		public void setFrom(String from) {
+			this.mFrom = from;
+		}
+
+		public String getTo() {
+			return mTo;
+		}
+
+		public void setTo(String to) {
+			this.mTo = to;
+		}
+
 	}
 }
