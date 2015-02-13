@@ -35,70 +35,82 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.ToolBar;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
-import javax.swing.JOptionPane;
+
+import javax.swing.*;
 
 /**
  *
  * @author emerson
  */
 public class SimulatorWindow extends AnchorPane implements Window {
+    private final int MOUSE_STEP = 1;
+    private final int RANDOM_PROBABILISTIC_STEP = 2;
+    private final int RANDOM_STEP = 3;
 
-    private int mStepCount;
-    private State mCurrentState;
+    private SimulatorContext mSimulatorContext;
 
+//    private int mStepCount;
+//    private State mCurrentState;
+//    private final Label mPathLabel;
     private final ToolBar mToolbar;
     private final Button mBtnStart;
-//    private final Button mBtnBackStep;
+    private final Button mBtnMakeStep;
+    private final Button mBtnUnmakeStep;
     private final BasicComponentViewer mViewer;
     private final TableView<Step> mTableView;
-    private final Label mPathLabel;
-    private final EventHandler<? super MouseEvent> aoClicarMouse = new EventHandler<MouseEvent>() {
+    private final ExecutorSimulatorCommands mExecutorCommands;
+
+    private final EventHandler<? super MouseEvent> onMouseClick = new EventHandler<MouseEvent>() {
         @Override
         public void handle(MouseEvent e) {
             View v = mViewer.getViewByMouseCoordinates(e.getX(), e.getY());
             if (!(v instanceof StateView)) {
                 return;
             }
+
             State s = ((StateView) v).getState();
-            Transition t = mCurrentState.getTransitionTo(s);
+            Transition t = mSimulatorContext.getmCurrentState().getTransitionTo(s);
+
             if (t == null) {
-                System.out.println("-- selecione um estado valido!");
+                System.out.println(mSimulatorContext.getmCurrentState().getLabel());
+                System.out.println("-- select a valid state!");
                 return;
             }
 
-            for (Transition tt : mCurrentState.getOutgoingTransitions()) {
-                if (tt == t) {
-                    applyEnableStyle(t);
-                } else {
-                    applyDisabledStyle(tt);
-                    applyDisabledStyle(tt.getDestiny());
-                }
-            }
-            mSteps.add(new Step(t.getLabel(), mCurrentState.getLabel(), s.getLabel()));
-            mPathLabel.setText(mPathLabel.getText() + " > " + t.getLabel());
-            mCurrentState = s;
-            if (s.isFinal() || s.isError()) {
-                mPathLabel.setText(mPathLabel.getText() + " > ENDED");
-                applyEnableStyle(mCurrentState);
-                mBtnStart.setText("Start");
-            } else if (s.getOutgoingTransitionsCount() == 0) {
-                mPathLabel.setText(mPathLabel.getText() + " DEADLOCK!");
-                applyEnableStyle(mCurrentState);
-                mBtnStart.setText("Start");
-            } else {
-                showChoices();
-            }
+            MakeStepCommand madeStep = new MakeStepCommand(mSimulatorContext, s, MOUSE_STEP);
+            mExecutorCommands.executeCommand(madeStep);
+            mSteps.add(new Step(madeStep.getmTransistionLabel(), madeStep.getmPreviousStateLabel(), madeStep.getmStateLabel()));
+
+//            for (Transition tt : mCurrentState.getOutgoingTransitions()) {
+//                if (tt == t) {
+//                    SimulatorUtils.applyEnableStyle(t);
+//                } else {
+//                    SimulatorUtils.applyDisabledStyle(tt);
+//                    SimulatorUtils.applyDisabledStyle(tt.getDestiny());
+//                }
+//            }
+//
+//            mSteps.add(new Step(t.getLabel(), mCurrentState.getLabel(), s.getLabel()));
+//            mPathLabel.setText(mPathLabel.getText() + " > " + t.getLabel());
+//            mCurrentState = s;
+//            if (s.isFinal() || s.isError()) {
+//                mPathLabel.setText(mPathLabel.getText() + " > ENDED");
+//                SimulatorUtils.applyEnableStyle(mCurrentState);
+//                mBtnStart.setText("Start");
+//            } else if (s.getOutgoingTransitionsCount() == 0) {
+//                mPathLabel.setText(mPathLabel.getText() + " DEADLOCK!");
+//                SimulatorUtils.applyEnableStyle(mCurrentState);
+//                mBtnStart.setText("Start");
+//            } else {
+//                SimulatorUtils.showChoices(mCurrentState);
+//            }
         }
     };
+
     private final TableColumn<Step, String> mActionCol;
     private final TableColumn<Step, String> mFromCol;
     private final TableColumn<Step, String> mToCol;
@@ -106,13 +118,22 @@ public class SimulatorWindow extends AnchorPane implements Window {
     private final ScrollPane mScrollPanel;
 
     public SimulatorWindow() {
-        mViewer = new BasicComponentViewer();
 //        AnchorPane.setTopAnchor(mViewer, 38D);
 //        AnchorPane.setLeftAnchor(mViewer, 0D);
 //        AnchorPane.setRightAnchor(mViewer, 0D);
 //        AnchorPane.setBottomAnchor(mViewer, 222D);
-        mViewer.setOnMouseClicked(aoClicarMouse);
+
+        mViewer = new BasicComponentViewer();
+        mViewer.setOnMouseClicked(onMouseClick);
         mScrollPanel = new ScrollPane(mViewer);
+
+        mSimulatorContext = new SimulatorContext();
+//        mCurrentState = mSimulatorContext.getmCurrentState();
+//        mPathLabel = mSimulatorContext.getmPathLabel();
+//        mStepCount = mSimulatorContext.getmStepCount();
+
+        mExecutorCommands = new ExecutorSimulatorCommands();
+
         AnchorPane.setTopAnchor(mScrollPanel, 38D);
         AnchorPane.setLeftAnchor(mScrollPanel, 0D);
         AnchorPane.setRightAnchor(mScrollPanel, 0D);
@@ -121,14 +142,48 @@ public class SimulatorWindow extends AnchorPane implements Window {
         mViewer.minWidthProperty().bind(mScrollPanel.widthProperty());
         getChildren().add(mScrollPanel);
 
+        mSimulatorContext.setmPathLabel(new Label(""));
+//        mPathLabel = new Label("");
+        mSimulatorContext.getmPathLabel().setPrefHeight(22);
+        AnchorPane.setLeftAnchor(mSimulatorContext.getmPathLabel(), 0D);
+        AnchorPane.setRightAnchor(mSimulatorContext.getmPathLabel(), 0D);
+        AnchorPane.setBottomAnchor(mSimulatorContext.getmPathLabel(), 200D);
+        getChildren().add(mSimulatorContext.getmPathLabel());
+
         mBtnStart = new Button("Start");
         mBtnStart.setOnAction((ActionEvent e) -> {
             start();
         });
-//        mBtnBackStep = new Button("Back");
+
+        mBtnUnmakeStep = new Button("Previous Step");
+        mBtnUnmakeStep.setOnAction((ActionEvent e) -> {
+            if (!mSimulatorContext.getmCurrentState().isInitial()) {
+                mExecutorCommands.unmakeOperation();
+                mSteps.remove(mSteps.size() - 1);
+            }
+            else {
+                JOptionPane.showMessageDialog(null, "Initial state reached!", "Invalid Operation", JOptionPane.ERROR_MESSAGE);
+            }
+        });
+
+        mBtnMakeStep = new Button("Random Step");
+        mBtnMakeStep.setOnAction((ActionEvent e) -> {
+
+            State mCurrentState = mSimulatorContext.getmCurrentState();
+            if (mCurrentState.isFinal() || mCurrentState.isError() || mCurrentState.getOutgoingTransitionsCount() == 0) {
+                mBtnStart.setText("Start");
+                JOptionPane.showMessageDialog(null, "Error state or final reached!", "Invalid Operation", JOptionPane.ERROR_MESSAGE);
+            } else {
+                MakeStepCommand madeStep = new MakeStepCommand(mSimulatorContext, RANDOM_PROBABILISTIC_STEP);
+                mExecutorCommands.executeCommand(madeStep);
+                mSteps.add(new Step(madeStep.getmTransistionLabel(), madeStep.getmPreviousStateLabel(), madeStep.getmStateLabel()));
+            }
+        });
+
+
 
         mToolbar = new ToolBar();
-        mToolbar.getItems().addAll(mBtnStart);
+        mToolbar.getItems().addAll(mBtnStart, mBtnMakeStep, mBtnUnmakeStep);
         AnchorPane.setTopAnchor(mToolbar, 0D);
         AnchorPane.setLeftAnchor(mToolbar, 0D);
         AnchorPane.setRightAnchor(mToolbar, 0D);
@@ -152,88 +207,91 @@ public class SimulatorWindow extends AnchorPane implements Window {
         mToCol.setCellValueFactory(new PropertyValueFactory<>("to"));
         mTableView.getColumns().addAll(mActionCol, mFromCol, mToCol);
         mTableView.setItems(mSteps);
-
-        mPathLabel = new Label("");
-        mPathLabel.setPrefHeight(22);
-        AnchorPane.setLeftAnchor(mPathLabel, 0D);
-        AnchorPane.setRightAnchor(mPathLabel, 0D);
-        AnchorPane.setBottomAnchor(mPathLabel, 200D);
-        getChildren().add(mPathLabel);
     }
 
     private void start() {
         mBtnStart.setText("Restart");
-        mStepCount = 0;
+        mExecutorCommands.cleanMadeOperations();
+        mExecutorCommands.cleanUnmadeOperations();
+//        mStepCount = 0;
         mSteps.clear();
-        mPathLabel.setText("");
-        mCurrentState = mViewer.getComponent().getInitialState();
-        if (mCurrentState == null) {
+//        mPathLabel.setText("");
+//        mCurrentState = mViewer.getComponent().getInitialState();
+
+        mSimulatorContext.setmStepCount(0);
+        mSimulatorContext.getmPathLabel().setText("");
+        mSimulatorContext.setmCurrentState(mViewer.getComponent().getInitialState());
+
+        if (mSimulatorContext.getmCurrentState() == null) {
             JOptionPane.showMessageDialog(null, "O componente não possui um estado inicial!");
             return;
         }
+
         for (State s : mViewer.getComponent().getStates()) {
-            applyDisabledStyle(s);
+            SimulatorUtils.applyDisabledStyle(s);
         }
+
         for (Transition t : mViewer.getComponent().getTransitions()) {
-            applyDisabledStyle(t);
+            SimulatorUtils.applyDisabledStyle(t);
         }
-        showChoices();
-        mSteps.add(new Step("", "", mCurrentState.getLabel()));
-        mPathLabel.setText(mCurrentState.getLabel());
+
+        SimulatorUtils.showChoices(mSimulatorContext.getmCurrentState());
+        mSteps.add(new Step("", "", mSimulatorContext.getmCurrentState().getLabel()));
+        mSimulatorContext.getmPathLabel().setText(mSimulatorContext.getmCurrentState().getLabel());
     }
 
-    private void showChoices() {
-        applyEnableStyle(mCurrentState);
-        for (Transition t : mCurrentState.getOutgoingTransitions()) {
-            applyChoiceStyle(t);
-            applyChoiceStyle(t.getDestiny());
-        }
-    }
-
-    private void applyEnableStyle(State s) {
-        s.setColor(null);
-        s.setTextColor("black");
-        s.setTextSyle(State.TEXTSTYLE_NORMAL);
-        s.setBorderColor("black");
-        s.setBorderWidth(1);
-    }
-
-    private void applyEnableStyle(Transition t) {
-        t.setColor("black");
-        t.setTextSyle(Transition.TEXTSTYLE_NORMAL);
-        t.setTextColor("black");
-        t.setWidth(1);
-    }
-
-    private void applyDisabledStyle(State s) {
-        s.setColor("#d0d0d0");
-        s.setTextColor("#c0c0c0");
-        s.setTextSyle(State.TEXTSTYLE_NORMAL);
-        s.setBorderColor("gray");
-        s.setBorderWidth(1);
-    }
-
-    private void applyDisabledStyle(Transition t) {
-        t.setColor("#d0d0d0");
-        t.setTextColor("#c0c0c0");
-        t.setTextSyle(Transition.TEXTSTYLE_NORMAL);
-        t.setWidth(1);
-    }
-
-    private void applyChoiceStyle(Transition t) {
-        t.setColor("blue");
-        t.setTextSyle(Transition.TEXTSTYLE_BOLD);
-        t.setTextColor("blue");
-        t.setWidth(2);
-    }
-
-    private void applyChoiceStyle(State s) {
-        s.setColor(null);
-        s.setBorderColor("blue");
-        s.setTextSyle(Transition.TEXTSTYLE_BOLD);
-        s.setTextColor("blue");
-        s.setBorderWidth(2);
-    }
+//    private void showChoices() {
+//        applyEnableStyle(mCurrentState);
+//        for (Transition t : mCurrentState.getOutgoingTransitions()) {
+//            applyChoiceStyle(t);
+//            applyChoiceStyle(t.getDestiny());
+//        }
+//    }
+//
+//    private void applyEnableStyle(State s) {
+//        s.setColor(null);
+//        s.setTextColor("black");
+//        s.setTextSyle(State.TEXTSTYLE_NORMAL);
+//        s.setBorderColor("black");
+//        s.setBorderWidth(1);
+//    }
+//
+//    private void applyEnableStyle(Transition t) {
+//        t.setColor("black");
+//        t.setTextSyle(Transition.TEXTSTYLE_NORMAL);
+//        t.setTextColor("black");
+//        t.setWidth(1);
+//    }
+//
+//    private void applyDisabledStyle(State s) {
+//        s.setColor("#d0d0d0");
+//        s.setTextColor("#c0c0c0");
+//        s.setTextSyle(State.TEXTSTYLE_NORMAL);
+//        s.setBorderColor("gray");
+//        s.setBorderWidth(1);
+//    }
+//
+//    private void applyDisabledStyle(Transition t) {
+//        t.setColor("#d0d0d0");
+//        t.setTextColor("#c0c0c0");
+//        t.setTextSyle(Transition.TEXTSTYLE_NORMAL);
+//        t.setWidth(1);
+//    }
+//
+//    private void applyChoiceStyle(Transition t) {
+//        t.setColor("blue");
+//        t.setTextSyle(Transition.TEXTSTYLE_BOLD);
+//        t.setTextColor("blue");
+//        t.setWidth(2);
+//    }
+//
+//    private void applyChoiceStyle(State s) {
+//        s.setColor(null);
+//        s.setBorderColor("blue");
+//        s.setTextSyle(Transition.TEXTSTYLE_BOLD);
+//        s.setTextColor("blue");
+//        s.setBorderWidth(2);
+//    }
 
     @Override
     public Component getComponent() {
