@@ -66,13 +66,16 @@ public class MakeStepCommand implements SimulatorCommand {
 			if (tt == t) {
 				SimulatorUtils.applyEnableStyle(t);
 			} else {
-				SimulatorUtils.applyDisabledStyle(tt);
-				SimulatorUtils.applyDisabledStyle(tt.getDestiny());
+				if (!tt.getDestiny().isVisited()) {
+					SimulatorUtils.applyDisabledStyle(tt);
+					SimulatorUtils.applyDisabledStyle(tt.getDestiny());
+				}
 			}
 		}
 
 		mSimulatorPathLabel.setText(mSimulatorPathLabel.getText() + " > " + t.getLabel());
 		mState = t.getDestiny();
+		mState.setVisited(true);
 		mPreviousState = t.getSource();
 		mTransition = t;
 		mSimulatorContext.setmCurrentState(mState);

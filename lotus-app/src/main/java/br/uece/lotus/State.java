@@ -74,6 +74,8 @@ public class State {
     private boolean mError;
     private boolean mFinal;
 
+    private boolean mVisited;
+
     State(Component c) {
         mComponent = c;
     }
@@ -209,6 +211,12 @@ public class State {
         for (Listener l : mListeners) {
             l.onChange(this);
         }
+    }
+
+    public boolean isVisited() { return mVisited; }
+
+    public void setVisited(boolean value) {
+        mVisited = value;
     }
 
     public Iterable<Transition> getIncomingTransitions() {

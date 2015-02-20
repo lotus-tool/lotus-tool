@@ -264,6 +264,13 @@ public class Component {
         }
     }
 
+    public void clearVisitedStates() {
+        for (State s : mStates) {
+            s.setVisited(false);
+        }
+    }
+
+
     @Override
     public Component clone() throws CloneNotSupportedException {
         Component c = new Component();
