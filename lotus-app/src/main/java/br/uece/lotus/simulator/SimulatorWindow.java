@@ -218,7 +218,7 @@ public class SimulatorWindow extends AnchorPane implements Window {
 //        mPathLabel.setText("");
 //        mCurrentState = mViewer.getComponent().getInitialState();
 
-        mViewer.getComponent().clearVisitedStates();
+        mViewer.getComponent().clearVisitedStatesCount();
 
         mSimulatorContext.setmStepCount(0);
         mSimulatorContext.getmPathLabel().setText("");

@@ -73,8 +73,8 @@ public class State {
     private boolean mInitial;
     private boolean mError;
     private boolean mFinal;
-
-    private boolean mVisited;
+    //Used in simulations
+    private int mVisitedStatesCount;
 
     State(Component c) {
         mComponent = c;
@@ -213,11 +213,9 @@ public class State {
         }
     }
 
-    public boolean isVisited() { return mVisited; }
+    public int getmVisitedStatesCount() { return mVisitedStatesCount; }
 
-    public void setVisited(boolean value) {
-        mVisited = value;
-    }
+    public void setmVisitedStatesCount(int value) { mVisitedStatesCount = value; }
 
     public Iterable<Transition> getIncomingTransitions() {
         return mTransicoesEntrada;

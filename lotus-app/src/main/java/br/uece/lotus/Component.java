@@ -264,12 +264,11 @@ public class Component {
         }
     }
 
-    public void clearVisitedStates() {
+    public void clearVisitedStatesCount() {
         for (State s : mStates) {
-            s.setVisited(false);
+            s.setmVisitedStatesCount(0);
         }
     }
-
 
     @Override
     public Component clone() throws CloneNotSupportedException {

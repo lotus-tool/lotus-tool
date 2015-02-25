@@ -66,7 +66,7 @@ public class MakeStepCommand implements SimulatorCommand {
 			if (tt == t) {
 				SimulatorUtils.applyEnableStyle(t);
 			} else {
-				if (!tt.getDestiny().isVisited()) {
+				if (tt.getDestiny().getmVisitedStatesCount() > 0) {
 					SimulatorUtils.applyDisabledStyle(tt);
 					SimulatorUtils.applyDisabledStyle(tt.getDestiny());
 				}
@@ -75,7 +75,7 @@ public class MakeStepCommand implements SimulatorCommand {
 
 		mSimulatorPathLabel.setText(mSimulatorPathLabel.getText() + " > " + t.getLabel());
 		mState = t.getDestiny();
-		mState.setVisited(true);
+		mState.setmVisitedStatesCount(mState.getmVisitedStatesCount() + 1);
 		mPreviousState = t.getSource();
 		mTransition = t;
 		mSimulatorContext.setmCurrentState(mState);
@@ -93,9 +93,15 @@ public class MakeStepCommand implements SimulatorCommand {
 
 	@Override
 	public void undoOperation() {
+		mState.setmVisitedStatesCount(mState.getmVisitedStatesCount() - 1);
+
 		if (mState.isFinal() || mState.isError() || mState.getOutgoingTransitionsCount() == 0) {
 			mSimulatorPathLabel.setText(mPreviousPathLabel);
-			SimulatorUtils.applyDisabledStyle(mState);
+			if (mState.getmVisitedStatesCount() < 1) {
+				SimulatorUtils.applyDisabledStyle(mState);
+				SimulatorUtils.applyDisabledStyle(mPreviousState.getTransitionTo(mState));
+				mState.setmVisitedStatesCount(0);
+			}
 		} else {
 			mSimulatorPathLabel.setText(mPreviousPathLabel);
 			SimulatorUtils.hideChoices(mState);
