@@ -48,11 +48,15 @@ public class ProjectDialogsHelper extends Plugin {
     }
 
     public void save(Project project, ProjectSerializer serializer, String title, String extensionDescription, String extension) {
-        realSave(project, serializer, false, title, extensionDescription, extension);
+        realSave(project, serializer, false, true, title, extensionDescription, extension);
     }
 
     public void saveAs(Project project, ProjectSerializer serializer, String title, String extensionDescription, String extension) {
-        realSave(project, serializer, true, title, extensionDescription, extension);
+        realSave(project, serializer, true, true, title, extensionDescription, extension);
+    }
+
+    public void saveCopy(Project project, ProjectSerializer serializer, String title, String extensionDescription, String extension) {
+        realSave(project, serializer, true, false, title, extensionDescription, extension);
     }
 
     public Project open(ProjectSerializer serializer, String title, String extensionDescription, String extension) {
@@ -73,13 +77,13 @@ public class ProjectDialogsHelper extends Plugin {
         return p;
     }
 
-    private void realSave(Project project, ProjectSerializer serializer, boolean force, String title, String extensionDescription, String extension) {
+    private void realSave(Project project, ProjectSerializer serializer, boolean forceShowDialog, boolean cacheFileName, String title, String extensionDescription, String extension) {
         if (project == null) {
             JOptionPane.showMessageDialog(null, "Please select a project!");
             return;
         }
         File f = (File) project.getValue("file");
-        if (force || f == null) {
+        if (forceShowDialog || f == null) {
             f = getFileChooser(title, extensionDescription, extension, project.getName()).showSaveDialog(null);
             if (f == null) {
                 return;
@@ -87,7 +91,9 @@ public class ProjectDialogsHelper extends Plugin {
         }
         try (FileOutputStream out = new FileOutputStream(f)) {
             serializer.toStream(project, out);
-            project.setValue("file", f);
+            if (cacheFileName) {
+                project.setValue("file", f);
+            }
         } catch (Exception e) {
             mDialogsHelper.showException(e);
         }

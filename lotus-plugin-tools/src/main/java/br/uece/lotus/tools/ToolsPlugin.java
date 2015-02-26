@@ -38,7 +38,7 @@ public class ToolsPlugin extends Plugin {
                 JOptionPane.showMessageDialog(null, "There is no project avaliable!");
                 return;
             }
-            mProjectDialogsHelper.saveAs(p, mLTSASerializer, "Export project to LTSA", "LTSA model (*.lts)", "*.lts");
+            mProjectDialogsHelper.saveCopy(p, mLTSASerializer, "Export project to LTSA", "LTSA model (*.lts)", "*.lts");
         }
     };
     private final Runnable mExportToPrism = new Runnable() {        
@@ -49,7 +49,7 @@ public class ToolsPlugin extends Plugin {
                 JOptionPane.showMessageDialog(null, "There is no project avaliable!");
                 return;
             }
-            mProjectDialogsHelper.saveAs(p, mPrismSerializer, "Export project to Prism", "Prism model (*.prism)", "*.prism");
+            mProjectDialogsHelper.saveCopy(p, mPrismSerializer, "Export project to Prism", "Prism model (*.prism)", "*.prism");
         }
     };
 
@@ -57,7 +57,9 @@ public class ToolsPlugin extends Plugin {
         @Override
         public void run() {
             Project p = mProjectDialogsHelper.open(mLTSASerializer, "Import project from LTSA", "LTSA Files (*.lts)", "*.lts");
-            mProjectExplorer.open(p);
+            if (p != null) {
+                mProjectExplorer.open(p);
+            }
         }
     };
     

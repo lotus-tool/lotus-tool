@@ -42,6 +42,7 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 
+import java.lang.IllegalArgumentException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -194,6 +195,9 @@ public final class ProjectExplorerPlugin extends Plugin implements ProjectExplor
 
     @Override
     public void open(Project p) {
+        if (p == null) {
+            throw new IllegalArgumentException("project can not be null!");
+        }
         TreeItem<Wrapper> itm = findItem(mProjectView.getRoot(), p);
         if (itm == null) {
             p.addListener(mProjectListener);
@@ -223,6 +227,9 @@ public final class ProjectExplorerPlugin extends Plugin implements ProjectExplor
 
     @Override
     public void close(Project p) {
+        if (p == null) {
+            throw new IllegalArgumentException("project can not be null!");
+        }
         TreeItem<Wrapper> itm = findItem(mProjectView.getRoot(), p);
         if (itm != null) {
             List<TreeItem<Wrapper>> aux = itm.getChildren();
