@@ -92,7 +92,7 @@ public class Startup extends Application {
 
 		stage.setScene(scene);
 		stage.show();
-		stage.setTitle("LoTuS 2.13 (alpha)");
+		stage.setTitle("LoTuS 2.13.1 (alpha)");
 	}
 
 	private void registerModules(ExtensionManager extensionManager) {

@@ -223,6 +223,9 @@ public class Transition {
         if (!Objects.equals(this.mLabel, other.mLabel)) {
             return false;
         }
+        if (!Objects.equals(this.mProbability, other.mProbability)) {
+            return false;
+        }
         return true;
     }
 
