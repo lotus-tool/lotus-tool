@@ -543,7 +543,8 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
                 }
                 if(mComponentSobMouse instanceof StateView){
                 setComponenteSelecionado(mComponentSobMouse);
-                StateView stateView= (StateView)mComponentSobMouse;i
+                StateView stateView= (StateView)mComponentSobMouse;
+                State state=stateView.getState();
                 statesSelecionados.add(state);
                 modoCriacaoDoRetangulo=false;
                 return;
