@@ -24,7 +24,6 @@
 
 package br.uece.seed.ext;
 
-import br.uece.seed.app.Startup;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -32,7 +31,7 @@ import java.util.logging.Logger;
 
 public class ExtensionManager {
 
-    private static final Logger logger = Logger.getLogger(Startup.class.getName());    
+    private static final Logger logger = Logger.getLogger(ExtensionManager.class.getName());
     private final List<Plugin> mPlugins = new ArrayList<>();    
 
     public void registerModule(Module m) {        

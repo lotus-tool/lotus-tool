@@ -21,34 +21,28 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package br.uece.seed.app;
 
-import java.io.InputStream;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyCombination;
+package br.uece.lotus.viewer;
+
+import br.uece.lotus.project.ProjectExplorer;
+import br.uece.seed.ext.ExtensionManager;
+import br.uece.seed.ext.Plugin;
 
 /**
  *
  * @author emerson
  */
-public interface ExtensibleMenu {
+public class ComponentViewer extends Plugin {
+    private ProjectExplorer mProjectExplorer;
 
-    void triggerDefaultAction();
-
-    public interface ItemBuilder {
-        ItemBuilder showSeparator(boolean v);
-        ItemBuilder setGraphic(InputStream graphic);
-        ItemBuilder setDefault(boolean value);
-        ItemBuilder setWeight(int weight);
-        ItemBuilder setAction(Runnable action);
-        ItemBuilder setAccelerator(KeyCode key, KeyCombination.Modifier... modifiers);
-        ItemBuilder hideText(boolean v);
-        void create();
+    @Override
+    public void onStart(ExtensionManager extensionManager) throws Exception {
+        mProjectExplorer = extensionManager.get(ProjectExplorer.class);
+        mProjectExplorer.getComponentMenu().addItem(Integer.MAX_VALUE, "Save as PNG", () -> {
+            
+        });
     }
     
-    ItemBuilder newItem(String path);
     
-    @Deprecated
-    void addItem(int weight, String path, Runnable action);
     
 }

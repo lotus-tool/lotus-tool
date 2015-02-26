@@ -1,0 +1,301 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.net.*?>
+<?import java.util.*?>
+<?import javafx.collections.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.input.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.paint.*?>
+<?import javafx.scene.text.*?>
+<?scenebuilder-classpath-element editor?>
+
+<AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="br.uece.lotus.app.MainSceneController">
+  <children>
+    <MenuBar fx:id="mMnuPrincipal" prefHeight="26.0" prefWidth="607.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <menus>
+        <Menu mnemonicParsing="false" text="File">
+          <items>
+            <MenuItem mnemonicParsing="false" onAction="#handleNovoProjeto" text="New Project">
+              <accelerator>
+                <KeyCodeCombination alt="UP" code="N" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+              </accelerator>
+            </MenuItem>
+            <MenuItem mnemonicParsing="false" onAction="#handleNovoComponente" text="New Component" fx:id="btnNovo">
+              <accelerator>
+                <KeyCodeCombination alt="UP" code="N" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+              </accelerator>
+            </MenuItem>
+            <MenuItem mnemonicParsing="false" onAction="#handleAbrirProjeto" text="Open Project..." fx:id="btnAbrir">
+              <accelerator>
+                <KeyCodeCombination alt="UP" code="A" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+              </accelerator>
+            </MenuItem>
+            <MenuItem mnemonicParsing="false" onAction="#handleSalvarProjeto" text="Save Project..." fx:id="btnSalvar">
+              <accelerator>
+                <KeyCodeCombination alt="UP" code="S" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+              </accelerator>
+            </MenuItem>
+            <MenuItem mnemonicParsing="false" onAction="#handleSalvarComoProjeto" text="Save Project as..." />
+            <MenuItem mnemonicParsing="false" onAction="#handleSair" text="Exit" fx:id="miFechar" />
+          </items>
+        </Menu>
+        <Menu mnemonicParsing="false" text="About" />
+      </menus>
+    </MenuBar>
+    <ToolBar id="mPnlFerramentas" minHeight="36.0" minWidth="-1.0" orientation="HORIZONTAL" prefHeight="50.0" prefWidth="607.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="26.0">
+      <items>
+        <Button id="btnAbas" fx:id="btnNovoComponente" cancelButton="false" defaultButton="false" graphicTextGap="4.0" minWidth="37.0" mnemonicParsing="false" onAction="#handleNovoComponente" prefHeight="35.0" prefWidth="37.0" text="">
+          <graphic>
+            <ImageView disable="false" fitHeight="24.0" fitWidth="24.0" mouseTransparent="true" pickOnBounds="true" preserveRatio="false" smooth="false">
+              <image>
+                <Image url="@component-new.png" />
+              </image>
+            </ImageView>
+          </graphic>
+        </Button>
+        <Button id="btnNewProject" fx:id="btnNovoProjeto" minWidth="37.0" mnemonicParsing="false" onAction="#handleNovoProjeto" prefHeight="35.0" prefWidth="37.0" text="">
+          <graphic>
+            <ImageView disable="false" fitHeight="24.0" fitWidth="24.0" mouseTransparent="true" pickOnBounds="true" preserveRatio="false" smooth="false">
+              <image>
+                <Image url="@project-new.png" />
+              </image>
+            </ImageView>
+          </graphic>
+        </Button>
+        <Button id="btnOpenProject" fx:id="btnAbrirProjeto" minWidth="37.0" mnemonicParsing="false" onAction="#handleAbrirProjeto" prefHeight="35.0" prefWidth="37.0" text="">
+          <graphic>
+            <ImageView disable="false" fitHeight="24.0" fitWidth="24.0" mouseTransparent="true" pickOnBounds="true" preserveRatio="false" smooth="false">
+              <image>
+                <Image url="@project-open.png" />
+              </image>
+            </ImageView>
+          </graphic>
+        </Button>
+        <Button fx:id="btnSalvarProjeto" minWidth="37.0" mnemonicParsing="false" onAction="#handleSalvarProjeto" prefHeight="35.0" prefWidth="37.0" text="">
+          <graphic>
+            <ImageView disable="false" fitHeight="24.0" fitWidth="24.0" mouseTransparent="true" pickOnBounds="true" preserveRatio="false" smooth="false">
+              <image>
+                <Image url="@project-save.png" />
+              </image>
+            </ImageView>
+          </graphic>
+        </Button>
+      </items>
+    </ToolBar>
+    <BorderPane prefHeight="387.0" prefWidth="607.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="76.0">
+      <center>
+        <SplitPane dividerPositions="0.350253807106599" focusTraversable="true" prefHeight="387.0" prefWidth="607.0" style="" BorderPane.alignment="CENTER">
+          <items>
+            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0" style="-fx-border-style: none;">
+              <children>
+                <SplitPane dividerPositions="0.2803921568627451" focusTraversable="true" orientation="VERTICAL" prefHeight="200.0" prefWidth="160.0" style="-fx-border-width: 0;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                  <items>
+                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
+                      <children>
+                        <Label prefHeight="24.0" prefWidth="179.0" style="-fx-background-color: linear-gradient(to bottom, white, gray);&#10;-fx-font-weight: bold;&#10;-fx-padding: 0 0 0 5;" text="Components" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                        <ListView fx:id="mLstComponents" prefHeight="171.0" prefWidth="177.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="24.0" />
+                      </children>
+                    </AnchorPane>
+                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
+                      <children>
+                        <Label minWidth="-1.0" prefHeight="25.0" style="-fx-background-color: linear-gradient(to bottom, white, gray);&#10;-fx-font-weight: bold;&#10;-fx-padding: 0 0 0 5;" text="Properties" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                        <ScrollPane fitToHeight="false" fitToWidth="false" hbarPolicy="NEVER" prefHeight="200.0" prefWidth="200.0" style="-fx-border-style: none;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="25.0">
+                          <content>
+                            <AnchorPane id="Content" maxHeight="-1.0" maxWidth="-1.0" minHeight="0.0" minWidth="0.0" prefHeight="221.0" prefWidth="231.0" style="-fx-border-style: none;">
+                              <children>
+                                <VBox maxWidth="1.7976931348623157E308" prefHeight="179.0" prefWidth="293.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                  <children>
+                                    <HBox maxWidth="1.7976931348623157E308" minWidth="-1.0" prefHeight="-1.0" prefWidth="-1.0" spacing="5.0">
+                                      <children>
+                                        <Label alignment="CENTER_RIGHT" contentDisplay="LEFT" maxHeight="1.7976931348623157E308" minHeight="-1.0" minWidth="-Infinity" prefHeight="22.0" prefWidth="70.0" text="Name" textAlignment="LEFT" underline="false" wrapText="false">
+                                          <font>
+                                            <Font size="12.0" fx:id="x1" />
+                                          </font>
+                                        </Label>
+                                        <TextField fx:id="mEdtName" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-1.0" prefHeight="22.0" prefWidth="159.0" HBox.hgrow="ALWAYS" />
+                                      </children>
+                                      <padding>
+                                        <Insets left="5.0" right="5.0" top="5.0" />
+                                      </padding>
+                                    </HBox>
+                                    <HBox maxWidth="1.7976931348623157E308" minWidth="-1.0" prefHeight="26.0" prefWidth="-1.0" spacing="5.0">
+                                      <children>
+                                        <Label alignment="CENTER_RIGHT" contentDisplay="LEFT" font="$x1" minWidth="-Infinity" prefHeight="21.0" prefWidth="70.0" text="Default" textAlignment="LEFT" underline="false" wrapText="false" />
+                                        <ChoiceBox fx:id="mCbxDefault" maxWidth="1.7976931348623157E308" prefWidth="151.0" HBox.hgrow="ALWAYS">
+                                          <items>
+                                            <FXCollections fx:factory="observableArrayList">
+                                              <String fx:value="Item 1" />
+                                              <String fx:value="Item 2" />
+                                              <String fx:value="Item 3" />
+                                            </FXCollections>
+                                          </items>
+                                        </ChoiceBox>
+                                      </children>
+                                      <padding>
+                                        <Insets left="5.0" right="5.0" top="5.0" />
+                                      </padding>
+                                    </HBox>
+                                    <HBox minWidth="-1.0" prefHeight="26.0" prefWidth="-1.0" spacing="5.0">
+                                      <children>
+                                        <Label alignment="CENTER_RIGHT" contentDisplay="LEFT" font="$x1" minWidth="-Infinity" prefHeight="20.999900000002526" prefWidth="70.0" text="Error" textAlignment="LEFT" underline="false" wrapText="false" />
+                                        <ChoiceBox fx:id="mCbxError" maxWidth="1.7976931348623157E308" prefWidth="151.0" HBox.hgrow="ALWAYS">
+                                          <items>
+                                            <FXCollections fx:factory="observableArrayList">
+                                              <String fx:value="Item 1" />
+                                              <String fx:value="Item 2" />
+                                              <String fx:value="Item 3" />
+                                            </FXCollections>
+                                          </items>
+                                        </ChoiceBox>
+                                      </children>
+                                      <padding>
+                                        <Insets left="5.0" right="5.0" top="5.0" />
+                                      </padding>
+                                    </HBox>
+                                    <HBox maxWidth="1.7976931348623157E308" minWidth="-1.0" prefHeight="19.0" prefWidth="-1.0" spacing="5.0">
+                                      <children>
+                                        <Label alignment="CENTER_RIGHT" contentDisplay="LEFT" font="$x1" maxHeight="1.7976931348623157E308" minWidth="-Infinity" prefHeight="-1.0" prefWidth="70.0" text="Label" textAlignment="LEFT" underline="false" wrapText="false" />
+                                        <TextField fx:id="mEdtLabel" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-1.0" prefHeight="22.0" prefWidth="-1.0" HBox.hgrow="ALWAYS" />
+                                      </children>
+                                      <padding>
+                                        <Insets left="5.0" right="5.0" top="5.0" />
+                                      </padding>
+                                    </HBox>
+                                    <HBox maxWidth="1.7976931348623157E308" minWidth="-1.0" prefHeight="19.0" prefWidth="-1.0" spacing="5.0">
+                                      <children>
+                                        <Label alignment="CENTER_RIGHT" contentDisplay="LEFT" font="$x1" maxHeight="1.7976931348623157E308" minHeight="-1.0" minWidth="-Infinity" prefHeight="-1.0" prefWidth="70.0" text="Guard" textAlignment="LEFT" underline="false" wrapText="false" />
+                                        <TextField fx:id="mEdtGuard" maxHeight="-1.0" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-1.0" prefHeight="22.0" prefWidth="-1.0" HBox.hgrow="ALWAYS" />
+                                      </children>
+                                      <padding>
+                                        <Insets left="5.0" right="5.0" top="5.0" />
+                                      </padding>
+                                    </HBox>
+                                    <HBox maxWidth="1.7976931348623157E308" minWidth="-1.0" prefHeight="20.0" prefWidth="-1.0" spacing="5.0">
+                                      <children>
+                                        <Label alignment="CENTER_RIGHT" contentDisplay="LEFT" font="$x1" maxHeight="1.7976931348623157E308" minHeight="-1.0" minWidth="-Infinity" prefHeight="22.0" prefWidth="70.0" text="Probability" textAlignment="LEFT" underline="false" wrapText="false" />
+                                        <TextField fx:id="mEdtProbability" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-1.0" prefHeight="22.0" prefWidth="-1.0" HBox.hgrow="ALWAYS" />
+                                      </children>
+                                      <padding>
+                                        <Insets left="5.0" right="5.0" top="5.0" />
+                                      </padding>
+                                    </HBox>
+                                    <HBox maxWidth="1.7976931348623157E308" minHeight="-1.0" minWidth="231.0" prefHeight="27.0" prefWidth="231.0" spacing="5.0">
+                                      <children>
+                                        <Label alignment="CENTER_RIGHT" font="$x1" minHeight="-Infinity" minWidth="-Infinity" prefHeight="22.0" prefWidth="70.0" text="Position X" textAlignment="LEFT">
+                                          <textFill>
+                                            <Color blue="0.161" green="0.161" red="0.161" fx:id="x2" />
+                                          </textFill>
+                                        </Label>
+                                        <TextField fx:id="mEdtPositionX" alignment="TOP_LEFT" maxWidth="1.7976931348623157E308" minHeight="-1.0" minWidth="-Infinity" prefHeight="21.0" prefWidth="140.0" HBox.hgrow="ALWAYS" />
+                                      </children>
+                                      <padding>
+                                        <Insets left="5.0" right="5.0" top="5.0" />
+                                      </padding>
+                                    </HBox>
+                                    <HBox prefHeight="100.0" prefWidth="200.0" spacing="5.0">
+                                      <children>
+                                        <Label alignment="CENTER_RIGHT" font="$x1" minHeight="-Infinity" minWidth="-Infinity" prefHeight="22.0" prefWidth="70.0" text="Position Y" textFill="$x2" />
+                                        <TextField fx:id="mEdtPositionY" alignment="TOP_LEFT" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-1.0" prefWidth="37.0" HBox.hgrow="ALWAYS" />
+                                      </children>
+                                      <padding>
+                                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                      </padding>
+                                    </HBox>
+                                  </children>
+                                </VBox>
+                              </children>
+                              <padding>
+                                <Insets bottom="15.0" />
+                              </padding>
+                            </AnchorPane>
+                          </content>
+                        </ScrollPane>
+                      </children>
+                    </AnchorPane>
+                  </items>
+                </SplitPane>
+              </children>
+            </AnchorPane>
+            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+              <children>
+                <BorderPane prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                  <center>
+                    <BorderPane fx:id="mEditorWrapper" prefHeight="200.0" prefWidth="200.0" />
+                  </center>
+                  <top>
+                    <VBox prefHeight="-1.0" prefWidth="-1.0">
+                      <children>
+                        <TabPane id="tpGrafoEditores" fx:id="mTabComponentes" disable="false" prefHeight="32.0" prefWidth="-1.0" rotateGraphic="false" side="TOP" tabClosingPolicy="ALL_TABS" tabMaxHeight="22.0" tabMinHeight="19.0">
+                          <tabs>
+                            <Tab style="" text="Untitled Tab">
+                              <content>
+                                <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                              </content>
+                            </Tab>
+                          </tabs>
+                        </TabPane>
+                        <ToolBar fx:id="mBarFerramentas">
+                          <items>
+                            <ToggleButton id="btnDefault" fx:id="mBtnDefault" mnemonicParsing="false" onAction="#handleFerramentaDefault" text="">
+                              <graphic>
+                                <ImageView fitHeight="24.0" fitWidth="24.0" mouseTransparent="true" pickOnBounds="true" preserveRatio="false" smooth="false">
+                                  <image>
+                                    <Image url="@default.png" />
+                                  </image>
+                                </ImageView>
+                              </graphic>
+                            </ToggleButton>
+                            <ToggleButton id="btnVertice" fx:id="mBtnVertice" mnemonicParsing="false" onAction="#handleFerramentaVertice" text="">
+                              <graphic>
+                                <ImageView fitHeight="24.0" fitWidth="24.0" mouseTransparent="true" pickOnBounds="true" preserveRatio="true">
+                                  <image>
+                                    <Image url="@vertice.png" />
+                                  </image>
+                                </ImageView>
+                              </graphic>
+                            </ToggleButton>
+                            <ToggleButton id="btnTransicao" fx:id="mBtnTransicao" minHeight="-1.0" mnemonicParsing="false" onAction="#handleFerramentaTransicao" prefHeight="-1.0" prefWidth="-1.0" text="">
+                              <graphic>
+                                <ImageView fitHeight="24.0" fitWidth="24.0" mouseTransparent="true" pickOnBounds="true" preserveRatio="true">
+                                  <image>
+                                    <Image url="@transicao.png" />
+                                  </image>
+                                </ImageView>
+                              </graphic>
+                            </ToggleButton>
+                            <ToggleButton id="btnApagar" fx:id="mBtnApagar" minHeight="-1.0" minWidth="-1.0" mnemonicParsing="false" onAction="#handleFerramentaApagar" prefHeight="-1.0" prefWidth="-1.0" text="">
+                              <graphic>
+                                <ImageView fitHeight="24.0" fitWidth="24.0" mouseTransparent="true" pickOnBounds="true" preserveRatio="true">
+                                  <image>
+                                    <Image url="@apagar.png" />
+                                  </image>
+                                </ImageView>
+                              </graphic>
+                            </ToggleButton>
+                          </items>
+                        </ToolBar>
+                      </children>
+                    </VBox>
+                  </top>
+                </BorderPane>
+              </children>
+            </AnchorPane>
+          </items>
+          <BorderPane.margin>
+            <Insets fx:id="x4" />
+          </BorderPane.margin>
+        </SplitPane>
+      </center>
+      <padding>
+        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+      </padding>
+    </BorderPane>
+  </children>
+  <stylesheets>
+    <URL value="@MainScene.css" />
+  </stylesheets>
+</AnchorPane>

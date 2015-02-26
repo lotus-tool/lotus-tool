@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2014 emerson.
+ * Copyright 2014 Universidade Estadual do Ceará.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,34 +21,12 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package br.uece.seed.app;
 
-import java.io.InputStream;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyCombination;
+package br.uece.lotus.viewer;
 
-/**
- *
- * @author emerson
- */
-public interface ExtensibleMenu {
 
-    void triggerDefaultAction();
-
-    public interface ItemBuilder {
-        ItemBuilder showSeparator(boolean v);
-        ItemBuilder setGraphic(InputStream graphic);
-        ItemBuilder setDefault(boolean value);
-        ItemBuilder setWeight(int weight);
-        ItemBuilder setAction(Runnable action);
-        ItemBuilder setAccelerator(KeyCode key, KeyCombination.Modifier... modifiers);
-        ItemBuilder hideText(boolean v);
-        void create();
-    }
+public interface View {
     
-    ItemBuilder newItem(String path);
-    
-    @Deprecated
-    void addItem(int weight, String path, Runnable action);
+    boolean isInsideBounds(double x, double y);
     
 }

@@ -21,34 +21,32 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package br.uece.seed.app;
-
-import java.io.InputStream;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyCombination;
+package br.uece.lotus.viewer;
 
 /**
  *
  * @author emerson
  */
-public interface ExtensibleMenu {
+public class Util {
 
-    void triggerDefaultAction();
-
-    public interface ItemBuilder {
-        ItemBuilder showSeparator(boolean v);
-        ItemBuilder setGraphic(InputStream graphic);
-        ItemBuilder setDefault(boolean value);
-        ItemBuilder setWeight(int weight);
-        ItemBuilder setAction(Runnable action);
-        ItemBuilder setAccelerator(KeyCode key, KeyCombination.Modifier... modifiers);
-        ItemBuilder hideText(boolean v);
-        void create();
+    public static double pointDistance(double aX, double aY, double bX, double bY) {
+        double deltaX = Math.abs(aX - bX);
+        double deltaY = Math.abs(aY - bY);
+        return Math.sqrt(deltaX * deltaX + deltaY * deltaY);
     }
-    
-    ItemBuilder newItem(String path);
-    
-    @Deprecated
-    void addItem(int weight, String path, Runnable action);
-    
+
+    public static double angle(double aX, double aY, double bX, double bY) {
+        double deltaX = bX - aX;
+        double deltaY = bY - aY;
+        if (deltaX == 0) {
+            return 90;
+        }
+        if (deltaY == 0) {
+            return 0;
+        }
+        double tang = deltaY / deltaX;
+        double tangRad = Math.atan(tang);
+        double tangGrau = tangRad * 36 / 2 * Math.PI;
+        return tangGrau;
+    }
 }
