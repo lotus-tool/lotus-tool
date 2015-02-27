@@ -23,6 +23,7 @@
  */
 package br.uece.seed.app;
 
+import java.util.ArrayList;
 import java.util.List;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
@@ -35,6 +36,7 @@ import javafx.scene.control.MenuItem;
 public class ExtensibleFXMenuBar implements ExtensibleMenu, MenuItemBuilderFX.Container {
 
     private final MenuBar mMenuBar;
+    private Runnable mDefaultAction;
 
     public ExtensibleFXMenuBar(MenuBar menuBar) {
         mMenuBar = menuBar;
@@ -49,6 +51,13 @@ public class ExtensibleFXMenuBar implements ExtensibleMenu, MenuItemBuilderFX.Co
     }
 
     @Override
+    public void triggerDefaultAction() {
+        if (mDefaultAction != null) {
+            mDefaultAction.run();
+        }
+    }
+
+    @Override
     public ItemBuilder newItem(String path) {
         MenuItemBuilderFX itm = new MenuItemBuilderFX(this);
         itm.setPath(path);
@@ -56,7 +65,7 @@ public class ExtensibleFXMenuBar implements ExtensibleMenu, MenuItemBuilderFX.Co
     }
 
     @Override
-    public void inject(String path, MenuItem item) {
+    public void inject(String path, MenuItem item, Runnable defaultAction) {
         Menu m;
         String[] arrPaths = path.split("/");
         String menuRaiz = arrPaths[0];
@@ -89,7 +98,10 @@ public class ExtensibleFXMenuBar implements ExtensibleMenu, MenuItemBuilderFX.Co
             atual = proximo.getItems();
         }
         atual.add(item);        
-        atual.sort(ExtensibleFXItemHolder.MENUITEM_COMPARATOR);        
+        atual.sort(ExtensibleFXItemHolder.MENUITEM_COMPARATOR);
+        if (defaultAction != null) {
+            mDefaultAction = defaultAction;
+        }
     }
 
     private Menu findMenuItem(List<MenuItem> lst, String name) {

@@ -27,17 +27,11 @@ import br.uece.lotus.Component;
 import br.uece.lotus.Project;
 import br.uece.lotus.State;
 import br.uece.lotus.Transition;
-import br.uece.lotus.designer.DesignerWindowManager;
-import br.uece.lotus.properties.PropertiesEditor;
 import br.uece.seed.app.ExtensibleFXContextMenu;
 import br.uece.seed.app.ExtensibleMenu;
 import br.uece.seed.app.UserInterface;
 import br.uece.seed.ext.ExtensionManager;
 import br.uece.seed.ext.Plugin;
-import java.util.ArrayList;
-import java.util.List;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TreeItem;
@@ -47,6 +41,10 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+
+import java.lang.IllegalArgumentException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -123,12 +121,12 @@ public final class ProjectExplorerPlugin extends Plugin implements ProjectExplor
 
         }
     };
-    private DesignerWindowManager mComponentDesigner;
-    private PropertiesEditor mPropertyEditor;
+    //private DesignerWindowManager mComponentDesigner;
+    //private PropertiesEditor mPropertyEditor;
     private final List<Listener> mListeners;
-    private final ChangeListener<TreeItem<Wrapper>> mEditarSelecaoNoPainelDePropriedades = (ObservableValue<? extends TreeItem<Wrapper>> observable, TreeItem<Wrapper> oldValue, TreeItem<Wrapper> newValue) -> {
-        mPropertyEditor.edit(newValue.getValue().getObject());
-    };
+    //private final ChangeListener<TreeItem<Wrapper>> mEditarSelecaoNoPainelDePropriedades = (ObservableValue<? extends TreeItem<Wrapper>> observable, TreeItem<Wrapper> oldValue, TreeItem<Wrapper> newValue) -> {
+         //mPropertyEditor.edit(newValue.getValue().getObject());
+    //};
 
     public ProjectExplorerPlugin() {
         mListeners = new ArrayList<>();
@@ -156,7 +154,7 @@ public final class ProjectExplorerPlugin extends Plugin implements ProjectExplor
             } else if (e.getClickCount() == 2) {
                 Component c = getSelectedComponent();
                 if (c != null) {
-                    mComponentDesigner.show(c);
+                    mExtMnuComponent.triggerDefaultAction();
                 }
             } else {
                 mMnuComponent.hide();
@@ -164,14 +162,14 @@ public final class ProjectExplorerPlugin extends Plugin implements ProjectExplor
                 mMnuWorkspace.hide();
             }
         });
-        mProjectView.getSelectionModel().selectedItemProperty().addListener(mEditarSelecaoNoPainelDePropriedades);
+        //mProjectView.getSelectionModel().selectedItemProperty().addListener(mEditarSelecaoNoPainelDePropriedades);
     }
 
     @Override
     public void onStart(ExtensionManager extensionManager) throws Exception {
         mUserInterface = extensionManager.get(UserInterface.class);
-        mComponentDesigner = extensionManager.get(DesignerWindowManager.class);
-        mPropertyEditor = extensionManager.get(PropertiesEditor.class);
+        //mComponentDesigner = extensionManager.get(DesignerWindowManager.class);
+        //mPropertyEditor = extensionManager.get(PropertiesEditor.class);
 
         AnchorPane.setTopAnchor(mProjectView, 0D);
         AnchorPane.setRightAnchor(mProjectView, 0D);
@@ -197,6 +195,9 @@ public final class ProjectExplorerPlugin extends Plugin implements ProjectExplor
 
     @Override
     public void open(Project p) {
+        if (p == null) {
+            throw new IllegalArgumentException("project can not be null!");
+        }
         TreeItem<Wrapper> itm = findItem(mProjectView.getRoot(), p);
         if (itm == null) {
             p.addListener(mProjectListener);
@@ -226,6 +227,9 @@ public final class ProjectExplorerPlugin extends Plugin implements ProjectExplor
 
     @Override
     public void close(Project p) {
+        if (p == null) {
+            throw new IllegalArgumentException("project can not be null!");
+        }
         TreeItem<Wrapper> itm = findItem(mProjectView.getRoot(), p);
         if (itm != null) {
             List<TreeItem<Wrapper>> aux = itm.getChildren();

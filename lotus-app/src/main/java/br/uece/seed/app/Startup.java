@@ -23,33 +23,26 @@
  */
 package br.uece.seed.app;
 
-import br.uece.lotus.Component;
 import br.uece.lotus.about.AboutPlugin;
-import br.uece.lotus.annotator.AnnotatorPlugin;
 import br.uece.lotus.project.BasicPlugin;
-import br.uece.lotus.designer.DesignerWindowManager;
 import br.uece.lotus.project.ProjectDialogsHelper;
 import br.uece.lotus.project.ProjectExplorerPlugin;
-import br.uece.lotus.properties.PropertiesEditorPlugin;
-import br.uece.lotus.simulator.SimulatorWindowManager;
-import br.uece.lotus.tools.ToolsPlugin;
 import br.uece.seed.ext.ExtensionManager;
 import br.uece.seed.ext.JarModule;
 import br.uece.seed.ext.Module;
 import br.uece.seed.ext.Plugin;
-
-import java.io.File;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.JavaFXBuilderFactory;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+
+import java.io.File;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Startup extends Application {
 
@@ -83,14 +76,14 @@ public class Startup extends Application {
 		extensionManager.registerPlugin(new DialogsHelper());
 		extensionManager.registerPlugin(new ProjectDialogsHelper());
 
-		extensionManager.registerPlugin(new PropertiesEditorPlugin());
+		//extensionManager.registerPlugin(new PropertiesEditorPlugin());
 		extensionManager.registerPlugin(new ProjectExplorerPlugin());
 		extensionManager.registerPlugin(new AboutPlugin());
-		extensionManager.registerPlugin(new DesignerWindowManager());
+		//extensionManager.registerPlugin(new DesignerWindowManager());
 		extensionManager.registerPlugin(new BasicPlugin());
-		extensionManager.registerPlugin(new ToolsPlugin());
-		extensionManager.registerPlugin(new SimulatorWindowManager());
-		extensionManager.registerPlugin(new AnnotatorPlugin());
+		//extensionManager.registerPlugin(new ToolsPlugin());
+		//extensionManager.registerPlugin(new SimulatorWindowManager());
+		//extensionManager.registerPlugin(new AnnotatorPlugin());
 		// extensionManager.registerPlugin(new AlgorithmsPlugins());
 
 		registerModules(extensionManager);

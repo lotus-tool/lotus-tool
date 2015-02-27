@@ -23,7 +23,7 @@
  */
 package br.uece.seed.app;
 
-import java.util.Comparator;
+import java.util.ArrayList;
 import java.util.List;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Menu;
@@ -36,6 +36,8 @@ import javafx.scene.control.MenuItem;
 public class ExtensibleFXContextMenu implements ExtensibleMenu, MenuItemBuilderFX.Container {
 
     private final ContextMenu mContextMenu;
+    private List<Runnable> mActions = new ArrayList<>();
+    private Runnable mDefaultAction;
 
     public ExtensibleFXContextMenu(ContextMenu contextMenu) {
         mContextMenu = contextMenu;
@@ -51,6 +53,13 @@ public class ExtensibleFXContextMenu implements ExtensibleMenu, MenuItemBuilderF
     }
 
     @Override
+    public void triggerDefaultAction() {
+        if (mDefaultAction != null) {
+            mDefaultAction.run();
+        }
+    }
+
+    @Override
     public ItemBuilder newItem(String path) {
         MenuItemBuilderFX itm = new MenuItemBuilderFX(this);
         itm.setPath(path);
@@ -58,7 +67,7 @@ public class ExtensibleFXContextMenu implements ExtensibleMenu, MenuItemBuilderF
     }
 
     @Override
-    public void inject(String path, MenuItem item) {
+    public void inject(String path, MenuItem item, Runnable defaultAction) {
         String[] arrPaths = path.split("/");
         List<MenuItem> atual = mContextMenu.getItems();
         for (int i = 0, n = arrPaths.length - 1; i < n; i++) {
@@ -75,7 +84,11 @@ public class ExtensibleFXContextMenu implements ExtensibleMenu, MenuItemBuilderF
         }                
         atual.add(item);
         atual.sort(ExtensibleFXItemHolder.MENUITEM_COMPARATOR);
+        if (defaultAction != null) {
+            mDefaultAction = defaultAction;
+        }
     }
+
 
     private Menu findMenuItem(List<MenuItem> lst, String name) {
         for (MenuItem itm : lst) {

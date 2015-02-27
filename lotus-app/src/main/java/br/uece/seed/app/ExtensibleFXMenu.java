@@ -23,7 +23,7 @@
  */
 package br.uece.seed.app;
 
-import java.util.Comparator;
+import java.util.ArrayList;
 import java.util.List;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
@@ -31,6 +31,7 @@ import javafx.scene.control.MenuItem;
 public class ExtensibleFXMenu implements ExtensibleMenu, MenuItemBuilderFX.Container {
 
     private final Menu mMenuRoot;
+    private Runnable mDefaultAction;
 
     public ExtensibleFXMenu(Menu menu) {
         mMenuRoot = menu;
@@ -42,7 +43,14 @@ public class ExtensibleFXMenu implements ExtensibleMenu, MenuItemBuilderFX.Conta
     }
 
     @Override
-    public void inject(String path, MenuItem item) {
+    public void triggerDefaultAction() {
+        if (mDefaultAction != null) {
+            mDefaultAction.run();
+        }
+    }
+
+    @Override
+    public void inject(String path, MenuItem item, Runnable defaultAction) {
         String[] arrPaths = path.split("/");
         List<MenuItem> atual = mMenuRoot.getItems();
         for (String strPath : arrPaths) {
@@ -60,6 +68,9 @@ public class ExtensibleFXMenu implements ExtensibleMenu, MenuItemBuilderFX.Conta
         }
         atual.add(item);
         atual.sort(ExtensibleFXItemHolder.MENUITEM_COMPARATOR);
+        if (defaultAction != null) {
+            mDefaultAction = defaultAction;
+        }
     }
 
     private Menu findMenuItem(List<MenuItem> lst, String name) {

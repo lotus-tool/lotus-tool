@@ -134,8 +134,10 @@ public class BasicPlugin extends Plugin {
     };
     
     private Runnable mOpenProject = () -> {        
-        Project p = mProjectDialogsHelper.open(mProjectSerializer, "Open project", EXTENSION_DESCRIPTION, EXTENSION);   
-        mProjectExplorer.open(p);
+        Project p = mProjectDialogsHelper.open(mProjectSerializer, "Open project", EXTENSION_DESCRIPTION, EXTENSION);
+        if (p != null) {
+            mProjectExplorer.open(p);
+        }
     };
     private final Runnable mSaveProject = () -> {
         Project p = mProjectExplorer.getSelectedProject();
@@ -151,7 +153,7 @@ public class BasicPlugin extends Plugin {
             JOptionPane.showMessageDialog(null, "Please select a project!");
             return;
         }
-        mProjectDialogsHelper.save(p, mProjectSerializer, "Save project as", EXTENSION_DESCRIPTION, EXTENSION);
+        mProjectDialogsHelper.saveAs(p, mProjectSerializer, "Save project as", EXTENSION_DESCRIPTION, EXTENSION);
     };
 
     @Override

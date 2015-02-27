@@ -66,7 +66,7 @@ public class AboutController implements Initializable {
         }
     }
     
-    private String convertStreamToString(java.io.InputStream is) {
+    private String convertStreamToString(InputStream is) {
         java.util.Scanner s = new java.util.Scanner(is).useDelimiter("\\A");
         return s.hasNext() ? s.next() : "";
     }

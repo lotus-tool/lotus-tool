@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.net.*?>
+<?import java.util.*?>
+<?import javafx.collections.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.input.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.paint.*?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="br.uece.seed.app.MainSceneController">
+    <children>
+        <MenuBar fx:id="mMnuPrincipal" prefHeight="26.0" prefWidth="607.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+        <BorderPane id="root" prefHeight="574.0" prefWidth="800.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="28.0">
+            <padding>
+                <Insets />
+            </padding>
+            <top>
+                <ToolBar fx:id="mToolbar" style="">          
+                </ToolBar>
+            </top>
+            <bottom>
+                <TabPane fx:id="mTabBottom" maxHeight="0.0" maxWidth="0.0" prefHeight="140.0" prefWidth="790.0" style=" -fx-border-color: #d0d0d0;" tabClosingPolicy="ALL_TABS">
+                    <BorderPane.margin>
+                        <Insets bottom="5.0" left="5.0" right="5.0" />
+                    </BorderPane.margin>
+                </TabPane>
+            </bottom>
+         <center>
+            <SplitPane dividerPositions="0.25" prefHeight="160.0" prefWidth="200.0" scaleShape="false" BorderPane.alignment="CENTER">
+               <items>
+                      <TabPane fx:id="mTabLeft" prefHeight="551.0" prefWidth="47.0" style=" -fx-border-color: #d0d0d0;" tabClosingPolicy="ALL_TABS" SplitPane.resizableWithParent="false" />
+                  <SplitPane dividerPositions="0.5" prefHeight="160.0" SplitPane.resizableWithParent="false">
+                     <items>
+                            <TabPane fx:id="mTabCenter" maxWidth="1.7976931348623157E308" prefHeight="200.0" prefWidth="200.0" style=" -fx-border-color: #d0d0d0;" tabClosingPolicy="ALL_TABS" />
+                            <TabPane fx:id="mTabRight" maxWidth="1.7976931348623157E308" prefHeight="200.0" prefWidth="200.0" style=" -fx-border-color: #d0d0d0;" tabClosingPolicy="ALL_TABS" SplitPane.resizableWithParent="false" />
+                     </items>
+                  </SplitPane>
+               </items>
+            </SplitPane>
+         </center>
+        </BorderPane>
+    </children>
+    <stylesheets>
+        <URL value="@/styles/base.css" />
+    </stylesheets>
+</AnchorPane>

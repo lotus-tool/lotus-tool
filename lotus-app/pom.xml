@@ -1,84 +1,43 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<groupId>br.uece.lotus</groupId>
-	<artifactId>lotus-app</artifactId>
-	<packaging>jar</packaging>
-	<version>2.13_alpha-SNAPSHOT</version>
-	<name>lotus-app</name>
-  <description>LoTuS is a open-source tool to graphic behaviour modelling of software using LTS. It aim to make the modelling process easier by providing drag-and-drop drawing tools. Making the learning curve tiny, removing the pré-requisite for modeller learn some formal specification language. This way, the use and learn of formal methods becames more accessible.</description>
-	<url>http://maven.apache.org</url>
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>lotus-root</artifactId>
+        <groupId>br.uece.lotus</groupId>
+        <version>2.13_alpha-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
 
-	<properties>
-		<maven.compiler.source>8</maven.compiler.source>
-		<maven.compiler.target>8</maven.compiler.target>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-	</properties>
+    <artifactId>lotus-app</artifactId>
+    <dependencies>
+        <dependency>
+            <groupId>br.uece.lotus</groupId>
+            <artifactId>lotus-api</artifactId>
+            <version>2.13_alpha-SNAPSHOT</version>
+        </dependency>
+    </dependencies>
 
-	<organization>
-		<name>Universidade Estadual do Ceara</name>
-	</organization>
-
-	<dependencies>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.8.1</version>
-			<scope>test</scope>
-		</dependency>
-	</dependencies>
-
-	<build>		
-		<plugins>
-			<plugin>
-				<groupId>com.zenjava</groupId>
-				<artifactId>javafx-maven-plugin</artifactId>
-				<version>8.1.2</version>
-				<configuration>
-					<mainClass>br.uece.seed.app.Startup</mainClass>
-				</configuration>
-				<executions>
-					<execution>
-						<id>make-jfx-executable-jar</id>
-						<phase>package</phase>
-						<goals>
-							<goal>jar</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>		
-			<plugin>
-				<artifactId>maven-assembly-plugin</artifactId>
-		        <version>2.4.1</version>
-		        <configuration>
-		          <descriptors>
-		            <descriptor>src/assembly/bin.xml</descriptor>
-		          </descriptors>
-		        </configuration>				        
-		        <executions>
-		          <execution>
-		            <id>make-bin</id> 
-		            <phase>verify</phase>
-		            <goals>
-		              <goal>single</goal>
-		            </goals>
-		          </execution>
-        		</executions>		        	
-			</plugin>
-<!-- 			<plugin> -->
-<!-- 		        <groupId>org.apache.maven.plugins</groupId> -->
-<!-- 		        <artifactId>maven-javadoc-plugin</artifactId> -->
-<!-- 		        <version>2.10.1</version> -->
-<!-- 				<executions> -->
-<!-- 		            <execution> -->
-<!-- 		              <phase>package</phase> -->
-<!-- 		              <goals> -->
-<!-- 		                <goal>javadoc</goal> -->
-<!-- 		              </goals> -->
-<!-- 		            </execution> -->
-<!-- 		          </executions>		         -->
-<!-- 		      </plugin> -->
-		</plugins>
-	</build>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>com.zenjava</groupId>
+                <artifactId>javafx-maven-plugin</artifactId>
+                <version>8.1.2</version>
+                <configuration>
+                    <mainClass>br.uece.seed.app.Startup</mainClass>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>make-jfx-executable-jar</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>

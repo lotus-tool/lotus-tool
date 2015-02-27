@@ -43,9 +43,10 @@ public class MenuItemBuilderFX implements ExtensibleMenu.ItemBuilder {
     private final Container mContainer;
     private boolean mHideText;
     private KeyCodeCombination mAccelerator;
+    private boolean mDefault;
 
     interface Container {
-        void inject(String path, MenuItem b);
+        void inject(String path, MenuItem b, Runnable value);
     }
 
     private boolean mAsSeparator;
@@ -77,6 +78,12 @@ public class MenuItemBuilderFX implements ExtensibleMenu.ItemBuilder {
     @Override
     public ExtensibleMenu.ItemBuilder setGraphic(InputStream graphic) {
         mGraphic = graphic;
+        return this;
+    }
+
+    @Override
+    public ExtensibleMenu.ItemBuilder setDefault(boolean value) {
+        mDefault = value;
         return this;
     }
 
@@ -139,6 +146,6 @@ public class MenuItemBuilderFX implements ExtensibleMenu.ItemBuilder {
         h.name = mText;
         h.weight = mWeight;
         item.setUserData(h);
-        mContainer.inject(mPath, item);
+        mContainer.inject(mPath, item, mDefault ? mAction : null);
     }
 }
