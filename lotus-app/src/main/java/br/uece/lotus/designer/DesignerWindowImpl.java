@@ -495,7 +495,7 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
     private boolean verificacao = false,auxA=false;
     private double variacaoXCliqueMouseComOCantoSuperiorEsquerdoVertice,ultimoInstanteX;
     private double variacaoYCliqueMouseComOCantoSuperiorEsquerdoVertice,ultimoInstanteY;
-    private boolean downShift, selecionadoUm,selecioneiComShift,selecaoDoEmerson;
+    private boolean downShift, selecionadoUm,selecioneiComShift, selecaoPadrao;
     ArrayList<State>statesSelecionados=new ArrayList<State>();
 
     private EventHandler<? super MouseEvent> aoIniciarArrastoVerticeComOMouse = new EventHandler<MouseEvent>() {
@@ -530,14 +530,14 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
 
                 modoCriacaoDoRetangulo=false;
                 downShift=false;
-                selecaoDoEmerson=false;
+                selecaoPadrao =false;
                 return;
             }else{
             
             if (!algumSelecionadoPeloRetangulo&&mComponentSobMouse!=null && !selecioneiComShift ) {
 
 
-                selecaoDoEmerson=true;
+                selecaoPadrao =true;
                 if (statesSelecionados != null) {
                     statesSelecionados.clear();
                 }
@@ -565,7 +565,7 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
                         s.setTextSyle(State.TEXTSTYLE_NORMAL);
                     }
                     if (mComponentSobMouse != null) {
-                        selecaoDoEmerson=true;
+                        selecaoPadrao =true;
                         if (statesSelecionados != null) {
                             statesSelecionados.clear();
                             modoCriacaoDoRetangulo = false;
@@ -579,7 +579,7 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
 
                     }
                     else{
-                        selecaoDoEmerson=false;
+                        selecaoPadrao =false;
                         modoCriacaoDoRetangulo = true;
                         algumSelecionadoPeloRetangulo = false;
                         selecioneiComShift=false;
@@ -633,7 +633,7 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
             if (mModoAtual != MODO_VERTICE && mModoAtual != MODO_NENHUM) {
                 return;
             }
-             if ((algumSelecionadoPeloRetangulo || selecionadoUm) && !selecaoDoEmerson) {
+             if ((algumSelecionadoPeloRetangulo || selecionadoUm) && !selecaoPadrao) {
 
                 if (!segundaVezEmDiante ) {
                     variacaoX = t.getX() - coordenadaInicialX;
@@ -715,7 +715,7 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
 
                 } else {
 
-                    if (!(mComponentSobMouse instanceof StateView)||!selecaoDoEmerson) {
+                    if (!(mComponentSobMouse instanceof StateView)||!selecaoPadrao) {
                         return;
                     }
 
