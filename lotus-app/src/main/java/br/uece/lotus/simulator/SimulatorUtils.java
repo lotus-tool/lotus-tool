@@ -19,12 +19,16 @@ public class SimulatorUtils {
 	public static void hideChoices(State currentState) {
 		applyDisabledStyle(currentState);
 		for (Transition t : currentState.getOutgoingTransitionsList()) {
-			if (t.getDestiny().isVisited()) {
-				applyEnableStyle(t);
+			if (t.getDestiny().getmVisitedStatesCount() > 0) {
 				applyEnableStyle(t.getDestiny());
 			} else {
-				applyDisabledStyle(t);
 				applyDisabledStyle(t.getDestiny());
+			}
+
+			if (t.getmTransitionsStatesCount() > 0) {
+				applyEnableStyle(t);
+			} else {
+				applyDisabledStyle(t);
 			}
 		}
 	}

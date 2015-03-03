@@ -94,6 +94,8 @@ public class Transition {
     private Double mProbability;
     private String mLabel;
     private String mGuard;
+    //Used in simulations
+    private int mVisitedTransitionsCount;
 
     Transition(State source, State destiny) {
         mSource = source;
@@ -195,6 +197,14 @@ public class Transition {
             l.onChange(this);
         }
     }
+
+    public int getmTransitionsStatesCount() { return mVisitedTransitionsCount; }
+
+    public void setmTransitionsStatesCount(int value) { mVisitedTransitionsCount = value; }
+
+    public void incrementTransitionsCount() { mVisitedTransitionsCount++; }
+
+    public void decrementTransitionsCount() { mVisitedTransitionsCount--; }
 
     @Override
     public int hashCode() {

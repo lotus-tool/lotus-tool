@@ -66,18 +66,26 @@ public class MakeStepCommand implements SimulatorCommand {
 			if (tt == t) {
 				SimulatorUtils.applyEnableStyle(t);
 			} else {
-				if (tt.getDestiny().getmVisitedStatesCount() > 0) {
-					SimulatorUtils.applyDisabledStyle(tt);
+				if (tt.getDestiny().getmVisitedStatesCount() < 1) {
 					SimulatorUtils.applyDisabledStyle(tt.getDestiny());
+				} else {
+					SimulatorUtils.applyEnableStyle(tt.getDestiny());
+				}
+
+				if (tt.getmTransitionsStatesCount() < 1) {
+					SimulatorUtils.applyDisabledStyle(tt);
+				} else {
+					SimulatorUtils.applyEnableStyle(tt);
 				}
 			}
 		}
 
 		mSimulatorPathLabel.setText(mSimulatorPathLabel.getText() + " > " + t.getLabel());
 		mState = t.getDestiny();
-		mState.setmVisitedStatesCount(mState.getmVisitedStatesCount() + 1);
+		mState.incrementStatesCount();
 		mPreviousState = t.getSource();
 		mTransition = t;
+		mTransition.incrementTransitionsCount();
 		mSimulatorContext.setmCurrentState(mState);
 
 		if (mState.isFinal() || mState.isError()) {
@@ -93,14 +101,19 @@ public class MakeStepCommand implements SimulatorCommand {
 
 	@Override
 	public void undoOperation() {
-		mState.setmVisitedStatesCount(mState.getmVisitedStatesCount() - 1);
+		mState.decrementStatesCount();
+		mTransition.decrementTransitionsCount();
 
 		if (mState.isFinal() || mState.isError() || mState.getOutgoingTransitionsCount() == 0) {
 			mSimulatorPathLabel.setText(mPreviousPathLabel);
+
 			if (mState.getmVisitedStatesCount() < 1) {
 				SimulatorUtils.applyDisabledStyle(mState);
-				SimulatorUtils.applyDisabledStyle(mPreviousState.getTransitionTo(mState));
 				mState.setmVisitedStatesCount(0);
+			}
+			if (mTransition.getmTransitionsStatesCount() < 1) {
+				SimulatorUtils.applyDisabledStyle(mPreviousState.getTransitionTo(mState));
+				mTransition.setmTransitionsStatesCount(0);
 			}
 		} else {
 			mSimulatorPathLabel.setText(mPreviousPathLabel);

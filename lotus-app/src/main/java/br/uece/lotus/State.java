@@ -217,6 +217,10 @@ public class State {
 
     public void setmVisitedStatesCount(int value) { mVisitedStatesCount = value; }
 
+    public void incrementStatesCount() { mVisitedStatesCount++; }
+
+    public void decrementStatesCount() { mVisitedStatesCount--; }
+
     public Iterable<Transition> getIncomingTransitions() {
         return mTransicoesEntrada;
     }
