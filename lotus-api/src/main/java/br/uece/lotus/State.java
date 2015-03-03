@@ -73,6 +73,8 @@ public class State {
     private boolean mInitial;
     private boolean mError;
     private boolean mFinal;
+    //Used in simulations
+    private int mVisitedStatesCount;
 
     State(Component c) {
         mComponent = c;
@@ -210,6 +212,14 @@ public class State {
             l.onChange(this);
         }
     }
+
+    public int getmVisitedStatesCount() { return mVisitedStatesCount; }
+
+    public void setmVisitedStatesCount(int value) { mVisitedStatesCount = value; }
+
+    public void incrementStatesCount() { mVisitedStatesCount++; }
+
+    public void decrementStatesCount() { mVisitedStatesCount--; }
 
     public Iterable<Transition> getIncomingTransitions() {
         return mTransicoesEntrada;
