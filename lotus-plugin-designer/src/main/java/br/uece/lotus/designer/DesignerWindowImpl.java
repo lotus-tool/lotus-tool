@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2014 Universidade Estadual do Ceará.
+ * Copyright 2014 Universidade Estadual do CearÃ¡.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -68,33 +68,31 @@ import javax.swing.JOptionPane;
  * @author emerson
  */
 public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
-/////////////////////////MINHA_VARIÁVEIS///////////////////////////////////////////////////
-    Rectangle ultimoRetanguloAdicionado;                                                 //
-    double coordenadaInicialX, coordenadaInicialY, coordenadaFinalX, coordenadaFinalY,   //
-    coornenadaIstanteX, coordenadaIstanteY;                                              //
-    boolean shifPrecionado = false;                                                      //
-    boolean algumSelecionadoPeloRetangulo = false;                                                       //
-    boolean ctrlPressionado = false;                                                     //
-    double posicaoDoEstadoXMaisRaio;                                                     //
-    double posicaoDoEstadoYMaisRaio;                                                     //
-    double posicaoDoEstadoXMenosRaio;                                                    //
-    double posicaoDoEstadoYMenosRaio;                                                    //
-    ArrayList<State> stateDentroDoRetangulo = new ArrayList<State>();                        //
-    double posCircleX;                                                                   //
-    double posCircleY;                                                                   //
-    double variacaoDeX;                                                                  //
-    double variacaoDeY;                                                                  //
-    double stateDoPrimeiroClickX, stateDoPrimeiroClickY;                                 //
-    boolean caso1, caso2, caso3, caso4, retorno, aux, modoCriacaoDoRetangulo = false;             //
-    static final int RAIO_CIRCULO = 15;                                                  //
-///////////////////////////////////////////////////////////////////////////////////////////
 
-
+    Rectangle ultimoRetanguloAdicionado;                                                
+    double coordenadaInicialX, coordenadaInicialY, coordenadaFinalX, coordenadaFinalY,   
+    coornenadaIstanteX, coordenadaIstanteY;                                            
+    boolean shifPrecionado = false;                                                    
+    boolean algumSelecionadoPeloRetangulo = false;                                                      
+    boolean ctrlPressionado = false;                                                    
+    double posicaoDoEstadoXMaisRaio;                                                    
+    double posicaoDoEstadoYMaisRaio;                                                    
+    double posicaoDoEstadoXMenosRaio;                                                   
+    double posicaoDoEstadoYMenosRaio;                                                  
+    ArrayList<State> stateDentroDoRetangulo = new ArrayList<State>();                      
+    double posCircleX;                                                                  
+    double posCircleY;                                                                  
+    double variacaoDeX;                                                                 
+    double variacaoDeY;                                                                
+    double stateDoPrimeiroClickX, stateDoPrimeiroClickY;                                
+    boolean caso1, caso2, caso3, caso4, retorno, aux, modoCriacaoDoRetangulo = false;            
+    static final int RAIO_CIRCULO = 15;                                                  
 
     public static final int MODO_NENHUM = 0;
     public static final int MODO_VERTICE = 1;
     public static final int MODO_TRANSICAO = 2;
     public static final int MODO_REMOVER = 3;
+    public static final int MODO_MOVER = 4;
     private final BasicComponentViewer mViewer;
     private final ToolBar mToolbar;
     private final ToggleGroup mToggleGroup;
@@ -103,6 +101,7 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
     private final ToggleButton mBtnTransitionLine;
     private final ToggleButton mBtnTransitionArc;
     private final ToggleButton mBtnEraser;
+    private final ToggleButton mBtnHand;
     private final MenuButton mBtnZoom;
 
     private final ToolBar mStateToolbar;
@@ -229,11 +228,13 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
 
     private int mModoAtual;
     private final ContextMenu mComponentContextMenu;
-    //seleção e destaque
+    //seleÃ§Ã£o e destaque
     private View mComponentSobMouse;
     private View mComponentSelecionado;
     private final List<Listener> mListeners = new ArrayList<>();
     private double mViewerScaleXPadrao,mViewerScaleYPadrao,mViewerTranslateXPadrao,mViewerTranslateYPadrao;
+    private double posicaoMViewerHandX=0,posicaoMViewerHandY=0;//posição mviewer
+    private double mouseHandX=0,mouseHandY=0;// posiÃ§Ã£o mouse
 
     public DesignerWindowImpl(BasicComponentViewer viewer) {
         mToolbar = new ToolBar();
@@ -273,6 +274,13 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
         });
         mBtnEraser.setToggleGroup(mToggleGroup);
         
+        mBtnHand =  new ToggleButton();
+        mBtnHand.setGraphic(new ImageView(new Image(getClass().getResourceAsStream("/images/ic_hand.png"))));
+        mBtnHand.setToggleGroup(mToggleGroup);
+        mBtnHand.setOnAction((ActionEvent e) -> {
+            setModo(MODO_MOVER); 
+        });
+        
         mBtnZoom = new MenuButton();
         mBtnZoom.setGraphic(new ImageView(new Image(getClass().getResourceAsStream("/images/ic_zoom.png"))));
         MenuItem zoomMais = new MenuItem("", new ImageView(new Image(getClass().getResourceAsStream("/images/ic_zoom_mais.png"))));
@@ -298,11 +306,11 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
                 mViewer.setTranslateY(mViewerTranslateYPadrao);
             }
         });
-        Tooltip zoomMore = new Tooltip("Ctrl + MouseScroll ↑\nCtrl + MouseScroll ↓\nCtrl + Mouse Button Middle");
+        Tooltip zoomMore = new Tooltip("Ctrl + MouseScroll â†‘\nCtrl + MouseScroll â†“\nCtrl + Mouse Button Middle");
         Tooltip.install(mBtnZoom, zoomMore);
         mBtnZoom.getItems().addAll(zoomMais,zoomMenos,zoomReset);
 
-        mToolbar.getItems().addAll(mBtnArrow, mBtnState, mBtnTransitionLine, mBtnTransitionArc, mBtnEraser, mBtnZoom);
+        mToolbar.getItems().addAll(mBtnArrow, mBtnState, mBtnTransitionLine, mBtnTransitionArc, mBtnEraser, mBtnHand ,mBtnZoom);
 
         mStateToolbar = new ToolBar();
         mStateToolbar.setVisible(false);
@@ -501,119 +509,135 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
     private EventHandler<? super MouseEvent> aoIniciarArrastoVerticeComOMouse = new EventHandler<MouseEvent>() {
         @Override
         public void handle(MouseEvent e) {
-
+            
+            //                         HAND MOVE                                     //
+            if(mModoAtual == MODO_MOVER){
+                mViewer.setCursor(Cursor.CLOSED_HAND);
+                if(e.getClickCount() == 2){
+                    mViewer.setTranslateX(mViewerTranslateXPadrao);
+                    mViewer.setTranslateY(mViewerTranslateYPadrao);
+                }
+                //gravar cordenadas x e y do mViewer de acordo com a posição do mouse
+                mouseHandX = e.getSceneX();
+                mouseHandY= e.getSceneY();
+                //get the x and y position measure from Left-Top
+                posicaoMViewerHandX = mViewer.getTranslateX();
+                posicaoMViewerHandY = mViewer.getTranslateY();
+            }
+            
             if (mModoAtual != MODO_VERTICE && mModoAtual != MODO_NENHUM) {
                 return;
             }
-            coordenadaInicialX = e.getX();
-            coordenadaInicialY = e.getY();
-            ultimoInstanteX = 0;
-            ultimoInstanteY = 0;
-            segundaVezEmDiante = false;
-
-            
-            if(e.isShiftDown()){
-                downShift=true;
-
-            }
-
-            if(downShift&&mComponentSobMouse!=null){
-                StateView stateView= (StateView)mComponentSobMouse;
-                State state=stateView.getState();
-                state.setBorderWidth(2);
-                state.setBorderColor("blue");
-                state.setTextColor("blue");
-                state.setTextSyle(State.TEXTSTYLE_BOLD);
-                statesSelecionados.add(state);
-                selecionadoUm =true;
-                selecioneiComShift=true;
-
-                modoCriacaoDoRetangulo=false;
-                downShift=false;
-                selecaoPadrao =false;
-                return;
-            }else{
-            
-            if (!algumSelecionadoPeloRetangulo&&mComponentSobMouse!=null && !selecioneiComShift ) {
+            if(mModoAtual == MODO_NENHUM){
+                coordenadaInicialX = e.getX();
+                coordenadaInicialY = e.getY();
+                ultimoInstanteX = 0;
+                ultimoInstanteY = 0;
+                segundaVezEmDiante = false;
 
 
-                selecaoPadrao =true;
-                if (statesSelecionados != null) {
-                    statesSelecionados.clear();
+                if(e.isShiftDown()){
+                    downShift=true;
+
                 }
-                if(mComponentSobMouse instanceof StateView){
-                setComponenteSelecionado(mComponentSobMouse);
-                StateView stateView= (StateView)mComponentSobMouse;
-                State state=stateView.getState();
-                statesSelecionados.add(state);
-                modoCriacaoDoRetangulo=false;
-                return;
-            }
-                else{
-                    setComponenteSelecionado(mComponentSobMouse);
-                }
-            }
 
-            else{
-                if (!SeClickeiEntreSelecionados(e.getX(), e.getY()) && statesSelecionados != null) {
+                if(downShift&&mComponentSobMouse!=null){
+                    StateView stateView= (StateView)mComponentSobMouse;
+                    State state=stateView.getState();
+                    state.setBorderWidth(2);
+                    state.setBorderColor("blue");
+                    state.setTextColor("blue");
+                    state.setTextSyle(State.TEXTSTYLE_BOLD);
+                    statesSelecionados.add(state);
+                    selecionadoUm =true;
+                    selecioneiComShift=true;
 
-                    verificacao = true;
-                    for (State s : statesSelecionados) {
-                        s.setBorderWidth(1);
-                        s.setBorderColor("black");
-                        s.setTextColor("black");
-                        s.setTextSyle(State.TEXTSTYLE_NORMAL);
-                    }
-                    if (mComponentSobMouse != null) {
+                    modoCriacaoDoRetangulo=false;
+                    downShift=false;
+                    selecaoPadrao =false;
+                    return;
+                }else{
+
+                    if (!algumSelecionadoPeloRetangulo&&mComponentSobMouse!=null && !selecioneiComShift ) {
+
+
                         selecaoPadrao =true;
                         if (statesSelecionados != null) {
                             statesSelecionados.clear();
-                            modoCriacaoDoRetangulo = false;
                         }
-
+                        if(mComponentSobMouse instanceof StateView){
                         setComponenteSelecionado(mComponentSobMouse);
                         StateView stateView= (StateView)mComponentSobMouse;
                         State state=stateView.getState();
                         statesSelecionados.add(state);
-
-
+                        modoCriacaoDoRetangulo=false;
+                        return;
                     }
-                    else{
-                        selecaoPadrao =false;
-                        modoCriacaoDoRetangulo = true;
-                        algumSelecionadoPeloRetangulo = false;
-                        selecioneiComShift=false;
-                        if(selecionadoUm){
-                        selecionadoUm=false;
-                    }
-                        for (State s : statesSelecionados) {
-                            s.setBorderWidth(1);
-                            s.setBorderColor("black");
-                            s.setTextColor("black");
-                            s.setTextSyle(State.TEXTSTYLE_NORMAL);
+                        else{
+                            setComponenteSelecionado(mComponentSobMouse);
                         }
-                        statesSelecionados.clear();
-
                     }
 
-            } else {
-                    verificacao = false;
-                    modoCriacaoDoRetangulo = false;
+                    else{
+                        if (!SeClickeiEntreSelecionados(e.getX(), e.getY()) && statesSelecionados != null) {
+
+                            verificacao = true;
+                            for (State s : statesSelecionados) {
+                                s.setBorderWidth(1);
+                                s.setBorderColor("black");
+                                s.setTextColor("black");
+                                s.setTextSyle(State.TEXTSTYLE_NORMAL);
+                            }
+                            if (mComponentSobMouse != null) {
+                                selecaoPadrao =true;
+                                if (statesSelecionados != null) {
+                                    statesSelecionados.clear();
+                                    modoCriacaoDoRetangulo = false;
+                                }
+
+                                setComponenteSelecionado(mComponentSobMouse);
+                                StateView stateView= (StateView)mComponentSobMouse;
+                                State state=stateView.getState();
+                                statesSelecionados.add(state);
+
+
+                            }
+                            else{
+                                selecaoPadrao =false;
+                                modoCriacaoDoRetangulo = true;
+                                algumSelecionadoPeloRetangulo = false;
+                                selecioneiComShift=false;
+                                if(selecionadoUm){
+                                selecionadoUm=false;
+                            }
+                                for (State s : statesSelecionados) {
+                                    s.setBorderWidth(1);
+                                    s.setBorderColor("black");
+                                    s.setTextColor("black");
+                                    s.setTextSyle(State.TEXTSTYLE_NORMAL);
+                                }
+                                statesSelecionados.clear();
+
+                            }
+
+                    } else {
+                            verificacao = false;
+                            modoCriacaoDoRetangulo = false;
+                        }
+
+                    }
                 }
 
+                if (!(mComponentSobMouse instanceof StateView)) {
+
+                    return;
+                }
+
+                StateView v = (StateView) mComponentSobMouse;
+
+                variacaoXCliqueMouseComOCantoSuperiorEsquerdoVertice = v.getLayoutX() - e.getX()+RAIO_CIRCULO;
+                variacaoYCliqueMouseComOCantoSuperiorEsquerdoVertice = v.getLayoutY() - e.getY()+RAIO_CIRCULO;
             }
-            }
-
-            if (!(mComponentSobMouse instanceof StateView)) {
-
-                return;
-            }
-
-            StateView v = (StateView) mComponentSobMouse;
-
-            variacaoXCliqueMouseComOCantoSuperiorEsquerdoVertice = v.getLayoutX() - e.getX()+RAIO_CIRCULO;
-            variacaoYCliqueMouseComOCantoSuperiorEsquerdoVertice = v.getLayoutY() - e.getY()+RAIO_CIRCULO;
-
         }
     };
 
@@ -624,104 +648,119 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
     private double largura = 0, altura = 0;
     private double inicioDoRectanguloX, inicioDoRectanguloY,inicioDoRectanguloXAux,inicioDoRectanguloYAux;
     //////////////////////////////////////////////////////////////////////////////////////////
-    // clickar e não soltar e mover o mouse(precionando e movendo/dragg)
+    // clickar e nÃ£o soltar e mover o mouse(precionando e movendo/dragg)
     //////////////////////////////////////////////////////////////////////////////////////////
     private EventHandler<? super MouseEvent> aoArrastarVerticeComOMouse = new EventHandler<MouseEvent>() {
         @Override
         public void handle(MouseEvent t) {
 
+            //                         HAND MOVE                                     //
+            if(mModoAtual == MODO_MOVER){
+                //Pegar Moviemnto do mouse
+                posicaoMViewerHandX += t.getSceneX()-mouseHandX ;
+                posicaoMViewerHandY += t.getSceneY()-mouseHandY ;
+                //setar nova posição apos calculo do movimento
+                mViewer.setTranslateX(posicaoMViewerHandX);
+                mViewer.setTranslateY(posicaoMViewerHandY);
+                //setar nova posição do mouse no mViewer
+                mouseHandX = t.getSceneX();
+                mouseHandY= t.getSceneY();
+            }
+            
             if (mModoAtual != MODO_VERTICE && mModoAtual != MODO_NENHUM) {
                 return;
             }
-             if ((algumSelecionadoPeloRetangulo || selecionadoUm) && !selecaoPadrao) {
+            if(mModoAtual == MODO_NENHUM){
+                if ((algumSelecionadoPeloRetangulo || selecionadoUm) && !selecaoPadrao) {
 
-                if (!segundaVezEmDiante ) {
-                    variacaoX = t.getX() - coordenadaInicialX;
-                    variacaoY = t.getY() - coordenadaInicialY;
-                    segundaVezEmDiante = true;
-                    ultimoInstanteX = t.getX();
-                    ultimoInstanteY = t.getY();
-
-                } else {
-                    variacaoX = (t.getX() - ultimoInstanteX);
-                    variacaoY = (t.getY() - ultimoInstanteY);
-                    ultimoInstanteX = t.getX();
-                    ultimoInstanteY = t.getY();
-
-                }
-
-                for (State s : statesSelecionados) {
-                    setandoStateEmConjunto(s, variacaoX, variacaoY);
-                }
-
-            } else {
-
-                if (modoCriacaoDoRetangulo) {
-                    auxA=true;
-
-                    coornenadaIstanteX = t.getX();
-                    coordenadaIstanteY = t.getY();
-
-
-
-                    if (coornenadaIstanteX <= coordenadaInicialX) {
-
-                        if (coordenadaIstanteY <= coordenadaInicialY) {
-                            largura = coordenadaInicialY - coordenadaIstanteY;
-                            altura = coordenadaInicialX - coornenadaIstanteX;
-                            inicioDoRectanguloX = coornenadaIstanteX;
-                            inicioDoRectanguloY = coordenadaIstanteY;
-                            inicioDoRectanguloXAux=coordenadaInicialX;
-                            inicioDoRectanguloYAux=coordenadaInicialY;
-                        }
-                        if(coordenadaIstanteY >= coordenadaInicialY){
-                            altura = coordenadaInicialX  - coornenadaIstanteX  ;
-                            largura = coordenadaIstanteY - coordenadaInicialY ;
-                            inicioDoRectanguloX = coordenadaInicialX-altura;
-                            inicioDoRectanguloY = coordenadaInicialY;
-                            inicioDoRectanguloXAux=coordenadaInicialX;
-                            inicioDoRectanguloYAux=coordenadaInicialY;
-                        }
+                    if (!segundaVezEmDiante ) {
+                        variacaoX = t.getX() - coordenadaInicialX;
+                        variacaoY = t.getY() - coordenadaInicialY;
+                        segundaVezEmDiante = true;
+                        ultimoInstanteX = t.getX();
+                        ultimoInstanteY = t.getY();
 
                     } else {
-                        if (coordenadaIstanteY <= coordenadaInicialY) {
-                            altura = coornenadaIstanteX - coordenadaInicialX ;
-                            largura = coordenadaInicialY - coordenadaIstanteY;
-                            inicioDoRectanguloX = coordenadaInicialX;
-                            inicioDoRectanguloY = coordenadaInicialY-largura;
-                            inicioDoRectanguloXAux=coordenadaInicialX;
-                            inicioDoRectanguloYAux=coordenadaInicialY;
-                        }
-                        if(coordenadaIstanteY >= coordenadaInicialY){
-                            altura = coornenadaIstanteX - coordenadaInicialX;
-                            largura=coordenadaIstanteY-coordenadaInicialY;
-                            inicioDoRectanguloX = coordenadaInicialX;
-                            inicioDoRectanguloY = coordenadaInicialY;
-                            inicioDoRectanguloXAux=coordenadaInicialX;
-                            inicioDoRectanguloYAux=coordenadaInicialY;
-                        }
+                        variacaoX = (t.getX() - ultimoInstanteX);
+                        variacaoY = (t.getY() - ultimoInstanteY);
+                        ultimoInstanteX = t.getX();
+                        ultimoInstanteY = t.getY();
 
                     }
-                    if (ultimoRetanguloAdicionado != null) {
-                        mViewer.getChildren().remove(ultimoRetanguloAdicionado);
-                    }
 
-                    Rectangle retangulo = new Rectangle((int) inicioDoRectanguloX, (int) inicioDoRectanguloY, (int) altura, (int) largura);
-                    ultimoRetanguloAdicionado = retangulo;
-                    retangulo.setFill(Color.BLUE);
-                    retangulo.setOpacity(0.4);
-                    retangulo.setVisible(true);
-                    mViewer.getChildren().add(retangulo);
+                    for (State s : statesSelecionados) {
+                        setandoStateEmConjunto(s, variacaoX, variacaoY);
+                    }
 
                 } else {
 
-                    if (!(mComponentSobMouse instanceof StateView)||!selecaoPadrao) {
-                        return;
-                    }
+                    if (modoCriacaoDoRetangulo) {
+                        auxA=true;
 
-                    State s = ((StateView) mComponentSobMouse).getState();
-                    s.setLayoutX(t.getX() + variacaoXCliqueMouseComOCantoSuperiorEsquerdoVertice-RAIO_CIRCULO);
-                    s.setLayoutY(t.getY() + variacaoYCliqueMouseComOCantoSuperiorEsquerdoVertice-RAIO_CIRCULO);
+                        coornenadaIstanteX = t.getX();
+                        coordenadaIstanteY = t.getY();
+
+
+
+                        if (coornenadaIstanteX <= coordenadaInicialX) {
+
+                            if (coordenadaIstanteY <= coordenadaInicialY) {
+                                largura = coordenadaInicialY - coordenadaIstanteY;
+                                altura = coordenadaInicialX - coornenadaIstanteX;
+                                inicioDoRectanguloX = coornenadaIstanteX;
+                                inicioDoRectanguloY = coordenadaIstanteY;
+                                inicioDoRectanguloXAux=coordenadaInicialX;
+                                inicioDoRectanguloYAux=coordenadaInicialY;
+                            }
+                            if(coordenadaIstanteY >= coordenadaInicialY){
+                                altura = coordenadaInicialX  - coornenadaIstanteX  ;
+                                largura = coordenadaIstanteY - coordenadaInicialY ;
+                                inicioDoRectanguloX = coordenadaInicialX-altura;
+                                inicioDoRectanguloY = coordenadaInicialY;
+                                inicioDoRectanguloXAux=coordenadaInicialX;
+                                inicioDoRectanguloYAux=coordenadaInicialY;
+                            }
+
+                        } else {
+                            if (coordenadaIstanteY <= coordenadaInicialY) {
+                                altura = coornenadaIstanteX - coordenadaInicialX ;
+                                largura = coordenadaInicialY - coordenadaIstanteY;
+                                inicioDoRectanguloX = coordenadaInicialX;
+                                inicioDoRectanguloY = coordenadaInicialY-largura;
+                                inicioDoRectanguloXAux=coordenadaInicialX;
+                                inicioDoRectanguloYAux=coordenadaInicialY;
+                            }
+                            if(coordenadaIstanteY >= coordenadaInicialY){
+                                altura = coornenadaIstanteX - coordenadaInicialX;
+                                largura=coordenadaIstanteY-coordenadaInicialY;
+                                inicioDoRectanguloX = coordenadaInicialX;
+                                inicioDoRectanguloY = coordenadaInicialY;
+                                inicioDoRectanguloXAux=coordenadaInicialX;
+                                inicioDoRectanguloYAux=coordenadaInicialY;
+                            }
+
+                        }
+                        if (ultimoRetanguloAdicionado != null) {
+                            mViewer.getChildren().remove(ultimoRetanguloAdicionado);
+                        }
+
+                        Rectangle retangulo = new Rectangle((int) inicioDoRectanguloX, (int) inicioDoRectanguloY, (int) altura, (int) largura);
+                        ultimoRetanguloAdicionado = retangulo;
+                        retangulo.setFill(Color.BLUE);
+                        retangulo.setOpacity(0.4);
+                        retangulo.setVisible(true);
+                        mViewer.getChildren().add(retangulo);
+
+                    } else {
+
+                        if (!(mComponentSobMouse instanceof StateView)||!selecaoPadrao) {
+                            return;
+                        }
+
+                        State s = ((StateView) mComponentSobMouse).getState();
+                        s.setLayoutX(t.getX() + variacaoXCliqueMouseComOCantoSuperiorEsquerdoVertice-RAIO_CIRCULO);
+                        s.setLayoutY(t.getY() + variacaoYCliqueMouseComOCantoSuperiorEsquerdoVertice-RAIO_CIRCULO);
+                    }
                 }
             }
         }
@@ -732,28 +771,35 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
     private EventHandler<? super MouseEvent> aoLiberarVerticeArrastadoComOMouse = new EventHandler<MouseEvent>() {
         @Override
         public void handle(MouseEvent t) {
+            
+            if(mModoAtual == MODO_MOVER){
+                mViewer.setCursor(Cursor.OPEN_HAND);
+            }
+            
             if (mModoAtual != MODO_VERTICE && mModoAtual != MODO_NENHUM) {
                 return;
             }
-           variacaoXCliqueMouseComOCantoSuperiorEsquerdoVertice = 0;
-            variacaoYCliqueMouseComOCantoSuperiorEsquerdoVertice = 0;
-            if (modoCriacaoDoRetangulo) {
-                if(!auxA){
-                    inicioDoRectanguloXAux=coordenadaInicialX;
-                    inicioDoRectanguloYAux=coordenadaInicialY;
-                }
-                if(!selecionadoUm) {
-                    coordenadaFinalX = t.getX();
-                    coordenadaFinalY = t.getY();
+            if(mModoAtual == MODO_NENHUM){
+                variacaoXCliqueMouseComOCantoSuperiorEsquerdoVertice = 0;
+                variacaoYCliqueMouseComOCantoSuperiorEsquerdoVertice = 0;
+                if (modoCriacaoDoRetangulo) {
+                    if(!auxA){
+                        inicioDoRectanguloXAux=coordenadaInicialX;
+                        inicioDoRectanguloYAux=coordenadaInicialY;
+                    }
+                    if(!selecionadoUm) {
+                        coordenadaFinalX = t.getX();
+                        coordenadaFinalY = t.getY();
 
-                    algumSelecionadoPeloRetangulo = selecionandoComRetangulo(inicioDoRectanguloXAux, inicioDoRectanguloYAux, coordenadaFinalX, coordenadaFinalY);
-                }
-                if (ultimoRetanguloAdicionado != null) {
-                    mViewer.getChildren().remove(ultimoRetanguloAdicionado);
+                        algumSelecionadoPeloRetangulo = selecionandoComRetangulo(inicioDoRectanguloXAux, inicioDoRectanguloYAux, coordenadaFinalX, coordenadaFinalY);
+                    }
+                    if (ultimoRetanguloAdicionado != null) {
+                        mViewer.getChildren().remove(ultimoRetanguloAdicionado);
 
-                }
+                    }
 
-                auxA=false;
+                    auxA=false;
+                }
             }
         }
     };
@@ -762,7 +808,7 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
     public boolean selecionandoComRetangulo(double inicioDoRectanguloX, double inicioDoRectanguloY, double finalDoRectanguloX, double finalDoRectanguloY) {
         boolean aux = false;
         /////////////////////////////////////////////////
-        ////////organizando as pesições do retangulo
+        ////////organizando as pesiÃ§Ãµes do retangulo
         /////////////////////////////////////////////////
         if(inicioDoRectanguloX>finalDoRectanguloX){
             double ajuda = finalDoRectanguloX;
@@ -798,7 +844,7 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
             posicaoDoEstadoXMenosRaio = posCircleX - RAIO_CIRCULO;
             posicaoDoEstadoYMenosRaio = posCircleY - RAIO_CIRCULO;
 
-            //verificando se a area do retangulo está pegando até o centro do state
+            //verificando se a area do retangulo estÃ¡ pegando atÃ© o centro do state
             if (posicaoDoEstadoXMenosRaio == inicioDoRectanguloX || posicaoDoEstadoXMenosRaio > inicioDoRectanguloX) {
                 if (posicaoDoEstadoXMaisRaio == finalDoRectanguloX || posicaoDoEstadoXMaisRaio < finalDoRectanguloX) {
                     if (posicaoDoEstadoYMenosRaio == inicioDoRectanguloY || posicaoDoEstadoYMenosRaio > inicioDoRectanguloY) {
@@ -875,7 +921,7 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
 
 
     ////////////////////////////////////////////////////////////////////////////
-    // Adicionar transição
+    // Adicionar transiÃ§Ã£o
     ////////////////////////////////////////////////////////////////////////////
     private StateView mVerticeOrigemParaAdicionarTransicao;
     private StateView mVerticeDestinoParaAdicionarTransicao;
@@ -897,7 +943,7 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
             //inicia o drag'n'drop
             Dragboard db = mVerticeOrigemParaAdicionarTransicao.startDragAndDrop(TransferMode.ANY);
 
-            //soh funciona com as três linhas a seguir. Porque? Eu não sei.
+            //soh funciona com as trÃªs linhas a seguir. Porque? Eu nÃ£o sei.
             ClipboardContent content = new ClipboardContent();
             content.putString("gambiarra");
             db.setContent(content);
@@ -909,8 +955,8 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
     private EventHandler<DragEvent> aoDetectarPossivelAlvoParaSoltarODrag = new EventHandler<DragEvent>() {
         @Override
         public void handle(DragEvent event) {
-            //a informaçao esta sendo solta sobre o alvo
-            //aceita soltar o mouse somente se não é o mesmo nodo de origem 
+            //a informaÃ§ao esta sendo solta sobre o alvo
+            //aceita soltar o mouse somente se nÃ£o Ã© o mesmo nodo de origem 
             //e possui uma string            
             if (event.getGestureSource() != event.getSource()) {
                 event.acceptTransferModes(TransferMode.COPY_OR_MOVE);
@@ -988,9 +1034,9 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
         node.setScaleX(node.getScaleX() * factor);  
         node.setScaleY(node.getScaleY() * factor);  
         node.setTranslateX(node.getTranslateX() + xr * dw / 2);  
-        node.setTranslateY(node.getTranslateY() + yr * dh / 2);  
+        node.setTranslateY(node.getTranslateY() + yr * dh / 2);
     }
-
+    
     @Override
     public Component getComponent() {
         return mViewer.getComponent();
@@ -1006,6 +1052,9 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
         mViewer.setCursor(Cursor.DEFAULT);
         mStateToolbar.setVisible(mModoAtual == MODO_VERTICE);
         mTransitionToolbar.setVisible(mModoAtual == MODO_TRANSICAO);
+        if(mModoAtual == MODO_MOVER){
+            mViewer.setCursor(Cursor.OPEN_HAND);
+        }
     }
 
     private View getComponentePelaPosicaoMouse(double x, double y) {
