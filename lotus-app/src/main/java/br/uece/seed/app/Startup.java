@@ -34,6 +34,7 @@ import br.uece.seed.ext.Plugin;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.JavaFXBuilderFactory;
+import javafx.scene.image.Image;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -89,6 +90,8 @@ public class Startup extends Application {
 		registerModules(extensionManager);
 		extensionManager.start();
 		Scene scene = new Scene(root, 700, 500);
+
+		stage.getIcons().add(new Image(getClass().getResourceAsStream("/images/app_logo.png")));
 
 		stage.setScene(scene);
 		stage.show();
