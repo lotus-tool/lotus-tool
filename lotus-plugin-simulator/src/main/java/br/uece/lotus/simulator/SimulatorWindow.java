@@ -34,6 +34,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.Orientation;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -60,6 +61,9 @@ public class SimulatorWindow extends AnchorPane implements Window {
     private final Button mBtnStart;
     private final Button mBtnMakeStep;
     private final Button mBtnUnmakeStep;
+    private final ComboBox mCbRandomPath;
+    private final Separator mSeparator1;
+    private final Separator mSeparator2;
     private final BasicComponentViewer mViewer;
     private final TableView<Step> mTableView;
     private final ExecutorSimulatorCommands mExecutorCommands;
@@ -180,10 +184,26 @@ public class SimulatorWindow extends AnchorPane implements Window {
             }
         });
 
+        mCbRandomPath = new ComboBox();
+        mCbRandomPath.getItems().addAll("Probabilistic", "Non-Probabilistic");
+        mCbRandomPath.setPromptText("Random Path");
+        mCbRandomPath.setOnAction((event) -> {
+            int selectedItem = mCbRandomPath.getSelectionModel().getSelectedIndex();
 
+            if(selectedItem == 0) {
+
+            } else {
+
+            }
+        });
+
+        mSeparator1 = new Separator();
+        mSeparator2 = new Separator();
+        mSeparator1.setOrientation(Orientation.VERTICAL);
+        mSeparator2.setOrientation(Orientation.VERTICAL);
 
         mToolbar = new ToolBar();
-        mToolbar.getItems().addAll(mBtnStart, mBtnMakeStep, mBtnUnmakeStep);
+        mToolbar.getItems().addAll(mBtnStart, mSeparator1, mBtnMakeStep, mBtnUnmakeStep, mSeparator2, mCbRandomPath);
         AnchorPane.setTopAnchor(mToolbar, 0D);
         AnchorPane.setLeftAnchor(mToolbar, 0D);
         AnchorPane.setRightAnchor(mToolbar, 0D);
