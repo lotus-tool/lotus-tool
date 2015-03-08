@@ -32,10 +32,14 @@ import br.uece.seed.app.ExtensibleToolbar;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
+import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.control.ContextMenu;
@@ -61,6 +65,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.transform.Scale;
 import javafx.stage.FileChooser;
 import javax.swing.JOptionPane;
 /**
@@ -235,6 +240,8 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
     private double mViewerScaleXPadrao,mViewerScaleYPadrao,mViewerTranslateXPadrao,mViewerTranslateYPadrao;
     private double posicaoMViewerHandX=0,posicaoMViewerHandY=0;//posição mviewer
     private double mouseHandX=0,mouseHandY=0;// posiÃ§Ã£o mouse
+    private DoubleProperty zoomFactor = new SimpleDoubleProperty(1);
+    private Scale escala = new Scale(1, 1);
 
     public DesignerWindowImpl(BasicComponentViewer viewer) {
         mToolbar = new ToolBar();
@@ -282,33 +289,33 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
         });
         
         mBtnZoom = new MenuButton();
+        HBox menuSlideZoom = new HBox();
+        menuSlideZoom.setSpacing(5);
+        Slider zoomSlide = new Slider(0.5,2,1);
+        zoomSlide.setShowTickMarks(true);
+        ImageView zoomMoree = new ImageView(new Image(getClass().getResourceAsStream("/images/ic_zoom_mais.png")));
+        ImageView zoomLess = new ImageView(new Image(getClass().getResourceAsStream("/images/ic_zoom_menos.png")));
+        CheckBox zoomReset = new CheckBox("Reset");
+        menuSlideZoom.getChildren().addAll(zoomLess,zoomSlide,zoomMoree,zoomReset);
         mBtnZoom.setGraphic(new ImageView(new Image(getClass().getResourceAsStream("/images/ic_zoom.png"))));
-        MenuItem zoomMais = new MenuItem("", new ImageView(new Image(getClass().getResourceAsStream("/images/ic_zoom_mais.png"))));
-        zoomMais.setOnAction(new EventHandler<ActionEvent>() {
-            public void handle(ActionEvent event) {
-                mViewer.setScaleX(mViewer.getScaleX() * 1.5);
-                mViewer.setScaleY(mViewer.getScaleY() * 1.5);
+        MenuItem zoomHBox = new MenuItem();
+        zoomHBox.setGraphic(menuSlideZoom);
+        zoomFactor.bind(zoomSlide.valueProperty());
+        zoomFactor.addListener((ObservableValue<? extends Number> observable, Number oldValue, Number newValue) -> {
+            escala.setX(newValue.doubleValue());
+            escala.setY(newValue.doubleValue());
+            requestLayout();
+            if(zoomFactor.getValue() != 1)
+                zoomReset.setSelected(false);
+        });
+        zoomReset.selectedProperty().addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {
+            if(zoomReset.isSelected()){
+                zoomSlide.setValue(1);
             }
         });
-        MenuItem zoomMenos = new MenuItem("", new ImageView(new Image(getClass().getResourceAsStream("/images/ic_zoom_menos.png"))));
-        zoomMenos.setOnAction(new EventHandler<ActionEvent>() {
-            public void handle(ActionEvent event) {
-                mViewer.setScaleX(mViewer.getScaleX() * 1/1.5);
-                mViewer.setScaleY(mViewer.getScaleY() * 1/1.5);
-            }
-        });
-        MenuItem zoomReset = new MenuItem("", new ImageView(new Image(getClass().getResourceAsStream("/images/ic_zoom_reset.png"))));
-        zoomReset.setOnAction(new EventHandler<ActionEvent>() {
-            public void handle(ActionEvent event) {
-                mViewer.setScaleX(mViewerScaleXPadrao);
-                mViewer.setScaleY(mViewerScaleYPadrao);
-                mViewer.setTranslateX(mViewerTranslateXPadrao);
-                mViewer.setTranslateY(mViewerTranslateYPadrao);
-            }
-        });
-        Tooltip zoomMore = new Tooltip("Ctrl + MouseScroll â†‘\nCtrl + MouseScroll â†“\nCtrl + Mouse Button Middle");
-        Tooltip.install(mBtnZoom, zoomMore);
-        mBtnZoom.getItems().addAll(zoomMais,zoomMenos,zoomReset);
+        Tooltip zoomInfo = new Tooltip("Ctrl + MouseScroll â†‘\nCtrl + MouseScroll â†“\nCtrl + Mouse Middle Button");
+        Tooltip.install(mBtnZoom, zoomInfo);
+        mBtnZoom.getItems().add(zoomHBox);
 
         mToolbar.getItems().addAll(mBtnArrow, mBtnState, mBtnTransitionLine, mBtnTransitionArc, mBtnEraser, mBtnHand ,mBtnZoom);
 
@@ -330,6 +337,8 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
         mComponentContextMenu = new ContextMenu();
 
         mViewer = viewer;
+        mViewer.getTransforms().add(escala);
+        
         mViewer.addListener(mViewerListener);
         mViewer.setStateContextMenu(mComponentContextMenu);
         mViewer.setOnMouseClicked(aoClicarMouse);
@@ -1018,7 +1027,6 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
             }
         }
     };
-    
     private void zoom(Node node, double centerX, double centerY, double factor) {  
         final Point2D center = node.localToParent(centerX, centerY);  
         final Bounds bounds = node.getBoundsInParent();  
