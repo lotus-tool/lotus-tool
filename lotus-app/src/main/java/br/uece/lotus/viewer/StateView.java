@@ -27,15 +27,21 @@ import br.uece.lotus.State;
 import javafx.scene.control.Label;
 import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
+import javafx.scene.shape.*;
+import javafx.scene.shape.Polygon;
+import java.util.List;
+
+import static java.util.Arrays.asList;
 
 public class StateView extends Region implements View, State.Listener {
 
     static final int RAIO_CIRCULO = 15;
-    static final int ESPESSURA_PERIMETRO_CIRCULO = 2;    
+    static final int ESPESSURA_PERIMETRO_CIRCULO = 2;
+    static final List<Double> PONTOS_TRIANGULO = asList(-1.5, 15.0, -13.0, 28.0, -13.0, 2.0);
 
     private final Circle mCircle;
     private final Circle mSecondCircle;
+    private final Polygon triangle;
     private final Label mText;
 
     private State mState;
@@ -50,8 +56,11 @@ public class StateView extends Region implements View, State.Listener {
         mCircle = new Circle(RAIO_CIRCULO);
         mSecondCircle = new Circle(RAIO_CIRCULO - 3);
         mSecondCircle.setFill(null);
+        triangle = new Polygon();
+        triangle.getPoints().addAll(PONTOS_TRIANGULO);
+        triangle.setFill(null);
 
-        getChildren().addAll(mCircle, mSecondCircle);
+        getChildren().addAll(mCircle, mSecondCircle, triangle);
 
         mCircle.setLayoutX(RAIO_CIRCULO);
         mCircle.setLayoutY(RAIO_CIRCULO);
@@ -93,6 +102,10 @@ public class StateView extends Region implements View, State.Listener {
 
         if (mState.isFinal()) {
             mSecondCircle.setStroke(Color.BLACK);
+        }
+
+        if (mState.isInitial()) {
+            triangle.setStyle(style);
         }
 
         style = "-fx-text-fill: " + (mState.getTextColor() == null ? "black" : mState.getTextColor()) + ";";
