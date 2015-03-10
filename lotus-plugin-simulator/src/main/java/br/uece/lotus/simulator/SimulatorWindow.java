@@ -209,7 +209,7 @@ public class SimulatorWindow extends AnchorPane implements Window {
         AnchorPane.setRightAnchor(mToolbar, 0D);
         getChildren().add(mToolbar);
 
-        mTableView = new TableView();
+        mTableView = new TableView<Step>();
         mTableView.setPrefHeight(200);
         AnchorPane.setLeftAnchor(mTableView, 0D);
         AnchorPane.setRightAnchor(mTableView, 0D);
@@ -217,16 +217,16 @@ public class SimulatorWindow extends AnchorPane implements Window {
         getChildren().add(mTableView);
 
         mActionCol = new TableColumn<>("Action");
-        mActionCol.setCellValueFactory(new PropertyValueFactory<>("action"));
+        mActionCol.setCellValueFactory(new PropertyValueFactory<Step, String>("action"));
         mActionCol.setPrefWidth(100);
         mFromCol = new TableColumn<>("From");
-        mFromCol.setCellValueFactory(new PropertyValueFactory<>("from"));
+        mFromCol.setCellValueFactory(new PropertyValueFactory<Step, String>("from"));
         mFromCol.setPrefWidth(100);
         mToCol = new TableColumn<>("To");
         mToCol.setPrefWidth(100);
-        mToCol.setCellValueFactory(new PropertyValueFactory<>("to"));
-        mTableView.getColumns().addAll(mActionCol, mFromCol, mToCol);
+        mToCol.setCellValueFactory(new PropertyValueFactory<Step, String>("to"));
         mTableView.setItems(mSteps);
+        mTableView.getColumns().addAll(mActionCol, mFromCol, mToCol);
     }
 
     private void start() {
@@ -262,59 +262,6 @@ public class SimulatorWindow extends AnchorPane implements Window {
         mSimulatorContext.getmPathLabel().setText(mSimulatorContext.getmCurrentState().getLabel());
     }
 
-//    private void showChoices() {
-//        applyEnableStyle(mCurrentState);
-//        for (Transition t : mCurrentState.getOutgoingTransitions()) {
-//            applyChoiceStyle(t);
-//            applyChoiceStyle(t.getDestiny());
-//        }
-//    }
-//
-//    private void applyEnableStyle(State s) {
-//        s.setColor(null);
-//        s.setTextColor("black");
-//        s.setTextSyle(State.TEXTSTYLE_NORMAL);
-//        s.setBorderColor("black");
-//        s.setBorderWidth(1);
-//    }
-//
-//    private void applyEnableStyle(Transition t) {
-//        t.setColor("black");
-//        t.setTextSyle(Transition.TEXTSTYLE_NORMAL);
-//        t.setTextColor("black");
-//        t.setWidth(1);
-//    }
-//
-//    private void applyDisabledStyle(State s) {
-//        s.setColor("#d0d0d0");
-//        s.setTextColor("#c0c0c0");
-//        s.setTextSyle(State.TEXTSTYLE_NORMAL);
-//        s.setBorderColor("gray");
-//        s.setBorderWidth(1);
-//    }
-//
-//    private void applyDisabledStyle(Transition t) {
-//        t.setColor("#d0d0d0");
-//        t.setTextColor("#c0c0c0");
-//        t.setTextSyle(Transition.TEXTSTYLE_NORMAL);
-//        t.setWidth(1);
-//    }
-//
-//    private void applyChoiceStyle(Transition t) {
-//        t.setColor("blue");
-//        t.setTextSyle(Transition.TEXTSTYLE_BOLD);
-//        t.setTextColor("blue");
-//        t.setWidth(2);
-//    }
-//
-//    private void applyChoiceStyle(State s) {
-//        s.setColor(null);
-//        s.setBorderColor("blue");
-//        s.setTextSyle(Transition.TEXTSTYLE_BOLD);
-//        s.setTextColor("blue");
-//        s.setBorderWidth(2);
-//    }
-
     @Override
     public Component getComponent() {
         return mViewer.getComponent();
@@ -335,44 +282,6 @@ public class SimulatorWindow extends AnchorPane implements Window {
     @Override
     public Node getNode() {
         return this;
-    }
-
-    public static class Step {
-
-        private String mAction;
-        private String mFrom;
-        private String mTo;
-
-        Step(String action, String from, String to) {
-            mAction = action;
-            mFrom = from;
-            mTo = to;
-        }
-
-        public String getAction() {
-            return mAction;
-        }
-
-        public void setAction(String action) {
-            this.mAction = action;
-        }
-
-        public String getFrom() {
-            return mFrom;
-        }
-
-        public void setFrom(String from) {
-            this.mFrom = from;
-        }
-
-        public String getTo() {
-            return mTo;
-        }
-
-        public void setTo(String to) {
-            this.mTo = to;
-        }
-
     }
 
 }
