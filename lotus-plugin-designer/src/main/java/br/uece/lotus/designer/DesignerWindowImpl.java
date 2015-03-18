@@ -29,9 +29,11 @@ import br.uece.lotus.Transition;
 import br.uece.lotus.viewer.*;
 import br.uece.seed.app.ExtensibleFXToolbar;
 import br.uece.seed.app.ExtensibleToolbar;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.value.ObservableValue;
@@ -39,7 +41,6 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
-import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.control.ContextMenu;
@@ -67,31 +68,32 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.transform.Scale;
 import javafx.stage.FileChooser;
+
 import javax.swing.JOptionPane;
+
 /**
- *
  * @author emerson
  */
 public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
 
-    Rectangle ultimoRetanguloAdicionado;                                                
-    double coordenadaInicialX, coordenadaInicialY, coordenadaFinalX, coordenadaFinalY,   
-    coornenadaIstanteX, coordenadaIstanteY;                                            
-    boolean shifPrecionado = false;                                                    
-    boolean algumSelecionadoPeloRetangulo = false;                                                      
-    boolean ctrlPressionado = false;                                                    
-    double posicaoDoEstadoXMaisRaio;                                                    
-    double posicaoDoEstadoYMaisRaio;                                                    
-    double posicaoDoEstadoXMenosRaio;                                                   
-    double posicaoDoEstadoYMenosRaio;                                                  
-    ArrayList<State> stateDentroDoRetangulo = new ArrayList<State>();                      
-    double posCircleX;                                                                  
-    double posCircleY;                                                                  
-    double variacaoDeX;                                                                 
-    double variacaoDeY;                                                                
-    double stateDoPrimeiroClickX, stateDoPrimeiroClickY;                                
-    boolean caso1, caso2, caso3, caso4, retorno, aux, modoCriacaoDoRetangulo = false;            
-    static final int RAIO_CIRCULO = 15;                                                  
+    Rectangle ultimoRetanguloAdicionado;
+    double coordenadaInicialX, coordenadaInicialY, coordenadaFinalX, coordenadaFinalY,
+            coornenadaIstanteX, coordenadaIstanteY;
+    boolean shifPrecionado = false;
+    boolean StatesSelecionadoPeloRetangulo = false;
+    boolean ctrlPressionado = false;
+    double posicaoDoEstadoXMaisRaio;
+    double posicaoDoEstadoYMaisRaio;
+    double posicaoDoEstadoXMenosRaio;
+    double posicaoDoEstadoYMenosRaio;
+    ArrayList<State> stateDentroDoRetangulo = new ArrayList<State>();
+    double posCircleX;
+    double posCircleY;
+    double variacaoDeX;
+    double variacaoDeY;
+    double stateDoPrimeiroClickX, stateDoPrimeiroClickY;
+    boolean caso1, caso2, caso3, caso4, retorno, aux, modoCriacaoDoRetangulo = false;
+    static final int RAIO_CIRCULO = 15;
 
     public static final int MODO_NENHUM = 0;
     public static final int MODO_VERTICE = 1;
@@ -130,7 +132,7 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
     private String mDefaultTransitionColor;
     private String mDefaultTransitionTextColor;
     private Integer mDefaultTransitionWidth;
-    private String mDefaultTransitionLabel;    
+    private String mDefaultTransitionLabel;
     private EventHandler<ActionEvent> mSetStateAsInitial = new EventHandler<ActionEvent>() {
         @Override
         public void handle(ActionEvent event) {
@@ -173,14 +175,14 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
             s.setFinal(true);
         }
     };
-        private  EventHandler<ActionEvent> mSetColor = new EventHandler<ActionEvent>() {
+    private EventHandler<ActionEvent> mSetColor = new EventHandler<ActionEvent>() {
         @Override
         public void handle(ActionEvent event) {
             if (mComponentSelecionado == null) {
                 return;
             }
             State s = ((StateView) mComponentSelecionado).getState();
-            s.setColor((String) ((MenuItem)event.getSource()).getUserData());
+            s.setColor((String) ((MenuItem) event.getSource()).getUserData());
         }
     };
     private int mTransitionViewType;
@@ -237,9 +239,9 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
     private View mComponentSobMouse;
     private View mComponentSelecionado;
     private final List<Listener> mListeners = new ArrayList<>();
-    private double mViewerScaleXPadrao,mViewerScaleYPadrao,mViewerTranslateXPadrao,mViewerTranslateYPadrao;
-    private double posicaoMViewerHandX=0,posicaoMViewerHandY=0;//posição mviewer
-    private double mouseHandX=0,mouseHandY=0;// posiÃ§Ã£o mouse
+    private double mViewerScaleXPadrao, mViewerScaleYPadrao, mViewerTranslateXPadrao, mViewerTranslateYPadrao;
+    private double posicaoMViewerHandX = 0, posicaoMViewerHandY = 0;//posição mviewer
+    private double mouseHandX = 0, mouseHandY = 0;// posiÃ§Ã£o mouse
     private DoubleProperty zoomFactor = new SimpleDoubleProperty(1);
     private Scale escala = new Scale(1, 1);
 
@@ -265,7 +267,7 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
             setModo(MODO_TRANSICAO);
         });
         mBtnTransitionLine.setToggleGroup(mToggleGroup);
-        
+
         mBtnTransitionArc = new ToggleButton();
         mBtnTransitionArc.setGraphic(new ImageView(new Image(getClass().getResourceAsStream("/images/ic_transition_semicircle.png"))));
         mBtnTransitionArc.setOnAction((ActionEvent e) -> {
@@ -273,30 +275,30 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
             setModo(MODO_TRANSICAO);
         });
         mBtnTransitionArc.setToggleGroup(mToggleGroup);
-        
+
         mBtnEraser = new ToggleButton();
         mBtnEraser.setGraphic(new ImageView(new Image(getClass().getResourceAsStream("/images/ic_eraser.png"))));
         mBtnEraser.setOnAction((ActionEvent e) -> {
             setModo(MODO_REMOVER);
         });
         mBtnEraser.setToggleGroup(mToggleGroup);
-        
-        mBtnHand =  new ToggleButton();
+
+        mBtnHand = new ToggleButton();
         mBtnHand.setGraphic(new ImageView(new Image(getClass().getResourceAsStream("/images/ic_hand.png"))));
         mBtnHand.setToggleGroup(mToggleGroup);
         mBtnHand.setOnAction((ActionEvent e) -> {
-            setModo(MODO_MOVER); 
+            setModo(MODO_MOVER);
         });
-        
+
         mBtnZoom = new MenuButton();
         HBox menuSlideZoom = new HBox();
         menuSlideZoom.setSpacing(5);
-        Slider zoomSlide = new Slider(0.5,2,1);
+        Slider zoomSlide = new Slider(0.5, 2, 1);
         zoomSlide.setShowTickMarks(true);
         ImageView zoomMoree = new ImageView(new Image(getClass().getResourceAsStream("/images/ic_zoom_mais.png")));
         ImageView zoomLess = new ImageView(new Image(getClass().getResourceAsStream("/images/ic_zoom_menos.png")));
         CheckBox zoomReset = new CheckBox("Reset");
-        menuSlideZoom.getChildren().addAll(zoomLess,zoomSlide,zoomMoree,zoomReset);
+        menuSlideZoom.getChildren().addAll(zoomLess, zoomSlide, zoomMoree, zoomReset);
         mBtnZoom.setGraphic(new ImageView(new Image(getClass().getResourceAsStream("/images/ic_zoom.png"))));
         MenuItem zoomHBox = new MenuItem();
         zoomHBox.setGraphic(menuSlideZoom);
@@ -305,11 +307,11 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
             escala.setX(newValue.doubleValue());
             escala.setY(newValue.doubleValue());
             requestLayout();
-            if(zoomFactor.getValue() != 1)
+            if (zoomFactor.getValue() != 1)
                 zoomReset.setSelected(false);
         });
         zoomReset.selectedProperty().addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {
-            if(zoomReset.isSelected()){
+            if (zoomReset.isSelected()) {
                 zoomSlide.setValue(1);
             }
         });
@@ -317,7 +319,7 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
         Tooltip.install(mBtnZoom, zoomInfo);
         mBtnZoom.getItems().add(zoomHBox);
 
-        mToolbar.getItems().addAll(mBtnArrow, mBtnState, mBtnTransitionLine, mBtnTransitionArc, mBtnEraser, mBtnHand ,mBtnZoom);
+        mToolbar.getItems().addAll(mBtnArrow, mBtnState, mBtnTransitionLine, mBtnTransitionArc, mBtnEraser, mBtnHand, mBtnZoom);
 
         mStateToolbar = new ToolBar();
         mStateToolbar.setVisible(false);
@@ -338,7 +340,7 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
 
         mViewer = viewer;
         mViewer.getTransforms().add(escala);
-        
+
         mViewer.addListener(mViewerListener);
         mViewer.setStateContextMenu(mComponentContextMenu);
         mViewer.setOnMouseClicked(aoClicarMouse);
@@ -365,7 +367,7 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
         mViewerScaleYPadrao = mViewer.getScaleY();
         mViewerTranslateXPadrao = mViewer.getTranslateX();
         mViewerTranslateYPadrao = mViewer.getTranslateY();
-        MenuItem mSetAsInitialMenuItem = new MenuItem("Set as initial");        
+        MenuItem mSetAsInitialMenuItem = new MenuItem("Set as initial");
         mSetAsInitialMenuItem.setOnAction(mSetStateAsInitial);
         MenuItem mSetAsNormalMenuItem = new MenuItem("Set as normal");
         mSetAsNormalMenuItem.setOnAction(mSetStateAsNormal);
@@ -374,7 +376,7 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
         MenuItem mSetAsErrorMenuItem = new MenuItem("Set as final");
         mSetAsErrorMenuItem.setOnAction(mSetStateAsFinal);
 
-        
+
         MenuItem mSaveAsPNG = new MenuItem("Save as PNG");
         mSaveAsPNG.setOnAction((ActionEvent event) -> {
             FileChooser fileChooser = new FileChooser();
@@ -435,7 +437,7 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
         MenuItem whiteColor = new MenuItem("White");
         whiteColor.setUserData("#FFFFFF");
         whiteColor.setOnAction(mSetColor);
-        menuColor.getItems().addAll(defaultColor,new SeparatorMenuItem(),greenColor, blueColor,blackColor,yellowColor,whiteColor,redColor,grayColor,pinkColor,purpleColor);
+        menuColor.getItems().addAll(defaultColor, new SeparatorMenuItem(), greenColor, blueColor, blackColor, yellowColor, whiteColor, redColor, grayColor, pinkColor, purpleColor);
         mComponentContextMenu.getItems().addAll(new SeparatorMenuItem(), menuColor);
 
 
@@ -452,14 +454,14 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
                 mComponentContextMenu.show(mViewer, e.getScreenX(), e.getScreenY());
                 return;
             }
-            
-            if(e.isControlDown() && e.getButton() == MouseButton.MIDDLE){
+
+            if (e.isControlDown() && e.getButton() == MouseButton.MIDDLE) {
                 mViewer.setScaleX(mViewerScaleXPadrao);
                 mViewer.setScaleY(mViewerScaleYPadrao);
                 mViewer.setTranslateX(mViewerTranslateXPadrao);
                 mViewer.setTranslateY(mViewerTranslateYPadrao);
             }
-            
+
             if (mModoAtual == MODO_NENHUM) {
 
 
@@ -487,8 +489,8 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
             }
         }
     };
-    
-////////////////////////////////////////////////////////////////////////////////
+
+    ////////////////////////////////////////////////////////////////////////////////
 // Mover o mouse(mover o cursor do mouse)
 ////////////////////////////////////////////////////////////////////////////
     private double coordenadaIniX = 0;
@@ -509,35 +511,35 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
     ////////////////////////////////////////////////////////////////////////////
     // Mover state (clickar sem soltar)
     ////////////////////////////////////////////////////////////////////////////
-    private boolean verificacao = false,auxA=false;
-    private double variacaoXCliqueMouseComOCantoSuperiorEsquerdoVertice,ultimoInstanteX;
-    private double variacaoYCliqueMouseComOCantoSuperiorEsquerdoVertice,ultimoInstanteY;
-    private boolean downShift, selecionadoUm,selecioneiComShift, selecaoPadrao;
-    ArrayList<State>statesSelecionados=new ArrayList<State>();
+    private boolean verificacao = false, auxA = false;
+    private double variacaoXCliqueMouseComOCantoSuperiorEsquerdoVertice, ultimoInstanteX;
+    private double variacaoYCliqueMouseComOCantoSuperiorEsquerdoVertice, ultimoInstanteY;
+    private boolean downShift, selecionadoUm, selecioneiComShift, selecaoPadrao;
+    ArrayList<State> statesSelecionados = new ArrayList<State>();
 
     private EventHandler<? super MouseEvent> aoIniciarArrastoVerticeComOMouse = new EventHandler<MouseEvent>() {
         @Override
         public void handle(MouseEvent e) {
-            
+
             //                         HAND MOVE                                     //
-            if(mModoAtual == MODO_MOVER){
+            if (mModoAtual == MODO_MOVER) {
                 mViewer.setCursor(Cursor.CLOSED_HAND);
-                if(e.getClickCount() == 2){
+                if (e.getClickCount() == 2) {
                     mViewer.setTranslateX(mViewerTranslateXPadrao);
                     mViewer.setTranslateY(mViewerTranslateYPadrao);
                 }
                 //gravar cordenadas x e y do mViewer de acordo com a posição do mouse
                 mouseHandX = e.getSceneX();
-                mouseHandY= e.getSceneY();
+                mouseHandY = e.getSceneY();
                 //get the x and y position measure from Left-Top
                 posicaoMViewerHandX = mViewer.getTranslateX();
                 posicaoMViewerHandY = mViewer.getTranslateY();
             }
-            
+
             if (mModoAtual != MODO_VERTICE && mModoAtual != MODO_NENHUM) {
                 return;
             }
-            if(mModoAtual == MODO_NENHUM){
+            if (mModoAtual == MODO_NENHUM) {
                 coordenadaInicialX = e.getX();
                 coordenadaInicialY = e.getY();
                 ultimoInstanteX = 0;
@@ -545,49 +547,46 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
                 segundaVezEmDiante = false;
 
 
-                if(e.isShiftDown()){
-                    downShift=true;
+                if (e.isShiftDown()) {
+                    downShift = true;
 
                 }
 
-                if(downShift&&mComponentSobMouse!=null){
-                    StateView stateView= (StateView)mComponentSobMouse;
-                    State state=stateView.getState();
+                if (downShift && mComponentSobMouse != null) {
+                    StateView stateView = (StateView) mComponentSobMouse;
+                    State state = stateView.getState();
                     state.setBorderWidth(2);
                     state.setBorderColor("blue");
                     state.setTextColor("blue");
                     state.setTextSyle(State.TEXTSTYLE_BOLD);
                     statesSelecionados.add(state);
-                    selecionadoUm =true;
-                    selecioneiComShift=true;
+                    selecionadoUm = true;
+                    selecioneiComShift = true;
 
-                    modoCriacaoDoRetangulo=false;
-                    downShift=false;
-                    selecaoPadrao =false;
+                    modoCriacaoDoRetangulo = false;
+                    downShift = false;
+                    selecaoPadrao = false;
                     return;
-                }else{
+                } else {
 
-                    if (!algumSelecionadoPeloRetangulo&&mComponentSobMouse!=null && !selecioneiComShift ) {
+                    if (!StatesSelecionadoPeloRetangulo && mComponentSobMouse != null && !selecioneiComShift) {
 
 
-                        selecaoPadrao =true;
+                        selecaoPadrao = true;
                         if (statesSelecionados != null) {
                             statesSelecionados.clear();
                         }
-                        if(mComponentSobMouse instanceof StateView){
-                        setComponenteSelecionado(mComponentSobMouse);
-                        StateView stateView= (StateView)mComponentSobMouse;
-                        State state=stateView.getState();
-                        statesSelecionados.add(state);
-                        modoCriacaoDoRetangulo=false;
-                        return;
-                    }
-                        else{
+                        if (mComponentSobMouse instanceof StateView) {
+                            setComponenteSelecionado(mComponentSobMouse);
+                            StateView stateView = (StateView) mComponentSobMouse;
+                            State state = stateView.getState();
+                            statesSelecionados.add(state);
+                            modoCriacaoDoRetangulo = false;
+                            return;
+                        } else {
                             setComponenteSelecionado(mComponentSobMouse);
                         }
-                    }
-
-                    else{
+                    } else {
                         if (!SeClickeiEntreSelecionados(e.getX(), e.getY()) && statesSelecionados != null) {
 
                             verificacao = true;
@@ -598,38 +597,43 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
                                 s.setTextSyle(State.TEXTSTYLE_NORMAL);
                             }
                             if (mComponentSobMouse != null) {
-                                selecaoPadrao =true;
+                                selecaoPadrao = true;
                                 if (statesSelecionados != null) {
                                     statesSelecionados.clear();
                                     modoCriacaoDoRetangulo = false;
                                 }
 
                                 setComponenteSelecionado(mComponentSobMouse);
-                                StateView stateView= (StateView)mComponentSobMouse;
-                                State state=stateView.getState();
+                                StateView stateView = (StateView) mComponentSobMouse;
+                                State state = stateView.getState();
                                 statesSelecionados.add(state);
 
 
-                            }
-                            else{
-                                selecaoPadrao =false;
+                            } else {
+                                selecaoPadrao = false;
                                 modoCriacaoDoRetangulo = true;
-                                algumSelecionadoPeloRetangulo = false;
-                                selecioneiComShift=false;
-                                if(selecionadoUm){
-                                selecionadoUm=false;
-                            }
+                                StatesSelecionadoPeloRetangulo = false;
+                                selecioneiComShift = false;
+                                if (selecionadoUm) {
+                                    selecionadoUm = false;
+                                }
                                 for (State s : statesSelecionados) {
                                     s.setBorderWidth(1);
                                     s.setBorderColor("black");
                                     s.setTextColor("black");
                                     s.setTextSyle(State.TEXTSTYLE_NORMAL);
                                 }
+
                                 statesSelecionados.clear();
+                                System.out.println("Removendo estilo selecionado state/trans");
+                                View v=getSelectedView();
+                                if(v instanceof TransitionView){
+                                    removeSelectedStyles(v);
+                                }
 
                             }
 
-                    } else {
+                        } else {
                             verificacao = false;
                             modoCriacaoDoRetangulo = false;
                         }
@@ -644,18 +648,17 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
 
                 StateView v = (StateView) mComponentSobMouse;
 
-                variacaoXCliqueMouseComOCantoSuperiorEsquerdoVertice = v.getLayoutX() - e.getX()+RAIO_CIRCULO;
-                variacaoYCliqueMouseComOCantoSuperiorEsquerdoVertice = v.getLayoutY() - e.getY()+RAIO_CIRCULO;
+                variacaoXCliqueMouseComOCantoSuperiorEsquerdoVertice = v.getLayoutX() - e.getX() + RAIO_CIRCULO;
+                variacaoYCliqueMouseComOCantoSuperiorEsquerdoVertice = v.getLayoutY() - e.getY() + RAIO_CIRCULO;
             }
         }
     };
 
 
-
     private double variacaoX, variacaoY;
     private boolean segundaVezEmDiante;
     private double largura = 0, altura = 0;
-    private double inicioDoRectanguloX, inicioDoRectanguloY,inicioDoRectanguloXAux,inicioDoRectanguloYAux;
+    private double inicioDoRectanguloX, inicioDoRectanguloY, inicioDoRectanguloXAux, inicioDoRectanguloYAux;
     //////////////////////////////////////////////////////////////////////////////////////////
     // clickar e nÃ£o soltar e mover o mouse(precionando e movendo/dragg)
     //////////////////////////////////////////////////////////////////////////////////////////
@@ -664,25 +667,25 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
         public void handle(MouseEvent t) {
 
             //                         HAND MOVE                                     //
-            if(mModoAtual == MODO_MOVER){
+            if (mModoAtual == MODO_MOVER) {
                 //Pegar Moviemnto do mouse
-                posicaoMViewerHandX += t.getSceneX()-mouseHandX ;
-                posicaoMViewerHandY += t.getSceneY()-mouseHandY ;
+                posicaoMViewerHandX += t.getSceneX() - mouseHandX;
+                posicaoMViewerHandY += t.getSceneY() - mouseHandY;
                 //setar nova posição apos calculo do movimento
                 mViewer.setTranslateX(posicaoMViewerHandX);
                 mViewer.setTranslateY(posicaoMViewerHandY);
                 //setar nova posição do mouse no mViewer
                 mouseHandX = t.getSceneX();
-                mouseHandY= t.getSceneY();
+                mouseHandY = t.getSceneY();
             }
-            
+
             if (mModoAtual != MODO_VERTICE && mModoAtual != MODO_NENHUM) {
                 return;
             }
-            if(mModoAtual == MODO_NENHUM){
-                if ((algumSelecionadoPeloRetangulo || selecionadoUm) && !selecaoPadrao) {
+            if (mModoAtual == MODO_NENHUM) {
+                if ((StatesSelecionadoPeloRetangulo || selecionadoUm) && !selecaoPadrao) {
 
-                    if (!segundaVezEmDiante ) {
+                    if (!segundaVezEmDiante) {
                         variacaoX = t.getX() - coordenadaInicialX;
                         variacaoY = t.getY() - coordenadaInicialY;
                         segundaVezEmDiante = true;
@@ -698,17 +701,16 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
                     }
 
                     for (State s : statesSelecionados) {
-                        setandoStateEmConjunto(s, variacaoX, variacaoY);
+                        posicionandoConjuntoDeStates(s, variacaoX, variacaoY);
                     }
 
                 } else {
 
                     if (modoCriacaoDoRetangulo) {
-                        auxA=true;
+                        auxA = true;
 
                         coornenadaIstanteX = t.getX();
                         coordenadaIstanteY = t.getY();
-
 
 
                         if (coornenadaIstanteX <= coordenadaInicialX) {
@@ -718,34 +720,34 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
                                 altura = coordenadaInicialX - coornenadaIstanteX;
                                 inicioDoRectanguloX = coornenadaIstanteX;
                                 inicioDoRectanguloY = coordenadaIstanteY;
-                                inicioDoRectanguloXAux=coordenadaInicialX;
-                                inicioDoRectanguloYAux=coordenadaInicialY;
+                                inicioDoRectanguloXAux = coordenadaInicialX;
+                                inicioDoRectanguloYAux = coordenadaInicialY;
                             }
-                            if(coordenadaIstanteY >= coordenadaInicialY){
-                                altura = coordenadaInicialX  - coornenadaIstanteX  ;
-                                largura = coordenadaIstanteY - coordenadaInicialY ;
-                                inicioDoRectanguloX = coordenadaInicialX-altura;
+                            if (coordenadaIstanteY >= coordenadaInicialY) {
+                                altura = coordenadaInicialX - coornenadaIstanteX;
+                                largura = coordenadaIstanteY - coordenadaInicialY;
+                                inicioDoRectanguloX = coordenadaInicialX - altura;
                                 inicioDoRectanguloY = coordenadaInicialY;
-                                inicioDoRectanguloXAux=coordenadaInicialX;
-                                inicioDoRectanguloYAux=coordenadaInicialY;
+                                inicioDoRectanguloXAux = coordenadaInicialX;
+                                inicioDoRectanguloYAux = coordenadaInicialY;
                             }
 
                         } else {
                             if (coordenadaIstanteY <= coordenadaInicialY) {
-                                altura = coornenadaIstanteX - coordenadaInicialX ;
+                                altura = coornenadaIstanteX - coordenadaInicialX;
                                 largura = coordenadaInicialY - coordenadaIstanteY;
                                 inicioDoRectanguloX = coordenadaInicialX;
-                                inicioDoRectanguloY = coordenadaInicialY-largura;
-                                inicioDoRectanguloXAux=coordenadaInicialX;
-                                inicioDoRectanguloYAux=coordenadaInicialY;
+                                inicioDoRectanguloY = coordenadaInicialY - largura;
+                                inicioDoRectanguloXAux = coordenadaInicialX;
+                                inicioDoRectanguloYAux = coordenadaInicialY;
                             }
-                            if(coordenadaIstanteY >= coordenadaInicialY){
+                            if (coordenadaIstanteY >= coordenadaInicialY) {
                                 altura = coornenadaIstanteX - coordenadaInicialX;
-                                largura=coordenadaIstanteY-coordenadaInicialY;
+                                largura = coordenadaIstanteY - coordenadaInicialY;
                                 inicioDoRectanguloX = coordenadaInicialX;
                                 inicioDoRectanguloY = coordenadaInicialY;
-                                inicioDoRectanguloXAux=coordenadaInicialX;
-                                inicioDoRectanguloYAux=coordenadaInicialY;
+                                inicioDoRectanguloXAux = coordenadaInicialX;
+                                inicioDoRectanguloYAux = coordenadaInicialY;
                             }
 
                         }
@@ -762,13 +764,13 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
 
                     } else {
 
-                        if (!(mComponentSobMouse instanceof StateView)||!selecaoPadrao) {
+                        if (!(mComponentSobMouse instanceof StateView) || !selecaoPadrao) {
                             return;
                         }
 
                         State s = ((StateView) mComponentSobMouse).getState();
-                        s.setLayoutX(t.getX() + variacaoXCliqueMouseComOCantoSuperiorEsquerdoVertice-RAIO_CIRCULO);
-                        s.setLayoutY(t.getY() + variacaoYCliqueMouseComOCantoSuperiorEsquerdoVertice-RAIO_CIRCULO);
+                        s.setLayoutX(t.getX() + variacaoXCliqueMouseComOCantoSuperiorEsquerdoVertice - RAIO_CIRCULO);
+                        s.setLayoutY(t.getY() + variacaoYCliqueMouseComOCantoSuperiorEsquerdoVertice - RAIO_CIRCULO);
                     }
                 }
             }
@@ -780,34 +782,34 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
     private EventHandler<? super MouseEvent> aoLiberarVerticeArrastadoComOMouse = new EventHandler<MouseEvent>() {
         @Override
         public void handle(MouseEvent t) {
-            
-            if(mModoAtual == MODO_MOVER){
+
+            if (mModoAtual == MODO_MOVER) {
                 mViewer.setCursor(Cursor.OPEN_HAND);
             }
-            
+
             if (mModoAtual != MODO_VERTICE && mModoAtual != MODO_NENHUM) {
                 return;
             }
-            if(mModoAtual == MODO_NENHUM){
+            if (mModoAtual == MODO_NENHUM) {
                 variacaoXCliqueMouseComOCantoSuperiorEsquerdoVertice = 0;
                 variacaoYCliqueMouseComOCantoSuperiorEsquerdoVertice = 0;
                 if (modoCriacaoDoRetangulo) {
-                    if(!auxA){
-                        inicioDoRectanguloXAux=coordenadaInicialX;
-                        inicioDoRectanguloYAux=coordenadaInicialY;
+                    if (!auxA) {
+                        inicioDoRectanguloXAux = coordenadaInicialX;
+                        inicioDoRectanguloYAux = coordenadaInicialY;
                     }
-                    if(!selecionadoUm) {
+                    if (!selecionadoUm) {
                         coordenadaFinalX = t.getX();
                         coordenadaFinalY = t.getY();
 
-                        algumSelecionadoPeloRetangulo = selecionandoComRetangulo(inicioDoRectanguloXAux, inicioDoRectanguloYAux, coordenadaFinalX, coordenadaFinalY);
+                        StatesSelecionadoPeloRetangulo = selecionandoComRetangulo(inicioDoRectanguloXAux, inicioDoRectanguloYAux, coordenadaFinalX, coordenadaFinalY);
                     }
                     if (ultimoRetanguloAdicionado != null) {
                         mViewer.getChildren().remove(ultimoRetanguloAdicionado);
 
                     }
 
-                    auxA=false;
+                    auxA = false;
                 }
             }
         }
@@ -819,16 +821,16 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
         /////////////////////////////////////////////////
         ////////organizando as pesiÃ§Ãµes do retangulo
         /////////////////////////////////////////////////
-        if(inicioDoRectanguloX>finalDoRectanguloX){
+        if (inicioDoRectanguloX > finalDoRectanguloX) {
             double ajuda = finalDoRectanguloX;
-            finalDoRectanguloX=inicioDoRectanguloX;
-            inicioDoRectanguloX=ajuda;
+            finalDoRectanguloX = inicioDoRectanguloX;
+            inicioDoRectanguloX = ajuda;
 
         }
-        if(inicioDoRectanguloY>finalDoRectanguloY){
+        if (inicioDoRectanguloY > finalDoRectanguloY) {
             double ajuda = finalDoRectanguloY;
-            finalDoRectanguloY=inicioDoRectanguloY;
-            inicioDoRectanguloY=ajuda;
+            finalDoRectanguloY = inicioDoRectanguloY;
+            inicioDoRectanguloY = ajuda;
 
 
         }
@@ -837,7 +839,7 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
         todosOsStates = (ArrayList<State>) mViewer.getComponent().getStates();
         int n = todosOsStates.size();
         if (stateDentroDoRetangulo != null) {
-            for(State s: stateDentroDoRetangulo){
+            for (State s : stateDentroDoRetangulo) {
                 statesSelecionados.remove(s);
             }
             stateDentroDoRetangulo.clear();
@@ -864,6 +866,7 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
                             s.setTextColor("blue");
                             s.setTextSyle(State.TEXTSTYLE_BOLD);
                             aux = true;
+
 
                         } else {
                             s.setBorderWidth(1);
@@ -988,8 +991,8 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
                 State d = mVerticeDestinoParaAdicionarTransicao.getState();
                 mExibirPropriedadesTransicao = true;
                 Transition t = mViewer.getComponent().buildTransition(o, d)
-                    .setValue("view.type", mTransitionViewType)
-                    .create();
+                        .setValue("view.type", mTransitionViewType)
+                        .create();
                 applyDefaults(t);
             }
 
@@ -1013,38 +1016,39 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
         }
 
     };
-///////////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////////
 //                             ZOOM                                     //////
 /////////////////////////////////////////////////////////////////////////////
     private EventHandler<? super ScrollEvent> zoom = new EventHandler<ScrollEvent>() {
 
         @Override
         public void handle(ScrollEvent event) {
-            if(event.isControlDown()){
+            if (event.isControlDown()) {
                 final double SCALE_DELTA = 1.1;
-                double scaleFactor = (event.getDeltaY() > 0) ? SCALE_DELTA : 1/SCALE_DELTA;
-                zoom(mViewer, event.getX(), event.getY(),scaleFactor);
+                double scaleFactor = (event.getDeltaY() > 0) ? SCALE_DELTA : 1 / SCALE_DELTA;
+                zoom(mViewer, event.getX(), event.getY(), scaleFactor);
             }
         }
     };
-    private void zoom(Node node, double centerX, double centerY, double factor) {  
-        final Point2D center = node.localToParent(centerX, centerY);  
-        final Bounds bounds = node.getBoundsInParent();  
-        final double w = bounds.getWidth();  
-        final double h = bounds.getHeight();  
 
-        final double dw = w * (factor - 1);  
-        final double xr = 2 * (w / 2 - (center.getX() - bounds.getMinX())) / w;  
+    private void zoom(Node node, double centerX, double centerY, double factor) {
+        final Point2D center = node.localToParent(centerX, centerY);
+        final Bounds bounds = node.getBoundsInParent();
+        final double w = bounds.getWidth();
+        final double h = bounds.getHeight();
 
-        final double dh = h * (factor - 1);  
-        final double yr = 2 * (h / 2 - (center.getY() - bounds.getMinY())) / h;  
+        final double dw = w * (factor - 1);
+        final double xr = 2 * (w / 2 - (center.getX() - bounds.getMinX())) / w;
 
-        node.setScaleX(node.getScaleX() * factor);  
-        node.setScaleY(node.getScaleY() * factor);  
-        node.setTranslateX(node.getTranslateX() + xr * dw / 2);  
+        final double dh = h * (factor - 1);
+        final double yr = 2 * (h / 2 - (center.getY() - bounds.getMinY())) / h;
+
+        node.setScaleX(node.getScaleX() * factor);
+        node.setScaleY(node.getScaleY() * factor);
+        node.setTranslateX(node.getTranslateX() + xr * dw / 2);
         node.setTranslateY(node.getTranslateY() + yr * dh / 2);
     }
-    
+
     @Override
     public Component getComponent() {
         return mViewer.getComponent();
@@ -1060,7 +1064,7 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
         mViewer.setCursor(Cursor.DEFAULT);
         mStateToolbar.setVisible(mModoAtual == MODO_VERTICE);
         mTransitionToolbar.setVisible(mModoAtual == MODO_TRANSICAO);
-        if(mModoAtual == MODO_MOVER){
+        if (mModoAtual == MODO_MOVER) {
             mViewer.setCursor(Cursor.OPEN_HAND);
         }
     }
@@ -1098,8 +1102,8 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
         return mComponentSelecionado;
     }
 
-    private void applySelectedStyles(View v) { 
-        System.out.println("applyselectedstyles " + v);       
+    private void applySelectedStyles(View v) {
+        System.out.println("applyselectedstyles " + v);
         if (v instanceof StateView) {
             State s = ((StateView) v).getState();
             s.setBorderWidth(2);
@@ -1116,7 +1120,7 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
     }
 
     private void removeSelectedStyles(View v) {
-        System.out.println("removeselectedstyles " + v);        
+        System.out.println("removeselectedstyles " + v);
         if (v instanceof StateView) {
             State s = ((StateView) v).getState();
             s.setBorderWidth(1);
@@ -1134,10 +1138,11 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
             t.setTextSyle(State.TEXTSTYLE_NORMAL);
         }
     }
+
     double posXAntes;
     double posYAntes;
 
-    public void setandoStateEmConjunto(State v, double mX, double mY) {
+    public void posicionandoConjuntoDeStates(State v, double mX, double mY) {
         double posX = v.getLayoutX();
         double posY = v.getLayoutY();
         posXAntes = posX;
