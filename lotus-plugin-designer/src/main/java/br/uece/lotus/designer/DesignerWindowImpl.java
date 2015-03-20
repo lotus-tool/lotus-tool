@@ -454,6 +454,9 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
                 mComponentContextMenu.show(mViewer, e.getScreenX(), e.getScreenY());
                 return;
             }
+			else {
+				mComponentContextMenu.hide();
+			}
 
             if (e.isControlDown() && e.getButton() == MouseButton.MIDDLE) {
                 mViewer.setScaleX(mViewerScaleXPadrao);
