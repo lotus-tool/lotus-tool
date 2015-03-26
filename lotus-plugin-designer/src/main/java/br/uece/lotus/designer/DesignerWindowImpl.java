@@ -1126,6 +1126,9 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
         System.out.println("removeselectedstyles " + v);
         if (v instanceof StateView) {
             State s = ((StateView) v).getState();
+			if (s == null){
+				return;
+			}
             s.setBorderWidth(1);
             s.setBorderColor("black");
             s.setTextColor("black");
