@@ -1,14 +1,15 @@
 package br.uece.lotus.simulator;
 
 import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 
 /**
  * Created by erickbs7 on 10/03/15.
  */
 public class Step {
-	private final SimpleStringProperty mAction;
-	private final SimpleStringProperty mFrom;
-	private final SimpleStringProperty mTo;
+	private final StringProperty mAction;
+	private final StringProperty mFrom;
+	private final StringProperty mTo;
 
 	public Step(String action, String from, String to) {
 		mAction = new SimpleStringProperty(action);
@@ -16,39 +17,27 @@ public class Step {
 		mTo = new SimpleStringProperty(to);
 	}
 
-	public String getmAction() {
+	public String getAction() {
 		return mAction.get();
 	}
 
-	public SimpleStringProperty mActionProperty() {
-		return mAction;
+	public void setAction(String action) {
+		mAction.set(action);
 	}
 
-	public void setmAction(String mAction) {
-		this.mAction.set(mAction);
-	}
-
-	public String getmFrom() {
+	public String getFrom() {
 		return mFrom.get();
 	}
 
-	public SimpleStringProperty mFromProperty() {
-		return mFrom;
+	public void setFrom(String from) {
+		mFrom.set(from);
 	}
 
-	public void setmFrom(String mFrom) {
-		this.mFrom.set(mFrom);
-	}
-
-	public String getmTo() {
+	public String getTo() {
 		return mTo.get();
 	}
 
-	public SimpleStringProperty mToProperty() {
-		return mTo;
-	}
-
-	public void setmTo(String mTo) {
-		this.mTo.set(mTo);
+	public void setTo(String to) {
+		mTo.set(to);
 	}
 }

@@ -52,6 +52,9 @@ public class SimulatorWindow extends AnchorPane implements Window {
     private final int RANDOM_PROBABILISTIC_STEP = 2;
     private final int RANDOM_STEP = 3;
 
+    private final int RANDOM_PATH_PROBABILISTC = 1;
+    private final int RANDOM_PATH_NON_PROBABILISTC = 2;
+
     private SimulatorContext mSimulatorContext;
 
 //    private int mStepCount;
@@ -118,7 +121,7 @@ public class SimulatorWindow extends AnchorPane implements Window {
     private final TableColumn<Step, String> mActionCol;
     private final TableColumn<Step, String> mFromCol;
     private final TableColumn<Step, String> mToCol;
-    private final ObservableList<Step> mSteps = FXCollections.observableArrayList();
+    private ObservableList<Step> mSteps = FXCollections.observableArrayList();
     private final ScrollPane mScrollPanel;
 
     public SimulatorWindow() {
@@ -209,7 +212,7 @@ public class SimulatorWindow extends AnchorPane implements Window {
         AnchorPane.setRightAnchor(mToolbar, 0D);
         getChildren().add(mToolbar);
 
-        mTableView = new TableView<Step>();
+        mTableView = new TableView<>();
         mTableView.setPrefHeight(200);
         AnchorPane.setLeftAnchor(mTableView, 0D);
         AnchorPane.setRightAnchor(mTableView, 0D);
@@ -217,14 +220,14 @@ public class SimulatorWindow extends AnchorPane implements Window {
         getChildren().add(mTableView);
 
         mActionCol = new TableColumn<>("Action");
-        mActionCol.setCellValueFactory(new PropertyValueFactory<Step, String>("action"));
+        mActionCol.setCellValueFactory(new PropertyValueFactory<>("action"));
         mActionCol.setPrefWidth(100);
         mFromCol = new TableColumn<>("From");
-        mFromCol.setCellValueFactory(new PropertyValueFactory<Step, String>("from"));
+        mFromCol.setCellValueFactory(new PropertyValueFactory<>("from"));
         mFromCol.setPrefWidth(100);
         mToCol = new TableColumn<>("To");
         mToCol.setPrefWidth(100);
-        mToCol.setCellValueFactory(new PropertyValueFactory<Step, String>("to"));
+        mToCol.setCellValueFactory(new PropertyValueFactory<>("to"));
         mTableView.setItems(mSteps);
         mTableView.getColumns().addAll(mActionCol, mFromCol, mToCol);
     }
@@ -283,5 +286,43 @@ public class SimulatorWindow extends AnchorPane implements Window {
     public Node getNode() {
         return this;
     }
+
+//    public static class Step {
+//
+//        private String mAction;
+//        private String mFrom;
+//        private String mTo;
+//
+//        Step(String action, String from, String to) {
+//            mAction = action;
+//            mFrom = from;
+//            mTo = to;
+//        }
+//
+//        public String getAction() {
+//            return mAction;
+//        }
+//
+//        public void setAction(String action) {
+//            this.mAction = action;
+//        }
+//
+//        public String getFrom() {
+//            return mFrom;
+//        }
+//
+//        public void setFrom(String from) {
+//            this.mFrom = from;
+//        }
+//
+//        public String getTo() {
+//            return mTo;
+//        }
+//
+//        public void setTo(String to) {
+//            this.mTo = to;
+//        }
+//
+//    }
 
 }
