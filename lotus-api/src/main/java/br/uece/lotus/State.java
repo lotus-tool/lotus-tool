@@ -187,6 +187,14 @@ public class State {
         }
     }
 
+    public boolean onlySelfTransition() {
+        if ( getOutgoingTransitionsList().size() == 1 && mTransicoesSaida.get(0).getDestiny().equals(this) ) {
+            return true;
+        }
+
+        return false;
+    }
+
     public boolean isInitial() {
         return mInitial;
     }

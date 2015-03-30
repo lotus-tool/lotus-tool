@@ -53,9 +53,6 @@ public class SimulatorWindow extends AnchorPane implements Window {
 
     private SimulatorContext mSimulatorContext;
 
-//    private int mStepCount;
-//    private State mCurrentState;
-//    private final Label mPathLabel;
     private final ToolBar mToolbar;
     private final Button mBtnStart;
     private final Button mBtnMakeStep;
@@ -72,42 +69,24 @@ public class SimulatorWindow extends AnchorPane implements Window {
                 return;
             }
 
+            State mCurrentState = mSimulatorContext.getmCurrentState();
             State s = ((StateView) v).getState();
             Transition t = mSimulatorContext.getmCurrentState().getTransitionTo(s);
 
             if (t == null) {
                 System.out.println(mSimulatorContext.getmCurrentState().getLabel());
-                System.out.println("-- select a valid state!");
+                JOptionPane.showMessageDialog(null, "Select a valid state!", "Invalid Operation", JOptionPane.ERROR_MESSAGE);
                 return;
+            } else if (mCurrentState.isFinal() || mCurrentState.isError() || mCurrentState.getOutgoingTransitionsCount() == 0) {
+                mBtnStart.setText("Start");
+                JOptionPane.showMessageDialog(null, "Error state or final reached!", "Invalid Operation", JOptionPane.ERROR_MESSAGE);
+            } else if (mCurrentState.onlySelfTransition() && mCurrentState.getmVisitedStatesCount() > 1) {
+                JOptionPane.showMessageDialog(null, "Only self transition available!", "Invalid Operation", JOptionPane.ERROR_MESSAGE);
+            } else {
+                MakeStepCommand madeStep = new MakeStepCommand(mSimulatorContext, s, MOUSE_STEP);
+                mExecutorCommands.executeCommand(madeStep);
+                mSteps.add(new Step(madeStep.getmTransistionLabel(), madeStep.getmPreviousStateLabel(), madeStep.getmStateLabel()));
             }
-
-            MakeStepCommand madeStep = new MakeStepCommand(mSimulatorContext, s, MOUSE_STEP);
-            mExecutorCommands.executeCommand(madeStep);
-            mSteps.add(new Step(madeStep.getmTransistionLabel(), madeStep.getmPreviousStateLabel(), madeStep.getmStateLabel()));
-
-//            for (Transition tt : mCurrentState.getOutgoingTransitions()) {
-//                if (tt == t) {
-//                    SimulatorUtils.applyEnableStyle(t);
-//                } else {
-//                    SimulatorUtils.applyDisabledStyle(tt);
-//                    SimulatorUtils.applyDisabledStyle(tt.getDestiny());
-//                }
-//            }
-//
-//            mSteps.add(new Step(t.getLabel(), mCurrentState.getLabel(), s.getLabel()));
-//            mPathLabel.setText(mPathLabel.getText() + " > " + t.getLabel());
-//            mCurrentState = s;
-//            if (s.isFinal() || s.isError()) {
-//                mPathLabel.setText(mPathLabel.getText() + " > ENDED");
-//                SimulatorUtils.applyEnableStyle(mCurrentState);
-//                mBtnStart.setText("Start");
-//            } else if (s.getOutgoingTransitionsCount() == 0) {
-//                mPathLabel.setText(mPathLabel.getText() + " DEADLOCK!");
-//                SimulatorUtils.applyEnableStyle(mCurrentState);
-//                mBtnStart.setText("Start");
-//            } else {
-//                SimulatorUtils.showChoices(mCurrentState);
-//            }
         }
     };
 
@@ -128,9 +107,6 @@ public class SimulatorWindow extends AnchorPane implements Window {
         mScrollPanel = new ScrollPane(mViewer);
 
         mSimulatorContext = new SimulatorContext();
-//        mCurrentState = mSimulatorContext.getmCurrentState();
-//        mPathLabel = mSimulatorContext.getmPathLabel();
-//        mStepCount = mSimulatorContext.getmStepCount();
 
         mExecutorCommands = new ExecutorSimulatorCommands();
 
@@ -143,7 +119,6 @@ public class SimulatorWindow extends AnchorPane implements Window {
         getChildren().add(mScrollPanel);
 
         mSimulatorContext.setmPathLabel(new Label(""));
-//        mPathLabel = new Label("");
         mSimulatorContext.getmPathLabel().setPrefHeight(22);
         AnchorPane.setLeftAnchor(mSimulatorContext.getmPathLabel(), 0D);
         AnchorPane.setRightAnchor(mSimulatorContext.getmPathLabel(), 0D);
@@ -173,6 +148,8 @@ public class SimulatorWindow extends AnchorPane implements Window {
             if (mCurrentState.isFinal() || mCurrentState.isError() || mCurrentState.getOutgoingTransitionsCount() == 0) {
                 mBtnStart.setText("Start");
                 JOptionPane.showMessageDialog(null, "Error state or final reached!", "Invalid Operation", JOptionPane.ERROR_MESSAGE);
+            } else if (mCurrentState.onlySelfTransition() && mCurrentState.getmVisitedStatesCount() > 1) {
+                JOptionPane.showMessageDialog(null, "Only self transition available!", "Invalid Operation", JOptionPane.ERROR_MESSAGE);
             } else {
                 MakeStepCommand madeStep = new MakeStepCommand(mSimulatorContext, RANDOM_PROBABILISTIC_STEP);
                 mExecutorCommands.executeCommand(madeStep);
@@ -242,59 +219,6 @@ public class SimulatorWindow extends AnchorPane implements Window {
         mSimulatorContext.getmPathLabel().setText(mSimulatorContext.getmCurrentState().getLabel());
     }
 
-//    private void showChoices() {
-//        applyEnableStyle(mCurrentState);
-//        for (Transition t : mCurrentState.getOutgoingTransitions()) {
-//            applyChoiceStyle(t);
-//            applyChoiceStyle(t.getDestiny());
-//        }
-//    }
-//
-//    private void applyEnableStyle(State s) {
-//        s.setColor(null);
-//        s.setTextColor("black");
-//        s.setTextSyle(State.TEXTSTYLE_NORMAL);
-//        s.setBorderColor("black");
-//        s.setBorderWidth(1);
-//    }
-//
-//    private void applyEnableStyle(Transition t) {
-//        t.setColor("black");
-//        t.setTextSyle(Transition.TEXTSTYLE_NORMAL);
-//        t.setTextColor("black");
-//        t.setWidth(1);
-//    }
-//
-//    private void applyDisabledStyle(State s) {
-//        s.setColor("#d0d0d0");
-//        s.setTextColor("#c0c0c0");
-//        s.setTextSyle(State.TEXTSTYLE_NORMAL);
-//        s.setBorderColor("gray");
-//        s.setBorderWidth(1);
-//    }
-//
-//    private void applyDisabledStyle(Transition t) {
-//        t.setColor("#d0d0d0");
-//        t.setTextColor("#c0c0c0");
-//        t.setTextSyle(Transition.TEXTSTYLE_NORMAL);
-//        t.setWidth(1);
-//    }
-//
-//    private void applyChoiceStyle(Transition t) {
-//        t.setColor("blue");
-//        t.setTextSyle(Transition.TEXTSTYLE_BOLD);
-//        t.setTextColor("blue");
-//        t.setWidth(2);
-//    }
-//
-//    private void applyChoiceStyle(State s) {
-//        s.setColor(null);
-//        s.setBorderColor("blue");
-//        s.setTextSyle(Transition.TEXTSTYLE_BOLD);
-//        s.setTextColor("blue");
-//        s.setBorderWidth(2);
-//    }
-
     @Override
     public Component getComponent() {
         return mViewer.getComponent();
@@ -316,6 +240,7 @@ public class SimulatorWindow extends AnchorPane implements Window {
     public Node getNode() {
         return this;
     }
+
 
     public static class Step {
 
