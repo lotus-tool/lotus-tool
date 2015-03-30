@@ -242,6 +242,7 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
     private double mViewerScaleXPadrao, mViewerScaleYPadrao, mViewerTranslateXPadrao, mViewerTranslateYPadrao;
     private double posicaoMViewerHandX = 0, posicaoMViewerHandY = 0;//posição mviewer
     private double mouseHandX = 0, mouseHandY = 0;// posiÃ§Ã£o mouse
+    private CheckBox zoomReset;
     private DoubleProperty zoomFactor = new SimpleDoubleProperty(1);
     private Scale escala = new Scale(1, 1);
 
@@ -297,7 +298,7 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
         zoomSlide.setShowTickMarks(true);
         ImageView zoomMoree = new ImageView(new Image(getClass().getResourceAsStream("/images/ic_zoom_mais.png")));
         ImageView zoomLess = new ImageView(new Image(getClass().getResourceAsStream("/images/ic_zoom_menos.png")));
-        CheckBox zoomReset = new CheckBox("Reset");
+        zoomReset = new CheckBox("Reset");
         menuSlideZoom.getChildren().addAll(zoomLess, zoomSlide, zoomMoree, zoomReset);
         mBtnZoom.setGraphic(new ImageView(new Image(getClass().getResourceAsStream("/images/ic_zoom.png"))));
         MenuItem zoomHBox = new MenuItem();
@@ -310,12 +311,8 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
             if (zoomFactor.getValue() != 1)
                 zoomReset.setSelected(false);
         });
-        zoomReset.selectedProperty().addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {
-            if (zoomReset.isSelected()) {
-                zoomSlide.setValue(1);
-            }
-        });
-        Tooltip zoomInfo = new Tooltip("Ctrl + MouseScroll â†‘\nCtrl + MouseScroll â†“\nCtrl + Mouse Middle Button");
+        
+        Tooltip zoomInfo = new Tooltip("Ctrl + MouseScroll ↑\nCtrl + MouseScroll ↓\nCtrl + Mouse Button Middle");
         Tooltip.install(mBtnZoom, zoomInfo);
         mBtnZoom.getItems().add(zoomHBox);
 
@@ -440,6 +437,16 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
         menuColor.getItems().addAll(defaultColor, new SeparatorMenuItem(), greenColor, blueColor, blackColor, yellowColor, whiteColor, redColor, grayColor, pinkColor, purpleColor);
         mComponentContextMenu.getItems().addAll(new SeparatorMenuItem(), menuColor);
 
+        //Resetando Zoom
+        zoomReset.selectedProperty().addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {
+            if (zoomReset.isSelected()) {
+                zoomSlide.setValue(1);
+                mViewer.setScaleX(mViewerScaleXPadrao);
+                mViewer.setScaleY(mViewerScaleYPadrao);
+                mViewer.setTranslateX(mViewerTranslateXPadrao);
+                mViewer.setTranslateY(mViewerTranslateYPadrao);
+            }
+        });
 
     }
 
@@ -1027,6 +1034,7 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
         @Override
         public void handle(ScrollEvent event) {
             if (event.isControlDown()) {
+                zoomReset.setSelected(false);
                 final double SCALE_DELTA = 1.1;
                 double scaleFactor = (event.getDeltaY() > 0) ? SCALE_DELTA : 1 / SCALE_DELTA;
                 zoom(mViewer, event.getX(), event.getY(), scaleFactor);
