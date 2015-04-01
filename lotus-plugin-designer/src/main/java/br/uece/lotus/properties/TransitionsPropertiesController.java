@@ -33,6 +33,9 @@ import javafx.scene.Parent;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 
+import javax.swing.*;
+import java.security.InvalidParameterException;
+
 public class TransitionsPropertiesController implements Transition.Listener, ChangeListener<String> {
 
     private TextField mEdtLabel;
@@ -57,11 +60,11 @@ public class TransitionsPropertiesController implements Transition.Listener, Cha
         mEdtProbability = edtProbability;
         mEdtProbability.focusedProperty().addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {
             if (!newValue) {
-                aplicarProbabilidade();
+                applyProbability();
             }
         });
         mEdtProbability.setOnAction((ActionEvent event) -> {
-            aplicarProbabilidade();
+            applyProbability();
             mEdtProbability.selectAll();
         });
         mEdtLabel.focusedProperty().addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {
@@ -132,15 +135,26 @@ public class TransitionsPropertiesController implements Transition.Listener, Cha
         mEdtProbability.setText(d == null ? "" : String.valueOf(d));
     }
 
-    private void aplicarProbabilidade() {
+    private void applyProbability() {
         try {
             String s = mEdtProbability.getText().trim();
+
             if (s.isEmpty()) {
                 mTransition.setProbability(null);
             }
-            mTransition.setProbability(Double.parseDouble(s));
+
+            Double probability = Double.parseDouble(s);
+
+            if (!(probability >= 0 && probability <= 1.0)) {
+                throw new InvalidParameterException();
+            }
+
+            mTransition.setProbability(probability);
         } catch (NumberFormatException e) {
-            //ignora
+//            JOptionPane.showMessageDialog(null, "Invalid probability value!", "Invalid Value", JOptionPane.ERROR_MESSAGE);
+        } catch (InvalidParameterException e) {
+            JOptionPane.showMessageDialog(null, "The probability must be a value between 0 and 1.0!", "Invalid Value", JOptionPane.ERROR_MESSAGE);
+            mTransition.setProbability(null);
         }
     }
 
