@@ -20,7 +20,8 @@ public class TraceParser {
     private String nomeDoStateDestino;
     private Transition currentTransition = null;
     boolean nomesIguais = false;
-    Transition TransDoMesmoNome = null;
+    boolean foiCasoVirgula = false;
+    Transition transicaoParaDestinoDePonte = null;
 
     protected Component parseFile(InputStream input) {
         mComponent = new Component();
@@ -31,6 +32,7 @@ public class TraceParser {
                 BufferedReader reader = new BufferedReader(new InputStreamReader(input));
                 String line = null;
                 while ((line = reader.readLine()) != null) {
+                    foiCasoVirgula = false;
                     String[] trace = line.split(",");
                     System.out.println("trace.length:" + trace.length);
 
@@ -38,39 +40,46 @@ public class TraceParser {
                     currentTransition = null;
 
                     for (int i = 0; i < trace.length; i++) {
-                        //currentTransition = null;
                         if (trace[i] != null) {
-                            System.out.println("teste" + trace[i]);
-                            currentTransition = verificarSeExisteTransicaoComEsseMesmoNomeNoComponente(trace[i].trim());
-                            if (currentTransition != null) {
-                                System.out.println(" tem transicaoAtual com esse nome");
-                                // nomeDoStateDestino = currentTransition.getSource().getLabel();
-                                // mCurrentState = currentTransition.getDestiny();
+                            System.out.println("vetor: " + trace[i]);
+                            currentTransition = transicaoComLabel(trace[i].trim());
+                            if (currentTransition != null&& !foiCasoVirgula) {
+                                System.out.println(" Existe a transicao " + trace[i]);
                                 mCurrentState = currentTransition.getDestiny();
-                                //nomeDoStateDestino = currentTransition.getSource().getLabel();
-                                //mCurrentState = currentTransition.getDestiny();
-                                //nomeDoStateDestino = String.valueOf(mComponent.getStatesCount());
-                            } else {
-                                System.out.println("não tem transicaoAtual com esse nome");
 
-                                //verificando se existe a posicao i+1
+                            } else {
+                                System.out.println("Não existe a transicao" + trace[i]);
+
+                                //// VERIFICAÇÃO DA PONTE /////
                                 if (i < trace.length - 1) {
-                                    TransDoMesmoNome = verificarSeExisteTransicaoComEsseMesmoNomeNoComponente(trace[i + 1].trim());
-                                    //caso não exista a posicao i+1
+                                    transicaoParaDestinoDePonte = transicaoComLabel(trace[i + 1].trim());
                                 } else {
-                                    TransDoMesmoNome = null;
+                                    transicaoParaDestinoDePonte = null;
                                 }
-                                //caso ponte
-                                if (TransDoMesmoNome != null) {
-                                    
-                                    System.out.println(" tem transicaoProx com esse nome");
-                                    nomeDoStateDestino = TransDoMesmoNome.getSource().getLabel();
-                                    //mCurrentState = TransDoMesmoNome.getDestiny();
-                                    System.out.println(mCurrentState.getLabel() + "::::" + nomeDoStateDestino);
-                                    System.out.println(mCurrentState.getLabel() + " " + trace[i] + " " + nomeDoStateDestino);
-                                    adicionarTransicao(mCurrentState.getLabel(), trace[i].trim(), nomeDoStateDestino);
+
+                                ///CASO PONTE///
+                                if (transicaoParaDestinoDePonte != null) {
+                                    System.out.println(" Existe a transiçãoPonte: " + trace[i]);
+                                    if (verificandoSeEhCasoDeVirgula(transicaoParaDestinoDePonte, i + 1, trace)) {
+                                        adicionarTransicaoCasoVirgula(mCurrentState, trace[i], transicaoParaDestinoDePonte.getSource());
+                                    } else {////não é o caso de virgula
+                                        //Se foiCasoPonte verdadeiro
+                                        if (foiCasoVirgula) {
+                                            System.out.println("Entrou aqui111");
+                                            adicionarTransicao(mCurrentState.getLabel(), trace[i].trim(), String.valueOf(mComponent.getStatesCount() + 1));
+
+                                        } else {
+                                            System.out.println("Entrou aqui222");
+
+                                            nomeDoStateDestino = String.valueOf(mComponent.getStatesCount() + 1);
+                                            System.out.println(mCurrentState.getLabel() + "::::" + nomeDoStateDestino);
+                                            System.out.println(mCurrentState.getLabel() + " " + trace[i] + " " + nomeDoStateDestino);
+                                            adicionarTransicao(mCurrentState.getLabel(), trace[i].trim(), nomeDoStateDestino);
+                                            foiCasoVirgula = true;
+                                        }
+                                    }
                                 } else {
-                                    System.out.println(" não tem transicaoProx com esse nome");
+                                    System.out.println(" não existe a transiçãoPonte: " + trace[i]);
 
                                     //verificando se existe a posicao i+1
                                     if (i < trace.length - 1) {
@@ -107,7 +116,7 @@ public class TraceParser {
         return mComponent;
     }
 
-    private Transition verificarSeExisteTransicaoComEsseMesmoNomeNoComponente(String nomeTrans) {
+    private Transition transicaoComLabel(String nomeTrans) {
         for (State s : mComponent.getStates()) {
             Transition trans = s.getTransitionByLabel(nomeTrans);
             if (trans != null) {
@@ -119,9 +128,51 @@ public class TraceParser {
 
     }
 
+    private void adicionarTransicaoCasoVirgula(State estadoOrigem, String acao, State estadoDestino) {
+        Transition tras = pegandoTransicaoPorStadoOrigEStadoDest(estadoOrigem, estadoDestino);//possivel problema, outra transiçao para o mesmo estado de ori e estado de dest
+        if (tras == null) {
+            return;
+        }
+        mCurrentState = estadoDestino;
+        mComponent.buildTransition(estadoOrigem, estadoDestino)
+                .setLabel(acao);
+        tras.setLabel(tras.getLabel() + "," + acao);
+
+
+    }
+
+    private boolean verificandoSeEhCasoDeVirgula(Transition t, int posicaoDoTrace, String[] linhaDoTrace) {
+        State stadoParaVerificar = t.getDestiny();
+        System.out.println("PosicaoDoTrance: " + posicaoDoTrace);
+        for (int i = posicaoDoTrace + 1; i < (linhaDoTrace.length); i++) {
+            System.out.println("PosicaoDoTrance: " + i);
+            System.out.println("String: " + linhaDoTrace[i]);
+            t = stadoParaVerificar.getTransitionByLabel(linhaDoTrace[i]);
+            if (t == null) {
+                System.out.println("false");
+                return false;
+            }
+        }
+        System.out.println("true");
+        return true;
+    }
+
+
     private boolean verificarSeProximoNomeDoVetorTraceEhIgualAoNomeAtualDoVetorTrace(String nomeAtual, String proxNome) {
-        if (nomeAtual.equals(proxNome)) {return true;}
-        else {return false;}
+        if (nomeAtual.equals(proxNome)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private Transition pegandoTransicaoPorStadoOrigEStadoDest(State orig, State dest) {
+        for (Transition t : mComponent.getTransitions()) {
+            if (t.getSource().getLabel().equals(orig.getLabel()) && t.getDestiny().getLabel().equals(dest.getLabel())) {
+                return t;
+            }
+        }
+        return null;
     }
 
     private void adicionarTransicao(String estadoOrigem, String acao, String estadoDestino) {
