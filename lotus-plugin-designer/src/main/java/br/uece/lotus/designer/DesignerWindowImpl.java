@@ -324,8 +324,14 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
             novoState.setLayoutX(100);
             novoState.setLayoutY(100);            
             novoState.setLabel(String.valueOf(id));
-            novoState.setID(contID);
+            
+            if (contID == 0) {
+                updateContID();                
+                novoState.setID(contID);                
+            } else 
+                novoState.setID(contID);                            
             contID++;
+            
             ((StateView) novoState.getValue("view")).setScaleX(1.5);
             ((StateView) novoState.getValue("view")).setScaleY(1.5);
             
@@ -557,8 +563,14 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
                         s.setLayoutX(e.getX());
                         s.setLayoutY(e.getY());
                         s.setLabel(String.valueOf(id));
-                        s.setID(contID);
+                        
+                        if (contID == 0) {
+                            updateContID();                
+                            s.setID(contID);                
+                        } else 
+                            s.setID(contID);                            
                         contID++;
+                        
                         if (mViewer.getComponent().getStatesCount() == 0) {
                             mViewer.getComponent().setInitialState(s);
                         }
@@ -1287,6 +1299,17 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
 
     public void removeListener(Listener l) {
         mListeners.remove(l);
+    }
+    
+    private void updateContID() {
+        int aux = 0;
+        for (State s : mViewer.getComponent().getStates()) {
+            if (s.getID() > aux) {
+                aux = s.getID();
+            }
+        }
+        contID = aux;
+        contID++;
     }
 
 }
