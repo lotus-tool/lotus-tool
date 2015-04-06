@@ -127,10 +127,10 @@ public class MakeStepCommand implements SimulatorCommand {
 	private Transition selectRandomTransitionByProbability() {
 		Transition selectedTransition = null;
 		Iterator it = mSimulatorCurrentState.getOutgoingTransitions().iterator();
-		Boolean transitionsNullProbability = false;
-		int probabilityCounter = 0;
+		Boolean transitionWithNullProbability = false;
+		double probabilityCounter = 0;
 		Random randomGenerator = new Random();
-		int randomProbability = randomGenerator.nextInt(101);
+		double randomProbability = randomGenerator.nextDouble();
 
 		while(it.hasNext()) {
 			Transition t = (Transition) it.next();
@@ -140,12 +140,12 @@ public class MakeStepCommand implements SimulatorCommand {
 				//Test if the randomProbability resides on the probability range of the current transition.
 				if ((randomProbability <= probabilityCounter) && (selectedTransition == null)) selectedTransition = t;
 			} else {
-				transitionsNullProbability = true;
+				transitionWithNullProbability = true;
 				break;
 			}
 		}
 
-		if (transitionsNullProbability || (probabilityCounter != 100)) selectedTransition = selectRandomTransition();
+		if ( transitionWithNullProbability || (probabilityCounter != 1) ) selectedTransition = selectRandomTransition();
 
 		return selectedTransition;
 	}
