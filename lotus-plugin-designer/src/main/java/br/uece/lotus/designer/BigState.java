@@ -156,7 +156,7 @@ public class BigState {
     public String toString() {
         String retorno = " --- States do BigState ---\n";
         for (State s : listaStates) {
-            retorno += "* State Label " + s.getLabel() + "\n";
+            retorno += "* State Label " + s.getLabel() + "ID " + state.getID() + "\n";
         }
         retorno += "--- Transitions Dentro ---\n* Quantidade " + listaTransitionsDentro.size() + "\n";
         retorno += "--- Transitions Fora Chegando ---\n* Quantidade " + listaTransitionsForaChegando.size() + "\n";
