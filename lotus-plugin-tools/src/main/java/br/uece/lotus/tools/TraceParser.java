@@ -71,7 +71,7 @@ public class TraceParser {
                                         } else {
                                             System.out.println("Entrou aqui222");
 
-                                            nomeDoStateDestino = String.valueOf(mComponent.getStatesCount() + 1);
+                                            nomeDoStateDestino = String.valueOf(mComponent.getStatesCount() );
                                             System.out.println(mCurrentState.getLabel() + "::::" + nomeDoStateDestino);
                                             System.out.println(mCurrentState.getLabel() + " " + trace[i] + " " + nomeDoStateDestino);
                                             adicionarTransicao(mCurrentState.getLabel(), trace[i].trim(), nomeDoStateDestino);
