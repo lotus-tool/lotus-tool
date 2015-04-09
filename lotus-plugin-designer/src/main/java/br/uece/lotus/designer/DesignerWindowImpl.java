@@ -23,6 +23,7 @@
  */
 package br.uece.lotus.designer;
 
+import br.uece.lotus.BigState;
 import br.uece.lotus.Component;
 import br.uece.lotus.State;
 import br.uece.lotus.Transition;
@@ -304,7 +305,7 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
         mBtnBigState.setOnAction(event -> {
             
             //CRIANDO BIGSTATE - USERDATA            
-            BigState bigState = new BigState(this);
+            BigState bigState = new BigState();
             List<State> listaS = stateDentroDoRetangulo;            
             
             if (!bigState.addStatesAndTransition(listaS)){
@@ -339,10 +340,22 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
             
             //ADD TRANSITIONS
             for (Transition t : bigState.getListaTransitionsForaSaindo()) {
-                Transition tNova = mViewer.getComponent().buildTransition(novoState, t.getDestiny()).setValue("view.type", 0).create();
+                if (novoState.getTransitionsTo(t.getDestiny()).size() == 0) {
+                    Transition tNova = mViewer.getComponent().buildTransition(novoState, t.getDestiny()).setValue("view.type", 0).create();
+                    tNova.setLabel(t.getLabel() == null ? "" : t.getLabel());
+                } else {
+                    String labelAntiga = novoState.getTransitionTo(t.getDestiny()).getLabel();
+                    novoState.getTransitionTo(t.getDestiny()).setLabel(t.getLabel() == null ? labelAntiga : labelAntiga + ", " + t.getLabel());
+                }
             }
             for (Transition t : bigState.getListaTransitionsForaChegando()) {
-                Transition tNova = mViewer.getComponent().buildTransition(t.getSource(), novoState).setValue("view.type", 0).create();
+                if (t.getSource().getTransitionsTo(novoState).size() == 0) {
+                    Transition tNova = mViewer.getComponent().buildTransition(t.getSource(), novoState).setValue("view.type", 0).create();
+                    tNova.setLabel(t.getLabel() == null ? "" : t.getLabel());
+                } else {
+                    String labelAntiga = t.getSource().getTransitionTo(novoState).getLabel();
+                    t.getSource().getTransitionTo(novoState).setLabel(t.getLabel() == null ? labelAntiga : labelAntiga + ", " + t.getLabel());
+                }
             }
 
             //REMOVENDO STATES DO VIEWER
@@ -1057,6 +1070,11 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
 
             //guarda o objeto no qual iniciamos o drag            
             mVerticeOrigemParaAdicionarTransicao = v;
+            
+            if (BigState.verifyIsBigState(mVerticeOrigemParaAdicionarTransicao.getState())) {
+                JOptionPane.showMessageDialog(null, "Impossible to create transitions in a Big State!", "Alert", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
 
             //inicia o drag'n'drop
             Dragboard db = mVerticeOrigemParaAdicionarTransicao.startDragAndDrop(TransferMode.ANY);
@@ -1093,6 +1111,11 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
             }
 
             if (mVerticeDestinoParaAdicionarTransicao != null) {
+                if (BigState.verifyIsBigState(mVerticeDestinoParaAdicionarTransicao.getState())) {
+                    JOptionPane.showMessageDialog(null, "Impossible to create transitions for a BigState!", "Alert", JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
+                
                 State o = mVerticeOrigemParaAdicionarTransicao.getState();
                 State d = mVerticeDestinoParaAdicionarTransicao.getState();
                 mExibirPropriedadesTransicao = true;

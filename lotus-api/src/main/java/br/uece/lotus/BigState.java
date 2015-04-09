@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package br.uece.lotus.designer;
+package br.uece.lotus;
 
 import br.uece.lotus.State;
 import br.uece.lotus.Transition;
@@ -14,24 +14,16 @@ import br.uece.lotus.viewer.View;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- *
- * @author Messias
- */
 public class BigState {
     
-    private State state;
-    private DesignerWindowImpl designerWindowImpl;
-    private BasicComponentViewer mViewer;
+    private State state;    
     private List<State> listaStates;
     private List<Transition> listaTransitionsDentro;
     private List<Transition> listaTransitionsForaSaindo;
     private List<Transition> listaTransitionsForaChegando;
     public static List<BigState> todosOsBigStates = new ArrayList<>();
 
-    public BigState(DesignerWindowImpl designerWindowImpl) {
-        this.designerWindowImpl = designerWindowImpl;
-        this.mViewer = this.designerWindowImpl.getMViewer();
+    public BigState() {
         this.listaStates = new ArrayList<>();
         this.listaTransitionsDentro = new ArrayList<>();
         this.listaTransitionsForaSaindo = new ArrayList<>();
@@ -146,6 +138,15 @@ public class BigState {
     
     public static void removeBigState(BigState bigState){
         todosOsBigStates.remove(bigState);
+    }
+    
+    public static boolean verifyIsBigState(State state) {
+        for (BigState big : BigState.todosOsBigStates) {
+            if (state.equals(big.getState())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private boolean contains(State destino) {
