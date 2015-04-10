@@ -27,7 +27,7 @@ import br.uece.lotus.Component;
 import br.uece.lotus.helpers.window.DefaultWindowManagerPlugin;
 import br.uece.lotus.project.ProjectExplorer;
 import br.uece.lotus.properties.PropertiesEditor;
-import br.uece.lotus.viewer.BasicComponentViewer;
+import br.uece.lotus.viewer.ComponentViewImpl;
 import br.uece.seed.ext.ExtensionManager;
 
 /**
@@ -69,7 +69,7 @@ public class DesignerWindowManager extends DefaultWindowManagerPlugin<DesignerWi
 
     @Override
     protected DesignerWindow onCreate() {
-        DesignerWindowImpl w = new DesignerWindowImpl(new BasicComponentViewer());        
+        DesignerWindowImpl w = new DesignerWindowImpl(new ComponentViewImpl());
         if (mPropertiesEditor != null) {
             w.addListener(mBindDesignerWithPropertiesEditor);
         }

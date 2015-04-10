@@ -5,12 +5,10 @@
  */
 package br.uece.lotus;
 
-import br.uece.lotus.State;
-import br.uece.lotus.Transition;
-import br.uece.lotus.viewer.BasicComponentViewer;
+import br.uece.lotus.viewer.ComponentView;
+import br.uece.lotus.viewer.ComponentViewImpl;
 import br.uece.lotus.viewer.StateView;
 import br.uece.lotus.viewer.TransitionView;
-import br.uece.lotus.viewer.View;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -72,7 +70,7 @@ public class BigState {
         }
     }
 
-    public boolean dismountBigState(BasicComponentViewer mviewer) {
+    public boolean dismountBigState(ComponentView mviewer) {
         if (!canUnmount()) {
             return false;
         }
@@ -98,7 +96,7 @@ public class BigState {
         return true;
     }
 
-    public boolean hasStateTransitionSelectedInside(View mComponentSelecionado, List<State> listaS) {
+    public boolean hasStateTransitionSelectedInside(Object mComponentSelecionado, List<State> listaS) {
         State sAux = null;
         Transition tAux = null;
         if (mComponentSelecionado instanceof StateView) {

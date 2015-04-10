@@ -23,8 +23,6 @@
  */
 package br.uece.lotus.properties;
 
-import br.uece.lotus.Component;
-import br.uece.lotus.Project;
 import br.uece.lotus.viewer.StateView;
 import br.uece.lotus.viewer.TransitionView;
 import java.net.URL;

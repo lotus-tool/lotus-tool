@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2014 Universidade Estadual do Ceará.
+ * Copyright 2014 emerson.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,9 +24,21 @@
 
 package br.uece.lotus.viewer;
 
+import br.uece.lotus.project.ProjectExplorer;
+import br.uece.seed.ext.ExtensionManager;
+import br.uece.seed.ext.Plugin;
 
-public interface View {
-    
-    boolean isInsideBounds(double x, double y);
-    
+/**
+ *
+ * @author emerson
+ */
+public class ComponentViewerPlugin extends Plugin {
+
+    private ProjectExplorer mProjectExplorer;
+
+    @Override
+    public void onStart(ExtensionManager extensionManager) throws Exception {
+        mProjectExplorer = extensionManager.get(ProjectExplorer.class);
+    }
+
 }

@@ -35,18 +35,4 @@ public class Util {
         return Math.sqrt(deltaX * deltaX + deltaY * deltaY);
     }
 
-    public static double angle(double aX, double aY, double bX, double bY) {
-        double deltaX = bX - aX;
-        double deltaY = bY - aY;
-        if (deltaX == 0) {
-            return 90;
-        }
-        if (deltaY == 0) {
-            return 0;
-        }
-        double tang = deltaY / deltaX;
-        double tangRad = Math.atan(tang);
-        double tangGrau = tangRad * 36 / 2 * Math.PI;
-        return tangGrau;
-    }
 }
