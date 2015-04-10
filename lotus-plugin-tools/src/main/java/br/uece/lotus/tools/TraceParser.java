@@ -18,88 +18,30 @@ public class TraceParser {
     private Component mComponent;
     private int id = 0;
     private String nomeDoStateDestino;
-    private Transition currentTransition = null;
-    boolean nomesIguais = false;
-    boolean foiCasoVirgula = false;
-    Transition transicaoParaDestinoDePonte = null;
 
     protected Component parseFile(InputStream input) {
         mComponent = new Component();
-        State estadoInicial = mComponent.newState(0);
-        mStates.put(estadoInicial.getLabel(), estadoInicial);
+        State initialState = mComponent.newState(0);
+        mStates.put(initialState.getLabel(), initialState);
         if (input != null) {
             try {
                 BufferedReader reader = new BufferedReader(new InputStreamReader(input));
                 String line = null;
                 while ((line = reader.readLine()) != null) {
-                    foiCasoVirgula = false;
                     String[] trace = line.split(",");
                     System.out.println("trace.length:" + trace.length);
 
-                    mCurrentState = estadoInicial;
-                    currentTransition = null;
+                    mCurrentState = initialState;
 
                     for (int i = 0; i < trace.length; i++) {
                         if (trace[i] != null) {
                             System.out.println("vetor: " + trace[i]);
-                            currentTransition = transicaoComLabel(trace[i].trim());
-                            if (currentTransition != null&& !foiCasoVirgula) {
-                                System.out.println(" Existe a transicao " + trace[i]);
-                                mCurrentState = currentTransition.getDestiny();
+                            System.out.println(" não existe a transiçãoPonte: " + trace[i]);
+                            System.out.println("vetor[i] e vetor[i++] não  são iguais");
+                            nomeDoStateDestino = String.valueOf(mComponent.getStatesCount());
+                            System.out.println(mCurrentState.getLabel() + " " + trace[i] + " " + nomeDoStateDestino);
+                            adicionarTransicao(mCurrentState.getLabel(), trace[i].trim(), nomeDoStateDestino);
 
-                            } else {
-                                System.out.println("Não existe a transicao" + trace[i]);
-
-                                //// VERIFICAÇÃO DA PONTE /////
-                                if (i < trace.length - 1) {
-                                    transicaoParaDestinoDePonte = transicaoComLabel(trace[i + 1].trim());
-                                } else {
-                                    transicaoParaDestinoDePonte = null;
-                                }
-
-                                ///CASO PONTE///
-                                if (transicaoParaDestinoDePonte != null) {
-                                    System.out.println(" Existe a transiçãoPonte: " + trace[i]);
-                                    if (verificandoSeEhCasoDeVirgula(transicaoParaDestinoDePonte, i + 1, trace)) {
-                                        adicionarTransicaoCasoVirgula(mCurrentState, trace[i], transicaoParaDestinoDePonte.getSource());
-                                    } else {////não é o caso de virgula
-                                        //Se foiCasoPonte verdadeiro
-                                        if (foiCasoVirgula) {
-                                            System.out.println("Entrou aqui111");
-                                            adicionarTransicao(mCurrentState.getLabel(), trace[i].trim(), String.valueOf(mComponent.getStatesCount() + 1));
-
-                                        } else {
-                                            System.out.println("Entrou aqui222");
-
-                                            nomeDoStateDestino = String.valueOf(mComponent.getStatesCount() );
-                                            System.out.println(mCurrentState.getLabel() + "::::" + nomeDoStateDestino);
-                                            System.out.println(mCurrentState.getLabel() + " " + trace[i] + " " + nomeDoStateDestino);
-                                            adicionarTransicao(mCurrentState.getLabel(), trace[i].trim(), nomeDoStateDestino);
-                                            foiCasoVirgula = true;
-                                        }
-                                    }
-                                } else {
-                                    System.out.println(" não existe a transiçãoPonte: " + trace[i]);
-
-                                    //verificando se existe a posicao i+1
-                                    if (i < trace.length - 1) {
-                                        nomesIguais = verificarSeProximoNomeDoVetorTraceEhIgualAoNomeAtualDoVetorTrace(trace[i].trim(), trace[i + 1].trim());
-                                        //caso não exista a posicao i+1
-                                    } else {
-                                        nomesIguais = false;
-                                    }
-                                    if (nomesIguais) {
-                                        System.out.println("vetor[i] e vetor[i++] são iguais");
-                                        nomeDoStateDestino = mCurrentState.getLabel();
-                                    } else {
-                                        System.out.println("vetor[i] e vetor[i++] não  são iguais");
-                                        nomeDoStateDestino = String.valueOf(mComponent.getStatesCount());
-                                    }
-                                    System.out.println(mCurrentState.getLabel() + " " + trace[i] + " " + nomeDoStateDestino);
-                                    adicionarTransicao(mCurrentState.getLabel(), trace[i].trim(), nomeDoStateDestino);
-                                }
-
-                            }
 
                         }
                     }
