@@ -71,7 +71,7 @@ public class XMLWritter {
             mOut.print(" ");
             mOut.print(name);
             mOut.print("=\"");
-            mOut.print(escapeEntities(value.toString()));
+            mOut.print(text(value.toString()));
             mOut.print("\"");
         } else {
             throw new IllegalStateException();
@@ -91,12 +91,14 @@ public class XMLWritter {
                 mEstado = TAG_STARTED;
             }
         }
-    }
+    }git
 
-    private String escapeEntities(String value) {
+    private String text(String value) {
+        value = value.replaceAll("&", "&amp");
+        value = value.replaceAll("\"", "&quot;");
+        value = value.replaceAll("'", "&apos;");
         value = value.replaceAll("<", "&lt;");
         value = value.replaceAll(">", "&gt;");
-        value = value.replaceAll("=", "&eq;");
         return value;
     }
 }
