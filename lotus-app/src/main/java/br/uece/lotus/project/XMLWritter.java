@@ -91,7 +91,7 @@ public class XMLWritter {
                 mEstado = TAG_STARTED;
             }
         }
-    }git
+    }
 
     private String text(String value) {
         value = value.replaceAll("&", "&amp");
