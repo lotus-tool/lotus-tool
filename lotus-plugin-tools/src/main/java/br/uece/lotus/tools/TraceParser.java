@@ -6,6 +6,7 @@ import br.uece.lotus.Transition;
 import br.uece.lotus.viewer.TransitionViewFactory;
 
 import java.io.*;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -17,7 +18,8 @@ public class TraceParser {
     State mCurrentState;
     private Component mComponent;
     private int id = 0;
-    private String nomeDoStateDestino;
+    private String namesDestinysState;
+    private ArrayList<String> labals;
 
     protected Component parseFile(InputStream input) {
         mComponent = new Component();
@@ -36,11 +38,14 @@ public class TraceParser {
                     for (int i = 0; i < trace.length; i++) {
                         if (trace[i] != null) {
                             System.out.println("vetor: " + trace[i]);
-                            System.out.println(" não existe a transiçãoPonte: " + trace[i]);
-                            System.out.println("vetor[i] e vetor[i++] não  são iguais");
-                            nomeDoStateDestino = String.valueOf(mComponent.getStatesCount());
-                            System.out.println(mCurrentState.getLabel() + " " + trace[i] + " " + nomeDoStateDestino);
-                            adicionarTransicao(mCurrentState.getLabel(), trace[i].trim(), nomeDoStateDestino);
+                            Transition trans = verificaionExistenceTransition(trace[i].trim(),mCurrentState);
+                            if (trans != null) {
+                                mCurrentState = travel(trans);
+                            } else {
+                                namesDestinysState = String.valueOf(mComponent.getStatesCount());
+                                System.out.println(mCurrentState.getLabel() + " " + trace[i] + " " + namesDestinysState);
+                                adicionarTransicao(mCurrentState.getLabel(), trace[i].trim(), namesDestinysState);
+                            }
 
 
                         }
@@ -58,16 +63,20 @@ public class TraceParser {
         return mComponent;
     }
 
-    private Transition transicaoComLabel(String nomeTrans) {
-        for (State s : mComponent.getStates()) {
-            Transition trans = s.getTransitionByLabel(nomeTrans);
-            if (trans != null) {
-                return trans;
+    private Transition verificaionExistenceTransition(String nameTrans,State currentState) {
+        for (Transition t : currentState.getOutgoingTransitionsList()) {
+            if (t.getLabel().equals(nameTrans)) {
+                return t;
             }
 
         }
         return null;
 
+    }
+
+    private State travel(Transition trans) {
+
+        return trans.getDestiny();
     }
 
     private void adicionarTransicaoCasoVirgula(State estadoOrigem, String acao, State estadoDestino) {
@@ -123,7 +132,7 @@ public class TraceParser {
         mCurrentState = dst;
         mComponent.buildTransition(src, dst)
                 .setLabel(acao)
-                .setViewType(TransitionViewFactory.Type.SEMI_CIRCLE)
+                .setViewType(TransitionViewFactory.Type.LINEAR)
                 .create();
 
     }
