@@ -48,7 +48,7 @@ public class TraceParser {
                                 mCurrentState = currentTransition.getDestiny();
 
                             } else {
-                                System.out.println("Não existe a transicao" + trace[i]);
+                                //System.out.println("Não existe a transicao" + trace[i]);
 
                                 //// VERIFICAÇÃO DA PONTE /////
                                 if (i < trace.length - 1) {
