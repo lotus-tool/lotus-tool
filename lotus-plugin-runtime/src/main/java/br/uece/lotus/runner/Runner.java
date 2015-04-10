@@ -12,7 +12,7 @@ import javax.script.ScriptException;
 /**
  * Created by emerson on 27/03/15.
  */
-public class Runner extends Plugin {
+public class Runner {
 
     private final ScriptEngine mEngine;
     private final Component mComponent;
