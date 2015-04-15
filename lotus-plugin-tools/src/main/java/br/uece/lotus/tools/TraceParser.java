@@ -37,15 +37,18 @@ public class TraceParser {
 
                     for (int i = 0; i < trace.length; i++) {
                         if (trace[i] != null) {
+                            Transition nextTransition=null;
                             System.out.println("vetor: " + trace[i]);
                             Transition trans = verificaionExistenceTransition(trace[i].trim(), mCurrentState);
                             if (trans != null) {
+                                System.out.println("Já existe esse vetor");
                                 mCurrentState = travel(trans);
                             } else {
+                                System.out.println("não existe esse vetor");
 //                                System.out.println("i+1:"+(i+1));
 //                                System.out.println(" trace.length"+ trace.length);
                                 if (i + 1 < trace.length) {
-                                    Transition nextTransition = verificaionExistenceTransition(trace[i + 1].trim());
+                                     nextTransition = verificaionExistenceTransition(trace[i + 1].trim());}
                                     if (nextTransition != null) {
                                         System.out.println("proxima transição existe");
                                         if (verificationCaseComma(nextTransition, i, trace)) {
@@ -53,13 +56,27 @@ public class TraceParser {
                                             addCommar(mCurrentState, trace[i].trim(), nextTransition.getSource());
                                             break;
                                         }
+                                        else{
+//                                            //ponte
+//                                            namesDestinysState=nextTransition.getSource().getLabel();
+//                                            System.out.println(mCurrentState.getLabel() + " " + trace[i] + " " + namesDestinysState);
+//                                            adicionarTransicao(mCurrentState.getLabel(), trace[i].trim(), namesDestinysState);
+                                            /////quebra em nova aŕvore
+                                            namesDestinysState=String.valueOf(mComponent.getStatesCount());
+                                            System.out.println(mCurrentState.getLabel() + " " + trace[i] + " " + namesDestinysState);
+                                            adicionarTransicao(mCurrentState.getLabel(), trace[i].trim(), namesDestinysState);
+                                        }
 
                                     }
+                                    else{
+                                        System.out.println("caso normal");
+                                        namesDestinysState = String.valueOf(mComponent.getStatesCount());
+                                        System.out.println(mCurrentState.getLabel() + " " + trace[i] + " " + namesDestinysState);
+                                        adicionarTransicao(mCurrentState.getLabel(), trace[i].trim(), namesDestinysState);
+                                    }
                                 }
-                                namesDestinysState = String.valueOf(mComponent.getStatesCount());
-                                System.out.println(mCurrentState.getLabel() + " " + trace[i] + " " + namesDestinysState);
-                                adicionarTransicao(mCurrentState.getLabel(), trace[i].trim(), namesDestinysState);
-                            }
+
+                            //}
 
 
                         }
@@ -118,16 +135,13 @@ public class TraceParser {
 
     private boolean verificationCaseComma(Transition transition, int posicaoDoTrace, String[] linhaDoTrace) {
         boolean aux = false;
-//        if (!transition.getLabel().equals(linhaDoTrace[posicaoDoTrace+1])) {
-//            return false;
-//        }
         State current = transition.getSource();
         System.out.println("current:" + current.getLabel());
 
-        for (int x = posicaoDoTrace + 1; x < linhaDoTrace.length; x++) {
+        for (int x = posicaoDoTrace + 2; x < linhaDoTrace.length; x++) {
             for (Transition t : current.getOutgoingTransitionsList()) {
-                System.out.println("transição:" + t.getLabel());
-                System.out.println("linhaDoTrace[x]:" + linhaDoTrace[x]);
+                //System.out.println("transição:" + t.getLabel());
+                //System.out.println("linhaDoTrace[x]:" + linhaDoTrace[x]);
                 if (t.getLabel().equals(linhaDoTrace[x].trim())) {
                     aux = true;
                     current = t.getDestiny();
@@ -135,7 +149,7 @@ public class TraceParser {
                 }
             }
         }
-System.out.println("retorno do commme"+aux);
+//System.out.println("retorno do commme"+aux);
         return aux;
 
     }
