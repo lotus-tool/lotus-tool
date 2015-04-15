@@ -38,10 +38,23 @@ public class TraceParser {
                     for (int i = 0; i < trace.length; i++) {
                         if (trace[i] != null) {
                             System.out.println("vetor: " + trace[i]);
-                            Transition trans = verificaionExistenceTransition(trace[i].trim(),mCurrentState);
+                            Transition trans = verificaionExistenceTransition(trace[i].trim(), mCurrentState);
                             if (trans != null) {
                                 mCurrentState = travel(trans);
                             } else {
+//                                System.out.println("i+1:"+(i+1));
+//                                System.out.println(" trace.length"+ trace.length);
+                                if (i + 1 < trace.length) {
+                                    Transition nextTransition = verificaionExistenceTransition(trace[i + 1]);
+                                    if (nextTransition != null) {
+                                        System.out.println("proxima transição existe");
+                                        if (verificationCaseComma(nextTransition, i, trace)) {
+                                            System.out.println("caso virgula");
+                                            addCommar(mCurrentState, trace[i], nextTransition.getSource());
+                                        }
+
+                                    }
+                                }
                                 namesDestinysState = String.valueOf(mComponent.getStatesCount());
                                 System.out.println(mCurrentState.getLabel() + " " + trace[i] + " " + namesDestinysState);
                                 adicionarTransicao(mCurrentState.getLabel(), trace[i].trim(), namesDestinysState);
@@ -63,7 +76,7 @@ public class TraceParser {
         return mComponent;
     }
 
-    private Transition verificaionExistenceTransition(String nameTrans,State currentState) {
+    private Transition verificaionExistenceTransition(String nameTrans, State currentState) {
         for (Transition t : currentState.getOutgoingTransitionsList()) {
             if (t.getLabel().equals(nameTrans)) {
                 return t;
@@ -74,12 +87,21 @@ public class TraceParser {
 
     }
 
+    private Transition verificaionExistenceTransition(String nameTransistion) {
+        for (Transition t : mComponent.getTransitions()) {
+            if (t.getLabel().equals(nameTransistion)) {
+                return t;
+            }
+        }
+        return null;
+    }
+
     private State travel(Transition trans) {
 
         return trans.getDestiny();
     }
 
-    private void adicionarTransicaoCasoVirgula(State estadoOrigem, String acao, State estadoDestino) {
+    private void addCommar(State estadoOrigem, String acao, State estadoDestino) {
         Transition tras = pegandoTransicaoPorStadoOrigEStadoDest(estadoOrigem, estadoDestino);//possivel problema, outra transiçao para o mesmo estado de ori e estado de dest
         if (tras == null) {
             return;
@@ -92,30 +114,23 @@ public class TraceParser {
 
     }
 
-    private boolean verificandoSeEhCasoDeVirgula(Transition t, int posicaoDoTrace, String[] linhaDoTrace) {
-        State stadoParaVerificar = t.getDestiny();
-        System.out.println("PosicaoDoTrance: " + posicaoDoTrace);
-        for (int i = posicaoDoTrace + 1; i < (linhaDoTrace.length); i++) {
-            System.out.println("PosicaoDoTrance: " + i);
-            System.out.println("String: " + linhaDoTrace[i]);
-            t = stadoParaVerificar.getTransitionByLabel(linhaDoTrace[i]);
-            if (t == null) {
-                System.out.println("false");
-                return false;
+    private boolean verificationCaseComma(Transition transition, int posicaoDoTrace, String[] linhaDoTrace) {
+        boolean aux = false;
+        State current = transition.getDestiny();
+        for (int x = posicaoDoTrace + 1; x < linhaDoTrace.length; x++) {
+            for (Transition t : current.getOutgoingTransitionsList()) {
+                if (t.getLabel().equals(linhaDoTrace[x])) {
+                    aux = true;
+                    current = t.getDestiny();
+                    break;
+                }
             }
         }
-        System.out.println("true");
-        return true;
+
+        return aux;
+
     }
 
-
-    private boolean verificarSeProximoNomeDoVetorTraceEhIgualAoNomeAtualDoVetorTrace(String nomeAtual, String proxNome) {
-        if (nomeAtual.equals(proxNome)) {
-            return true;
-        } else {
-            return false;
-        }
-    }
 
     private Transition pegandoTransicaoPorStadoOrigEStadoDest(State orig, State dest) {
         for (Transition t : mComponent.getTransitions()) {
