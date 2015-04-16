@@ -368,9 +368,6 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
                 mViewer.getComponent().remove(state);
             }
             stateDentroDoRetangulo.clear();
-            
-            
-            
         });
         
         mBtnZoom = new MenuButton();

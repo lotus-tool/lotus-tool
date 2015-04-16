@@ -43,6 +43,7 @@ public class PropertiesEditorPlugin extends Plugin implements PropertiesEditor {
 
     @Override
     public void onStart(ExtensionManager extensionManager) throws Exception {
+        /*
         mUserInterface = extensionManager.get(UserInterface.class);
         
         URL location = getClass().getResource("/fxml/PropertiesEditor.fxml");
@@ -53,6 +54,7 @@ public class PropertiesEditorPlugin extends Plugin implements PropertiesEditor {
         Parent root = (Parent) fxmlLoader.load(location.openStream());
         mPropertiesEditorController = fxmlLoader.getController();
         mUserInterface.getRightPanel().newTab("Properties", root, false);
+        */
     }
 
     

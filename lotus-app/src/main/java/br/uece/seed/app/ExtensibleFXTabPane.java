@@ -38,15 +38,17 @@ import javafx.scene.layout.Region;
 public class ExtensibleFXTabPane implements ExtensibleTabPane {
 
     private final TabPane mTabPane;
+    private final boolean mCanHide;
     private int counter;
     private final EventHandler<Event> mOnClose;
 
-    public ExtensibleFXTabPane(TabPane tabPane) {
+    public ExtensibleFXTabPane(TabPane tabPane, boolean canHide) {
         mTabPane = tabPane;
+        mCanHide = canHide;
         mOnClose = (Event e) -> {
             Tab t = (Tab) e.getSource();
             mTabPane.getTabs().remove(t);   
-            if (mTabPane.getTabs().size() == 0) {
+            if (mCanHide && mTabPane.getTabs().size() == 0) {
             	mTabPane.setMaxSize(0, 0);
             }
         };
@@ -62,7 +64,7 @@ public class ExtensibleFXTabPane implements ExtensibleTabPane {
             t.setUserData(id);
             t.setOnClosed(mOnClose);
             mTabPane.getTabs().add(t);
-            if (mTabPane.getTabs().size() > 0) {
+            if (mCanHide && mTabPane.getTabs().size() > 0) {
             	mTabPane.setMaxSize(Integer.MAX_VALUE, Integer.MAX_VALUE);
             }
         });
@@ -86,7 +88,7 @@ public class ExtensibleFXTabPane implements ExtensibleTabPane {
             if (t != null) {
                 mTabPane.getTabs().remove(t);
             }
-            if (mTabPane.getTabs().size() == 0) {
+            if (mCanHide && mTabPane.getTabs().size() == 0) {
             	mTabPane.setMaxSize(0, 0);
             }
         });

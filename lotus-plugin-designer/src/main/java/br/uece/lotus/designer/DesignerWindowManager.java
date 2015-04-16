@@ -30,6 +30,8 @@ import br.uece.lotus.properties.PropertiesEditor;
 import br.uece.lotus.viewer.ComponentViewImpl;
 import br.uece.seed.ext.ExtensionManager;
 
+import java.io.IOException;
+
 /**
  *
  * @author emerson
