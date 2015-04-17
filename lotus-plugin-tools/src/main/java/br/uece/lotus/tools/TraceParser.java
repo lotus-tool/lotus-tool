@@ -37,6 +37,7 @@ public class TraceParser {
 
                     for (int i = 0; i < trace.length; i++) {
                         if (trace[i] != null) {
+                            Transition nextTransitionGoingOutOrGoingInOfCurrentState = null;
                             Transition nextTransition=null;
                             System.out.println("vetor: " + trace[i]);
                             Transition trans = verificaionExistenceTransition(trace[i].trim(), mCurrentState);
@@ -48,51 +49,75 @@ public class TraceParser {
 //                                System.out.println("i+1:"+(i+1));
 //                                System.out.println(" trace.length"+ trace.length);
                                 if (i + 1 < trace.length) {
-                                     nextTransition = verificaionExistenceTransition(trace[i + 1].trim());}
-                                    if (nextTransition != null) {
-                                        System.out.println("proxima transição existe");
-                                        if (verificationCaseComma(nextTransition, i, trace)) {
-                                            System.out.println("caso virgula");
-                                            addCommar(mCurrentState, trace[i].trim(), nextTransition.getSource());
-                                            break;
-                                        }
-                                        else{
-//                                            //ponte
-//                                            namesDestinysState=nextTransition.getSource().getLabel();
-//                                            System.out.println(mCurrentState.getLabel() + " " + trace[i] + " " + namesDestinysState);
-//                                            adicionarTransicao(mCurrentState.getLabel(), trace[i].trim(), namesDestinysState);
+                                    nextTransitionGoingOutOrGoingInOfCurrentState = verificaionExistenceTransitionGoingInOrGoingOut(trace[i + 1].trim(), mCurrentState);
+                                }
+                                if (nextTransitionGoingOutOrGoingInOfCurrentState != null) {
+                                                                     //ponte
+                                    namesDestinysState = nextTransitionGoingOutOrGoingInOfCurrentState.getSource().getLabel();
+                                    System.out.println(mCurrentState.getLabel() + " " + trace[i] + " " + namesDestinysState);
+                                    adicionarTransicao(mCurrentState.getLabel(), trace[i].trim(), namesDestinysState);
+                                    System.out.println("Caso ponte");
+                                    continue;
+                                }else{
+                                    if (i + 1 < trace.length) {
+                                 nextTransition = verificaionExistenceTransition(trace[i + 1].trim());}
+                                    if(nextTransition!=null){
+                                    if (verificationCaseComma(nextTransition, i, trace)) {
+                                        System.out.println("caso virgula");
+                                        addCommar(mCurrentState, trace[i].trim(), nextTransition.getSource());
+                                        continue;
+                                    }else{
                                             /////quebra em nova aŕvore
-                                            namesDestinysState=String.valueOf(mComponent.getStatesCount());
-                                            System.out.println(mCurrentState.getLabel() + " " + trace[i] + " " + namesDestinysState);
-                                            adicionarTransicao(mCurrentState.getLabel(), trace[i].trim(), namesDestinysState);
-                                        }
+                                            System.out.println("quebra em nova aŕvore");
+                                            namesDestinysState = String.valueOf(mComponent.getStatesCount());
+                                            continue;
 
-                                    }
-                                    else{
-                                        System.out.println("caso normal");
-                                        namesDestinysState = String.valueOf(mComponent.getStatesCount());
-                                        System.out.println(mCurrentState.getLabel() + " " + trace[i] + " " + namesDestinysState);
-                                        adicionarTransicao(mCurrentState.getLabel(), trace[i].trim(), namesDestinysState);
-                                    }
+
+
+                                }}
+
                                 }
 
-                            //}
+//                                    if (verificationCaseComma(nextTransitionGoOutOfCurrentState, i, trace)) {
+//                                        System.out.println("caso virgula");
+//                                        addCommar(mCurrentState, trace[i].trim(), nextTransitionGoOutOfCurrentState.getSource());
+//                                        continue;
+//                                    }
 
+                                System.out.println("caso normal");
+                                namesDestinysState = String.valueOf(mComponent.getStatesCount());
+//                                    System.out.println(mCurrentState.getLabel() + " " + trace[i] + " " + namesDestinysState);
+//                                    adicionarTransicao(mCurrentState.getLabel(), trace[i].trim(), namesDestinysState);
+                                System.out.println(mCurrentState.getLabel() + " " + trace[i] + " " + namesDestinysState);
+                                adicionarTransicao(mCurrentState.getLabel(), trace[i].trim(), namesDestinysState);
+                            }
 
                         }
+
+                        //}
+
+
                     }
-
                 }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
 
-
+        }catch(IOException e){
+            e.printStackTrace();
         }
-        new LTSALayouter().layout(mComponent);
-        mComponent.setName("Untitled");
-        return mComponent;
+
+
     }
+
+    new
+
+    LTSALayouter()
+
+    .
+
+    layout(mComponent);
+
+    mComponent.setName("Untitled");
+    return mComponent;
+}
 
     private Transition verificaionExistenceTransition(String nameTrans, State currentState) {
         for (Transition t : currentState.getOutgoingTransitionsList()) {
@@ -104,6 +129,22 @@ public class TraceParser {
         return null;
 
     }
+    private Transition verificaionExistenceTransitionGoingInOrGoingOut(String nameTrans, State currentState) {
+        for (Transition t : currentState.getOutgoingTransitionsList()) {
+            if (t.getLabel().equals(nameTrans)) {
+                return t;
+            }
+        }
+            for (Transition r : currentState.getIncomingTransitionsList()) {
+                if (r.getLabel().equals(nameTrans)) {
+                    return r;
+                }
+
+        }
+        return null;
+
+    }
+
 
     private Transition verificaionExistenceTransition(String nameTransistion) {
         for (Transition t : mComponent.getTransitions()) {
@@ -135,13 +176,23 @@ public class TraceParser {
 
     private boolean verificationCaseComma(Transition transition, int posicaoDoTrace, String[] linhaDoTrace) {
         boolean aux = false;
-        State current = transition.getSource();
+
+        State current = transition.getDestiny();
+        System.out.println("transition:" + transition.getLabel());
         System.out.println("current:" + current.getLabel());
+        System.out.println("current.getOutgoingTransitionsList():" + current.getOutgoingTransitionsList().size());
+        System.out.println(" posicaoDoTrace+2 <linhaDoTrace.length:" + (posicaoDoTrace + 2) + "<= " + linhaDoTrace.length);
+
+        if (current.getOutgoingTransitionsList().size() == 0 && posicaoDoTrace + 2 >= linhaDoTrace.length) {
+            System.out.println("entrou aquii");
+            return true;
+        }
 
         for (int x = posicaoDoTrace + 2; x < linhaDoTrace.length; x++) {
             for (Transition t : current.getOutgoingTransitionsList()) {
-                //System.out.println("transição:" + t.getLabel());
-                //System.out.println("linhaDoTrace[x]:" + linhaDoTrace[x]);
+//                System.out.println("current.getOutgoingTransitionsList().size():" + t.getLabel());
+                System.out.println("transição:" + t.getLabel());
+                System.out.println("linhaDoTrace[x]:" + linhaDoTrace[x]);
                 if (t.getLabel().equals(linhaDoTrace[x].trim())) {
                     aux = true;
                     current = t.getDestiny();
