@@ -43,12 +43,15 @@ public class TraceParser {
                             Transition trans = verificaionExistenceTransition(trace[i].trim(), mCurrentState);
                             if (trans != null) {
                                 System.out.println("Já existe esse vetor");
+                                System.out.println("percorrer");
                                 mCurrentState = travel(trans);
                             } else {
                                 System.out.println("não existe esse vetor");
 //                                System.out.println("i+1:"+(i+1));
 //                                System.out.println(" trace.length"+ trace.length);
+                                System.out.println("i + 1 < trace.length"+(i + 1)+"<"+trace.length);
                                 if (i + 1 < trace.length) {
+
                                     nextTransitionGoingOutOrGoingInOfCurrentState = verificaionExistenceTransitionGoingInOrGoingOut(trace[i + 1].trim(), mCurrentState);
                                 }
                                 if (nextTransitionGoingOutOrGoingInOfCurrentState != null) {
@@ -121,7 +124,7 @@ public class TraceParser {
 
     private Transition verificaionExistenceTransition(String nameTrans, State currentState) {
         for (Transition t : currentState.getOutgoingTransitionsList()) {
-            if (t.getLabel().equals(nameTrans)) {
+            if (brokenLabel(t.getLabel(),nameTrans)){
                 return t;
             }
 
@@ -129,14 +132,25 @@ public class TraceParser {
         return null;
 
     }
+    private boolean brokenLabel(String label,String name){
+        String[] names = label.split(",");
+        for(String s : names){
+            if(s.equals(name)){
+                return true;
+            }
+        }
+        return false;
+    }
     private Transition verificaionExistenceTransitionGoingInOrGoingOut(String nameTrans, State currentState) {
+        System.out.println("entrou aquiii");
         for (Transition t : currentState.getOutgoingTransitionsList()) {
-            if (t.getLabel().equals(nameTrans)) {
+            System.out.println(t.getLabel()+"XXXXXX"+nameTrans);
+            if ((brokenLabel(t.getLabel(),nameTrans))) {
                 return t;
             }
         }
             for (Transition r : currentState.getIncomingTransitionsList()) {
-                if (r.getLabel().equals(nameTrans)) {
+                if ((brokenLabel(r.getLabel(), nameTrans))) {
                     return r;
                 }
 
@@ -148,7 +162,7 @@ public class TraceParser {
 
     private Transition verificaionExistenceTransition(String nameTransistion) {
         for (Transition t : mComponent.getTransitions()) {
-            if (t.getLabel().equals(nameTransistion)) {
+            if ((brokenLabel(t.getLabel(),nameTransistion))) {
                 return t;
             }
         }
@@ -193,7 +207,8 @@ public class TraceParser {
 //                System.out.println("current.getOutgoingTransitionsList().size():" + t.getLabel());
                 System.out.println("transição:" + t.getLabel());
                 System.out.println("linhaDoTrace[x]:" + linhaDoTrace[x]);
-                if (t.getLabel().equals(linhaDoTrace[x].trim())) {
+
+                if (brokenLabel(t.getLabel(), linhaDoTrace[x].trim())) {
                     aux = true;
                     current = t.getDestiny();
                     break;
