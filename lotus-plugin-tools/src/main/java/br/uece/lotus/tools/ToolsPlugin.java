@@ -62,7 +62,13 @@ public class ToolsPlugin extends Plugin {
             }
         }
     };
-    
+    private final Runnable mTreeLayout = new Runnable() {
+        @Override
+        public void run() {
+            new TreeLayouter().layout(mProjectExplorer.getSelectedComponent());
+        }
+    };
+
 
     @Override
     public void onStart(ExtensionManager extensionManager) throws Exception {
@@ -87,6 +93,10 @@ public class ToolsPlugin extends Plugin {
         mMainMenu.newItem("File/Import/From LTSA...")
                 .setWeight(MENU_WEIGHT)
                 .setAction(mImportFromLTSA)
+                .create();
+        mMainMenu.newItem("File/Layout/Tree layout")
+                .setWeight(MENU_WEIGHT)
+                .setAction(mTreeLayout)
                 .create();
     }
 

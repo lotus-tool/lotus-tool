@@ -32,33 +32,40 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javafx.collections.ObservableList;
 import javafx.embed.swing.SwingFXUtils;
+import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.image.WritableImage;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Region;
+
 import javax.imageio.ImageIO;
 
 /**
  *
  * @author emerson
  */
-public class BasicComponentViewer extends AnchorPane implements Component.Listener {
+public class ComponentViewImpl extends AnchorPane implements ComponentView, Component.Listener {
 
     private Component mComponent;
     private ContextMenu mStateContextMenu;
+    private TransitionViewFactory mTransitionViewFactory;
+    private StateViewFactory mStateViewFactory;
     private List<Listener> mListeners = new ArrayList<>();
+    private List<StateView> mStateViews = new ArrayList<>();
+    private List<TransitionView> mTransitionViews = new ArrayList<>();
 
-    public interface Listener {
-        void onTransitionViewCreated(BasicComponentViewer v, TransitionView tv);
-    }
-    
-    public BasicComponentViewer() {
-        setStyle("-fx-background-color: white;");
+    public ComponentViewImpl() {
+        mTransitionViewFactory = new TransitionViewFactory();
+        mStateViewFactory = new StateViewFactory();
+        //setStyle("-fx-background-color: white;");
     }
 
+    @Override
     public void setStateContextMenu(ContextMenu menu) {
         mStateContextMenu = menu;
     }
@@ -134,13 +141,15 @@ public class BasicComponentViewer extends AnchorPane implements Component.Listen
             aux.remove(view);
             state.setValue("view", null);
             view.setState(null);
+            mStateViews.remove(view);
         }
     }
 
     private void hideTransition(Transition t) {
         synchronized (this) {
-            TransitionView view = (TransitionView) t.getValue("view");
+            TransitionViewImpl view = (TransitionViewImpl) t.getValue("view");
             if (view != null) {
+                mTransitionViews.remove(view);
                 view.setTransition(null);
                 t.setValue("view", null);
                 getChildren().remove(view);
@@ -149,41 +158,43 @@ public class BasicComponentViewer extends AnchorPane implements Component.Listen
 
     }
 
-    public void showState(State s) {
+    private void showState(State s) {
         StateView view;
+        Node node;
         synchronized (this) {
             if (s.getValue("view") == null) {
-                view = new StateView();
-//                view.setStyle("-fx-border-width: 1px; -fx-border-color: red;");
-                getChildren().add(view);
+                view = mStateViewFactory.create();
+                mStateViews.add(view);
+                node = view.getNode();
+                //view.setStyle("-fx-border-width: 1px; -fx-border-color: red;");
                 view.setState(s);
                 s.setValue("view", view);
+                getChildren().add(node);
             }
         }
     }
 
-    public void showTransition(Transition t) {
+    private void showTransition(Transition t) {
         TransitionView view;
+        Node node;
         synchronized (this) {
             if (t.getValue("view") == null) {
-                Integer type = (Integer) t.getValue("view.type");                
-                System.out.println("type: " + type);
-                view = TransitionViewFactory.create(t, type == null ? TransitionViewFactory.Type.LINEAR : type);
-                System.out.println(view.getClass().getSimpleName());;
-                getChildren().add(view);
+                view = mTransitionViewFactory.create(t);
+                mTransitionViews.add(view);
                 view.setTransition(t);
                 t.setValue("view", view);
-                if (view instanceof SelfTransitionView) {
-                    ((StateView) t.getSource().getValue("view")).toFront();                    
+                node = view.getNode();
+                getChildren().add(node);
+                if (view instanceof SelfTransitionViewImpl) {
+                    ((SelfTransitionViewImpl) view).getSourceStateView().getNode().toFront();
                 } else {
-                    view.toBack();
+                    node.toBack();
                 }
                 for (Listener l: mListeners) {
                     l.onTransitionViewCreated(this, view);
                 }
             }
         }
-
     }
 
     public void clear() {
@@ -196,31 +207,16 @@ public class BasicComponentViewer extends AnchorPane implements Component.Listen
         mComponent = null;
     }
 
+    @Override
     public void saveAsPng(File file) {
         WritableImage img = snapshot(new SnapshotParameters(), null);
         try {
             ImageIO.write(SwingFXUtils.fromFXImage(img, null), "png", file);
         } catch (IOException ex) {
-            Logger.getLogger(BasicComponentViewer.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ComponentViewImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
-    public View getViewByMouseCoordinates(double x, double y) {
-        for (State s : mComponent.getStates()) {
-            View v = (View) s.getValue("view");
-            if (v.isInsideBounds(x, y)) {
-                return v;
-            }
-        }
-        for (Transition t : mComponent.getTransitions()) {
-            View v = (View) t.getValue("view");
-            if (v.isInsideBounds(x, y)) {
-                return v;
-            }
-        }
-        return null;
-    }
-    
     public void addListener(Listener l) {
         mListeners.add(l);
     }
@@ -229,4 +225,28 @@ public class BasicComponentViewer extends AnchorPane implements Component.Listen
         mListeners.remove(l);
     }
 
+    @Override
+    public StateView locateStateView(Point2D point) {
+        for (StateView v: mStateViews) {
+            if (v.isInsideBounds(point)) {
+                return v;
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public TransitionView locateTransitionView(Point2D point) {
+        for (TransitionView v: mTransitionViews) {
+            if (v.isInsideBounds(point)) {
+                return v;
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public AnchorPane getNode() {
+        return this;
+    }
 }

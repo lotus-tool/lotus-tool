@@ -3,6 +3,7 @@ package br.uece.lotus.tools;
 import br.uece.lotus.Component;
 import br.uece.lotus.State;
 import br.uece.lotus.Transition;
+import br.uece.lotus.viewer.TransitionView;
 import br.uece.lotus.viewer.TransitionViewFactory;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -71,7 +72,7 @@ public class LTSAParser {
         State dst = getOrCreateState(estadoDestino);
         mComponent.buildTransition(src, dst)
                 .setLabel(acao)
-                .setViewType(TransitionViewFactory.Type.SEMI_CIRCLE)
+                .setViewType(TransitionView.Geometry.CURVE)
                 .create();
     }
 

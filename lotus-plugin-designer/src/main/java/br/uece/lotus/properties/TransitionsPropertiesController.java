@@ -145,7 +145,7 @@ public class TransitionsPropertiesController implements Transition.Listener, Cha
 
             Double probability = Double.parseDouble(s);
 
-            if (!(probability >= 0 && probability <= 1.0)) {
+            if (!(probability >= 0 && probability <= 1)) {
                 throw new InvalidParameterException();
             }
 

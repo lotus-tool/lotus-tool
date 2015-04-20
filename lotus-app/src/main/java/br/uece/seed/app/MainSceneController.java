@@ -57,10 +57,10 @@ public class MainSceneController extends Plugin implements Initializable, UserIn
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         mExtensibleMainMenu = new ExtensibleFXMenuBar(mMnuPrincipal);
-        mExtensibleLeftPanel = new ExtensibleFXTabPane(mTabLeft);
-        mExtensibleCenterPanel = new ExtensibleFXTabPane(mTabCenter);
-        mExtensibleRightPanel = new ExtensibleFXTabPane(mTabRight);
-        mExtensibleBottomPanel = new ExtensibleFXTabPane(mTabBottom);
+        mExtensibleLeftPanel = new ExtensibleFXTabPane(mTabLeft, true);
+        mExtensibleCenterPanel = new ExtensibleFXTabPane(mTabCenter, false);
+        //mExtensibleRightPanel = new ExtensibleFXTabPane(mTabRight);
+        mExtensibleBottomPanel = new ExtensibleFXTabPane(mTabBottom, true);
         mExtensibleToolbar = new ExtensibleFXToolbar(mToolbar);
     }
 

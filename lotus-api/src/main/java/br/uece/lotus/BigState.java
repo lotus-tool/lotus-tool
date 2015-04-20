@@ -3,35 +3,25 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package br.uece.lotus.designer;
+package br.uece.lotus;
 
-import br.uece.lotus.State;
-import br.uece.lotus.Transition;
-import br.uece.lotus.viewer.BasicComponentViewer;
+import br.uece.lotus.viewer.ComponentView;
+import br.uece.lotus.viewer.ComponentViewImpl;
 import br.uece.lotus.viewer.StateView;
 import br.uece.lotus.viewer.TransitionView;
-import br.uece.lotus.viewer.View;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- *
- * @author Messias
- */
 public class BigState {
     
-    private State state;
-    private DesignerWindowImpl designerWindowImpl;
-    private BasicComponentViewer mViewer;
+    private State state;    
     private List<State> listaStates;
     private List<Transition> listaTransitionsDentro;
     private List<Transition> listaTransitionsForaSaindo;
     private List<Transition> listaTransitionsForaChegando;
     public static List<BigState> todosOsBigStates = new ArrayList<>();
 
-    public BigState(DesignerWindowImpl designerWindowImpl) {
-        this.designerWindowImpl = designerWindowImpl;
-        this.mViewer = this.designerWindowImpl.getMViewer();
+    public BigState() {
         this.listaStates = new ArrayList<>();
         this.listaTransitionsDentro = new ArrayList<>();
         this.listaTransitionsForaSaindo = new ArrayList<>();
@@ -80,7 +70,7 @@ public class BigState {
         }
     }
 
-    public boolean dismountBigState(BasicComponentViewer mviewer) {
+    public boolean dismountBigState(ComponentView mviewer) {
         if (!canUnmount()) {
             return false;
         }
@@ -106,7 +96,7 @@ public class BigState {
         return true;
     }
 
-    public boolean hasStateTransitionSelectedInside(View mComponentSelecionado, List<State> listaS) {
+    public boolean hasStateTransitionSelectedInside(Object mComponentSelecionado, List<State> listaS) {
         State sAux = null;
         Transition tAux = null;
         if (mComponentSelecionado instanceof StateView) {
@@ -147,6 +137,15 @@ public class BigState {
     public static void removeBigState(BigState bigState){
         todosOsBigStates.remove(bigState);
     }
+    
+    public static boolean verifyIsBigState(State state) {
+        for (BigState big : BigState.todosOsBigStates) {
+            if (state.equals(big.getState())) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     private boolean contains(State destino) {
         return listaStates.contains(destino);
@@ -156,7 +155,7 @@ public class BigState {
     public String toString() {
         String retorno = " --- States do BigState ---\n";
         for (State s : listaStates) {
-            retorno += "* State Label " + s.getLabel() + "\n";
+            retorno += "* State Label " + s.getLabel() + "ID " + state.getID() + "\n";
         }
         retorno += "--- Transitions Dentro ---\n* Quantidade " + listaTransitionsDentro.size() + "\n";
         retorno += "--- Transitions Fora Chegando ---\n* Quantidade " + listaTransitionsForaChegando.size() + "\n";
