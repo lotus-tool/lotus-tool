@@ -3,6 +3,7 @@ package br.uece.lotus.tools;
 import br.uece.lotus.Component;
 import br.uece.lotus.State;
 import br.uece.lotus.Transition;
+import br.uece.lotus.viewer.TransitionView;
 import br.uece.lotus.viewer.TransitionViewFactory;
 
 import java.io.*;
@@ -236,7 +237,7 @@ public class TraceParser {
         mCurrentState = dst;
         mComponent.buildTransition(src, dst)
                 .setLabel(acao)
-                .setViewType(TransitionViewFactory.Type.LINEAR)
+                .setViewType(TransitionView.Geometry.LINE)
                 .create();
 
     }
