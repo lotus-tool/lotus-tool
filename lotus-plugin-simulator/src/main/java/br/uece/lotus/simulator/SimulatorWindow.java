@@ -30,10 +30,12 @@ import br.uece.lotus.helpers.window.Window;
 import br.uece.lotus.viewer.ComponentView;
 import br.uece.lotus.viewer.ComponentViewImpl;
 import br.uece.lotus.viewer.StateView;
+import br.uece.seed.app.View;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.fxml.FXML;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.control.*;
@@ -42,24 +44,33 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 
 import javax.swing.*;
+import java.io.IOException;
 
 /**
  *
  * @author emerson
  */
-public class SimulatorWindow extends AnchorPane implements Window {
+public class SimulatorWindow extends View implements Window {
+
     private final int MOUSE_STEP = 1;
     private final int RANDOM_PROBABILISTIC_STEP = 2;
     private final int RANDOM_STEP = 3;
 
     private SimulatorContext mSimulatorContext;
 
-    private final ToolBar mToolbar;
-    private final Button mBtnStart;
-    private final Button mBtnMakeStep;
-    private final Button mBtnUnmakeStep;
-    private final ComponentView mViewer;
-    private final TableView<Step> mTableView;
+    @FXML
+    private Button mBtnStart;
+
+    @FXML
+    private Button mBtnMakeStep;
+
+    @FXML
+    private Button mBtnUnmakeStep;
+    @FXML
+    private ComponentViewImpl mViewer;
+
+    @FXML
+    private TableView<Step> mTableView;
     private final ExecutorSimulatorCommands mExecutorCommands;
 
     private final EventHandler<? super MouseEvent> onMouseClick = new EventHandler<MouseEvent>() {
@@ -95,20 +106,21 @@ public class SimulatorWindow extends AnchorPane implements Window {
     private final TableColumn<Step, String> mFromCol;
     private final TableColumn<Step, String> mToCol;
     private final ObservableList<Step> mSteps = FXCollections.observableArrayList();
-    private final ScrollPane mScrollPanel;
+    @FXML
+    private ScrollPane mScrollPanel;
 
-    public SimulatorWindow() {
-//        AnchorPane.setTopAnchor(mViewer, 38D);
-//        AnchorPane.setLeftAnchor(mViewer, 0D);
-//        AnchorPane.setRightAnchor(mViewer, 0D);
-//        AnchorPane.setBottomAnchor(mViewer, 222D);
+    public SimulatorWindow() throws IOException {
+        super("/fxml/simulator.fxml");
+        //AnchorPane.setTopAnchor(mViewer, 38D);
+        //AnchorPane.setLeftAnchor(mViewer, 0D);
+        //AnchorPane.setRightAnchor(mViewer, 0D);
+        //AnchorPane.setBottomAnchor(mViewer, 222D);
 
-        mViewer = new ComponentViewImpl();
-        mViewer.getNode().setOnMouseClicked(onMouseClick);
-        mScrollPanel = new ScrollPane(mViewer.getNode());
+        //mViewer = new ComponentViewImpl();
+        //mViewer.getNode().setOnMouseClicked(onMouseClick);
+        //mScrollPanel = new ScrollPane(mViewer.getNode());
 
         mSimulatorContext = new SimulatorContext();
-
         mExecutorCommands = new ExecutorSimulatorCommands();
 
         AnchorPane.setTopAnchor(mScrollPanel, 38D);
@@ -117,14 +129,14 @@ public class SimulatorWindow extends AnchorPane implements Window {
         AnchorPane.setBottomAnchor(mScrollPanel, 222D);
         mViewer.getNode().minHeightProperty().bind(mScrollPanel.heightProperty());
         mViewer.getNode().minWidthProperty().bind(mScrollPanel.widthProperty());
-        getChildren().add(mScrollPanel);
+        //getChildren().add(mScrollPanel);
 
         mSimulatorContext.setmPathLabel(new Label(""));
         mSimulatorContext.getmPathLabel().setPrefHeight(22);
         AnchorPane.setLeftAnchor(mSimulatorContext.getmPathLabel(), 0D);
         AnchorPane.setRightAnchor(mSimulatorContext.getmPathLabel(), 0D);
         AnchorPane.setBottomAnchor(mSimulatorContext.getmPathLabel(), 200D);
-        getChildren().add(mSimulatorContext.getmPathLabel());
+        //getChildren().add(mSimulatorContext.getmPathLabel());
 
         mBtnStart = new Button("Start");
         mBtnStart.setOnAction((ActionEvent e) -> {
@@ -160,21 +172,21 @@ public class SimulatorWindow extends AnchorPane implements Window {
 
 
 
-        mToolbar = new ToolBar();
+       /* mToolbar = new ToolBar();
         mToolbar.getItems().addAll(mBtnStart, mBtnMakeStep, mBtnUnmakeStep);
         AnchorPane.setTopAnchor(mToolbar, 0D);
         AnchorPane.setLeftAnchor(mToolbar, 0D);
         AnchorPane.setRightAnchor(mToolbar, 0D);
-        getChildren().add(mToolbar);
+        getChildren().add(mToolbar);*/
 
-        mTableView = new TableView();
+        /*mTableView = new TableView();
         mTableView.setPrefHeight(200);
         AnchorPane.setLeftAnchor(mTableView, 0D);
         AnchorPane.setRightAnchor(mTableView, 0D);
         AnchorPane.setBottomAnchor(mTableView, 0D);
-        getChildren().add(mTableView);
+        getChildren().add(mTableView);*/
 
-        mActionCol = new TableColumn<>("Action");
+        /*mActionCol = new TableColumn<>("Action");*/
         mActionCol.setCellValueFactory(new PropertyValueFactory<>("action"));
         mActionCol.setPrefWidth(100);
         mFromCol = new TableColumn<>("From");

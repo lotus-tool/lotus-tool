@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+
+<!--<?import br.uece.lotus.viewer.ComponentViewImpl?>-->
+
+<VBox xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0">
+         <bottom>
+            <VBox spacing="5">
+               <children>
+                  <HBox spacing="5">
+                     <children>
+                        <Button fx:id="mBtnStart" mnemonicParsing="false" text="Start" />
+                        <Button fx:id="mBtnMakeStep" mnemonicParsing="false" text="Step" />
+                        <Button fx:id="mBtnUndoStep" mnemonicParsing="false" text="Undo" />
+                     </children>
+                     <VBox.margin>
+                        <Insets />
+                     </VBox.margin>
+                     <padding>
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                     </padding>
+                  </HBox>
+                  <TabPane prefHeight="228.0" prefWidth="600.0" side="LEFT" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER">
+                    <tabs>
+                      <Tab text="Trace">
+                        <content>
+                              <VBox spacing="5">
+                                 <children>
+                                    <HBox alignment="CENTER_LEFT">
+                                       <children>
+                                          <TextField editable="false" HBox.hgrow="ALWAYS" />
+                                       </children>
+                                    </HBox>
+                                    <TableView fx:id="mTableView" layoutX="23.0" layoutY="-16.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                      <columns>
+                                        <TableColumn prefWidth="75.0" text="Action" />
+                                        <TableColumn prefWidth="75.0" text="From" />
+                                          <TableColumn prefWidth="75.0" text="To" />
+                                      </columns>
+                                    </TableView>
+                                 </children>
+                                 <padding>
+                                    <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                 </padding>
+                              </VBox>
+                        </content>
+                      </Tab>
+                      <Tab text="Console">
+                        <content>
+                              <VBox spacing="5">
+                                 <children>
+                                    <HBox alignment="CENTER_LEFT" spacing="5">
+                                       <children>
+                                          <Button mnemonicParsing="false" text="Save" />
+                                          <Button mnemonicParsing="false" text="Clear" />
+                                       </children>
+                                    </HBox>
+                                    <TextArea layoutX="14.0" layoutY="-16.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                                 </children>
+                                 <padding>
+                                    <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                 </padding>
+                              </VBox>
+                        </content>
+                      </Tab>
+                        <Tab text="Variables">
+                          <content>
+                              <VBox spacing="5">
+                                 <children>
+                                    <TableView layoutX="14.0" layoutY="-47.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                      <columns>
+                                        <TableColumn prefWidth="75.0" text="Name" />
+                                        <TableColumn prefWidth="75.0" text="Value" />
+                                      </columns>
+                                    </TableView>
+                                 </children>
+                                <padding>
+                                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                </padding>
+                              </VBox>
+                          </content>
+                        </Tab>
+                    </tabs>
+                  </TabPane>
+               </children>
+            </VBox>
+         </bottom>
+         <center>
+            <ScrollPane fx:id="mScrollPane" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+               <content>
+
+               </content></ScrollPane>
+         </center>
+      </BorderPane>
+   </children>
+</VBox>
