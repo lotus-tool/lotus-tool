@@ -140,7 +140,7 @@ public class MainSceneController1 extends Plugin implements Initializable, UserI
     private final EventHandler<ActionEvent> mMudarNomeComponentePelaAbaHandler = (ActionEvent t) -> {
         EditableTab tab = ((EditableTab) t.getSource());
         ((Component) tab.getUserData()).setName(tab.getLabel());
-        System.out.println(tab.getLabel());
+
     };
 
     private Component.Listener mComponentListener = new Component.Listener() {

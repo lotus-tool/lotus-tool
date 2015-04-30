@@ -54,6 +54,9 @@ public class TraceParser {
                                 if (i + 1 < trace.length) {
 
                                     nextTransitionGoingOutOrGoingInOfCurrentState = verificaionExistenceTransitionGoingInOrGoingOut(trace[i + 1].trim(), mCurrentState);
+                                    if(nextTransitionGoingOutOrGoingInOfCurrentState==null){
+                                        nextTransitionGoingOutOrGoingInOfCurrentState=verificaionExistenceTransition(trace[i + 1].trim());
+                                    }
                                 }
                                 if (nextTransitionGoingOutOrGoingInOfCurrentState != null) {
                                                                      //ponte
