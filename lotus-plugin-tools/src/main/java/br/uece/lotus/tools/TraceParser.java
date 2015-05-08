@@ -45,9 +45,11 @@ public class TraceParser {
                             if (trans != null) {
                                 System.out.println("Já existe esse vetor");
                                 System.out.println("percorrer");
+
                                 mCurrentState = travel(trans);
                             } else {
                                 System.out.println("não existe esse vetor");
+
 //                                System.out.println("i+1:"+(i+1));
 //                                System.out.println(" trace.length"+ trace.length);
                                 System.out.println("i + 1 < trace.length"+(i + 1)+"<"+trace.length);
@@ -238,10 +240,17 @@ public class TraceParser {
         State src = getOrCreateState(estadoOrigem);
         State dst = getOrCreateState(estadoDestino);
         mCurrentState = dst;
+        if(pegandoTransicaoPorStadoOrigEStadoDest(src,dst)!=null){
+            mComponent.buildTransition(src, dst)
+                    .setLabel(acao)
+                    .setViewType(TransitionView.Geometry.CURVE)
+                    .create();
+        }else{
         mComponent.buildTransition(src, dst)
                 .setLabel(acao)
                 .setViewType(TransitionView.Geometry.LINE)
                 .create();
+        }
 
     }
 
