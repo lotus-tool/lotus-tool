@@ -32,7 +32,7 @@ public class TraceParser {
                 String line = null;
                 while ((line = reader.readLine()) != null) {
                     String[] trace = line.split(",");
-                    System.out.println("trace.length:" + trace.length);
+                  //  System.out.println("trace.length:" + trace.length);
 
                     mCurrentState = initialState;
 
@@ -40,19 +40,19 @@ public class TraceParser {
                         if (trace[i] != null) {
                             Transition nextTransitionGoingOutOrGoingInOfCurrentState = null;
                             Transition nextTransition=null;
-                            System.out.println("vetor: " + trace[i]);
+                          //  System.out.println("vetor: " + trace[i]);
                             Transition trans = verificaionExistenceTransition(trace[i].trim(), mCurrentState);
                             if (trans != null) {
-                                System.out.println("Já existe esse vetor");
-                                System.out.println("percorrer");
+//                                System.out.println("Já existe esse vetor");
+//                                System.out.println("percorrer");
 
                                 mCurrentState = travel(trans);
                             } else {
-                                System.out.println("não existe esse vetor");
+//                                System.out.println("não existe esse vetor");
 
 //                                System.out.println("i+1:"+(i+1));
 //                                System.out.println(" trace.length"+ trace.length);
-                                System.out.println("i + 1 < trace.length"+(i + 1)+"<"+trace.length);
+//                                System.out.println("i + 1 < trace.length"+(i + 1)+"<"+trace.length);
                                 if (i + 1 < trace.length) {
 
                                     nextTransitionGoingOutOrGoingInOfCurrentState = verificaionExistenceTransitionGoingInOrGoingOut(trace[i + 1].trim(), mCurrentState);
@@ -63,21 +63,21 @@ public class TraceParser {
                                 if (nextTransitionGoingOutOrGoingInOfCurrentState != null) {
                                                                      //ponte
                                     namesDestinysState = nextTransitionGoingOutOrGoingInOfCurrentState.getSource().getLabel();
-                                    System.out.println(mCurrentState.getLabel() + " " + trace[i] + " " + namesDestinysState);
+//                                    System.out.println(mCurrentState.getLabel() + " " + trace[i] + " " + namesDestinysState);
                                     adicionarTransicao(mCurrentState.getLabel(), trace[i].trim(), namesDestinysState);
-                                    System.out.println("Caso ponte");
+//                                    System.out.println("Caso ponte");
                                     continue;
                                 }else{
                                     if (i + 1 < trace.length) {
                                  nextTransition = verificaionExistenceTransition(trace[i + 1].trim());}
                                     if(nextTransition!=null){
                                     if (verificationCaseComma(nextTransition, i, trace)) {
-                                        System.out.println("caso virgula");
+//                                        System.out.println("caso virgula");
                                         addCommar(mCurrentState, trace[i].trim(), nextTransition.getSource());
                                         continue;
                                     }else{
                                             /////quebra em nova aŕvore
-                                            System.out.println("quebra em nova aŕvore");
+//                                            System.out.println("quebra em nova aŕvore");
                                             namesDestinysState = String.valueOf(mComponent.getStatesCount());
                                             continue;
 
@@ -93,11 +93,11 @@ public class TraceParser {
 //                                        continue;
 //                                    }
 
-                                System.out.println("caso normal");
+//                                System.out.println("caso normal");
                                 namesDestinysState = String.valueOf(mComponent.getStatesCount());
 //                                    System.out.println(mCurrentState.getLabel() + " " + trace[i] + " " + namesDestinysState);
 //                                    adicionarTransicao(mCurrentState.getLabel(), trace[i].trim(), namesDestinysState);
-                                System.out.println(mCurrentState.getLabel() + " " + trace[i] + " " + namesDestinysState);
+//                                System.out.println(mCurrentState.getLabel() + " " + trace[i] + " " + namesDestinysState);
                                 adicionarTransicao(mCurrentState.getLabel(), trace[i].trim(), namesDestinysState);
                             }
 
@@ -148,9 +148,9 @@ public class TraceParser {
         return false;
     }
     private Transition verificaionExistenceTransitionGoingInOrGoingOut(String nameTrans, State currentState) {
-        System.out.println("entrou aquiii");
+//        System.out.println("entrou aquiii");
         for (Transition t : currentState.getOutgoingTransitionsList()) {
-            System.out.println(t.getLabel()+"XXXXXX"+nameTrans);
+//            System.out.println(t.getLabel()+"XXXXXX"+nameTrans);
             if ((brokenLabel(t.getLabel(),nameTrans))) {
                 return t;
             }
@@ -185,7 +185,7 @@ public class TraceParser {
         if (tras == null) {
             return;
         }
-        System.out.println("tras" + tras.getLabel());
+      //  System.out.println("tras" + tras.getLabel());
         mCurrentState = estadoDestino;
         mComponent.buildTransition(estadoOrigem, estadoDestino)
                 .setLabel(acao);
@@ -198,21 +198,21 @@ public class TraceParser {
         boolean aux = false;
 
         State current = transition.getDestiny();
-        System.out.println("transition:" + transition.getLabel());
-        System.out.println("current:" + current.getLabel());
-        System.out.println("current.getOutgoingTransitionsList():" + current.getOutgoingTransitionsList().size());
-        System.out.println(" posicaoDoTrace+2 <linhaDoTrace.length:" + (posicaoDoTrace + 2) + "<= " + linhaDoTrace.length);
+//        System.out.println("transition:" + transition.getLabel());
+//        System.out.println("current:" + current.getLabel());
+//        System.out.println("current.getOutgoingTransitionsList():" + current.getOutgoingTransitionsList().size());
+//        System.out.println(" posicaoDoTrace+2 <linhaDoTrace.length:" + (posicaoDoTrace + 2) + "<= " + linhaDoTrace.length);
 
         if (current.getOutgoingTransitionsList().size() == 0 && posicaoDoTrace + 2 >= linhaDoTrace.length) {
-            System.out.println("entrou aquii");
+//            System.out.println("entrou aquii");
             return true;
         }
 
         for (int x = posicaoDoTrace + 2; x < linhaDoTrace.length; x++) {
             for (Transition t : current.getOutgoingTransitionsList()) {
 //                System.out.println("current.getOutgoingTransitionsList().size():" + t.getLabel());
-                System.out.println("transição:" + t.getLabel());
-                System.out.println("linhaDoTrace[x]:" + linhaDoTrace[x]);
+//                System.out.println("transição:" + t.getLabel());
+//                System.out.println("linhaDoTrace[x]:" + linhaDoTrace[x]);
 
                 if (brokenLabel(t.getLabel(), linhaDoTrace[x].trim())) {
                     aux = true;
@@ -240,7 +240,7 @@ public class TraceParser {
         State src = getOrCreateState(estadoOrigem);
         State dst = getOrCreateState(estadoDestino);
         mCurrentState = dst;
-        if(pegandoTransicaoPorStadoOrigEStadoDest(src,dst)!=null){
+        if(pegandoTransicaoPorStadoOrigEStadoDest(src,dst)!=null||pegandoTransicaoPorStadoOrigEStadoDest(dst,src)!=null){
             mComponent.buildTransition(src, dst)
                     .setLabel(acao)
                     .setViewType(TransitionView.Geometry.CURVE)
