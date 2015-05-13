@@ -46,6 +46,14 @@ public class Component {
         to.setLabel(from.getLabel());
         to.setLayoutX(from.getLayoutX());
         to.setLayoutY(from.getLayoutY());
+
+        if (from.isError()) {
+            to.setError(true);
+        } else if (from.isFinal()) {
+            to.setFinal(true);
+        } else if (from.isInitial()) {
+            to.setAsInitial();
+        }
     }
 
     private void copyTransition(Transition from, Transition to) {        
@@ -70,8 +78,10 @@ public class Component {
 
     private String mName;
     private State mInitialState;
+    //This attributes should be lists os states.
     private State mFinalState;
     private State mErrorState;
+
     private final List<State> mStates = new ArrayList<>();
     private final List<Transition> mTransitions = new ArrayList<>();
     private final List<Listener> mListeners = new ArrayList<>();

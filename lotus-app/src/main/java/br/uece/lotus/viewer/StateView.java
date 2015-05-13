@@ -26,9 +26,9 @@ package br.uece.lotus.viewer;
 import br.uece.lotus.State;
 import javafx.scene.control.Label;
 import javafx.scene.layout.Region;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.*;
+import javafx.scene.shape.Circle;
 import javafx.scene.shape.Polygon;
+
 import java.util.List;
 
 import static java.util.Arrays.asList;
@@ -101,7 +101,7 @@ public class StateView extends Region implements View, State.Listener {
         mCircle.setStyle(style);
 
         if (mState.isFinal()) {
-            mSecondCircle.setStroke(Color.BLACK);
+            mSecondCircle.setStyle(style);
         }
 
         if (mState.isInitial()) {

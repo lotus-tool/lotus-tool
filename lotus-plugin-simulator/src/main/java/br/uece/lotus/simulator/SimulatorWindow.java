@@ -145,6 +145,7 @@ public class SimulatorWindow extends AnchorPane implements Window {
         mBtnMakeStep.setOnAction((ActionEvent e) -> {
 
             State mCurrentState = mSimulatorContext.getmCurrentState();
+
             if (mCurrentState.isFinal() || mCurrentState.isError() || mCurrentState.getOutgoingTransitionsCount() == 0) {
                 mBtnStart.setText("Start");
                 JOptionPane.showMessageDialog(null, "Error state or final reached!", "Invalid Operation", JOptionPane.ERROR_MESSAGE);
