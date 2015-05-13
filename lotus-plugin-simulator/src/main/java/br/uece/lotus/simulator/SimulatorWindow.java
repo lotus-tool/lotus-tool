@@ -27,13 +27,14 @@ import br.uece.lotus.Component;
 import br.uece.lotus.State;
 import br.uece.lotus.Transition;
 import br.uece.lotus.helpers.window.Window;
-import br.uece.lotus.viewer.BasicComponentViewer;
+import br.uece.lotus.viewer.ComponentView;
+import br.uece.lotus.viewer.ComponentViewImpl;
 import br.uece.lotus.viewer.StateView;
-import br.uece.lotus.viewer.View;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -57,20 +58,20 @@ public class SimulatorWindow extends AnchorPane implements Window {
     private final Button mBtnStart;
     private final Button mBtnMakeStep;
     private final Button mBtnUnmakeStep;
-    private final BasicComponentViewer mViewer;
+    private final ComponentView mViewer;
     private final TableView<Step> mTableView;
     private final ExecutorSimulatorCommands mExecutorCommands;
 
     private final EventHandler<? super MouseEvent> onMouseClick = new EventHandler<MouseEvent>() {
         @Override
         public void handle(MouseEvent e) {
-            View v = mViewer.getViewByMouseCoordinates(e.getX(), e.getY());
-            if (!(v instanceof StateView)) {
+            StateView v = mViewer.locateStateView(new Point2D(e.getSceneX(), e.getSceneY()));
+            if (v == null) {
                 return;
             }
 
             State mCurrentState = mSimulatorContext.getmCurrentState();
-            State s = ((StateView) v).getState();
+            State s = v.getState();
             Transition t = mSimulatorContext.getmCurrentState().getTransitionTo(s);
 
             if (t == null) {
@@ -102,9 +103,9 @@ public class SimulatorWindow extends AnchorPane implements Window {
 //        AnchorPane.setRightAnchor(mViewer, 0D);
 //        AnchorPane.setBottomAnchor(mViewer, 222D);
 
-        mViewer = new BasicComponentViewer();
-        mViewer.setOnMouseClicked(onMouseClick);
-        mScrollPanel = new ScrollPane(mViewer);
+        mViewer = new ComponentViewImpl();
+        mViewer.getNode().setOnMouseClicked(onMouseClick);
+        mScrollPanel = new ScrollPane(mViewer.getNode());
 
         mSimulatorContext = new SimulatorContext();
 
@@ -114,8 +115,8 @@ public class SimulatorWindow extends AnchorPane implements Window {
         AnchorPane.setLeftAnchor(mScrollPanel, 0D);
         AnchorPane.setRightAnchor(mScrollPanel, 0D);
         AnchorPane.setBottomAnchor(mScrollPanel, 222D);
-        mViewer.minHeightProperty().bind(mScrollPanel.heightProperty());
-        mViewer.minWidthProperty().bind(mScrollPanel.widthProperty());
+        mViewer.getNode().minHeightProperty().bind(mScrollPanel.heightProperty());
+        mViewer.getNode().minWidthProperty().bind(mScrollPanel.widthProperty());
         getChildren().add(mScrollPanel);
 
         mSimulatorContext.setmPathLabel(new Label(""));

@@ -24,24 +24,18 @@
 package br.uece.lotus.viewer;
 
 import br.uece.lotus.State;
+import javafx.geometry.Point2D;
+import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.layout.Region;
 import javafx.scene.shape.Circle;
-import javafx.scene.shape.Polygon;
 
-import java.util.List;
-
-import static java.util.Arrays.asList;
-
-public class StateView extends Region implements View, State.Listener {
+public class StateViewImpl extends Region implements StateView, State.Listener {
 
     static final int RAIO_CIRCULO = 15;
-    static final int ESPESSURA_PERIMETRO_CIRCULO = 2;
-    static final List<Double> PONTOS_TRIANGULO = asList(-1.5, 15.0, -13.0, 28.0, -13.0, 2.0);
 
     private final Circle mCircle;
     private final Circle mSecondCircle;
-    private final Polygon triangle;
     private final Label mText;
 
     private State mState;
@@ -49,18 +43,15 @@ public class StateView extends Region implements View, State.Listener {
     private static final String DEFAULT_FINAL_COLOR = "gray";
     private static final String DEFAULT_ERROR_COLOR = "red";
     private static final String DEFAULT_NORMAL_COLOR = "aqua";
-    private static final String DEFAULT_BORDER_COLOR = "black";
-    private static final String DEFAULT_TEXT_COLOR = "black";
 
-    public StateView() {
+    public StateViewImpl() {
         mCircle = new Circle(RAIO_CIRCULO);
         mSecondCircle = new Circle(RAIO_CIRCULO - 3);
         mSecondCircle.setFill(null);
-        triangle = new Polygon();
-        triangle.getPoints().addAll(PONTOS_TRIANGULO);
-        triangle.setFill(null);
 
-        getChildren().addAll(mCircle, mSecondCircle, triangle);
+        //setStyle("-fx-border-color: red;");
+
+        getChildren().addAll(mCircle, mSecondCircle);
 
         mCircle.setLayoutX(RAIO_CIRCULO);
         mCircle.setLayoutY(RAIO_CIRCULO);
@@ -85,8 +76,10 @@ public class StateView extends Region implements View, State.Listener {
     }
 
     @Override
-    public boolean isInsideBounds(double x, double y) {
-        return Util.pointDistance(x, y, getLayoutX() + RAIO_CIRCULO, getLayoutY() + RAIO_CIRCULO) <= RAIO_CIRCULO;
+    public boolean isInsideBounds(Point2D point) {
+        Point2D aux = mCircle.localToScene(Point2D.ZERO);
+        //System.out.printf("(%f %f) (%f %f)\n", aux.getX(), aux.getY(), point.getX(), point.getY());
+        return aux.distance(point) <= RAIO_CIRCULO;
     }
 
     public State getState() {
@@ -102,10 +95,6 @@ public class StateView extends Region implements View, State.Listener {
 
         if (mState.isFinal()) {
             mSecondCircle.setStyle(style);
-        }
-
-        if (mState.isInitial()) {
-            triangle.setStyle(style);
         }
 
         style = "-fx-text-fill: " + (mState.getTextColor() == null ? "black" : mState.getTextColor()) + ";";
@@ -146,7 +135,9 @@ public class StateView extends Region implements View, State.Listener {
         }
         return mState.getLabel();
     }
-    
-    
 
+    @Override
+    public Node getNode() {
+        return this;
+    }
 }
