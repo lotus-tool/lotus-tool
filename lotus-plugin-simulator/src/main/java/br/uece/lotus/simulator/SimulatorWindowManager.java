@@ -30,8 +30,14 @@ import br.uece.seed.app.ExtensibleMenu;
 import br.uece.seed.app.ExtensibleToolbar;
 import br.uece.seed.app.UserInterface;
 import br.uece.seed.ext.ExtensionManager;
+import javafx.fxml.FXMLLoader;
+import javafx.fxml.JavaFXBuilderFactory;
+import javafx.scene.Parent;
 
 import javax.swing.*;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -84,7 +90,20 @@ public class SimulatorWindowManager extends DefaultWindowManagerPlugin<Simulator
 
     @Override
     protected SimulatorWindow onCreate() {
-        return new SimulatorWindow();
+        SimulatorWindow c = null;
+        try {
+            URL location = getClass().getResource("/fxml/simulator.fxml");
+            FXMLLoader loader = new FXMLLoader();
+            loader.setClassLoader(getClass().getClassLoader());
+            loader.setLocation(location);
+            loader.setBuilderFactory(new JavaFXBuilderFactory());
+            Parent root = (Parent) loader.load(location.openStream());
+            c = (SimulatorWindow) loader.getController();
+            c.setNode(root);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return c;
     }
 
     @Override

@@ -34,33 +34,52 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 
 import javax.swing.*;
+import java.net.URL;
+import java.util.ResourceBundle;
 
 /**
- *
  * @author emerson
  */
-public class SimulatorWindow extends AnchorPane implements Window {
+public class SimulatorWindow extends AnchorPane implements Window, Initializable {
+
     private final int MOUSE_STEP = 1;
     private final int RANDOM_PROBABILISTIC_STEP = 2;
     private final int RANDOM_STEP = 3;
 
     private SimulatorContext mSimulatorContext;
 
-    private final ToolBar mToolbar;
-    private final Button mBtnStart;
-    private final Button mBtnMakeStep;
-    private final Button mBtnUnmakeStep;
-    private final ComponentView mViewer;
-    private final TableView<Step> mTableView;
-    private final ExecutorSimulatorCommands mExecutorCommands;
+    @FXML
+    private ToolBar mToolbar;
+    @FXML
+    private Button mBtnStart;
+    @FXML
+    private Button mBtnMakeStep;
+    @FXML
+    private Button mBtnUnmakeStep;
+    @FXML
+    private TableView<Step> mTableView;
+    @FXML
+    private TableColumn<Step, String> mActionCol;
+    @FXML
+    private TableColumn<Step, String> mFromCol;
+    @FXML
+    private TableColumn<Step, String> mToCol;
+    @FXML
+    private ScrollPane mScrollPanel;
+
+    private ComponentView mViewer;
+    private ExecutorSimulatorCommands mExecutorCommands;
 
     private final EventHandler<? super MouseEvent> onMouseClick = new EventHandler<MouseEvent>() {
         @Override
@@ -91,58 +110,33 @@ public class SimulatorWindow extends AnchorPane implements Window {
         }
     };
 
-    private final TableColumn<Step, String> mActionCol;
-    private final TableColumn<Step, String> mFromCol;
-    private final TableColumn<Step, String> mToCol;
     private final ObservableList<Step> mSteps = FXCollections.observableArrayList();
-    private final ScrollPane mScrollPanel;
+    private Node mNode;
 
-    public SimulatorWindow() {
-//        AnchorPane.setTopAnchor(mViewer, 38D);
-//        AnchorPane.setLeftAnchor(mViewer, 0D);
-//        AnchorPane.setRightAnchor(mViewer, 0D);
-//        AnchorPane.setBottomAnchor(mViewer, 222D);
-
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
         mViewer = new ComponentViewImpl();
         mViewer.getNode().setOnMouseClicked(onMouseClick);
-        mScrollPanel = new ScrollPane(mViewer.getNode());
+        mScrollPanel.setContent((Node) mViewer);
 
-        mSimulatorContext = new SimulatorContext();
-
-        mExecutorCommands = new ExecutorSimulatorCommands();
-
-        AnchorPane.setTopAnchor(mScrollPanel, 38D);
-        AnchorPane.setLeftAnchor(mScrollPanel, 0D);
-        AnchorPane.setRightAnchor(mScrollPanel, 0D);
-        AnchorPane.setBottomAnchor(mScrollPanel, 222D);
         mViewer.getNode().minHeightProperty().bind(mScrollPanel.heightProperty());
         mViewer.getNode().minWidthProperty().bind(mScrollPanel.widthProperty());
-        getChildren().add(mScrollPanel);
 
         mSimulatorContext.setmPathLabel(new Label(""));
-        mSimulatorContext.getmPathLabel().setPrefHeight(22);
-        AnchorPane.setLeftAnchor(mSimulatorContext.getmPathLabel(), 0D);
-        AnchorPane.setRightAnchor(mSimulatorContext.getmPathLabel(), 0D);
-        AnchorPane.setBottomAnchor(mSimulatorContext.getmPathLabel(), 200D);
-        getChildren().add(mSimulatorContext.getmPathLabel());
 
-        mBtnStart = new Button("Start");
         mBtnStart.setOnAction((ActionEvent e) -> {
             start();
         });
 
-        mBtnUnmakeStep = new Button("Previous Step");
         mBtnUnmakeStep.setOnAction((ActionEvent e) -> {
             if (!mSimulatorContext.getmCurrentState().isInitial()) {
                 mExecutorCommands.unmakeOperation();
                 mSteps.remove(mSteps.size() - 1);
-            }
-            else {
+            } else {
                 JOptionPane.showMessageDialog(null, "Initial state reached!", "Invalid Operation", JOptionPane.ERROR_MESSAGE);
             }
         });
 
-        mBtnMakeStep = new Button("Random Step");
         mBtnMakeStep.setOnAction((ActionEvent e) -> {
 
             State mCurrentState = mSimulatorContext.getmCurrentState();
@@ -159,33 +153,15 @@ public class SimulatorWindow extends AnchorPane implements Window {
             }
         });
 
-
-
-        mToolbar = new ToolBar();
-        mToolbar.getItems().addAll(mBtnStart, mBtnMakeStep, mBtnUnmakeStep);
-        AnchorPane.setTopAnchor(mToolbar, 0D);
-        AnchorPane.setLeftAnchor(mToolbar, 0D);
-        AnchorPane.setRightAnchor(mToolbar, 0D);
-        getChildren().add(mToolbar);
-
-        mTableView = new TableView();
-        mTableView.setPrefHeight(200);
-        AnchorPane.setLeftAnchor(mTableView, 0D);
-        AnchorPane.setRightAnchor(mTableView, 0D);
-        AnchorPane.setBottomAnchor(mTableView, 0D);
-        getChildren().add(mTableView);
-
-        mActionCol = new TableColumn<>("Action");
         mActionCol.setCellValueFactory(new PropertyValueFactory<>("action"));
-        mActionCol.setPrefWidth(100);
-        mFromCol = new TableColumn<>("From");
         mFromCol.setCellValueFactory(new PropertyValueFactory<>("from"));
-        mFromCol.setPrefWidth(100);
-        mToCol = new TableColumn<>("To");
-        mToCol.setPrefWidth(100);
         mToCol.setCellValueFactory(new PropertyValueFactory<>("to"));
-        mTableView.getColumns().addAll(mActionCol, mFromCol, mToCol);
         mTableView.setItems(mSteps);
+    }
+
+    public SimulatorWindow() {
+        mSimulatorContext = new SimulatorContext();
+        mExecutorCommands = new ExecutorSimulatorCommands();
     }
 
     private void start() {
@@ -227,9 +203,9 @@ public class SimulatorWindow extends AnchorPane implements Window {
     }
 
     @Override
-    public void setComponent(Component c) {        
+    public void setComponent(Component c) {
         mViewer.setComponent(c);
-        start();        
+        start();
     }
 
     @Override
@@ -240,7 +216,11 @@ public class SimulatorWindow extends AnchorPane implements Window {
 
     @Override
     public Node getNode() {
-        return this;
+        return mNode;
+    }
+
+    public void setNode(Parent node) {
+        this.mNode = node;
     }
 
 
