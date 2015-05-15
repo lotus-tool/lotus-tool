@@ -3,15 +3,17 @@ package br.uece.lotus.simulator;
 import br.uece.lotus.State;
 import br.uece.lotus.Transition;
 
+import javax.script.ScriptException;
+
 /**
  * Created by erickbs7 on 02/02/15.
  */
 public class SimulatorUtils {
 
-	public static void showChoices(State currentState) {
+	public static void showChoices(State currentState, SimulatorContext mSimulatorContext) {
 		applyEnableStyle(currentState);
 		for (Transition t : currentState.getOutgoingTransitions()) {
-			applyChoiceStyle(t);
+			applyChoiceStyle(t, mSimulatorContext);
 			applyChoiceStyle(t.getDestiny());
 		}
 	}
@@ -63,10 +65,18 @@ public class SimulatorUtils {
 		t.setWidth(1);
 	}
 
-	public static void applyChoiceStyle(Transition t) {
-		t.setColor("blue");
+	public static void applyChoiceStyle(Transition t, SimulatorContext mSimulatorContext) {
+		boolean guardResult = true;
+		try {
+			if (t.getGuard() != null && !t.getGuard().isEmpty()) {
+				guardResult = (boolean) mSimulatorContext.getmEngine().eval(t.getGuard());
+			}
+		} catch (ScriptException e) {
+			e.printStackTrace();
+		}
+		t.setColor(guardResult ? "blue" : "red");
 		t.setTextSyle(Transition.TEXTSTYLE_BOLD);
-		t.setTextColor("blue");
+		t.setTextColor(guardResult ? "blue" : "red");
 		t.setWidth(2);
 	}
 

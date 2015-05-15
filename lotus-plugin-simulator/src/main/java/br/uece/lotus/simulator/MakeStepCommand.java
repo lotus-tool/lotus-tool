@@ -4,6 +4,7 @@ import br.uece.lotus.State;
 import br.uece.lotus.Transition;
 import javafx.scene.control.Label;
 
+import javax.script.ScriptException;
 import java.util.*;
 
 /**
@@ -88,6 +89,12 @@ public class MakeStepCommand implements SimulatorCommand {
 		mTransition.incrementTransitionsCount();
 		mSimulatorContext.setmCurrentState(mState);
 
+		try {
+			mSimulatorContext.getmEngine().eval(t.getLabel());
+		} catch (ScriptException e) {
+			e.printStackTrace();
+		}
+
 		if (mState.isFinal() || mState.isError()) {
 			mSimulatorPathLabel.setText(mSimulatorPathLabel.getText() + " > ENDED");
 			SimulatorUtils.applyEnableStyle(mState);
@@ -95,7 +102,7 @@ public class MakeStepCommand implements SimulatorCommand {
 			mSimulatorPathLabel.setText(mSimulatorPathLabel.getText() + " > DEADLOCK!");
 			SimulatorUtils.applyEnableStyle(mState);
 		} else {
-			SimulatorUtils.showChoices(mState);
+			SimulatorUtils.showChoices(mState, mSimulatorContext);
 		}
 	}
 
@@ -121,7 +128,7 @@ public class MakeStepCommand implements SimulatorCommand {
 		}
 
 		mSimulatorContext.setmCurrentState(mPreviousState);
-		SimulatorUtils.showChoices(mSimulatorCurrentState);
+		SimulatorUtils.showChoices(mSimulatorCurrentState, mSimulatorContext);
 	}
 
 	private Transition selectRandomTransitionByProbability() {
@@ -161,4 +168,5 @@ public class MakeStepCommand implements SimulatorCommand {
 	public String getmPreviousStateLabel() { return mPreviousState.getLabel(); }
 
 	public String getmStateLabel() { return mState.getLabel(); }
+
 }

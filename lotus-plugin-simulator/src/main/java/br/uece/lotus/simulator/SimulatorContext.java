@@ -3,15 +3,28 @@ package br.uece.lotus.simulator;
 import br.uece.lotus.State;
 import javafx.scene.control.Label;
 
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+
 /**
  * Created by erickbs7 on 04/02/15.
  */
 public class SimulatorContext {
+
+	private final ScriptEngine mEngine;
 	private State mCurrentState;
 	private Label mPathLabel;
 	private int mStepCount;
 
+	public ScriptEngine getmEngine() {
+		return mEngine;
+	}
 
+	public SimulatorContext() {
+		ScriptEngineManager manager = new ScriptEngineManager();
+		mEngine = manager.getEngineByName("JavaScript");
+	}
+	
 	public State getmCurrentState() {
 		return mCurrentState;
 	}

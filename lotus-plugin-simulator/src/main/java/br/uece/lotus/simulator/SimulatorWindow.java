@@ -44,6 +44,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 
+import javax.script.ScriptEngine;
 import javax.swing.*;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -112,6 +113,7 @@ public class SimulatorWindow extends AnchorPane implements Window, Initializable
 
     private final ObservableList<Step> mSteps = FXCollections.observableArrayList();
     private Node mNode;
+    private ScriptEngine mEngine;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -192,9 +194,11 @@ public class SimulatorWindow extends AnchorPane implements Window, Initializable
             SimulatorUtils.applyDisabledStyle(t);
         }
 
-        SimulatorUtils.showChoices(mSimulatorContext.getmCurrentState());
+        SimulatorUtils.showChoices(mSimulatorContext.getmCurrentState(), mSimulatorContext);
         mSteps.add(new Step("", "", mSimulatorContext.getmCurrentState().getLabel()));
         mSimulatorContext.getmPathLabel().setText(mSimulatorContext.getmCurrentState().getLabel());
+
+        mSimulatorContext.getmEngine().getContext();
     }
 
     @Override
