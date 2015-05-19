@@ -29,6 +29,7 @@ import br.uece.seed.ext.ExtensionManager;
 import br.uece.seed.ext.Plugin;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import javafx.stage.FileChooser;
 import javax.swing.JOptionPane;
@@ -75,6 +76,15 @@ public class ProjectDialogsHelper extends Plugin {
             mDialogsHelper.showException(e);
         }
         return p;
+    }
+    
+    public File findXMI(String title, String extensionDescription, String extension) throws FileNotFoundException{
+        File file = getFileChooser(title, extensionDescription, extension, null).showOpenDialog(null);
+        if(file == null){
+            return null;
+        }
+        
+        return file;
     }
 
     private void realSave(Project project, ProjectSerializer serializer, boolean forceShowDialog, boolean cacheFileName, String title, String extensionDescription, String extension) {
