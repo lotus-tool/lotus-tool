@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox prefHeight="440.0" prefWidth="652.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="br.uece.lotus.simulator.SimulatorWindow">
+   <children>
+      <ToolBar fx:id="mToolbar" prefHeight="40.0" prefWidth="200.0" VBox.vgrow="NEVER">
+        <items>
+          <Button fx:id="mBtnStart" mnemonicParsing="false" text="Restart" />
+            <Button fx:id="mBtnMakeStep" mnemonicParsing="false" text="Random Step" />
+            <Button fx:id="mBtnUnmakeStep" mnemonicParsing="false" text="Previous Step" />
+        </items>
+      </ToolBar>
+      <ScrollPane fx:id="mScrollPanel" prefViewportHeight="200.0" prefViewportWidth="652.0" VBox.vgrow="ALWAYS">
+         <VBox.margin>
+            <Insets left="5.0" right="5.0" top="5.0" />
+         </VBox.margin>
+      </ScrollPane>
+      <TabPane prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" VBox.vgrow="NEVER">
+        <tabs>
+          <Tab text="Traces">
+            <content>
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <TableView fx:id="mTableView" layoutX="68.0" layoutY="-24.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                          <columns>
+                            <TableColumn fx:id="mActionCol" prefWidth="75.0" text="Action" />
+                            <TableColumn fx:id="mFromCol" prefWidth="75.0" text="From" />
+                              <TableColumn fx:id="mToCol" prefWidth="75.0" text="To" />
+                          </columns>
+                        </TableView>
+                     </children>
+                     <padding>
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                     </padding>
+                  </AnchorPane>
+            </content>
+          </Tab>
+          <Tab text="Variables">
+            <content>
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <TableView layoutX="14.0" layoutY="14.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                          <columns>
+                            <TableColumn prefWidth="204.0" text="Name" />
+                            <TableColumn minWidth="0.0" prefWidth="427.0" text="Value" />
+                          </columns>
+                        </TableView>
+                     </children>
+                     <padding>
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                     </padding></AnchorPane>
+            </content>
+          </Tab>
+            <Tab text="Console">
+              <content>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <TextArea layoutX="105.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                     </children>
+                     <padding>
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                     </padding>
+                  </AnchorPane>
+              </content>
+            </Tab>
+        </tabs>
+         <VBox.margin>
+            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+         </VBox.margin>
+      </TabPane>
+   </children>
+</VBox>

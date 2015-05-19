@@ -28,7 +28,6 @@ import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.layout.Region;
-import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 
 public class StateViewImpl extends Region implements StateView, State.Listener {
@@ -95,7 +94,7 @@ public class StateViewImpl extends Region implements StateView, State.Listener {
         mCircle.setStyle(style);
 
         if (mState.isFinal()) {
-            mSecondCircle.setStroke(Color.BLACK);
+            mSecondCircle.setStyle(style);
         }
 
         style = "-fx-text-fill: " + (mState.getTextColor() == null ? "black" : mState.getTextColor()) + ";";

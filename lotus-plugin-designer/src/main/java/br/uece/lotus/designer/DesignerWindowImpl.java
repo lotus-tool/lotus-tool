@@ -395,7 +395,33 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
         Tooltip.install(mBtnZoom, zoomInfo);
         mBtnZoom.getItems().add(zoomHBox);
 
-        mToolbar.getItems().addAll(mBtnArrow, mBtnState, mBtnTransitionLine, mBtnTransitionArc, mBtnEraser, mBtnHand, mBtnZoom, mBtnBigState);
+        TextField txtLabel = new TextField();
+        txtLabel.setPromptText("action");
+        txtLabel.setOnAction(event -> {
+            Object obj = getSelectedView();
+            if (obj instanceof TransitionView) {
+                ((TransitionView) obj).getTransition().setLabel(txtLabel.getText());
+            }
+        });
+        TextField txtGuard = new TextField();
+        txtGuard.setPromptText("guard");
+        txtGuard.setOnAction(event -> {
+            Object obj = getSelectedView();
+            if (obj instanceof TransitionView) {
+                ((TransitionView) obj).getTransition().setGuard(txtGuard.getText());
+            }
+        });
+
+        addListener(v -> {
+            Object obj = v.getSelectedView();
+            if (obj instanceof TransitionView) {
+                Transition t = ((TransitionView) obj).getTransition();
+                txtGuard.setText(t.getGuard());
+                txtLabel.setText(t.getLabel());
+            }
+        });
+
+        mToolbar.getItems().addAll(mBtnArrow, mBtnState, mBtnTransitionLine, mBtnTransitionArc, mBtnEraser, mBtnHand, mBtnZoom, mBtnBigState, new Separator(), txtGuard, txtLabel);
 
         mStateToolbar = new ToolBar();
         mStateToolbar.setVisible(false);

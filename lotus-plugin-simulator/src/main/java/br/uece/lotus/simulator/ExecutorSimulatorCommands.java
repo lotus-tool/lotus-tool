@@ -1,5 +1,7 @@
 package br.uece.lotus.simulator;
 
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
 import java.util.Deque;
 import java.util.LinkedList;
 
