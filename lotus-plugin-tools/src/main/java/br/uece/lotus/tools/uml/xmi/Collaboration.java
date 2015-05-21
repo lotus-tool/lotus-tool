@@ -16,9 +16,19 @@ public class Collaboration {
     private String xmiIDcollaboration;
     private List<NamespaceOwnedElement> grupoCollaboration;
     private List<Interaction> grupoMessagens;
+    private List<InteractionFragments> grupoLoopOrFluxo;
 
+    
     public Collaboration(String xmiIDcollaboration) {
         this.xmiIDcollaboration = xmiIDcollaboration;
+    }
+
+    public List<InteractionFragments> getGrupoLoopOrFluxo() {
+        return grupoLoopOrFluxo;
+    }
+
+    public void setGrupoLoopOrFluxo(List<InteractionFragments> grupoLoopOrFluxo) {
+        this.grupoLoopOrFluxo = grupoLoopOrFluxo;
     }
 
     public String getXmiIDcollaboration() {

@@ -11,11 +11,12 @@ package br.uece.lotus.tools.uml.xmi;
  */
 public class AtorAndClasse {
     
-    private String nome,xmiID;
+    private String nome,xmiID,tipo;
     
-    public AtorAndClasse(String nome, String xmiID){
+    public AtorAndClasse(String nome, String xmiID, String tipo){
         this.nome = nome;
         this.xmiID = xmiID;
+        this.tipo = tipo;
     }
 
     public String getNome() {
@@ -33,7 +34,12 @@ public class AtorAndClasse {
     public void setXmiID(String xmiID) {
         this.xmiID = xmiID;
     }
-    
-    
-    
+
+    public String getTipo() {
+        return tipo;
+    }
+
+    public void setTipo(String tipo) {
+        this.tipo = tipo;
+    }
 }
