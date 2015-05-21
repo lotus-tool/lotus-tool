@@ -687,6 +687,7 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
                 ultimoInstanteX = 0;
                 ultimoInstanteY = 0;
                 segundaVezEmDiante = false;
+                //selecioneiComShift=false;
 
 
                 if (e.isShiftDown()) {
@@ -695,8 +696,15 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
                 }
 
                 if (downShift && mComponentSobMouse != null) {
+
                     StateView stateView = (StateView) mComponentSobMouse;
                     State state = stateView.getState();
+
+                    for(State s : statesSelecionados){
+                        if(s==state){
+                            return;
+                        }
+                    }
                     state.setBorderWidth(2);
                     state.setBorderColor("blue");
                     state.setTextColor("blue");
@@ -830,9 +838,16 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
                 return;
             }
             if (mModoAtual == MODO_NENHUM) {
-                if ((StatesSelecionadoPeloRetangulo || selecionadoUm) && !selecaoPadrao) {
+                if ((StatesSelecionadoPeloRetangulo || selecionadoUm ) && !selecaoPadrao) {
+//                        if(selecioneiComShift){
+//                            System.out.println("retornou?");
+//                            //selecioneiComShift=false;
+//                            return;
+//                        }
 
-                    if (!segundaVezEmDiante) {
+                    if (!segundaVezEmDiante //&& downShift
+                     ) {
+                        System.out.println("primeira vez");
                         variacaoX = t.getX() - coordenadaInicialX;
                         variacaoY = t.getY() - coordenadaInicialY;
                         segundaVezEmDiante = true;
@@ -840,6 +855,7 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
                         ultimoInstanteY = t.getY();
 
                     } else {
+                        System.out.println("seunda vez");
                         variacaoX = (t.getX() - ultimoInstanteX);
                         variacaoY = (t.getY() - ultimoInstanteY);
                         ultimoInstanteX = t.getX();
@@ -854,6 +870,8 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
                 } else {
 
                     if (modoCriacaoDoRetangulo) {
+                        System.out.println("entra aqui 1");
+
                         auxA = true;
 
                         coornenadaIstanteX = t.getX();
@@ -914,6 +932,7 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
                         if (!(mComponentSobMouse instanceof StateView) || !selecaoPadrao) {
                             return;
                         }
+                        System.out.println("entra aqui 2");
 
                         State s = ((StateView) mComponentSobMouse).getState();
                         s.setLayoutX(t.getX() + variacaoXCliqueMouseComOCantoSuperiorEsquerdoVertice - RAIO_CIRCULO);
@@ -1243,9 +1262,11 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
         if (t != null) {
             applySelectedStyles(mComponentSelecionado);
         }
-        for (Listener l : mListeners) {
-            l.onSelectionChange(this);
-        }
+        System.out.println("chegou aqui ");
+
+//        for (Listener l : mListeners) {
+//            l.onSelectionChange(this);
+//        }
     }
 
     public Object getSelectedView() {
