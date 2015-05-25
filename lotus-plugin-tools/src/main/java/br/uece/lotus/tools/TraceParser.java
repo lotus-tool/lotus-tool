@@ -116,14 +116,8 @@ public class TraceParser {
 
     }
 
-    new
-
-    LTSALayouter()
-
-    .
-
-    layout(mComponent);
-
+   // new LTSALayouter().layout(mComponent);
+        new TreeLayouter().layout(mComponent);
     mComponent.setName("Untitled");
     return mComponent;
 }
