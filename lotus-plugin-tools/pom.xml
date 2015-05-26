@@ -17,6 +17,11 @@
             <artifactId>lotus-api</artifactId>
             <version>2.13_alpha-SNAPSHOT</version>
         </dependency>
+        <dependency>
+            <groupId>br.uece.lotus</groupId>
+            <artifactId>lotus-plugin-designer</artifactId>
+            <version>2.13_alpha-SNAPSHOT</version>
+        </dependency>
     </dependencies>
     
 </project>
