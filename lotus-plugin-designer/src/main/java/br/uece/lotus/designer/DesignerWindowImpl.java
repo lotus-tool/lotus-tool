@@ -411,6 +411,18 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
                 ((TransitionView) obj).getTransition().setGuard(txtGuard.getText());
             }
         });
+        TextField txtProbability = new TextField();
+        txtProbability.setPromptText("probability");
+        txtProbability.setOnAction(event -> {
+            Object obj = getSelectedView();
+            if (obj instanceof TransitionView) {
+                try {
+                    ((TransitionView) obj).getTransition().setProbability(Double.parseDouble(txtProbability.getText()));
+                } catch (Exception e) {
+                    //ignora
+                }
+            }
+        });
 
         addListener(v -> {
             Object obj = v.getSelectedView();
@@ -418,10 +430,11 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
                 Transition t = ((TransitionView) obj).getTransition();
                 txtGuard.setText(t.getGuard());
                 txtLabel.setText(t.getLabel());
+                txtProbability.setText(t.getProbability() == null ? "" : t.getProbability().toString());
             }
         });
 
-        mToolbar.getItems().addAll(mBtnArrow, mBtnState, mBtnTransitionLine, mBtnTransitionArc, mBtnEraser, mBtnHand, mBtnZoom, mBtnBigState, new Separator(), txtGuard, txtLabel);
+        mToolbar.getItems().addAll(mBtnArrow, mBtnState, mBtnTransitionLine, mBtnTransitionArc, mBtnEraser, mBtnHand, mBtnZoom, mBtnBigState, new Separator(), txtGuard, txtProbability, txtLabel);
 
         mStateToolbar = new ToolBar();
         mStateToolbar.setVisible(false);
