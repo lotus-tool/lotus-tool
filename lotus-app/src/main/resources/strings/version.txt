@@ -1,6 +1,0 @@
-LoTuS
-
-Version 2.0 alpha
-Website <a href="http://jeri.larces.uece.br/~lotus">http://jeri.larces.uece.br/~lotus</a>
-
-2013 ~ 2014
