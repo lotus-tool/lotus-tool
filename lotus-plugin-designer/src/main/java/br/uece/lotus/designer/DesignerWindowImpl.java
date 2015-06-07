@@ -793,7 +793,7 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
                                 }
 
                                 statesSelecionados.clear();
-                                System.out.println("Removendo estilo selecionado state/trans");
+                                //System.out.println("Removendo estilo selecionado state/trans");
                                 Object v = getSelectedView();
                                 if(v instanceof TransitionView){
                                     removeSelectedStyles(v);
@@ -860,7 +860,7 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
 
                     if (!segundaVezEmDiante //&& downShift
                      ) {
-                        System.out.println("primeira vez");
+                        //System.out.println("primeira vez");
                         variacaoX = t.getX() - coordenadaInicialX;
                         variacaoY = t.getY() - coordenadaInicialY;
                         segundaVezEmDiante = true;
@@ -868,7 +868,7 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
                         ultimoInstanteY = t.getY();
 
                     } else {
-                        System.out.println("seunda vez");
+                        //System.out.println("seunda vez");
                         variacaoX = (t.getX() - ultimoInstanteX);
                         variacaoY = (t.getY() - ultimoInstanteY);
                         ultimoInstanteX = t.getX();
@@ -883,7 +883,7 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
                 } else {
 
                     if (modoCriacaoDoRetangulo) {
-                        System.out.println("entra aqui 1");
+                        //System.out.println("entra aqui 1");
 
                         auxA = true;
 
@@ -945,7 +945,7 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
                         if (!(mComponentSobMouse instanceof StateView) || !selecaoPadrao) {
                             return;
                         }
-                        System.out.println("entra aqui 2");
+                        //System.out.println("entra aqui 2");
 
                         State s = ((StateView) mComponentSobMouse).getState();
                         s.setLayoutX(t.getX() + variacaoXCliqueMouseComOCantoSuperiorEsquerdoVertice - RAIO_CIRCULO);
@@ -1275,7 +1275,7 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
         if (t != null) {
             applySelectedStyles(mComponentSelecionado);
         }
-        System.out.println("chegou aqui ");
+        //System.out.println("chegou aqui ");
 
 //        for (Listener l : mListeners) {
 //            l.onSelectionChange(this);
@@ -1287,7 +1287,7 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
     }
 
     private void applySelectedStyles(Object v) {
-        System.out.println("applyselectedstyles " + v);
+        //System.out.println("applyselectedstyles " + v);
         if (v instanceof StateView) {
             State s = ((StateView) v).getState();
             s.setBorderWidth(2);
@@ -1304,7 +1304,7 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
     }
 
     private void removeSelectedStyles(Object v) {
-        System.out.println("removeselectedstyles " + v);
+       // System.out.println("removeselectedstyles " + v);
         if (v instanceof StateView) {
             State s = ((StateView) v).getState();
             if (s == null){
@@ -1339,8 +1339,8 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
         double deltaX, deltaY;
 //        mX = mX - RAIO_CIRCULO;
 //        mY = mY - RAIO_CIRCULO;
-        System.out.println("varuacaoX-raio" + mX);
-        System.out.println("varuacaoY-raio" + mY);
+        //System.out.println("varuacaoX-raio" + mX);
+        //System.out.println("varuacaoY-raio" + mY);
 //        System.out.println("mX" + mX);
 //        System.out.println("mY" + mY);
 //        System.out.println("posX" + posX);
@@ -1366,8 +1366,8 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
 
         v.setLayoutX(v.getLayoutX() + mX);
         v.setLayoutY(v.getLayoutY() + mY);
-        System.out.println(v.getLayoutX());
-        System.out.println(v.getLayoutY());
+        //System.out.println(v.getLayoutX());
+        //System.out.println(v.getLayoutY());
     }
 
     public void addListener(Listener l) {
