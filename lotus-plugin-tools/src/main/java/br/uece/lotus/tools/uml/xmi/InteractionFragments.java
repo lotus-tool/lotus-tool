@@ -13,34 +13,13 @@ import java.util.List;
  */
 public class InteractionFragments {
     
-    private String name,operator;
-    private List<String> ClassifierRoleLoopOrAlt;
+    private List<CombinedFragments> combinedFrags;
 
-    public String getName() {
-        return name;
+    public List<CombinedFragments> getCombinedFrags() {
+        return combinedFrags;
     }
 
-    public String getOperator() {
-        return operator;
+    public void setCombinedFrags(List<CombinedFragments> combinedFrags) {
+        this.combinedFrags = combinedFrags;
     }
-
-    public void setOperator(String operator) {
-        this.operator = operator;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public List<String> getClassifierRoleLoopOrAlt() {
-        return ClassifierRoleLoopOrAlt;
-    }
-
-    public void setClassifierRoleLoopOrAlt(List<String> ClassifierRoleLoopOrAlt) {
-        this.ClassifierRoleLoopOrAlt = ClassifierRoleLoopOrAlt;
-    }
-
-    
-    
-    
 }

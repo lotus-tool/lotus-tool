@@ -14,14 +14,23 @@ import br.uece.lotus.tools.uml.xmi.AtorAndClasse;
 public class Mensagem {
     private AtorAndClasse enviando;
     private AtorAndClasse recebendo;
-    private String label;
-    
-    public String getLabel() {
-        return label;
+    private String msg, xmiIdMsg;
+
+
+    public String getXmiIdMsg() {
+        return xmiIdMsg;
     }
 
-    public void setLabel(String label) {
-        this.label = label;
+    public void setXmiIdMsg(String xmiIdMsg) {
+        this.xmiIdMsg = xmiIdMsg;
+    }
+
+    public String getMsg() {
+        return msg;
+    }
+
+    public void setMsg(String label) {
+        this.msg = label;
     }
 
     

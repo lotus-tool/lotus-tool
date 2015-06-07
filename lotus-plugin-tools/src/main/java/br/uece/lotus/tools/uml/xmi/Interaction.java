@@ -12,17 +12,27 @@ package br.uece.lotus.tools.uml.xmi;
 public class Interaction {
     
     private String xmiIDREFcollaboration; //Aponta para a Collaboration dele
-    private String nomeMensagem,enviando,recebendo;
+    private String xmiIDMsg,nomeMensagem,enviando,recebendo;
 
-    public Interaction(String xmiIDREFcollaboration, String nomeMensagem, String enviando, String recebendo) {
+    public Interaction(String xmiIDREFcollaboration, String xmiIDMsg, String nomeMensagem, String enviando, String recebendo) {
         this.xmiIDREFcollaboration = xmiIDREFcollaboration;
+        this.xmiIDMsg = xmiIDMsg;
         this.nomeMensagem = nomeMensagem;
         this.enviando = enviando;
         this.recebendo = recebendo;
     }
+    
 
     public String getXmiIDREFcollaboration() {
         return xmiIDREFcollaboration;
+    }
+
+    public String getXmiIDMsg() {
+        return xmiIDMsg;
+    }
+
+    public void setXmiIDMsg(String xmiIDMsg) {
+        this.xmiIDMsg = xmiIDMsg;
     }
 
     public void setXmiIDREFcollaboration(String xmiIDREFcollaboration) {

@@ -13,12 +13,20 @@ public class AtorAndClasse {
     
     private String nome,xmiID,tipo;
     
-    public AtorAndClasse(String nome, String xmiID, String tipo){
+    public AtorAndClasse(String nome, String xmiID, String tipo) {
         this.nome = nome;
         this.xmiID = xmiID;
         this.tipo = tipo;
     }
 
+    public String getTipo() {
+        return tipo;
+    }
+
+    public void setTipo(String tipo) {
+        this.tipo = tipo;
+    }
+    
     public String getNome() {
         return nome;
     }
@@ -33,13 +41,5 @@ public class AtorAndClasse {
 
     public void setXmiID(String xmiID) {
         this.xmiID = xmiID;
-    }
-
-    public String getTipo() {
-        return tipo;
-    }
-
-    public void setTipo(String tipo) {
-        this.tipo = tipo;
     }
 }

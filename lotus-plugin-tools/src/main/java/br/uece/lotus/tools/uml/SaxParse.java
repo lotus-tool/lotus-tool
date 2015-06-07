@@ -7,8 +7,10 @@ package br.uece.lotus.tools.uml;
 
 import br.uece.lotus.tools.uml.xmi.AtorAndClasse;
 import br.uece.lotus.tools.uml.xmi.Collaboration;
+import br.uece.lotus.tools.uml.xmi.CombinedFragments;
 import br.uece.lotus.tools.uml.xmi.Interaction;
 import br.uece.lotus.tools.uml.xmi.InteractionFragments;
+import br.uece.lotus.tools.uml.xmi.InteractionOperand;
 import br.uece.lotus.tools.uml.xmi.NamespaceOwnedElement;
 import java.io.File;
 import java.io.IOException;
@@ -63,7 +65,7 @@ public class SaxParse extends DefaultHandler{
         System.out.println("\nFim do Parsing...");
         
         for(AtorAndClasse aac : atoresAndClasses){
-            System.out.println("\nIndividuo: "+ aac.getNome()+ " xmi.id = "+aac.getXmiID());
+            System.out.println("\nIndividuo: "+ aac.getNome()+ " xmi.id = "+aac.getXmiID()+"  tipo: "+aac.getTipo());
         }
         for(NamespaceOwnedElement noe : elementos){
             System.out.println("\nClassifierRole: "+noe.getXmiIDClassifierRole()+"\nClassifierRoleBase: "+noe.getXmiIDREFclassifierBase());
@@ -72,12 +74,22 @@ public class SaxParse extends DefaultHandler{
             System.out.println("\nOrigem: "+ i.getEnviando()+"\n"+
                                 "Destino: "+ i.getRecebendo()+"\n"+
                                 "Menssagem: "+ i.getNomeMensagem()+"\n"+
+                                "Xmi.Id: "+i.getXmiIDMsg()+"\n"+
                                 "IDInteracao: "+ i.getXmiIDREFcollaboration()+"\n");
         }
         for(InteractionFragments inf : loopsOuFluxos){
-            System.out.println("\n(Nome): "+inf.getName()+" (Operator): "+inf.getOperator());
-            for(String idref : inf.getClassifierRoleLoopOrAlt()){
-                System.out.println("\nClassifierIDREF: "+idref);
+            for(CombinedFragments comb : inf.getCombinedFrags()){
+                System.out.println("\nCombinedFragments: "+comb.getXmiIdCombinedFragment()+"  Operator: "+comb.getOperator());
+                for(InteractionOperand intop : comb.getInteractionOperands()){
+                    System.out.println("InteractionOperand: "+intop.getXmiIdIteractionOperand());
+                    System.out.println("------------Msg-----&&----Operand Frags---------");
+                    for(String s : intop.getXmiIdRefMsg()){
+                        System.out.println("MensagemId: "+s);
+                    }
+                    for(String s : intop.getInteractionOperandFrags()){
+                        System.out.println("CombinedFrag: "+s);
+                    }
+                }
             }
         }
     }
@@ -94,12 +106,15 @@ public class SaxParse extends DefaultHandler{
     private boolean interactionContextTagAberta = false, interactionMessageTagAberta = false;
     private String idREFinteractionToCollaboration;
     private boolean messageTagAberta = false, messageSenderTagAberta = false, messageReceiverTagAberta = false;
-    private String msg, envia,recebe;
+    private String xmiIdMsg,msg,envia,recebe;
     private boolean atributosMaisDe1Message = false;
     //////////////////////////////////////////////////////////////////////////////////////
-    private boolean interactionFragTagAberta = false, combinedFragTagAberta = false;
-    private String nomeLoopOuFluxo, operator;
-    private List<String> classifierRoleLoopsOuAlt = new ArrayList<>();
+    private int controleTag = 0;
+    private String xmiIdCombinedFrag = "", operator = "", xmiIdInteractionOperand = "";
+    private List<String> xmiIdRefMsg = new ArrayList<>();
+    private List<String> combinedFragIdRef = new ArrayList<>();//blocos dentro de bloco
+    private List<InteractionOperand> interactionOperands = new ArrayList<>();
+    private List<CombinedFragments> combinedFragments = new ArrayList<>();
     //////////////////////////////////////////////////////////////////////////////////////
     @Override
     public void startElement(String uri, String localName, String qName, Attributes atts) {
@@ -110,7 +125,7 @@ public class SaxParse extends DefaultHandler{
         }
         //extraindo atores e classes
         if((tagAtual.equals("UML:Actor") || tagAtual.equals("UML:Class")) && !packageInvalido.equals("UML:Package")){
-            AtorAndClasse acc = new AtorAndClasse("", "", "");
+            AtorAndClasse acc = new AtorAndClasse("", "","");
             if(tagAtual.equals("UML:Actor")){
                 acc.setNome(atts.getValue("name"));
                 acc.setXmiID(atts.getValue("xmi.id"));
@@ -135,7 +150,7 @@ public class SaxParse extends DefaultHandler{
             atributosMaisDe1Role = true;
             classifierRoleID = atts.getValue("xmi.id");
             if(!atts.getValue("name").equals("")){
-                AtorAndClasse aac2 = new AtorAndClasse(atts.getValue("name"), atts.getValue("xmi.id"),"class");
+                AtorAndClasse aac2 = new AtorAndClasse(atts.getValue("name"), atts.getValue("xmi.id"), "class");
                 NamespaceOwnedElement noe2 = new NamespaceOwnedElement(atts.getValue("xmi.id"), atts.getValue("xmi.id"));
                 atoresAndClasses.add(aac2);
                 elementos.add(noe2);
@@ -169,6 +184,7 @@ public class SaxParse extends DefaultHandler{
             atributosMaisDe1Message = true;
             messageTagAberta = true;
             msg = atts.getValue("name");
+            xmiIdMsg = atts.getValue("xmi.id");
         }
         if(tagAtual.equals("UML:Message.sender") && messageTagAberta){
             messageSenderTagAberta = true;
@@ -186,15 +202,22 @@ public class SaxParse extends DefaultHandler{
         }
         //----------------------------------Loops e Alts----------------------------------------------
         if(tagAtual.equals("UML:Interaction.fragments")){
-            interactionFragTagAberta = true;
+            controleTag++;
         }
-        if(tagAtual.equals("UML:CombinedFragment") && interactionFragTagAberta){
-            combinedFragTagAberta = true;
-            nomeLoopOuFluxo = atts.getValue("name");
+        if(tagAtual.equals("UML:CombinedFragment") && controleTag==1){
+            controleTag++;
+            xmiIdCombinedFrag = atts.getValue("xmi.id");
             operator = atts.getValue("operator");
         }
-        if(tagAtual.equals("UML:ClassifierRole") && combinedFragTagAberta){
-            classifierRoleLoopsOuAlt.add(atts.getValue("xmi.idref"));
+        if(tagAtual.equals("UML:InteractionOperand") && controleTag==2){
+            controleTag++;
+            xmiIdInteractionOperand = atts.getValue("xmi.id");
+        }
+        if(tagAtual.equals("UML:Message") && controleTag==3){
+            xmiIdRefMsg.add(atts.getValue("xmi.idref"));
+        }
+        if(tagAtual.equals("UML:CombinedFragment") && controleTag==3){
+            combinedFragIdRef.add(atts.getValue("xmi.idref"));
         }
     }
     
@@ -204,35 +227,50 @@ public class SaxParse extends DefaultHandler{
         if("UML:Package".equals(qName)){
             packageInvalido = "";
         }
-        
-        if("UML:CombinedFragment".equals(qName) && interactionFragTagAberta){
-            combinedFragTagAberta = false;
+        if("UML:InteractionOperand".equals(qName) && controleTag==3){
+            controleTag--;
+            InteractionOperand io = new InteractionOperand(xmiIdInteractionOperand, null, null);
+            List<String> aux1 = new ArrayList<>();
+            List<String> aux2 = new ArrayList<>();
+            aux1.addAll(xmiIdRefMsg);
+            aux2.addAll(combinedFragIdRef);
+            io.setXmiIdRefMsg(aux1);
+            io.setInteractionOperandFrags(aux2);
+            interactionOperands.add(io);
+            xmiIdRefMsg.clear();
+            combinedFragIdRef.clear();
+        }
+        if("UML:CombinedFragment".equals(qName) && controleTag==2){
+            controleTag--;
+            CombinedFragments combFrag = new CombinedFragments(xmiIdCombinedFrag, operator, null);
+            List<InteractionOperand> aux = new ArrayList<>();
+            aux.addAll(interactionOperands);
+            combFrag.setInteractionOperands(aux);
+            combinedFragments.add(combFrag);
+            interactionOperands.clear();
+        }
+        if("UML:Interaction.fragments".equals(qName) && controleTag==1){
+            controleTag--;
+            List<CombinedFragments> aux = new ArrayList<>();
+            aux.addAll(combinedFragments);
             InteractionFragments inf = new InteractionFragments();
-            inf.setName(nomeLoopOuFluxo);
-            inf.setOperator(operator);
-            inf.setClassifierRoleLoopOrAlt(classifierRoleLoopsOuAlt);
+            inf.setCombinedFrags(aux);
             loopsOuFluxos.add(inf);
+            combinedFragments.clear();
         }
-        
-        if("UML:Interaction.fragments".equals(qName)){
-            interactionFragTagAberta = false;
-        }
-        
         if("UML:Message".equals(qName) && interactionMessageTagAberta && atributosMaisDe1Message){
             messageTagAberta = false;
             atributosMaisDe1Message = false;
-            Interaction inter = new Interaction(idREFinteractionToCollaboration, msg, envia, recebe);
+            Interaction inter = new Interaction(idREFinteractionToCollaboration, xmiIdMsg, msg, envia, recebe);
             interacoes.add(inter);
             msg = "";
             envia = "";
             recebe = "";
         }
-        
         if("UML:Interaction.message".equals(qName)){
             idREFinteractionToCollaboration = "";
             interactionMessageTagAberta = false;
         }
-        
         if("UML:Collaboration".equals(qName) && atributosMaisDe1collaboration){
             collaborationTagAberta = false;
             atributosMaisDe1collaboration = false;
@@ -244,5 +282,4 @@ public class SaxParse extends DefaultHandler{
             collaborationID = "";
         }
     }
-    
 }

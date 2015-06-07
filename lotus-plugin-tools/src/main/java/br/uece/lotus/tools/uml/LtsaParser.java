@@ -8,8 +8,12 @@ package br.uece.lotus.tools.uml;
 import br.uece.lotus.Component;
 import br.uece.lotus.State;
 import br.uece.lotus.Transition;
+import br.uece.lotus.tools.uml.xmi.CombinedFragments;
 import br.uece.lotus.tools.uml.xmi.InteractionFragments;
+import br.uece.lotus.tools.uml.xmi.InteractionOperand;
 import br.uece.lotus.viewer.TransitionView;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -19,121 +23,172 @@ import java.util.List;
 public class LtsaParser {
     
     private final List<Mensagem> comunicacao;
-    private final List<TabelaReferenciaID> relativo;
+    private final List<TabelaReferenciaID> relativoClassifier;
     private final List<InteractionFragments> loopsOuAlts;
     private final Component c;
     private static int idDisponivel;
 
-    public LtsaParser(List<Mensagem> comunicacao, List<TabelaReferenciaID> relativo, List<InteractionFragments> loopsOuAlts , Component c) {
+    public LtsaParser(List<Mensagem> comunicacao, List<TabelaReferenciaID> relativoClassifier, List<InteractionFragments> loopsOuAlts , Component c) {
         this.comunicacao = comunicacao;
-        this.relativo = relativo;
+        this.relativoClassifier = relativoClassifier;
         this.loopsOuAlts = loopsOuAlts;
         this.c = c;
-        idDisponivel = this.relativo.size()+1;
+        idDisponivel = this.relativoClassifier.size()+1;
     }
     
     public Component parseLTSA(){
-        State inicial = null;
-        State msgOrig = null,msgDest = null,msgAux = null;
-        String tipoDeDestinoAnterior="";
+        State org = null, dst = null;
+        
+        //=================================Montar linha de vida=================================================
+        
         for(Mensagem m : comunicacao){
-            ///////////////////////////////////Verificando caso Inicial////////////////////////////////////////////////
-            if(inicial == null){
-                inicial = c.newState(0);
-                inicial.setAsInitial();
-                if(m.getRecebendo().getTipo().equals("actor")){
-                    tipoDeDestinoAnterior = "actor";
-                    msgOrig = c.newState(idrelativo(m.getEnviando().getXmiID()));
-                    Transition t = c.newTransition(inicial, msgOrig);
-                    t.setLabel("Resultados Esperados");
-                    msgDest = c.newState(idrelativo(m.getRecebendo().getXmiID()));
-                    Transition t2 = c.newTransition(msgOrig, msgDest);
-                    t2.setLabel(m.getEnviando().getNome()+"."+m.getRecebendo().getNome()+"."+m.getLabel());
-                }
-                else if(m.getRecebendo().getTipo().equals("class")){
-                    tipoDeDestinoAnterior = "class";
-                    msgOrig = c.newState(idrelativo(m.getEnviando().getXmiID()));
-                    Transition t = c.newTransition(inicial, msgOrig);
-                    t.setLabel("Passos");
-                    msgDest = c.newState(idrelativo(m.getRecebendo().getXmiID()));
-                    Transition t2 = c.newTransition(msgOrig, msgDest);
-                    t2.setLabel(m.getEnviando().getNome()+"."+m.getRecebendo().getNome()+"."+m.getLabel());
-                }
-            /////////////////////////////////Depois do inicial ja existir////////////////////////////////////////////////////////////////
+            if(c.getInitialState() == null){
+                org = c.newState(idrelativoClassifier(m.getEnviando().getXmiID()));
+                dst = c.newState(idrelativoClassifier(m.getRecebendo().getXmiID()));
+                c.buildTransition(org, dst)
+                        .setLabel(m.getEnviando().getNome()+"."+m.getRecebendo().getNome()+"."+m.getMsg().replaceAll("\\+", ""))
+                        .create();
             }else{
-                ////////////////////////////////////////////Casos que o Destino nao exista/////////////////////////////////////////////////////
-                if(tipoDeDestinoAnterior.equals(m.getRecebendo().getTipo()) && !stateExiste(c, idrelativo(m.getRecebendo().getXmiID()))){
-                    msgOrig = msgDest;
-                    msgDest = c.newState(idrelativo(m.getRecebendo().getXmiID()));
-                    c.buildTransition(msgOrig, msgDest)
-                           .setLabel(m.getEnviando().getNome()+"."+m.getRecebendo().getNome()+"."+m.getLabel())
-                           .create();
-                }
-                else if(!tipoDeDestinoAnterior.equals(m.getRecebendo().getTipo()) && !stateExiste(c, idrelativo(m.getRecebendo().getXmiID()))){
-                    if("actor".equals(m.getRecebendo().getTipo())){
-                       tipoDeDestinoAnterior = "actor";
-                       msgAux = msgDest;
-                       msgOrig = c.newState(idrelativo(m.getEnviando().getXmiID()));
-                       c.buildTransition(msgAux, msgOrig)
-                               .setLabel("Resultados Esperados")
-                               .create();
-                       msgDest = c.newState(idrelativo(m.getRecebendo().getXmiID()));
-                       c.buildTransition(msgOrig, msgDest)
-                               .setLabel(m.getEnviando().getNome()+"."+m.getRecebendo().getNome()+"."+m.getLabel())
-                               .create();
-                    }
-                    else if("class".equals(m.getRecebendo().getTipo())){
-                        tipoDeDestinoAnterior = "class";
-                        msgAux = msgDest;
-                        msgOrig = c.newState(idrelativo(m.getEnviando().getXmiID()));
-                        c.buildTransition(msgAux, msgOrig)
-                                .setLabel("Passos")
-                                .create();
-                        msgDest = c.newState(idrelativo(m.getRecebendo().getXmiID()));
-                        c.buildTransition(msgOrig, msgDest)
-                                .setLabel(m.getEnviando().getNome()+"."+m.getRecebendo().getNome()+"."+m.getLabel())
-                                .create();
-                    }
-                }
-                /////////////////////////////////////////////Casos que o Destino já exista////////////////////////////////////////////////////
-                else if(tipoDeDestinoAnterior.equals(m.getRecebendo().getTipo()) && stateExiste(c, idrelativo(m.getRecebendo().getXmiID()))){
-                    msgAux = msgDest;
-                    msgDest = c.newState(ultimoIDdisponivel());
-                    c.buildTransition(msgAux, msgDest)
-                            .setLabel(m.getEnviando().getNome()+"."+m.getRecebendo().getNome()+"."+m.getLabel())
+                if(!stateExiste(c, idrelativoClassifier(m.getRecebendo().getXmiID()))){
+                    org = dst;
+                    dst = c.newState(idrelativoClassifier(m.getRecebendo().getXmiID()));
+                    c.buildTransition(org, dst)
+                            .setLabel(m.getEnviando().getNome()+"."+m.getRecebendo().getNome()+"."+m.getMsg().replaceAll("\\+", ""))
                             .create();
                 }
-                else if(!tipoDeDestinoAnterior.equals(m.getRecebendo().getTipo()) && stateExiste(c, idrelativo(m.getRecebendo().getXmiID()))){
-                    if("actor".equals(m.getRecebendo().getTipo())){
-                       tipoDeDestinoAnterior = "actor";
-                       msgAux = msgDest;
-                       msgOrig = c.newState(ultimoIDdisponivel());
-                       c.buildTransition(msgAux, msgOrig)
-                               .setLabel("Resultados Esperados")
-                               .create();
-                       msgDest = c.newState(ultimoIDdisponivel());
-                       c.buildTransition(msgOrig, msgDest)
-                               .setLabel(m.getEnviando().getNome()+"."+m.getRecebendo().getNome()+"."+m.getLabel())
-                               .create();
-                    }
-                    else if("class".equals(m.getRecebendo().getTipo())){
-                        tipoDeDestinoAnterior = "class";
-                        msgAux = msgDest;
-                        msgOrig = c.newState(ultimoIDdisponivel());
-                        c.buildTransition(msgAux, msgOrig)
-                                .setLabel("Passos")
-                                .create();
-                        msgDest = c.newState(ultimoIDdisponivel());
-                        c.buildTransition(msgOrig, msgDest)
-                                .setLabel(m.getEnviando().getNome()+"."+m.getRecebendo().getNome()+"."+m.getLabel())
-                                .create();
-                    }
+                else if(stateExiste(c, idrelativoClassifier(m.getRecebendo().getXmiID()))){
+                    org = dst;
+                    dst = c.newState(ultimoIDdisponivel());
+                    c.buildTransition(org, dst)
+                            .setLabel(m.getEnviando().getNome()+"."+m.getRecebendo().getNome()+"."+m.getMsg().replaceAll("\\+", ""))
+                            .create();
                 }
             }
         }
-        for(State s : c.getStates()){
-            System.out.println(s.getLabel()+"  "+s.getID());
+        
+        //=======================================Loop e Alt ===============================================
+        try{
+            for(InteractionFragments itf : loopsOuAlts){
+                for(CombinedFragments combf : itf.getCombinedFrags()){
+                    switch(combf.getOperator()){
+                        case "loop":{//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                            for(InteractionOperand intop : combf.getInteractionOperands()){
+                                State origem = null , destino = null;
+                                List<Transition> transInterOperand = new ArrayList<>();
+                                for(Mensagem m : comunicacao){
+                                    for(String s : intop.getXmiIdRefMsg()){
+                                        if(m.getXmiIdMsg().equals(s)){
+                                            for(Transition t : c.getTransitions()){
+                                                String msg = m.getEnviando().getNome()+"."+m.getRecebendo().getNome()+"."+m.getMsg().replaceAll("\\+", "");
+                                                if(msg.equals(t.getLabel())){
+                                                    transInterOperand.add(t);
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                                origem = transInterOperand.get(transInterOperand.size()-1).getSource();
+                                destino = transInterOperand.get(0).getSource();
+                                c.buildTransition(origem, destino)
+                                        .setLabel(transInterOperand.get(transInterOperand.size()-1).getLabel())
+                                        .setViewType(TransitionView.Geometry.CURVE)
+                                        .create();
+                                if(transInterOperand.get(transInterOperand.size()-1).getDestiny().getIncomingTransitionsCount()==1 &&
+                                                        transInterOperand.get(transInterOperand.size()-1).getDestiny().getOutgoingTransitionsCount()==0){
+                                    c.remove(transInterOperand.get(transInterOperand.size()-1).getDestiny());
+                                }
+                                else if(transInterOperand.get(transInterOperand.size()-1).getDestiny().getIncomingTransitionsCount()>1 ||
+                                                        transInterOperand.get(transInterOperand.size()-1).getDestiny().getOutgoingTransitionsCount()>0){
+                                    List<Transition> paraRemover = new ArrayList<>();
+                                    State src = transInterOperand.get(transInterOperand.size()-1).getSource();
+                                    State dsty = transInterOperand.get(transInterOperand.size()-1).getDestiny();
+                                    c.remove(transInterOperand.get(transInterOperand.size()-1));
+                                    //arrumando saidas do ultimo
+                                    for(Transition t : dsty.getOutgoingTransitionsList()){
+                                        c.buildTransition(src, t.getDestiny())
+                                                .setLabel(t.getLabel())
+                                                .create();
+                                        paraRemover.add(t);
+                                    }
+                                    //arrumando entradas do ultimo
+                                    for(Transition t : dsty.getIncomingTransitionsList()){
+                                        c.buildTransition(t.getSource(), src)
+                                                .setLabel(t.getLabel())
+                                                .create();
+                                        paraRemover.add(t);
+                                    }
+                                    //removendo transitions dispensadas
+                                    for(Transition t : paraRemover){
+                                        c.remove(t);
+                                    }
+                                    c.remove(dsty);
+                                }
+                                
+                            }
+                        };break;
+                        case "alt":{////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                            State gancho = null;
+                            int i = 0;
+                            HashMap<Integer,List<Transition>> mapa = new HashMap<>();
+                            for(InteractionOperand intop : combf.getInteractionOperands()){
+                                List<Transition> transInterOperand = new ArrayList<>();
+                                for(Mensagem m : comunicacao){
+                                    for(String s : intop.getXmiIdRefMsg()){
+                                        if(m.getXmiIdMsg().equals(s)){
+                                            for(Transition t : c.getTransitions()){
+                                                String msg = m.getEnviando().getNome()+"."+m.getRecebendo().getNome()+"."+m.getMsg().replaceAll("\\+", "");
+                                                if(msg.equals(t.getLabel())){
+                                                    transInterOperand.add(t);
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                                mapa.put(i, transInterOperand);
+                                i++;
+                            }
+                            Transition ligacaoFinal = null;
+                            for(int j=0;j<mapa.size();j++){ // Quebrando os alts
+                                for(int k=0;k<mapa.get(j).size();k++){
+                                    Transition t = mapa.get(j).get(k);
+                                    if(j==0 && k==0){
+                                        gancho = t.getSource();
+                                    }
+                                    else if(j!=0 && k==0){
+                                        c.buildTransition(gancho, t.getDestiny())
+                                                .setLabel(t.getLabel())
+                                                .create();
+                                        c.remove(t);
+                                    }
+                                    //se houver transicao de saida do ultimo
+                                    else if(j==(mapa.size()-1) && k==mapa.get(j).size()-1){
+                                        if(t.getDestiny().getOutgoingTransitionsCount()>0){
+                                            ligacaoFinal = t.getDestiny().getOutgoingTransitionsList().get(0);
+                                        }
+                                    }
+                                }
+                            }
+                            if(ligacaoFinal != null){
+                                for(int j=0;j<mapa.size();j++){ // Arrumando saidas das pontas soltas
+                                    for(int k=0;k<mapa.get(j).size();k++){
+                                        Transition t = mapa.get(j).get(k);
+                                        if(j!=(mapa.size()-1) && k==(mapa.get(j).size()-1)){
+                                            c.buildTransition(t.getSource(), ligacaoFinal.getSource())
+                                                    .setLabel(t.getLabel())
+                                                    .create();
+                                            c.remove(t.getDestiny());
+                                        }
+                                    }
+                                }
+                            }
+                        };break;
+                    }
+                }
+            }
+        }catch(Exception e){
+            e.printStackTrace();
         }
+        
         return c;
     }
     
@@ -148,9 +203,9 @@ public class LtsaParser {
         return existe;
     }
     
-    private int idrelativo(String id){
+    private int idrelativoClassifier(String id){
         int i = 0;
-        for(TabelaReferenciaID tri : relativo){
+        for(TabelaReferenciaID tri : relativoClassifier){
             if(tri.getIdClassOrActor().equals(id)){
                 i=tri.getIdRelativo();
             }
