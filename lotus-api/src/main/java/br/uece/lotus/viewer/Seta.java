@@ -18,7 +18,7 @@ public class Seta extends Polygon {
         Bounds aux = getLocalToSceneTransform().transform(getLayoutBounds());
         double x0 = aux.getMinX() + 5;
         double y0 = aux.getMinY() + 5;
-        System.out.printf("(%f %f) (%f %f)\n", x0, y0, x, y);
+    //    System.out.printf("(%f %f) (%f %f)\n", x0, y0, x, y);
         return abs(x0 - x) <= 8 && abs(x0 - y) <= 8;
     }
 

@@ -38,7 +38,7 @@ class Geom {
             double deltaX = mXb.get() - mXa.get();
             double deltaY = mYb.get() - mYa.get();
             if (deltaX == 0) {
-                System.out.println("zero");
+                //System.out.println("zero");
                 return 90;
             }
             if (deltaY == 0) {
@@ -89,7 +89,7 @@ class Geom {
             boolean terceiroQuadrante = mXa.getValue() >= mXb.getValue() && mYa.getValue() <= mYb.getValue();
             boolean quartoQuadrante = mXa.getValue() <= mXb.getValue() && mYa.getValue() <= mYb.getValue();
 
-            System.out.printf("%s, %s, %s, %s\n", primeiroQuadrante, segundoQuadrante, terceiroQuadrante, quartoQuadrante);
+    //        System.out.printf("%s, %s, %s, %s\n", primeiroQuadrante, segundoQuadrante, terceiroQuadrante, quartoQuadrante);
             if (segundoQuadrante && terceiroQuadrante) {
                 return mSecondAndThirthBinding != null ? mSecondAndThirthBinding.get() : mSecondAndThirthValue;
             } else if (primeiroQuadrante && segundoQuadrante) {
