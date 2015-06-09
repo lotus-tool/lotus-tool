@@ -3,8 +3,8 @@ package br.uece.lotus.tools;
 import br.uece.lotus.Component;
 import br.uece.lotus.State;
 import br.uece.lotus.Transition;
+import br.uece.lotus.tools.layout.TreeLayouter;
 import br.uece.lotus.viewer.TransitionView;
-import br.uece.lotus.viewer.TransitionViewFactory;
 
 import java.io.*;
 import java.util.ArrayList;

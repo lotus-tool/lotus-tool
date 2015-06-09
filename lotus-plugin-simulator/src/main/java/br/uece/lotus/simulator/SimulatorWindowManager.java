@@ -76,7 +76,7 @@ public class SimulatorWindowManager extends DefaultWindowManagerPlugin<Simulator
         
         final ExtensibleToolbar toolBar = mUserInterface.getToolBar();
         toolBar.newItem("-")
-                .setWeight(Integer.MAX_VALUE)
+                .setWeight(Integer.MIN_VALUE + 1)
                 .showSeparator(true)                
                 .create();
         toolBar.newItem("Simulate")

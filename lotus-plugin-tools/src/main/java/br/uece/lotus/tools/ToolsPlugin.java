@@ -4,6 +4,7 @@ import br.uece.lotus.Project;
 import br.uece.lotus.project.ProjectDialogsHelper;
 import br.uece.lotus.project.ProjectExplorer;
 import br.uece.lotus.project.ProjectSerializer;
+import br.uece.lotus.tools.layout.TreeLayouter;
 import br.uece.seed.app.ExtensibleMenu;
 import br.uece.seed.app.UserInterface;
 import br.uece.seed.ext.ExtensionManager;
@@ -62,13 +63,6 @@ public class ToolsPlugin extends Plugin {
             }
         }
     };
-    private final Runnable mTreeLayout = new Runnable() {
-        @Override
-        public void run() {
-            new TreeLayouter().layout(mProjectExplorer.getSelectedComponent());
-        }
-    };
-
 
     @Override
     public void onStart(ExtensionManager extensionManager) throws Exception {
@@ -94,10 +88,7 @@ public class ToolsPlugin extends Plugin {
                 .setWeight(MENU_WEIGHT)
                 .setAction(mImportFromLTSA)
                 .create();
-        mMainMenu.newItem("File/Layout/Tree layout")
-                .setWeight(MENU_WEIGHT)
-                .setAction(mTreeLayout)
-                .create();
+
     }
 
 }

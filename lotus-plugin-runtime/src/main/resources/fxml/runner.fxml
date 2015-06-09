@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane prefHeight="442.0" prefWidth="633.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="br.uece.lotus.runner.RunnerWindow">
+   <right>
+      <TabPane prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER">
+        <tabs>
+          <Tab text="Traces">
+            <content>
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <TableView fx:id="mTableView" layoutX="0" layoutY="0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                          <columns>
+                            <TableColumn fx:id="mActionCol" prefWidth="76.0" text="Action" />
+                            <TableColumn fx:id="mFromCol" prefWidth="51.0" text="From" />
+                              <TableColumn fx:id="mToCol" prefWidth="60.0" text="To" />
+                          </columns>
+                        </TableView>
+                     </children>
+                     <padding>
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                     </padding>
+                  </AnchorPane>
+            </content>
+          </Tab>
+          <Tab text="Variables">
+            <content>
+                  <VBox spacing="5.0">
+                     <children>
+                        <VBox spacing="5.0">
+                           <children>
+                              <TextField promptText="Name" />
+                              <TextField promptText="Value" />
+                              <Button mnemonicParsing="false" prefWidth="1.7976931348623157E308" text="Add/Save" />
+                           </children>
+                        </VBox>
+                        <TableView fx:id="mSymbolTable" layoutX="10.0" layoutY="10.0" prefHeight="359.0" prefWidth="173.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" VBox.vgrow="ALWAYS">
+                          <columns>
+                            <TableColumn fx:id="mSymbolNameCol" minWidth="50.0" prefWidth="96.0" text="Name" />
+                            <TableColumn fx:id="mSymbolValueCol" minWidth="50.0" prefWidth="92.0" text="Value" />
+                          </columns>
+                        </TableView>
+                     </children>
+                     <padding>
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                     </padding>
+                  </VBox>
+            </content>
+          </Tab>
+        </tabs>
+      </TabPane>
+   </right>
+   <center>
+      <BorderPane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+         <center>
+            <ScrollPane fx:id="mScrollPanel" prefViewportHeight="200.0" prefViewportWidth="652.0" BorderPane.alignment="CENTER" />
+         </center>
+         <bottom>
+            <TabPane prefHeight="150.0" prefWidth="633.0" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER">
+              <tabs>
+                  <Tab text="Output">
+                    <content>
+                      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                           <children>
+                              <TextArea layoutX="105.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                           </children>
+                           <padding>
+                              <Insets bottom="5.0" left="5.0" top="5.0" />
+                           </padding>
+                        </AnchorPane>
+                    </content>
+                  </Tab>
+              </tabs>
+            </TabPane>
+         </bottom>
+         <left>
+            <TabPane prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER">
+              <tabs>
+                <Tab text="Actions">
+                  <content>
+                        <VBox spacing="5.0">
+                           <padding>
+                              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                           </padding>
+                           <children>
+                               <Button mnemonicParsing="false" prefWidth="1.7976931348623157E308" text="i = 0" />
+                               <Button disable="true" mnemonicParsing="false" prefWidth="1.7976931348623157E308" text="print(i)" />
+                               <Button disable="true" mnemonicParsing="false" prefWidth="1.7976931348623157E308" text="-" />
+                               <Button disable="true" mnemonicParsing="false" prefWidth="1.7976931348623157E308" text="i = i + 1" />
+                           </children>
+                        </VBox>
+                  </content>
+                </Tab>
+              </tabs>
+            </TabPane>
+         </left>
+      </BorderPane>
+   </center>
+</BorderPane>

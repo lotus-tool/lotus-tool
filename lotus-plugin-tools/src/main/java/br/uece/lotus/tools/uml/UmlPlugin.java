@@ -9,7 +9,7 @@ import br.uece.lotus.Component;
 import br.uece.lotus.Project;
 import br.uece.lotus.project.ProjectDialogsHelper;
 import br.uece.lotus.project.ProjectExplorer;
-import br.uece.lotus.tools.TreeLayouter;
+import br.uece.lotus.tools.layout.TreeLayouter;
 import br.uece.seed.app.ExtensibleMenu;
 import br.uece.seed.app.UserInterface;
 import br.uece.seed.ext.ExtensionManager;
