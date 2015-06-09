@@ -24,7 +24,9 @@
 package br.uece.lotus.viewer;
 
 import br.uece.lotus.State;
+import br.uece.lotus.Transition;
 import javafx.beans.binding.DoubleBinding;
+import javafx.beans.value.ObservableNumberValue;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
@@ -54,7 +56,7 @@ public class ElipseTransitionViewImpl extends TransitionViewImpl {
         StateViewImpl origemView = (StateViewImpl) origem.getValue("view");
         StateViewImpl destinoView = (StateViewImpl) destino.getValue("view");
 
-        mCurva = new TransicaoEmArco(origemView, destinoView);
+        mCurva = new TransicaoEmArco(origemView, destinoView, mTransition);
         mCurva.setStyle(StyleBuilder.stroke("#f00", 1));
         mCurva.layoutXProperty().bind(origemView.layoutXProperty().add(origemView.heightProperty().divide(2)));
         mCurva.layoutYProperty().bind(origemView.layoutYProperty().subtract(mCurva.heightProperty()).add(origemView.heightProperty().divide(2)));
@@ -90,14 +92,16 @@ public class ElipseTransitionViewImpl extends TransitionViewImpl {
 
     static class TransicaoEmArco extends Region {
 
+        Transition mTransition;
         final Label rotulo = new Label();
         final Seta seta = new Seta();
         final Arc arco = new Arc();
 
-        public TransicaoEmArco(Node origem, Node destino) {
+        public TransicaoEmArco(Node origem, Node destino, Transition transition) {
+            mTransition = transition;
             getChildren().addAll(rotulo, seta, arco);
             arco.radiusXProperty().bind(Geom.distance(origem, destino).divide(2));
-            arco.radiusYProperty().bind(Geom.distance(origem, destino).divide(4));
+            arco.radiusYProperty().bind(Geom.distance(origem, destino).divide(4).add(fatorY()));
             arco.centerXProperty().bind(arco.radiusXProperty());
             arco.centerYProperty().bind(arco.radiusYProperty().add(17));
             arco.setLength(180);
@@ -110,5 +114,13 @@ public class ElipseTransitionViewImpl extends TransitionViewImpl {
             rotulo.setLayoutY(5);
             rotulo.layoutXProperty().bind(arco.radiusXProperty().subtract(rotulo.widthProperty().divide(2)));
         }
+
+        private int fatorY() {
+               return (quantidadeFilhos() - 1) * 20;
+        }
+
+        private int quantidadeFilhos() {
+            return mTransition.getSource().getTransitionsTo(mTransition.getDestiny()).size();
+        }    
     }
 }
