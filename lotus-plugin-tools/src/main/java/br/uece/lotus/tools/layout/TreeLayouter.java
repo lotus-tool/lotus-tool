@@ -1,4 +1,4 @@
-package br.uece.lotus.tools;
+package br.uece.lotus.tools.layout;
 
 import br.uece.lotus.Component;
 import br.uece.lotus.State;
