@@ -195,8 +195,8 @@ public class SimulatorWindow extends AnchorPane implements Window {
 
             if(selectedItem == 0) {
 
-            } else {
-
+            } else if (selectedItem == 1) {
+                mExecutorCommands.executeCommand(new RandomPathCommand(mSimulatorContext));
             }
         });
 
