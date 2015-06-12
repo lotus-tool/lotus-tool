@@ -43,31 +43,47 @@ public class LtsaParser {
         
         for(Mensagem m : comunicacao){
             if(c.getInitialState() == null){
-                org = c.newState(idrelativoClassifier(m.getEnviando().getXmiID()));
-                dst = c.newState(idrelativoClassifier(m.getRecebendo().getXmiID()));
-                c.buildTransition(org, dst)
-                        .setLabel(m.getEnviando().getNome()+"."+m.getRecebendo().getNome()+"."+m.getMsg().replaceAll("\\+", ""))
-                        .create();
-            }else{
-                if(!stateExiste(c, idrelativoClassifier(m.getRecebendo().getXmiID()))){
-                    org = dst;
+                if(m.getEnviando().getXmiID().equals(m.getRecebendo().getXmiID())){
+                    org = c.newState(idrelativoClassifier(m.getEnviando().getXmiID()));
+                    dst = org;
+                    c.buildTransition(org, dst)
+                            .setLabel(m.getEnviando().getNome()+"."+m.getRecebendo().getNome()+"."+m.getMsg().replaceAll("\\+", ""))
+                            .create();
+                }else{
+                    org = c.newState(idrelativoClassifier(m.getEnviando().getXmiID()));
                     dst = c.newState(idrelativoClassifier(m.getRecebendo().getXmiID()));
                     c.buildTransition(org, dst)
                             .setLabel(m.getEnviando().getNome()+"."+m.getRecebendo().getNome()+"."+m.getMsg().replaceAll("\\+", ""))
                             .create();
                 }
-                else if(stateExiste(c, idrelativoClassifier(m.getRecebendo().getXmiID()))){
+            }else{
+                if(m.getEnviando().getXmiID().equals(m.getRecebendo().getXmiID())){
                     org = dst;
-                    dst = c.newState(ultimoIDdisponivel());
                     c.buildTransition(org, dst)
                             .setLabel(m.getEnviando().getNome()+"."+m.getRecebendo().getNome()+"."+m.getMsg().replaceAll("\\+", ""))
                             .create();
+                }else{
+                    if(!stateExiste(c, idrelativoClassifier(m.getRecebendo().getXmiID()))){
+                        org = dst;
+                        dst = c.newState(idrelativoClassifier(m.getRecebendo().getXmiID()));
+                        c.buildTransition(org, dst)
+                                .setLabel(m.getEnviando().getNome()+"."+m.getRecebendo().getNome()+"."+m.getMsg().replaceAll("\\+", ""))
+                                .create();
+                    }
+                    else if(stateExiste(c, idrelativoClassifier(m.getRecebendo().getXmiID()))){
+                        org = dst;
+                        dst = c.newState(ultimoIDdisponivel());
+                        c.buildTransition(org, dst)
+                                .setLabel(m.getEnviando().getNome()+"."+m.getRecebendo().getNome()+"."+m.getMsg().replaceAll("\\+", ""))
+                                .create();
+                    }
                 }
             }
         }
         
         //=======================================Loop e Alt ===============================================
         try{
+            mesclarBlocos();//Trata blocos internos
             for(InteractionFragments itf : loopsOuAlts){
                 for(CombinedFragments combf : itf.getCombinedFrags()){
                     switch(combf.getOperator()){
@@ -117,13 +133,11 @@ public class LtsaParser {
                                                 .create();
                                         paraRemover.add(t);
                                     }
-                                    //removendo transitions dispensadas
                                     for(Transition t : paraRemover){
                                         c.remove(t);
                                     }
                                     c.remove(dsty);
                                 }
-                                
                             }
                         };break;
                         case "alt":{////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -147,24 +161,28 @@ public class LtsaParser {
                                 mapa.put(i, transInterOperand);
                                 i++;
                             }
-                            Transition ligacaoFinal = null;
+                            State ligacaoFinal = null;
                             for(int j=0;j<mapa.size();j++){ // Quebrando os alts
                                 for(int k=0;k<mapa.get(j).size();k++){
                                     Transition t = mapa.get(j).get(k);
+                                    Transition remover = null;
                                     if(j==0 && k==0){
                                         gancho = t.getSource();
                                     }
-                                    else if(j!=0 && k==0){
+                                    else if(j>0 && k==0){
                                         c.buildTransition(gancho, t.getDestiny())
                                                 .setLabel(t.getLabel())
                                                 .create();
-                                        c.remove(t);
+                                        remover = t;
                                     }
                                     //se houver transicao de saida do ultimo
-                                    else if(j==(mapa.size()-1) && k==mapa.get(j).size()-1){
+                                    if(j==(mapa.size()-1) && k==mapa.get(j).size()-1){
                                         if(t.getDestiny().getOutgoingTransitionsCount()>0){
-                                            ligacaoFinal = t.getDestiny().getOutgoingTransitionsList().get(0);
+                                            ligacaoFinal = t.getDestiny();
                                         }
+                                    }
+                                    if(remover!=null){
+                                        c.remove(remover);
                                     }
                                 }
                             }
@@ -173,12 +191,27 @@ public class LtsaParser {
                                     for(int k=0;k<mapa.get(j).size();k++){
                                         Transition t = mapa.get(j).get(k);
                                         if(j!=(mapa.size()-1) && k==(mapa.get(j).size()-1)){
-                                            c.buildTransition(t.getSource(), ligacaoFinal.getSource())
+                                            c.buildTransition(t.getSource(), ligacaoFinal)
                                                     .setLabel(t.getLabel())
                                                     .create();
                                             c.remove(t.getDestiny());
                                         }
                                     }
+                                }
+                                ligacaoFinal = null;
+                            }
+                            //Arrumando Transicoes Duplas
+                            for(Transition t : c.getTransitions()){
+                                State origem = t.getSource();
+                                State destino = t.getDestiny();
+                                int contagem = 0;
+                                for(Transition t2 : origem.getOutgoingTransitions()){
+                                    if(t2.getDestiny() == destino){
+                                        contagem++;
+                                    }
+                                }
+                                if(contagem>1){
+                                    t.setValue("view.type", 1);
                                 }
                             }
                         };break;
@@ -211,6 +244,27 @@ public class LtsaParser {
             }
         }
         return i;
+    }
+    
+    private void mesclarBlocos(){
+        for(InteractionFragments itf : loopsOuAlts){
+            for(CombinedFragments combf : itf.getCombinedFrags()){
+                for(InteractionOperand intop : combf.getInteractionOperands()){
+                    List<String> msgs = intop.getXmiIdRefMsg();
+                    if(intop.getInteractionOperandFrags().size()>0){
+                        for(String s : intop.getInteractionOperandFrags()){
+                            for(CombinedFragments combf2 : itf.getCombinedFrags()){
+                                if(s.equals(combf2.getXmiIdCombinedFragment())){
+                                    for(InteractionOperand intop2 : combf2.getInteractionOperands()){
+                                        msgs.addAll(intop2.getXmiIdRefMsg());
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
     
     private int ultimoIDdisponivel(){
