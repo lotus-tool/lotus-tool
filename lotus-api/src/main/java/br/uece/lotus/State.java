@@ -79,6 +79,10 @@ public class State {
     State(Component c) {
         mComponent = c;
     }
+    
+    public Component getComponent(){
+        return this.mComponent;
+    }
 
     public void setID(int id) {
         mID = id;
