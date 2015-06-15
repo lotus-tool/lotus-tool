@@ -101,7 +101,7 @@ public class ElipseTransitionViewImpl extends TransitionViewImpl {
             mTransition = transition;
             getChildren().addAll(rotulo, seta, arco);
             arco.radiusXProperty().bind(Geom.distance(origem, destino).divide(2));
-            arco.radiusYProperty().bind(Geom.distance(origem, destino).divide(4).add(fatorY()));
+            arco.radiusYProperty().bind(Geom.distance(origem, destino).divide(4).add(fatorY(mTransition)));
             arco.centerXProperty().bind(arco.radiusXProperty());
             arco.centerYProperty().bind(arco.radiusYProperty().add(17));
             arco.setLength(180);
@@ -114,13 +114,13 @@ public class ElipseTransitionViewImpl extends TransitionViewImpl {
             rotulo.setLayoutY(5);
             rotulo.layoutXProperty().bind(arco.radiusXProperty().subtract(rotulo.widthProperty().divide(2)));
         }
-
-        private int fatorY() {
-               return (quantidadeFilhos() - 1) * 20;
+        
+        private int fatorY(Transition mTransition) {
+            return (quantidadeFilhos(mTransition) - 1) * 20;
         }
 
-        private int quantidadeFilhos() {
-            return mTransition.getSource().getTransitionsTo(mTransition.getDestiny()).size();
+        private int quantidadeFilhos(Transition mTransition) {
+            return mTransition.getSource().getTransitionsTo(mTransition.getDestiny()).indexOf(mTransition);
         }    
     }
 }
