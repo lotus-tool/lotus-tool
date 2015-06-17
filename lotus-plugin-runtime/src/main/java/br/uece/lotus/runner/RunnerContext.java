@@ -3,11 +3,10 @@ package br.uece.lotus.runner;
 import br.uece.lotus.Component;
 import br.uece.lotus.State;
 import br.uece.lotus.Transition;
-
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
-import java.io.IOException;
+import java.io.Reader;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -19,25 +18,12 @@ import java.util.Map;
  */
 public class RunnerContext {
 
+    public interface Listener {
+        void onChanged(RunnerContext runnerContext);
+    }
+
     private static final String SCRIPT_ENGINE_LANGUAGE = "JavaScript";
     private static final String INVALID_STEP_TRANSITION_MESSAGE = "Invalid transition step!";
-    StringBuilder sb = new StringBuilder();
-    private final Writer mWriter = new Writer() {
-        @Override
-        public void write(char[] cbuf, int off, int len) throws IOException {
-            sb.append(cbuf, off, len);
-        }
-
-        @Override
-        public void flush() throws IOException {
-
-        }
-
-        @Override
-        public void close() throws IOException {
-
-        }
-    };
 
     private Component mComponent;
     private ScriptEngine mScriptEngine;
@@ -46,11 +32,14 @@ public class RunnerContext {
     private List<Transition> mDisabledTransitions;
     private Map<String, Object> mSymbols;
     private List<String> mTrace;
+    private List<Listener> mListeners = new ArrayList<>();
 
-    public RunnerContext(Component component) {
+
+    public RunnerContext(Component component, ScriptStandardLibrary std) {
         mComponent = component;
         mScriptEngine = new ScriptEngineManager().getEngineByName(SCRIPT_ENGINE_LANGUAGE);
-        mScriptEngine.getContext().setWriter(mWriter);
+        mScriptEngine.put("std", std);
+        std.inicializar(mScriptEngine);
         mSymbols = new HashMap<>();
         mTrace = new ArrayList<>();
         mEnabledTransitions = new ArrayList<>();
@@ -62,6 +51,13 @@ public class RunnerContext {
         mCurrentState = state;
         analisarGuardasDasTransicoes();
         atualizarValoresDosSimbolos();
+        notifyListeners();
+    }
+
+    private void notifyListeners() {
+        for (Listener l: mListeners) {
+            l.onChanged(this);
+        }
     }
 
     public void step(Transition transition) {
@@ -69,20 +65,25 @@ public class RunnerContext {
             throw new RuntimeException(INVALID_STEP_TRANSITION_MESSAGE);
         }
         mTrace.add(transition.getLabel());
-        executar(transition.getLabel());
-        changeCurrentState(transition.getDestiny());
+        executar(transition.getLabel(), () -> {
+            changeCurrentState(transition.getDestiny());
+        });
     }
 
-    private void executar(String script) {
-        System.out.println("running " + script);
+    private void executar(String script, Runnable onFinish) {
+        final String s = script;
+        System.out.println("running " + s);
         if (script == null || script.isEmpty()) {
             return;
         }
-        try {
-            mScriptEngine.eval(script);
-        } catch (ScriptException e) {
-            //o que fazer com o erro?
-        }
+        new Thread(() -> {
+            try {
+                mScriptEngine.eval(s);
+            } catch (ScriptException e) {
+                e.printStackTrace();
+            }
+            onFinish.run();
+        }).start();
     }
 
     private void atualizarValoresDosSimbolos() {
@@ -90,7 +91,9 @@ public class RunnerContext {
             String name = e.getKey();
             Object value = mScriptEngine.get(e.getKey());
             System.out.println("symbol " + name + ": " + value);
-            mSymbols.put(name, value);
+            if (value != null) {
+                mSymbols.put(name, value);
+            }
         }
     }
 
@@ -126,10 +129,6 @@ public class RunnerContext {
         return mSymbols;
     }
 
-    public String getOutput() {
-        return sb.toString();
-    }
-
     public List<Transition> getDisabledActions() {
         return mDisabledTransitions;
     }
@@ -142,7 +141,13 @@ public class RunnerContext {
         return mCurrentState;
     }
 
-    public void putSymbol(String name, String value) {
+    public void putSymbol(String name, Object value) {
+        mScriptEngine.put(name, value);
         mSymbols.put(name, value);
     }
+
+    public void addListener(Listener l) {
+        mListeners.add(l);
+    }
+
 }

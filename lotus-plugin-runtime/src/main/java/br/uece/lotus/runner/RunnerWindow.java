@@ -5,11 +5,7 @@ import br.uece.lotus.Transition;
 import br.uece.lotus.helpers.window.Window;
 import br.uece.lotus.viewer.ComponentView;
 import br.uece.lotus.viewer.ComponentViewImpl;
-import br.uece.seed.app.UserInterface;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -20,17 +16,16 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.VBox;
 
-import javax.script.ScriptException;
-import java.io.IOException;
-import java.io.Writer;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 
 /**
  * Created by emerson on 29/03/15.
  */
-public class RunnerWindow implements Window, Initializable {
+public class RunnerWindow implements Window, Initializable, RunnerContext.Listener {
 
     private Parent mNode;
     private Component mComponent;
@@ -43,6 +38,8 @@ public class RunnerWindow implements Window, Initializable {
     private ListView<String> mLstTrace;
     @FXML
     private TextArea mTxtOutput;
+    @FXML
+    private TextField mTxtInput;
     @FXML
     private VBox mTransitionContainer;
     @FXML
@@ -58,6 +55,7 @@ public class RunnerWindow implements Window, Initializable {
     @FXML
     private TextField mEdtSymbolValue;
 
+    private List<Transition> mTransicoesColoridas = new ArrayList<>();
 
     private EventHandler<ActionEvent> mBtnTransitionClicked = (event) -> {
         descolorirTransicoes();
@@ -66,18 +64,33 @@ public class RunnerWindow implements Window, Initializable {
     };
 
     private void descolorirTransicoes() {
-        for (Transition t: mContext.getEnabledActions()) {
+        for (Transition t: mTransicoesColoridas) {
             applyNormalStyle(t);
         }
-        for (Transition t: mContext.getDisabledActions()) {
-            applyNormalStyle(t);
-        }
+        mTransicoesColoridas.clear();
     }
 
     private EventHandler<ActionEvent> mBtnAddSaveSymbolClick = (event) -> {
-        mContext.putSymbol(mEdtSymbolName.getText(), mEdtSymbolValue.getText());
-        updateSymbolTable();
+        if (!mEdtSymbolName.getText().trim().isEmpty()) {
+            Object v = literalValue(mEdtSymbolValue.getText());
+            mContext.putSymbol(mEdtSymbolName.getText(), v);
+            updateSymbolTable();
+        }
     };
+
+    private Object literalValue(String literal) {
+        try {
+            return Double.parseDouble(literal);
+        } catch (Exception e) {
+            //ignora
+        }
+        try {
+            return Boolean.parseBoolean(literal);
+        } catch (Exception e) {
+            //ignora
+        }
+        return literal;
+    }
 
     private void updateSymbolTable() {
         mSymbolTable.getItems().clear();
@@ -98,7 +111,8 @@ public class RunnerWindow implements Window, Initializable {
     public void setComponent(Component component) {
         mViewer.setComponent(component);
         mComponent = component;
-        mContext = new RunnerContext(component);
+        mContext = new RunnerContext(component, new ScriptStandardLibrary(mTxtOutput, mTxtInput));
+        mContext.addListener(this);
         updateView();
     }
 
@@ -127,7 +141,6 @@ public class RunnerWindow implements Window, Initializable {
     }
 
     private void updateView() {
-        mTxtOutput.setText(mContext.getOutput());
         mTransitionContainer.getChildren().clear();
         for (Transition t: mContext.getEnabledActions()) {
             Button btn = new Button();
@@ -140,37 +153,46 @@ public class RunnerWindow implements Window, Initializable {
         mLstTrace.getItems().clear();
         mLstTrace.getItems().addAll(mContext.getTrace());
         updateSymbolTable();
+        descolorirTransicoes();
         colorirTransicoes();
     }
 
     private void colorirTransicoes() {
         for (Transition t: mContext.getEnabledActions()) {
+            mTransicoesColoridas.add(t);
             applyEnabledStyle(t);
         }
         for (Transition t: mContext.getDisabledActions()) {
+            mTransicoesColoridas.add(t);
             applyDisabledStyle(t);
         }
     }
 
-    public void applyDisabledStyle(Transition t) {
+    private void applyDisabledStyle(Transition t) {
         t.setColor("red");
         t.setTextColor("red");
         t.setTextSyle(Transition.TEXTSTYLE_BOLD);
         t.setWidth(2);
     }
 
-    public static void applyEnabledStyle(Transition t) {
+    private static void applyEnabledStyle(Transition t) {
         t.setColor("blue");
         t.setTextColor("blue");
         t.setTextSyle(Transition.TEXTSTYLE_BOLD);
         t.setWidth(2);
     }
 
-    public static void applyNormalStyle(Transition t) {
+    private static void applyNormalStyle(Transition t) {
         t.setColor("black");
         t.setTextSyle(Transition.TEXTSTYLE_NORMAL);
-        t.setTextColor(null);
+        t.setTextColor("black");
         t.setWidth(1);
     }
 
+    @Override
+    public void onChanged(RunnerContext runnerContext) {
+        Platform.runLater(() -> {
+            updateView();
+        });
+    }
 }

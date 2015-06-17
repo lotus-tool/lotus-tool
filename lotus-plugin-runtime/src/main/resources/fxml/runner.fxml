@@ -56,16 +56,17 @@
          <bottom>
             <TabPane prefHeight="150.0" prefWidth="633.0" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER">
               <tabs>
-                  <Tab text="Output">
+                  <Tab text="Console">
                     <content>
-                      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                        <VBox>
                            <children>
                               <TextArea fx:id="mTxtOutput" layoutX="105.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                              <TextField fx:id="mTxtInput" layoutX="48.0" layoutY="70.0" />
                            </children>
                            <padding>
                               <Insets bottom="5.0" left="5.0" top="5.0" />
                            </padding>
-                        </AnchorPane>
+                        </VBox>
                     </content>
                   </Tab>
               </tabs>
