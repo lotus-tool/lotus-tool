@@ -311,17 +311,12 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
             
             //CRIANDO BIGSTATE - USERDATA            
             BigState bigState = new BigState();
-            List<State> listaS = stateDentroDoRetangulo;            
+            List<State> listaS = statesSelecionados;            
             
             if (!bigState.addStatesAndTransition(listaS)){
-                JOptionPane.showMessageDialog(null, "Add more States","Attention", JOptionPane.WARNING_MESSAGE);   
+                JOptionPane.showMessageDialog(null, "Add more States or initial State selected","Attention", JOptionPane.WARNING_MESSAGE);   
                 return;
-            }
-            if (bigState.hasStateTransitionSelectedInside(getSelectedView(), listaS)){
-                JOptionPane.showMessageDialog(null, "There is a selected component. Deselect it","Attention",JOptionPane.WARNING_MESSAGE);
-                BigState.removeBigState(bigState);
-                return;
-            }
+            }            
             
             //CRIANDO NA TELA O STATE MAIOR COM O BIGSTATE
             int id = mViewer.getComponent().getStatesCount();
@@ -330,6 +325,7 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
             novoState.setLayoutX(100);
             novoState.setLayoutY(100);            
             novoState.setLabel(String.valueOf(id));
+            bigState.setState(novoState);
             
             if (contID == 0) {
                 updateContID();                
@@ -338,36 +334,29 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
                 novoState.setID(contID);                            
             contID++;
             
-            ((StateView) novoState.getValue("view")).getNode().setScaleX(1.5);
-            ((StateView) novoState.getValue("view")).getNode().setScaleY(1.5);
+            ((StateView) novoState.getValue("view")).getNode().setScaleX(1.3);
+            ((StateView) novoState.getValue("view")).getNode().setScaleY(1.3);
             
-            bigState.setState(novoState);
-            
-            //ADD TRANSITIONS
+            //ADD TRANSITIONS DOS BIGSTATES
             for (Transition t : bigState.getListaTransitionsForaSaindo()) {
                 if (novoState.getTransitionsTo(t.getDestiny()).size() == 0) {
-                    Transition tNova = mViewer.getComponent().buildTransition(novoState, t.getDestiny()).setValue("view.type", 0).create();
-                    tNova.setLabel(t.getLabel() == null ? "" : t.getLabel());
+                    Transition tNova = mViewer.getComponent().buildTransition(novoState, t.getDestiny()).setValue("view.type", 0).setLabel(t.getLabel() == null || t.getLabel().equals("") ? "" : t.getLabel()).create();                    
                 } else {
                     String labelAntiga = novoState.getTransitionTo(t.getDestiny()).getLabel();
-                    novoState.getTransitionTo(t.getDestiny()).setLabel(t.getLabel() == null ? labelAntiga : labelAntiga + ", " + t.getLabel());
+                    novoState.getTransitionTo(t.getDestiny()).setLabel(t.getLabel() == null || t.getLabel().equals("") ? labelAntiga : labelAntiga + ", " + t.getLabel());
                 }
             }
             for (Transition t : bigState.getListaTransitionsForaChegando()) {
-                if (t.getSource().getTransitionsTo(novoState).size() == 0) {
-                    Transition tNova = mViewer.getComponent().buildTransition(t.getSource(), novoState).setValue("view.type", 0).create();
-                    tNova.setLabel(t.getLabel() == null ? "" : t.getLabel());
+                if (t.getSource().getTransitionsTo(novoState).size() == 0) {                    
+                    Transition tNova = mViewer.getComponent().buildTransition(t.getSource(), novoState).setValue("view.type", 0).setLabel(t.getLabel() == null || t.getLabel().equals("") ? "" : t.getLabel()).create();
                 } else {
                     String labelAntiga = t.getSource().getTransitionTo(novoState).getLabel();
-                    t.getSource().getTransitionTo(novoState).setLabel(t.getLabel() == null ? labelAntiga : labelAntiga + ", " + t.getLabel());
+                    t.getSource().getTransitionTo(novoState).setLabel(t.getLabel() == null || t.getLabel().equals("") ? labelAntiga : labelAntiga + ", " + t.getLabel());
                 }
             }
 
-            //REMOVENDO STATES DO VIEWER
-            for (State state : stateDentroDoRetangulo) {
-                mViewer.getComponent().remove(state);
-            }
-            stateDentroDoRetangulo.clear();
+            BigState.removeStatesComponent();
+            
         });
         
         mBtnZoom = new MenuButton();
@@ -599,12 +588,11 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
                             StateView stateView = (StateView) mComponentSobMouse;
                             State state = stateView.getState();
                             BigState bigState = (BigState) state.getValue("bigstate");
-                            if (!bigState.dismountBigState(mViewer)){
+                            if (!bigState.dismountBigState(mViewer.getComponent())){
                                 JOptionPane.showMessageDialog(null, "You need another BigState before dismantling");
                                 return;
-                            }
-                            setComponenteSelecionado(((List<State>) mViewer.getComponent().getStates()).get(0).getValue("view"));
-                            mViewer.getComponent().remove(state);                                                        
+                            }                            
+                            mViewer.getComponent().remove(state);                                                   
                         }
                     }
                 }

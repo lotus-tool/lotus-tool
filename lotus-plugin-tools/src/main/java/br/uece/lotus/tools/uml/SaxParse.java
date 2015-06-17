@@ -81,7 +81,7 @@ public class SaxParse extends DefaultHandler{
             for(CombinedFragments comb : inf.getCombinedFrags()){
                 System.out.println("\nCombinedFragments: "+comb.getXmiIdCombinedFragment()+"  Operator: "+comb.getOperator());
                 for(InteractionOperand intop : comb.getInteractionOperands()){
-                    System.out.println("InteractionOperand: "+intop.getXmiIdIteractionOperand());
+                    System.out.println("\nInteractionOperand: "+intop.getXmiIdIteractionOperand());
                     System.out.println("------------Msg-----&&----Operand Frags---------");
                     for(String s : intop.getXmiIdRefMsg()){
                         System.out.println("MensagemId: "+s);
@@ -110,7 +110,7 @@ public class SaxParse extends DefaultHandler{
     private boolean atributosMaisDe1Message = false;
     //////////////////////////////////////////////////////////////////////////////////////
     private int controleTag = 0;
-    private String xmiIdCombinedFrag = "", operator = "", xmiIdInteractionOperand = "";
+    private String xmiIdCombinedFrag = "", operator = "", xmiIdInteractionOperand = "", nomeCombinedFrag = "";
     private List<String> xmiIdRefMsg = new ArrayList<>();
     private List<String> combinedFragIdRef = new ArrayList<>();//blocos dentro de bloco
     private List<InteractionOperand> interactionOperands = new ArrayList<>();
@@ -208,6 +208,7 @@ public class SaxParse extends DefaultHandler{
             controleTag++;
             xmiIdCombinedFrag = atts.getValue("xmi.id");
             operator = atts.getValue("operator");
+            nomeCombinedFrag = atts.getValue("name");
         }
         if(tagAtual.equals("UML:InteractionOperand") && controleTag==2){
             controleTag++;
@@ -242,7 +243,7 @@ public class SaxParse extends DefaultHandler{
         }
         if("UML:CombinedFragment".equals(qName) && controleTag==2){
             controleTag--;
-            CombinedFragments combFrag = new CombinedFragments(xmiIdCombinedFrag, operator, null);
+            CombinedFragments combFrag = new CombinedFragments(xmiIdCombinedFrag, operator,nomeCombinedFrag ,null);
             List<InteractionOperand> aux = new ArrayList<>();
             aux.addAll(interactionOperands);
             combFrag.setInteractionOperands(aux);

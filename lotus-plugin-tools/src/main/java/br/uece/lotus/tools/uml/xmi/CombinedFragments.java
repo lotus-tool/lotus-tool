@@ -13,13 +13,22 @@ import java.util.List;
  */
 public class CombinedFragments {
     
-    private String xmiIdCombinedFragment, operator;
+    private String xmiIdCombinedFragment, operator, nome;
     private List<InteractionOperand> interactionOperands;
 
-    public CombinedFragments(String xmiIdCombinedFragment, String operator, List<InteractionOperand> interactionOperands) {
+    public CombinedFragments(String xmiIdCombinedFragment, String operator, String nome, List<InteractionOperand> interactionOperands) {
         this.xmiIdCombinedFragment = xmiIdCombinedFragment;
         this.operator = operator;
+        this.nome = nome;
         this.interactionOperands = interactionOperands;
+    }
+
+    public String getNome() {
+        return nome;
+    }
+
+    public void setNome(String nome) {
+        this.nome = nome;
     }
 
     public String getXmiIdCombinedFragment() {

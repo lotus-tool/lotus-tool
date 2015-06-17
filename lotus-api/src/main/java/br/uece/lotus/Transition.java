@@ -96,6 +96,8 @@ public class Transition {
     private String mGuard;
     //Used in simulations
     private int mVisitedTransitionsCount;
+    //Used in BigState
+    private int propertyBigState = 0;
 
     Transition(State source, State destiny) {
         mSource = source;
@@ -196,6 +198,14 @@ public class Transition {
         for (Listener l : mListeners) {
             l.onChange(this);
         }
+    }
+    
+    public int getPropertyBigState() {
+        return propertyBigState;
+    }
+
+    public void setPropertyBigState(int propertyBigState) {
+        this.propertyBigState = propertyBigState;
     }
 
     public int getmTransitionsStatesCount() { return mVisitedTransitionsCount; }

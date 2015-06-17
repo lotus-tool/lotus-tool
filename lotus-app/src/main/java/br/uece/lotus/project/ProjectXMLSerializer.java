@@ -23,6 +23,7 @@
  */
 package br.uece.lotus.project;
 
+import br.uece.lotus.BigState;
 import br.uece.lotus.Component;
 import br.uece.lotus.Project;
 import br.uece.lotus.State;
@@ -71,8 +72,36 @@ public class ProjectXMLSerializer implements ProjectSerializer {
                 if (v.isFinal()) {
                     xml.attr("final", "true");
                 }
-
+                if (BigState.verifyIsBigState(v)) {
+                    xml.attr("bigstate", "true");
+                }
                 xml.end();
+            }
+            
+            //GRAVANDO TODOS OS STATES DOS BIGSTATES
+            for (BigState bigState : BigState.todosOsBigStates) {
+                if (bigState.getState().getComponent().equals(c)) {
+                    for (State state : bigState.getListaStates()) {
+                        xml.begin("state");
+                        xml.attr("id", state.getID() + ":" + bigState.getState().getID());
+                        xml.attr("x", state.getLayoutX());
+                        xml.attr("y", state.getLayoutY());
+                        xml.attr("label", state.getLabel());
+                        if (state.isInitial()) {
+                            xml.attr("initial", "true");
+                        }
+                        if (state.isError()) {
+                            xml.attr("error", "true");
+                        }
+                        if (state.isFinal()) {
+                            xml.attr("final", "true");
+                        }
+                        if (BigState.verifyIsBigState(state)) {
+                            xml.attr("bigstate", "true");
+                        }
+                        xml.end();
+                    }
+                }
             }
 
             xml.end();
@@ -98,6 +127,41 @@ public class ProjectXMLSerializer implements ProjectSerializer {
                     xml.attr("view-type", String.valueOf(i));
                 }
                 xml.end();
+            }
+            
+            int lastBigState = 0;
+            for (State state : c.getStates()) {
+                BigState bigState = (BigState) state.getValue("bigstate");
+                if (bigState != null) {
+                    lastBigState++;
+                    int lastTransition = 1;
+                    for (Transition t : bigState.getAllTransitions()) {
+                        xml.begin("transition");
+                        xml.attr("from", t.getSource().getID());
+                        xml.attr("to", t.getDestiny().getID());
+                        Double d = t.getProbability();
+                        if (d != null) {
+                            xml.attr("prob", t.getProbability());
+                        }
+                        String s = t.getLabel();
+                        xml.attr("label", s == null ? "" : s);
+                        s = t.getGuard();
+                        if (s != null) {
+                            xml.attr("guard", s);
+                        }
+                        Integer i = (Integer) t.getValue("view.type");
+                        if (i != null) {
+                            xml.attr("view-type", String.valueOf(i));
+                        }                        
+                        xml.attr("vID", bigState.getState().getID()+":"+t.getPropertyBigState());
+                        //EH A ULTIMA TRANSICAO DO COMPONENT ADD                        
+                        if (lastBigState == c.getBigStatesCount() && lastTransition == bigState.getAllTransitions().size()) {
+                            xml.attr("end", "true");
+                        }
+                        xml.end();
+                        lastTransition++;
+                    }
+                }                
             }
             xml.end();
 
@@ -151,7 +215,7 @@ public class ProjectXMLSerializer implements ProjectSerializer {
     }
 
     private static void parseStateTag(Attributes attributes) {
-        int id = Integer.parseInt(attributes.getValue("id"));
+        int id = Integer.parseInt(attributes.getValue("id").split(":")[0]);
         mState = mComponent.newState(id);
         mState.setLayoutX(Double.parseDouble(attributes.getValue("x")));
         mState.setLayoutY(Double.parseDouble(attributes.getValue("y")));
@@ -165,6 +229,21 @@ public class ProjectXMLSerializer implements ProjectSerializer {
             mState.setError(true);
         }
         mState.setLabel(attributes.getValue("label"));
+        //VERIFICANDO SE EH UM BIGSTATE        
+        if (Boolean.parseBoolean(attributes.getValue("bigstate"))) {
+            BigState bigState = new BigState();
+            bigState.setState(mState);
+            mState.setValue("bigstate", bigState);
+            BigState.todosOsBigStates.add(bigState);
+        } else {
+            if (attributes.getValue("id").split(":").length != 1) {
+                int virtualID = Integer.parseInt(attributes.getValue("id").split(":")[1]);
+                BigState bigStateSelec = BigState.getBigStateById(virtualID, mComponent);
+                if (bigStateSelec != null) {
+                    bigStateSelec.addState(mState);                    
+                }
+            }
+        }
     }
 
     private static void parseTransitionTag(Attributes attributes) {
@@ -176,6 +255,17 @@ public class ProjectXMLSerializer implements ProjectSerializer {
                 .setGuard(attributes.getValue("guard"))
                 .setValue("view.type", viewType == null ? null : Integer.parseInt(viewType))
                 .create();
+        if (attributes.getValue("vID") != null) {
+            int virtualID = Integer.parseInt(attributes.getValue("vID").split(":")[0]);
+            int property = Integer.parseInt(attributes.getValue("vID").split(":")[1]);
+            BigState bigStateSelec = BigState.getBigStateById(virtualID, mComponent);
+            if (bigStateSelec != null) {
+                bigStateSelec.addTransition(mTransition, property);
+            }
+        }
+        if (Boolean.parseBoolean(attributes.getValue("end"))) {
+            BigState.removeStatesComponent();
+        }
     }
 
 }

@@ -104,6 +104,15 @@ public class Component {
     public int getStatesCount() {
         return mStates.size();
     }
+    
+    public int getBigStatesCount(){
+        int count = 0;
+        for(State s : mStates){
+            if(s.getValue("bigstate")!=null)
+                count++;
+        }
+        return count;
+    }
 
     public int getStateIndex(State s) {
         return mStates.indexOf(s);
