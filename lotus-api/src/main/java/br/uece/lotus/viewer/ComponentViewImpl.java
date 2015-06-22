@@ -58,6 +58,7 @@ public class ComponentViewImpl extends AnchorPane implements ComponentView, Comp
     private List<Listener> mListeners = new ArrayList<>();
     private List<StateView> mStateViews = new ArrayList<>();
     private List<TransitionView> mTransitionViews = new ArrayList<>();
+    private final double ajuste = 50;
 
     public ComponentViewImpl() {
         mTransitionViewFactory = new TransitionViewFactory();
@@ -248,5 +249,156 @@ public class ComponentViewImpl extends AnchorPane implements ComponentView, Comp
     @Override
     public AnchorPane getNode() {
         return this;
+    }
+
+    @Override
+    public void tamalhoPadrao() {
+        setPrefSize(1200, 600);
+    }
+
+    @Override
+    public void reajuste() {
+        double meioDaPaneX = 600;
+        double meioDaPaneY = 300;
+        double [] arrayValoresMedios;
+        arrayValoresMedios=mediaDaNuvemDeStates();
+        distanciaDosValoresMediosParaCentroDaPaneEFazendoReajusteNosStates(arrayValoresMedios, meioDaPaneX, meioDaPaneY);
+
+        if (verificarExisteCoordenadaNegativa()) {
+            System.out.println("Existe coord negativa");
+            System.out.println("menorCoodX=" + menorCoorX());
+            System.out.println("menorCoodY=" + menorCoorY());
+
+            deslocamentoTodosStates(menorCoorX() - ajuste, menorCoorY() - ajuste); // menos com menos dá mais
+        }
+
+        double x = maiorCoordX();
+        System.out.println("maiorCoordX=" + x);
+        double y = maiorCoordY();
+        System.out.println("maiorCoordY=" + y);
+
+
+        /////reajusta a ancher
+        System.out.println("x+ajuste" + (x + ajuste));
+        System.out.println("y+ajuste" + (y + ajuste));
+        setMinSize(x + ajuste, y + ajuste);
+        //setPrefSize();
+        //setMaxSize(x+ajuste,y+ajuste);
+        //setMinSize(menorCoorX()+ajuste,menorCoorY()+ajuste);
+        //setMaxSize(x+ajuste,y+ajuste);
+        //setPrefSize(250,250);
+
+    }
+
+    private void distanciaDosValoresMediosParaCentroDaPaneEFazendoReajusteNosStates(double[] arrayValoresMedios, double meioDaPaneX, double meioDaPaneY) {
+        double deltaX;
+        double deltaY;
+        // if(arrayValoresMedios[0]>=meioDaPaneX){
+        deltaX=-arrayValoresMedios[0]+meioDaPaneX;
+        //}
+        // else{
+        //    deltaX=meioDaPaneX-arrayValoresMedios[0];
+        //}
+        //if(arrayValoresMedios[1]>=meioDaPaneY){
+        deltaY=-arrayValoresMedios[1]+meioDaPaneY;//}
+        //else{
+        //  deltaY=meioDaPaneY-arrayValoresMedios[1];
+        //}
+        for(State s : mComponent.getStates()){
+            s.setLayoutX(s.getLayoutX()+deltaX);
+            s.setLayoutY(s.getLayoutY() + deltaY);
+        }
+
+    }
+
+    private double[] mediaDaNuvemDeStates() {
+        double maiorX = maiorCoordX();
+        double maiorY = maiorCoordY();
+        double menorX = menorCoorX();
+        double menorY = menorCoorY();
+        double xMedio = mediaDoX(maiorX, menorX);
+        double yMedio = mediaDoY(maiorY, menorY);
+        double[] valoresMedios = new double[2];
+        valoresMedios[0] = xMedio;
+        valoresMedios[1] = yMedio;
+        System.out.println("maiorX= "+maiorX);
+        System.out.println("maiorY= "+maiorY);
+        System.out.println("menorX= "+menorX);
+        System.out.println("menorY= "+menorY);
+
+        System.out.println("valorMedioX= "+ xMedio);
+        System.out.println("valorMedioY= "+ yMedio);
+        return valoresMedios;
+
+    }
+
+    private double mediaDoY(double maiorY, double menorY) {
+        return (Math.abs(Math.sqrt(Math.pow(menorY - (maiorY), 2))))/2+menorY;
+    }
+
+    private double mediaDoX(double maiorX, double menorX) {
+        return (Math.abs(Math.sqrt(Math.pow(menorX - (maiorX), 2))))/2+menorX;
+    }
+
+    private double menorCoorY() {
+        double menor = 10000;
+        for (State s : mComponent.getStates()) {
+            if (s.getLayoutY() < menor) {
+                menor = s.getLayoutY();
+            }
+        }
+        return menor;
+    }
+
+
+    private double menorCoorX() {
+        double menor = 10000;
+        for (State s : mComponent.getStates()) {
+            if (s.getLayoutX() < menor) {
+                menor = s.getLayoutX();
+            }
+        }
+        return menor;
+
+
+    }
+
+    private void deslocamentoTodosStates(double menorX, double menorY) {
+        for (State s : mComponent.getStates()) {
+            s.setLayoutX(s.getLayoutX() + Math.abs(menorX));
+            s.setLayoutY(s.getLayoutY() + Math.abs(menorY));
+
+        }
+
+    }
+
+
+    private boolean verificarExisteCoordenadaNegativa() {
+        for (State s : mComponent.getStates()) {
+            if (s.getLayoutX() < 0 || s.getLayoutY() < 0) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private double maiorCoordX() {
+        double maior = -10000;
+        for (State s : mComponent.getStates()) {
+            if (s.getLayoutX() > maior) {
+                maior = s.getLayoutX();
+            }
+        }
+        return maior;
+    }
+
+    private double maiorCoordY() {
+        double maior = -10000;
+        for (State s : mComponent.getStates()) {
+            if (s.getLayoutY() > maior) {
+                maior = s.getLayoutY();
+            }
+        }
+        return maior;
     }
 }

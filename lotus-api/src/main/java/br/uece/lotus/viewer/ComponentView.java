@@ -14,6 +14,10 @@ import java.io.File;
  */
 public interface ComponentView {
 
+    void tamalhoPadrao();
+
+    void reajuste();
+
     public interface Listener {
 
         void onStateViewCreated(ComponentView cv, StateView v);
