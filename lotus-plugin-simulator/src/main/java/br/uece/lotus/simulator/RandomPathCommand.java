@@ -39,22 +39,6 @@ public class RandomPathCommand extends Thread implements SimulatorCommand {
 		}
 	}
 
-//	private void startScheduleExecutorService() {
-//		final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-//
-//		scheduler.scheduleAtFixedRate(
-//				() -> {
-//					if (mContinueScheduler) {
-//						Platform.runLater(() -> makeStep());
-//					} else {
-//						scheduler.shutdown();
-//						mContinueScheduler = false;
-//					}
-//				},
-//				1,
-//				1,
-//				TimeUnit.SECONDS);
-//	}
 
 	private void makeStep() {
 		Transition t = selectRandomTransition();
