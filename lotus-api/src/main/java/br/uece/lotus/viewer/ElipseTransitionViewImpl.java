@@ -116,7 +116,7 @@ public class ElipseTransitionViewImpl extends TransitionViewImpl {
         }
         
         private int fatorY(Transition mTransition) {
-            return (quantidadeFilhos(mTransition) - 1) * 20;
+            return (quantidadeFilhos(mTransition) - 1) * 30;
         }
 
         private int quantidadeFilhos(Transition mTransition) {

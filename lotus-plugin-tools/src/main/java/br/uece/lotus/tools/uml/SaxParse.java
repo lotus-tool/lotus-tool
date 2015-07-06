@@ -81,7 +81,7 @@ public class SaxParse extends DefaultHandler{
             for(CombinedFragments comb : inf.getCombinedFrags()){
                 System.out.println("\nCombinedFragments: "+comb.getXmiIdCombinedFragment()+"  Operator: "+comb.getOperator());
                 for(InteractionOperand intop : comb.getInteractionOperands()){
-                    System.out.println("\nInteractionOperand: "+intop.getXmiIdIteractionOperand());
+                    System.out.println("\nInteractionOperand: "+intop.getXmiIdIteractionOperand()+"\tName: "+intop.getInteractionConstraintName());
                     System.out.println("------------Msg-----&&----Operand Frags---------");
                     for(String s : intop.getXmiIdRefMsg()){
                         System.out.println("MensagemId: "+s);
@@ -110,7 +110,7 @@ public class SaxParse extends DefaultHandler{
     private boolean atributosMaisDe1Message = false;
     //////////////////////////////////////////////////////////////////////////////////////
     private int controleTag = 0;
-    private String xmiIdCombinedFrag = "", operator = "", xmiIdInteractionOperand = "", nomeCombinedFrag = "";
+    private String xmiIdCombinedFrag = "", operator = "", xmiIdInteractionOperand = "", nomeCombinedFrag = "", interactionConstraintName = "";
     private List<String> xmiIdRefMsg = new ArrayList<>();
     private List<String> combinedFragIdRef = new ArrayList<>();//blocos dentro de bloco
     private List<InteractionOperand> interactionOperands = new ArrayList<>();
@@ -214,6 +214,12 @@ public class SaxParse extends DefaultHandler{
             controleTag++;
             xmiIdInteractionOperand = atts.getValue("xmi.id");
         }
+        if(tagAtual.equals("UML:ModelElement.constraint") && controleTag==3){
+            controleTag++;
+        }
+        if(tagAtual.equals("UML:InteractionConstraint") && controleTag==4){
+            interactionConstraintName = atts.getValue("name");
+        }
         if(tagAtual.equals("UML:Message") && controleTag==3){
             xmiIdRefMsg.add(atts.getValue("xmi.idref"));
         }
@@ -230,7 +236,7 @@ public class SaxParse extends DefaultHandler{
         }
         if("UML:InteractionOperand".equals(qName) && controleTag==3){
             controleTag--;
-            InteractionOperand io = new InteractionOperand(xmiIdInteractionOperand, null, null);
+            InteractionOperand io = new InteractionOperand(xmiIdInteractionOperand, interactionConstraintName , null, null);
             List<String> aux1 = new ArrayList<>();
             List<String> aux2 = new ArrayList<>();
             aux1.addAll(xmiIdRefMsg);
@@ -240,6 +246,9 @@ public class SaxParse extends DefaultHandler{
             interactionOperands.add(io);
             xmiIdRefMsg.clear();
             combinedFragIdRef.clear();
+        }
+        if("UML:ModelElement.constraint".equals(qName) && controleTag==4){
+            controleTag--;
         }
         if("UML:CombinedFragment".equals(qName) && controleTag==2){
             controleTag--;

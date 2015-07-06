@@ -19,8 +19,8 @@ public class TreeLayouter {
         List<State> states = new ArrayList<>();
         List<State> visitedStates = new ArrayList<>();
         State is = component.getInitialState();
-        is.setLayoutX(0);
-        is.setLayoutY(0);
+        is.setLayoutX(30);
+        is.setLayoutY(30);
         states.add(is);
 
         while (!states.isEmpty()) {

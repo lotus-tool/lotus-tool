@@ -13,12 +13,13 @@ import java.util.List;
  */
 public class InteractionOperand {
     
-    private String xmiIdIteractionOperand;
+    private String xmiIdIteractionOperand, interactionConstraintName;
     private List<String> xmiIdRefMsg;
     private List<String> interactionOperandFrags; // xmi.idref dos combinedFragments (só preenchido se houver blocos dentro de blocos)
 
-    public InteractionOperand(String xmiIdIteractionOperand, List<String> xmiIdRefMsg, List<String> interactionOperandFrags) {
+    public InteractionOperand(String xmiIdIteractionOperand, String interactionConstraintName, List<String> xmiIdRefMsg, List<String> interactionOperandFrags) {
         this.xmiIdIteractionOperand = xmiIdIteractionOperand;
+        this.interactionConstraintName = interactionConstraintName;
         this.xmiIdRefMsg = xmiIdRefMsg;
         this.interactionOperandFrags = interactionOperandFrags;
     }
@@ -29,6 +30,14 @@ public class InteractionOperand {
 
     public void setXmiIdIteractionOperand(String xmiIdIteractionOperand) {
         this.xmiIdIteractionOperand = xmiIdIteractionOperand;
+    }
+
+    public String getInteractionConstraintName() {
+        return interactionConstraintName;
+    }
+
+    public void setInteractionConstraintName(String interactionConstraintName) {
+        this.interactionConstraintName = interactionConstraintName;
     }
 
     public List<String> getXmiIdRefMsg() {
@@ -46,6 +55,4 @@ public class InteractionOperand {
     public void setInteractionOperandFrags(List<String> interactionOperandFrags) {
         this.interactionOperandFrags = interactionOperandFrags;
     }
-
-    
 }

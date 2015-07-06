@@ -20,7 +20,7 @@ import java.util.List;
  *
  * @author Bruno Barbosa
  */
-public class LtsaParser {
+public class LtsParser {
     
     private final List<Mensagem> comunicacao;
     private final List<TabelaReferenciaID> relativoClassifier;
@@ -28,7 +28,7 @@ public class LtsaParser {
     private final Component c;
     private static int idDisponivel;
 
-    public LtsaParser(List<Mensagem> comunicacao, List<TabelaReferenciaID> relativoClassifier, List<InteractionFragments> loopsOuAlts , Component c) {
+    public LtsParser(List<Mensagem> comunicacao, List<TabelaReferenciaID> relativoClassifier, List<InteractionFragments> loopsOuAlts , Component c) {
         this.comunicacao = comunicacao;
         this.relativoClassifier = relativoClassifier;
         this.loopsOuAlts = loopsOuAlts;
