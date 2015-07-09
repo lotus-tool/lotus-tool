@@ -327,6 +327,7 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
             novoState.setLayoutX(100);
             novoState.setLayoutY(100);
             novoState.setLabel(String.valueOf(id));
+            novoState.setBig(true);
             bigState.setState(novoState);
 
             if (contID == 0) {
@@ -334,10 +335,7 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
                 novoState.setID(contID);
             } else
                 novoState.setID(contID);
-            contID++;
-
-            ((StateView) novoState.getValue("view")).getNode().setScaleX(1.3);
-            ((StateView) novoState.getValue("view")).getNode().setScaleY(1.3);
+            contID++;            
 
             //ADD TRANSITIONS DOS BIGSTATES
             for (Transition t : bigState.getListaTransitionsForaSaindo()) {

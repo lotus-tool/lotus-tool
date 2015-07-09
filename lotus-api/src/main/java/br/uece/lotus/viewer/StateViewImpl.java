@@ -96,6 +96,12 @@ public class StateViewImpl extends Region implements StateView, State.Listener {
         if (mState.isFinal()) {
             mSecondCircle.setStyle(style);
         }
+        
+        if(mState.isBig()){
+            mCircle.setRadius(RAIO_CIRCULO+3);      
+            mSecondCircle.setRadius(RAIO_CIRCULO+1);
+            mSecondCircle.setStyle(style);            
+        }
 
         style = "-fx-text-fill: " + (mState.getTextColor() == null ? "black" : mState.getTextColor()) + ";";
         style += "-fx-font-weight: " + (mState.getTextStyle() == null ? "normal" : mState.getTextStyle()) + ";";

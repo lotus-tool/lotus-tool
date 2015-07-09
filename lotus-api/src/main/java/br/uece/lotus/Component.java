@@ -54,6 +54,9 @@ public class Component {
         } else if (from.isInitial()) {
             to.setAsInitial();
         }
+        if (from.isBig()){
+            to.setBig(true);
+        }
     }
 
     private void copyTransition(Transition from, Transition to) {        

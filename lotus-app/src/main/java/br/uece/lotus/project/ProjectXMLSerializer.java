@@ -234,6 +234,7 @@ public class ProjectXMLSerializer implements ProjectSerializer {
             BigState bigState = new BigState();
             bigState.setState(mState);
             mState.setValue("bigstate", bigState);
+            mState.setBig(true);
             BigState.todosOsBigStates.add(bigState);
         } else {
             if (attributes.getValue("id").split(":").length != 1) {

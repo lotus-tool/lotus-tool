@@ -75,6 +75,8 @@ public class State {
     private boolean mFinal;
     //Used in simulations
     private int mVisitedStatesCount;
+    //Used in BigState
+    private boolean mBig = false;
 
     State(Component c) {
         mComponent = c;
@@ -224,7 +226,18 @@ public class State {
             l.onChange(this);
         }
     }
-
+    
+    public boolean isBig(){
+        return this.mBig;
+    }
+    
+    public void setBig(boolean big){
+        this.mBig = big;
+        for (Listener l : mListeners) {
+            l.onChange(this);
+        }        
+    }
+    
     public int getmVisitedStatesCount() { return mVisitedStatesCount; }
 
     public void setmVisitedStatesCount(int value) { mVisitedStatesCount = value; }
