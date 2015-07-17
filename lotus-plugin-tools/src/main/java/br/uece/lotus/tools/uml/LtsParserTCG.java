@@ -234,6 +234,12 @@ public class LtsParserTCG {
                                 tipoAnterior = m.getRecebendo().getTipo();
                                 ultimoDaRamificacao = dst;
                                 receberProximoAlt = dst;
+                                if(primeiroEhUltimo){
+                                    pontaFinal = dst;
+                                    ganchoAlt = null;
+                                    ligacaoDosAlts();
+                                    primeiroEhUltimo = false;
+                                }
                                 break;
                             }
                             case "continuaRamificacao":{
@@ -433,9 +439,6 @@ public class LtsParserTCG {
             e.printStackTrace();
         }
         
-        for(State s : c.getStates()){
-            System.out.println("State id: "+s.getID()+"  State label: "+s.getLabel());
-        }
         return c;
     }
     
@@ -498,6 +501,7 @@ public class LtsParserTCG {
     private State receberProximoAlt = null;
     private State ganchoAlt = null, pontaFinal = null;
     private State ultimoDaRamificacao = null;
+    private Boolean primeiroEhUltimo = false;
     private List<Mensagem> pontasSoltas = new ArrayList<>();
     private String verificarAlt(Mensagem m) {
         for(InteractionFragments intf : loopsOuAlts){
@@ -553,12 +557,16 @@ public class LtsParserTCG {
                                             .setLabel(labelConstraint)
                                             .create();
                                     ultimoDaRamificacao = constraintName;
-                                    if(j==combf.getInteractionOperands().get(i).getXmiIdRefMsg().size()-1){
+                                    if(i==combf.getInteractionOperands().size()-1 && // ponta final das ramificacoes
+                                        j==combf.getInteractionOperands().get(i).getXmiIdRefMsg().size()-1){
+                                        primeiroEhUltimo = true;
+                                    }
+                                    else if(j==combf.getInteractionOperands().get(i).getXmiIdRefMsg().size()-1){
                                         pontasSoltas.add(m);
                                     }
                                     return "primeiro";
                                 }
-                                if(i==combf.getInteractionOperands().size()-1 && // ponta final das ramificacoes
+                                else if(i==combf.getInteractionOperands().size()-1 && // ponta final das ramificacoes
                                         j==combf.getInteractionOperands().get(i).getXmiIdRefMsg().size()-1){
                                     return "ultimo";
                                 }
