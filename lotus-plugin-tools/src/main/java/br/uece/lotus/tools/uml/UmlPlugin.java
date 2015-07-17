@@ -114,8 +114,7 @@ public class UmlPlugin extends Plugin{
                 c = parserComun.parseLTSA();
                 break;
             case "Tcg":
-                LtsaParserTCG parserTcg = new LtsaParserTCG(comunicacao, relativo, loopsOuAlts, c);
-                //LtsParserTCG parserTcg = new LtsParserTCG(comunicacao, relativo, loopsOuAlts, c);
+                LtsParserTCG parserTcg = new LtsParserTCG(comunicacao, relativo, loopsOuAlts, c);
                 c = parserTcg.parseLTSA();
                 break;
         }
