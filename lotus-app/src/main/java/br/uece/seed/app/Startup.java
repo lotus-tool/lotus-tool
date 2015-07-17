@@ -22,7 +22,6 @@
  * THE SOFTWARE.
  */
 package br.uece.seed.app;
-
 import br.uece.lotus.about.AboutPlugin;
 import br.uece.lotus.project.BasicPlugin;
 import br.uece.lotus.project.ProjectDialogsHelper;
@@ -38,7 +37,6 @@ import javafx.scene.image.Image;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-
 import java.io.File;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -63,8 +61,8 @@ public class Startup extends Application {
 	@Override
 	public void start(Stage stage) throws Exception {
 		mStage = stage;
-
-		URL location = getClass().getResource("/fxml/MainScene.fxml");
+		
+                URL location = getClass().getResource("/fxml/MainScene.fxml");
 		FXMLLoader fxmlLoader = new FXMLLoader();
 		fxmlLoader.setLocation(location);
 		fxmlLoader.setBuilderFactory(new JavaFXBuilderFactory());
@@ -89,13 +87,15 @@ public class Startup extends Application {
 
 		registerModules(extensionManager);
 		extensionManager.start();
-		Scene scene = new Scene(root, 700, 500);
+		
+                Scene scene = new Scene(root, 700, 500);
 
-		stage.getIcons().add(new Image(getClass().getResourceAsStream("/images/app_logo.png")));
+		mStage.getIcons().add(new Image(getClass().getResourceAsStream("/images/app_logo.png")));
 
-		stage.setScene(scene);
-		stage.show();
-		stage.setTitle("LoTuS 2.13.1 (alpha)");
+		mStage.setScene(scene);
+		mStage.show();
+                mStage.toBack();
+		mStage.setTitle("LoTuS 2.13.1 (alpha)");
 	}
 
 	private void registerModules(ExtensionManager extensionManager) {
