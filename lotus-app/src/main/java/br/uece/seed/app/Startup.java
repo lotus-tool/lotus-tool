@@ -91,7 +91,7 @@ public class Startup extends Application {
                 Scene scene = new Scene(root, 700, 500);
 
 		mStage.getIcons().add(new Image(getClass().getResourceAsStream("/images/app_logo.png")));
-
+                mStage.setMaximized(true);
 		mStage.setScene(scene);
 		mStage.show();
                 mStage.toBack();
