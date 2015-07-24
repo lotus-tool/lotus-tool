@@ -41,6 +41,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
+import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
@@ -65,6 +66,7 @@ import javafx.scene.input.ScrollEvent;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.transform.Scale;
@@ -423,7 +425,7 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
             }
         });
 
-        mToolbar.getItems().addAll(mBtnArrow, mBtnState, mBtnTransitionLine, mBtnTransitionArc, mBtnEraser, mBtnHand, mBtnZoom, mBtnBigState, new Separator(), txtGuard, txtProbability, txtLabel);
+        mToolbar.getItems().addAll(mBtnArrow, mBtnState, mBtnTransitionLine, mBtnTransitionArc, mBtnEraser, mBtnHand, mBtnZoom, mBtnBigState); //, new Separator(), txtGuard, txtProbability, txtLabel);
 
         mStateToolbar = new ToolBar();
         mStateToolbar.setVisible(false);
@@ -463,9 +465,24 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
         mScrollPanel = new ScrollPane(mViewer.getNode());
         AnchorPane.setTopAnchor(mScrollPanel, 44D);
         AnchorPane.setLeftAnchor(mScrollPanel, 0D);
-        AnchorPane.setRightAnchor(mScrollPanel, 0D);
+        AnchorPane.setRightAnchor(mScrollPanel, 175D);
         AnchorPane.setBottomAnchor(mScrollPanel, 0D);
         getChildren().add(mScrollPanel);
+
+        //Propriedades
+        VBox mPainelPropriedades = new VBox();
+        mPainelPropriedades.getChildren().add(new Label("Guard"));
+        mPainelPropriedades.getChildren().add(txtGuard);
+        mPainelPropriedades.getChildren().add(new Label("Probability"));
+        mPainelPropriedades.getChildren().add(txtProbability);
+        mPainelPropriedades.getChildren().add(new Label("Action"));
+        mPainelPropriedades.getChildren().add(txtLabel);
+        mPainelPropriedades.setPadding(new Insets(5));
+        mPainelPropriedades.setSpacing(5);
+        AnchorPane.setTopAnchor(mPainelPropriedades, 44D);
+        AnchorPane.setRightAnchor(mPainelPropriedades, 0D);
+        AnchorPane.setBottomAnchor(mPainelPropriedades, 0D);
+        getChildren().add(mPainelPropriedades);
 
 
 //       mViewer.getNode().minHeightProperty().bind(mScrollPanel.heightProperty());
