@@ -29,33 +29,33 @@ import javafx.util.Duration;
  */
 public class PreLoader extends Preloader{
 
-    private Stage stage;
+    public static Stage stagePreloader;
     
     @Override
     public void start(Stage primaryStage) throws Exception {
-        stage = primaryStage;
+        stagePreloader = primaryStage;
         
         Parent splash = FXMLLoader.load(getClass().getResource("/fxml/SplashScreen.fxml"));
             
-        stage.initStyle(StageStyle.TRANSPARENT);
+        stagePreloader.initStyle(StageStyle.TRANSPARENT);
         Scene cena = new Scene(splash);
         cena.setFill(Color.TRANSPARENT);
-        stage.setScene(cena);
-        stage.setResizable(false);
-        stage.getIcons().add(new Image(getClass().getResourceAsStream("/images/app_logo.png")));
-        stage.show();
+        stagePreloader.setScene(cena);
+        stagePreloader.setResizable(false);
+        stagePreloader.getIcons().add(new Image(getClass().getResourceAsStream("/images/app_logo.png")));
+        stagePreloader.show();
     }
     
     @Override
     public void handleStateChangeNotification(StateChangeNotification evt){
         if (evt.getType() == StateChangeNotification.Type.BEFORE_START) {
-            if (stage.isShowing()) {
+            if (stagePreloader.isShowing()) {
                 PauseTransition pt = new PauseTransition(Duration.seconds(3));
                 FadeTransition ft = new FadeTransition(
-                    Duration.millis(4000), stage.getScene().getRoot());
+                    Duration.millis(4000), stagePreloader.getScene().getRoot());
                     ft.setFromValue(1.0);
                     ft.setToValue(0.0);
-                    final Stage s = stage;
+                    final Stage s = stagePreloader;
                     EventHandler<ActionEvent> eh = (ActionEvent t) -> {
                         s.close();
                 };
@@ -65,7 +65,7 @@ public class PreLoader extends Preloader{
                 st.play();
                 
             } else {
-                stage.hide();
+                stagePreloader.hide();
             }
         }
     }

@@ -94,8 +94,8 @@ public class Startup extends Application {
                 mStage.setMaximized(true);
 		mStage.setScene(scene);
 		mStage.show();
-                mStage.toBack();
 		mStage.setTitle("LoTuS 2.13.1 (alpha)");
+                PreLoader.stagePreloader.toFront();
 	}
 
 	private void registerModules(ExtensionManager extensionManager) {
