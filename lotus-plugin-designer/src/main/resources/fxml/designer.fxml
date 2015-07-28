@@ -1,24 +1,47 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.*?>
+<?import java.lang.*?>
+<?import javafx.scene.control.*?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.ToolBar?>
 <?import javafx.scene.layout.*?>
-<?import br.uece.lotus.viewer.ComponentViewImpl?>
+
+<!--<?import br.uece.lotus.viewer.ComponentViewImpl?>-->
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
 
 <AnchorPane maxHeight="Infinity" maxWidth="Infinity" minHeight="-Infinity" minWidth="-Infinity" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <SplitPane dividerPositions="0.75" prefHeight="160.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <items>
-            <VBox >
+            <VBox>
                <children>
                   <ToolBar fx:id="mToolbar" prefHeight="40.0" prefWidth="200.0"> </ToolBar>
-                  <ScrollPane fx:id="mComponentViewWrapper" VBox.vgrow="ALWAYS">
-                      <ComponentViewImpl fx:id="mComponentView" />
-                    </ScrollPane>
+                      <ScrollPane fx:id="mComponentViewWrapper" VBox.vgrow="ALWAYS">
+                          <!--<ComponentViewImpl fx:id="mComponentView" />-->
+                      </ScrollPane>
                </children>
             </VBox>
-            <AnchorPane fx:id="mPropertiesContainer"/>
+            <AnchorPane fx:id="mPropertiesContainer">
+               <children>
+                   <VBox prefWidth="100.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" VBox.vgrow="ALWAYS">
+                       <children>
+                           <Label text="Guard" />
+                           <TextField fx:id="txtGuard" prefWidth="Infinity" />
+                           <Label text="Probaiblity" />
+                           <TextField fx:id="txtProbability" prefWidth="Infinity" />
+                           <Label text="Action" />
+                           <TextField fx:id="txtAction" prefWidth="Infinity" />
+                       </children>
+                   </VBox>
+               </children>
+               <padding>
+                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+               </padding>
+            </AnchorPane>
         </items>
       </SplitPane>
    </children>
