@@ -471,12 +471,12 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
 
         //Propriedades
         VBox mPainelPropriedades = new VBox();
+        mPainelPropriedades.getChildren().add(new Label("Action"));
+        mPainelPropriedades.getChildren().add(txtLabel);
         mPainelPropriedades.getChildren().add(new Label("Guard"));
         mPainelPropriedades.getChildren().add(txtGuard);
         mPainelPropriedades.getChildren().add(new Label("Probability"));
         mPainelPropriedades.getChildren().add(txtProbability);
-        mPainelPropriedades.getChildren().add(new Label("Action"));
-        mPainelPropriedades.getChildren().add(txtLabel);
         mPainelPropriedades.setPadding(new Insets(5));
         mPainelPropriedades.setSpacing(5);
         AnchorPane.setTopAnchor(mPainelPropriedades, 44D);
