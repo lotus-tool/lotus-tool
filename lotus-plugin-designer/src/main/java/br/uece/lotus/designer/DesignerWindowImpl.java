@@ -79,6 +79,9 @@ import javax.swing.JOptionPane;
  */
 public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
 
+    private final TextField txtLabel;
+    private final TextField txtGuard;
+    private final TextField txtProbability;
     Rectangle ultimoRetanguloAdicionado;
     double coordenadaInicialX, coordenadaInicialY, coordenadaFinalX, coordenadaFinalY,
             coornenadaIstanteX, coordenadaIstanteY;
@@ -386,7 +389,7 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
         Tooltip.install(mBtnZoom, zoomInfo);
         mBtnZoom.getItems().add(zoomHBox);
 
-        TextField txtLabel = new TextField();
+        txtLabel = new TextField();
         txtLabel.setPromptText("action");
         txtLabel.setOnAction(event -> {
             Object obj = getSelectedView();
@@ -394,7 +397,7 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
                 ((TransitionView) obj).getTransition().setLabel(txtLabel.getText());
             }
         });
-        TextField txtGuard = new TextField();
+        txtGuard = new TextField();
         txtGuard.setPromptText("guard");
         txtGuard.setOnAction(event -> {
             Object obj = getSelectedView();
@@ -402,7 +405,7 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
                 ((TransitionView) obj).getTransition().setGuard(txtGuard.getText());
             }
         });
-        TextField txtProbability = new TextField();
+        txtProbability = new TextField();
         txtProbability.setPromptText("probability");
         txtProbability.setOnAction(event -> {
             Object obj = getSelectedView();
@@ -1285,6 +1288,7 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
         }
         mComponentSelecionado = t;
         if (t != null) {
+            updatePropriedades(t);
             applySelectedStyles(mComponentSelecionado);
         }
         //System.out.println("chegou aqui ");
@@ -1292,6 +1296,16 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
 //        for (Listener l : mListeners) {
 //            l.onSelectionChange(this);
 //        }
+    }
+
+    private void updatePropriedades(Object t) {
+        if (t instanceof TransitionView) {
+            Transition tt = ((TransitionView) t).getTransition();
+            txtGuard.setText(tt.getGuard());
+            txtProbability.setText(tt.getProbability() == null ? null : String.valueOf(tt.getProbability()));
+            txtLabel.setText(tt.getLabel());
+            txtLabel.requestFocus();
+        }
     }
 
     public Object getSelectedView() {
