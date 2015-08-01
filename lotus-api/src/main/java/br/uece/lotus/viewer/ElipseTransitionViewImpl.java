@@ -111,7 +111,7 @@ public class ElipseTransitionViewImpl extends TransitionViewImpl {
 
             seta.layoutXProperty().bind(arco.radiusXProperty());
             seta.setLayoutY(17);
-            rotulo.setLayoutY(5);
+            rotulo.setLayoutY(-5);
             rotulo.layoutXProperty().bind(arco.radiusXProperty().subtract(rotulo.widthProperty().divide(2)));
         }
         

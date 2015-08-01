@@ -90,7 +90,7 @@ public class LineTransitionViewImpl extends TransitionViewImpl {
         mSeta.layoutYProperty().bind(origemY.add(meioCaminhoY));
 
         mRotulo.layoutXProperty().bind(mSeta.layoutXProperty().subtract(mRotulo.widthProperty().divide(2)));
-        mRotulo.layoutYProperty().bind(mSeta.layoutYProperty().subtract(mRotulo.heightProperty()));
+        mRotulo.layoutYProperty().bind(mSeta.layoutYProperty().subtract(mRotulo.heightProperty()).add(5));
         
         mRotulo.translateXProperty().bind(origem.widthProperty().divide(2));
         mRotulo.translateYProperty().bind(origem.heightProperty().divide(2));
