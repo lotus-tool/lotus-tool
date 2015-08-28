@@ -74,9 +74,13 @@ public class LineTransitionViewImpl extends TransitionViewImpl {
         );
 
         DoubleBinding origemX = origem.layoutXProperty().add(origem.widthProperty().divide(2));
+      //  System.out.println("origemX"+origemX.get());
         DoubleBinding origemY = origem.layoutYProperty().add(origem.heightProperty().divide(2));
+//        System.out.println("origemY"+origemY.get());
         DoubleBinding destinoX = destino.layoutXProperty().add(destino.widthProperty().divide(2));
+//        System.out.println("destinoX"+destinoX.get());
         DoubleBinding destinoY = destino.layoutYProperty().add(destino.heightProperty().divide(2));
+//        System.out.println("destinoY"+destinoY.get());
 
         mLinha.startXProperty().bind(origemX);
         mLinha.startYProperty().bind(origemY);
@@ -90,10 +94,21 @@ public class LineTransitionViewImpl extends TransitionViewImpl {
         mSeta.layoutYProperty().bind(origemY.add(meioCaminhoY));
 
         mRotulo.layoutXProperty().bind(mSeta.layoutXProperty().subtract(mRotulo.widthProperty().divide(2)));
-        mRotulo.layoutYProperty().bind(mSeta.layoutYProperty().subtract(mRotulo.heightProperty()).add(5));
+        mRotulo.layoutYProperty().bind(mSeta.layoutYProperty().subtract(mRotulo.heightProperty()).add(5).subtract(10));
+
+
         
-        mRotulo.translateXProperty().bind(origem.widthProperty().divide(2));
-        mRotulo.translateYProperty().bind(origem.heightProperty().divide(2));
+      //  mRotulo.translateXProperty().bind(origem.widthProperty().divide(2));
+      //  mRotulo.translateYProperty().bind(origem.heightProperty().divide(2));
+       // if(mSeta.getRotate()==90||mSeta.getRotate()==270){
+           // mRotulo.setRotate(180);
+       // }
+       // mRotulo.rotateProperty().bind(mSeta.rotateProperty());
+        //System.out.println((mSeta.rotateProperty()).getValue());
+//        System.out.println("origem.widthProperty().divide(2)");
+//        System.out.println(origem.widthProperty().divide(2).getValue());
+//        System.out.println("origem.heightProperty().divide(2).getValue()");
+//        System.out.println(origem.heightProperty().divide(2).getValue());
     }
     
     @Override
