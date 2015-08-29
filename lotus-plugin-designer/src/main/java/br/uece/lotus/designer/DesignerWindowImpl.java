@@ -384,11 +384,8 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
             if (zoomFactor.getValue() != 1)
                 zoomReset.setSelected(false);
         });
-
-        Tooltip zoomInfo = new Tooltip("Ctrl + MouseScroll ↑\nCtrl + MouseScroll ↓\nCtrl + Mouse Button Middle");
-        Tooltip.install(mBtnZoom, zoomInfo);
         mBtnZoom.getItems().add(zoomHBox);
-
+        
         txtLabel = new TextField();
         txtLabel.setPromptText("action");
         txtLabel.setOnAction(event -> {
@@ -427,6 +424,24 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
                 txtProbability.setText(t.getProbability() == null ? "" : t.getProbability().toString());
             }
         });
+        
+        //ToolTips
+        Tooltip arrowInfo = new Tooltip("Selection");
+        Tooltip stateInfo = new Tooltip("Create State");
+        Tooltip lineTransitionInfo = new Tooltip("Create Transition Line");
+        Tooltip arcTransitionInfo = new Tooltip("Create Transition Curve");
+        Tooltip eraserInfo = new Tooltip("Eraser");
+        Tooltip handInfo = new Tooltip("Move");
+        Tooltip zoomInfo = new Tooltip("Ctrl + MouseScroll ↑\nCtrl + MouseScroll ↓\nCtrl + Mouse Button Middle");
+        Tooltip bigStateInfo = new Tooltip("Create Big State");
+        Tooltip.install(mBtnArrow, arrowInfo);
+        Tooltip.install(mBtnState, stateInfo);
+        Tooltip.install(mBtnTransitionLine, lineTransitionInfo);
+        Tooltip.install(mBtnTransitionArc, arcTransitionInfo);
+        Tooltip.install(mBtnEraser, eraserInfo);
+        Tooltip.install(mBtnHand, handInfo);
+        Tooltip.install(mBtnZoom, zoomInfo);
+        Tooltip.install(mBtnBigState, bigStateInfo);
 
         mToolbar.getItems().addAll(mBtnArrow, mBtnState, mBtnTransitionLine, mBtnTransitionArc, mBtnEraser, mBtnHand, mBtnZoom, mBtnBigState); //, new Separator(), txtGuard, txtProbability, txtLabel);
 
