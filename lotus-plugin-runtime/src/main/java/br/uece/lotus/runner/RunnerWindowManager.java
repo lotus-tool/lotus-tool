@@ -42,17 +42,18 @@ public class RunnerWindowManager extends DefaultWindowManagerPlugin<RunnerWindow
         mUserInterface = (UserInterface) extensionManager.get(UserInterface.class);
         mProjectExplorer = (ProjectExplorer) extensionManager.get(ProjectExplorer.class);
 
-        mUserInterface.getMainMenu()
+        /*mUserInterface.getMainMenu()
                 .newItem("Run/Run component")
                 .setWeight(Integer.MIN_VALUE + 2)
                 .setAccelerator(KeyCode.R, KeyCombination.CONTROL_DOWN)
                 .setAction(mRunComponent)
-                .create();
+                .create();*/
 
         mUserInterface.getToolBar().newItem(null)
                 .setGraphic(getClass().getResourceAsStream("/images/ic_run.png"))
                 .setWeight(Integer.MAX_VALUE)
                 .setAction(mRunComponent)
+                .setTooltip("Execute")
                 .create();
 
         mProjectExplorer.getComponentMenu().newItem("Run component")
