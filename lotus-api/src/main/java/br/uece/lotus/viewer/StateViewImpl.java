@@ -96,6 +96,9 @@ public class StateViewImpl extends Region implements StateView, State.Listener {
         if (mState.isFinal()) {
             mSecondCircle.setStyle(style);
         }
+        else{
+            mSecondCircle.setStyle(null);
+        }
         
         if(mState.isBig()){
             mCircle.setRadius(RAIO_CIRCULO+3);      
