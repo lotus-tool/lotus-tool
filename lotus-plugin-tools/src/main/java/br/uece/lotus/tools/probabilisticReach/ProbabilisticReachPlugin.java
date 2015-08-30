@@ -67,7 +67,7 @@ public class ProbabilisticReachPlugin extends Plugin implements ProbabilisticRea
         mProjectExplorer = extensionManager.get(ProjectExplorer.class);
         
         mUserInterface.getMainMenu().newItem("Verification/Probabilistic Reachability")
-                .setWeight(Integer.MAX_VALUE)
+                .setWeight(Integer.MIN_VALUE+20)
                 .setAction(mOpenProbabilisticReach)
                 .create();
 

@@ -30,7 +30,7 @@ public class TracePlugin  extends Plugin {
         mProjectDialogsHelper = extensionManager.get(ProjectDialogsHelper.class);
         mUserInterface.getMainMenu().
         newItem("Model/Model from Trace")
-                    .setWeight(Integer.MAX_VALUE)
+                    .setWeight(Integer.MIN_VALUE)
                     .setAction(mImportTrace)
                     .create();
 

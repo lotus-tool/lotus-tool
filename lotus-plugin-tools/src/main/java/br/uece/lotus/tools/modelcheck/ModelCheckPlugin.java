@@ -79,7 +79,7 @@ public class ModelCheckPlugin extends Plugin {
 
         List<Component> aux = new ArrayList<>();
         mUserInterface.getMainMenu().newItem("Verification/Unreachable States")
-            .setWeight(Integer.MAX_VALUE)
+            .setWeight(Integer.MIN_VALUE+20)
             .setAction(() -> {
             if (mProjectExplorer.getSelectedComponents().size() != 1) {
                 throw new RuntimeException("Select exactly ONE component!");
@@ -109,7 +109,7 @@ public class ModelCheckPlugin extends Plugin {
                 .create();
         
         mUserInterface.getMainMenu().newItem("Verification/Deadlock Detection")
-                .setWeight(Integer.MAX_VALUE)
+                .setWeight(Integer.MIN_VALUE+20)
                 .setAction(() -> {
                     if (mProjectExplorer.getSelectedComponents().size() != 1) {
                         throw new RuntimeException("Select exactly ONE component!");

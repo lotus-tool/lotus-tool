@@ -75,11 +75,19 @@ public abstract class TransitionViewImpl extends Region implements TransitionVie
         String s = "";
 
         if (mTransition.getGuard() != null) {
-            s += "[" + mTransition.getGuard() + "]";
+            if(mTransition.getGuard().equals("")){
+                s += "";
+            }else{
+                s += "[" + mTransition.getGuard() + "]";
+            }
         }
 
         if (mTransition.getProbability() != null) {
-            s += String.format(" (%.2f)", mTransition.getProbability());
+            if(mTransition.getProbability() == null){
+                s += "";
+            }else{
+                s += String.format(" (%.2f)", mTransition.getProbability());
+            }
         }
 
         if (mTransition.getLabel() != null) {

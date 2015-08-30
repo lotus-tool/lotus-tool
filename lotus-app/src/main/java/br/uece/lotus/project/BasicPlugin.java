@@ -34,7 +34,7 @@ import javafx.scene.input.KeyCombination;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
-public class BasicPlugin extends Plugin {
+public class BasicPlugin extends Plugin{
 
     private static final String EXTENSION_DESCRIPTION = "LoTuS files (*.xml)";
     private static final String EXTENSION = "*.xml";
@@ -62,11 +62,12 @@ public class BasicPlugin extends Plugin {
     };
     private Runnable mNewProject = () -> {
         SwingUtilities.invokeLater(() -> {
-            String name = JOptionPane.showInputDialog(null, "Enter the new project's name", "Untitled");
+            Project p = new Project();
+            String namePrompt = "Untitled" + (mProjectExplorer.getAllProjects().size()+1);
+            String name = JOptionPane.showInputDialog(null, "Enter the new project's name", namePrompt);
             if (name == null) {
                 return;
             }
-            Project p = new Project();
             p.setName(name);
             Component c = new Component();
             c.setName("Component" + (p.getComponentsCount() + 1));
