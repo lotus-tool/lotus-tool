@@ -120,7 +120,9 @@ public class ElipseTransitionViewImpl extends TransitionViewImpl {
         }
 
         private int quantidadeFilhos(Transition mTransition) {
-            return mTransition.getSource().getTransitionsTo(mTransition.getDestiny()).indexOf(mTransition);
+            System.out.println("quantas transiçoes tem:" + mTransition.getSource().getOutgoingTransitionsCount());
+           // return mTransition.getSource().getTransitionsTo(mTransition.getDestiny()).indexOf(mTransition);
+            return mTransition.getSource().getOutgoingTransitionsCount();
         }    
     }
 }
