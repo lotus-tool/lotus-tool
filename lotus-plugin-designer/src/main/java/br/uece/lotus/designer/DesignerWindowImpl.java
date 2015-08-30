@@ -408,7 +408,11 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
             Object obj = getSelectedView();
             if (obj instanceof TransitionView) {
                 try {
-                    ((TransitionView) obj).getTransition().setProbability(Double.parseDouble(txtProbability.getText()));
+                    if(txtProbability.getText().equals("")){
+                        ((TransitionView) obj).getTransition().setProbability(null);
+                    }else{
+                        ((TransitionView) obj).getTransition().setProbability(Double.parseDouble(txtProbability.getText()));
+                    }
                 } catch (Exception e) {
                     //ignora
                 }
