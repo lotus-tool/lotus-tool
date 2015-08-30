@@ -272,7 +272,7 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
         mBtnArrow.setGraphic(new ImageView(new Image(getClass().getResourceAsStream("/images/ic_arrow.png"))));
         mBtnArrow.setOnAction((ActionEvent e) -> {
             // ComponentViewImpl v = new ComponentViewImpl();
-            viewer.reajuste();
+           // viewer.reajuste();
             setModo(MODO_NENHUM);
         });
         mBtnArrow.setToggleGroup(mToggleGroup);
