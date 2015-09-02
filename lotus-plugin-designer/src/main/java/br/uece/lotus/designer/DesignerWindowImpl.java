@@ -42,6 +42,7 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
+import javafx.geometry.Orientation;
 import javafx.geometry.Point2D;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
@@ -60,6 +61,9 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.Dragboard;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
@@ -118,6 +122,10 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
     private final ToggleButton mBtnEraser;
     private final ToggleButton mBtnHand;
     private final MenuButton mBtnZoom;
+    private final Button mBtnUndo;
+    private final Button mBtnRedo;
+    private ComponentView[] mUndoRedo;
+    private final int tamHistorico = 14;
 
     private final ToolBar mStateToolbar;
     private final ToolBar mTransitionToolbar;
@@ -265,6 +273,7 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
 
     public DesignerWindowImpl(ComponentView viewer) {
         mViewer = viewer;
+        mUndoRedo = new ComponentView[14];
 
         mToolbar = new ToolBar();
         mToggleGroup = new ToggleGroup();
@@ -386,6 +395,18 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
         });
         mBtnZoom.getItems().add(zoomHBox);
         
+        mBtnUndo = new Button();
+        mBtnUndo.setGraphic(new ImageView(new Image(getClass().getResourceAsStream("/images/ic_undo.png"))));
+        mBtnUndo.setOnAction((ActionEvent event) -> {
+            historicoViewer("Desfazer");
+        });
+        
+        mBtnRedo = new Button();
+        mBtnRedo.setGraphic(new ImageView(new Image(getClass().getResourceAsStream("/images/ic_redo.png"))));
+        mBtnRedo.setOnAction((ActionEvent event) -> {
+            historicoViewer("Refazer");
+        });
+        
         txtLabel = new TextField();
         txtLabel.setPromptText("action");
         txtLabel.setOnAction(event -> {
@@ -438,6 +459,8 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
         Tooltip handInfo = new Tooltip("Move");
         Tooltip zoomInfo = new Tooltip("Ctrl + MouseScroll ↑\nCtrl + MouseScroll ↓\nCtrl + Mouse Button Middle");
         Tooltip bigStateInfo = new Tooltip("Create Big State");
+        Tooltip undoInfo = new Tooltip("Undo (CTRL+Z");
+        Tooltip redoInfo = new Tooltip("Redo (CTRL+Y");
         Tooltip.install(mBtnArrow, arrowInfo);
         Tooltip.install(mBtnState, stateInfo);
         Tooltip.install(mBtnTransitionLine, lineTransitionInfo);
@@ -446,8 +469,11 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
         Tooltip.install(mBtnHand, handInfo);
         Tooltip.install(mBtnZoom, zoomInfo);
         Tooltip.install(mBtnBigState, bigStateInfo);
+        Tooltip.install(mBtnUndo, undoInfo);
+        Tooltip.install(mBtnRedo, redoInfo);
 
-        mToolbar.getItems().addAll(mBtnArrow, mBtnState, mBtnTransitionLine, mBtnTransitionArc, mBtnEraser, mBtnHand, mBtnZoom, mBtnBigState); //, new Separator(), txtGuard, txtProbability, txtLabel);
+        mToolbar.getItems().addAll(mBtnArrow, mBtnState, mBtnTransitionLine, mBtnTransitionArc, mBtnEraser, mBtnHand, mBtnZoom, mBtnBigState,
+                                    new Separator(Orientation.VERTICAL), mBtnUndo, mBtnRedo); //, new Separator(), txtGuard, txtProbability, txtLabel);
 
         mStateToolbar = new ToolBar();
         mStateToolbar.setVisible(false);
@@ -505,8 +531,17 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
         AnchorPane.setRightAnchor(mPainelPropriedades, 0D);
         AnchorPane.setBottomAnchor(mPainelPropriedades, 0D);
         getChildren().add(mPainelPropriedades);
+        
+        /*/KeyCode Combination (Erro de nullPoint na scene)
+        mBtnUndo.getScene().getAccelerators().put(new KeyCodeCombination(KeyCode.Z, KeyCodeCombination.CONTROL_DOWN), new Runnable() {
 
-
+            @Override
+            public void run() {
+                mBtnUndo.fire();
+                System.out.println("Desfazer keycode");
+            }
+        });*/
+        
 //       mViewer.getNode().minHeightProperty().bind(mScrollPanel.heightProperty());
 //       mViewer.getNode().minWidthProperty().bind(mScrollPanel.widthProperty());
 
@@ -1434,4 +1469,34 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
         contID++;
     }
 
+    //Historico para Desfazer e Refazer
+    private void historicoViewer(String opcao) {
+        switch(opcao){
+            case "Desfazer":{
+                if(contPosHistoricoCheia>0){
+                    mScrollPanel.getChildrenUnmodifiable().clear();
+                    mScrollPanel.getChildrenUnmodifiable().add(mUndoRedo[contPosHistoricoCheia-1].getNode());
+                }
+            }break;
+            
+            case "Refazer":{
+                
+            }break;
+        }
+    }
+    private int contPosHistoricoCheia = 0;
+    private void addHistorico(ComponentView viewer){
+        if(contPosHistoricoCheia <= tamHistorico){
+            mUndoRedo[contPosHistoricoCheia] = viewer;
+            contPosHistoricoCheia+=1;
+        }else{
+            for(int i=1;i<=tamHistorico;i++){
+                mUndoRedo[i-1] = mUndoRedo[i];
+            }
+            contPosHistoricoCheia-=1;
+            mUndoRedo[contPosHistoricoCheia] = viewer;
+            contPosHistoricoCheia+=1;
+        }
+    }
+    
 }
