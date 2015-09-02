@@ -157,6 +157,8 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
                 return;
             }
             State s = ((StateView) mComponentSelecionado).getState();
+            s.setError(false);
+            s.setFinal(false);
             s.setAsInitial();
         }
     };
@@ -178,8 +180,14 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
                 return;
             }
             State s = ((StateView) mComponentSelecionado).getState();
-            s.setError(true);
-        }
+            if(s.isInitial()){
+               // JOptionPane.showMessageDialog(null, "Impossible to change an initial state for Erro", "Alert", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
+            s.setFinal(false);
+            s.setError(true);}
+
     };
 
     private EventHandler<ActionEvent> mSetStateAsFinal = new EventHandler<ActionEvent>() {
@@ -189,6 +197,11 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
                 return;
             }
             State s = ((StateView) mComponentSelecionado).getState();
+            if(s.isInitial()){
+                //JOptionPane.showMessageDialog(null, "Impossible to change an initial state for Final", "Alert", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+            s.setError(false);
             s.setFinal(true);
         }
     };
