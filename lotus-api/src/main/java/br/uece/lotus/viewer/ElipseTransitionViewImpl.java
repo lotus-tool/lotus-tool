@@ -25,8 +25,8 @@ package br.uece.lotus.viewer;
 
 import br.uece.lotus.State;
 import br.uece.lotus.Transition;
+import java.util.List;
 import javafx.beans.binding.DoubleBinding;
-import javafx.beans.value.ObservableNumberValue;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
@@ -116,13 +116,18 @@ public class ElipseTransitionViewImpl extends TransitionViewImpl {
         }
         
         private int fatorY(Transition mTransition) {
-            return (quantidadeFilhos(mTransition) - 1) * 30;
+            return quantidadeFilhos(mTransition) * 25;
         }
 
         private int quantidadeFilhos(Transition mTransition) {
-            System.out.println("quantas transiçoes tem:" + mTransition.getSource().getOutgoingTransitionsCount());
-           // return mTransition.getSource().getTransitionsTo(mTransition.getDestiny()).indexOf(mTransition);
-            return mTransition.getSource().getOutgoingTransitionsCount();
-        }    
+            int index = 0;
+            List<Transition> listaT = mTransition.getSource().getTransitionsTo(mTransition.getDestiny());
+            for(int i=0;i<listaT.size();i++){
+                if(listaT.get(i) == mTransition){
+                    index = i;
+                }
+            }
+            return index;
+        }
     }
 }

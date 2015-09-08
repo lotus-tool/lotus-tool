@@ -154,7 +154,7 @@ public class ComponentViewImpl extends AnchorPane implements ComponentView, Comp
                 view.setTransition(null);
                 t.setValue("view", null);
                 getChildren().remove(view);
-            }
+            }   
         }
 
     }

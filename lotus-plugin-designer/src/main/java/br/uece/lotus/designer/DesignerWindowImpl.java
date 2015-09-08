@@ -189,7 +189,7 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
             }
             State s = ((StateView) mComponentSelecionado).getState();
             if(s.isInitial()){
-               // JOptionPane.showMessageDialog(null, "Impossible to change an initial state for Erro", "Alert", JOptionPane.WARNING_MESSAGE);
+                JOptionPane.showMessageDialog(null, "Impossible to change an initial state for Erro", "Alert", JOptionPane.WARNING_MESSAGE);
                 return;
             }
 
@@ -206,7 +206,7 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
             }
             State s = ((StateView) mComponentSelecionado).getState();
             if(s.isInitial()){
-                //JOptionPane.showMessageDialog(null, "Impossible to change an initial state for Final", "Alert", JOptionPane.WARNING_MESSAGE);
+                JOptionPane.showMessageDialog(null, "Impossible to change an initial state for Final", "Alert", JOptionPane.WARNING_MESSAGE);
                 return;
             }
             s.setError(false);
@@ -485,8 +485,8 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
         Tooltip.install(mBtnUndo, undoInfo);
         Tooltip.install(mBtnRedo, redoInfo);
 
-        mToolbar.getItems().addAll(mBtnArrow, mBtnState, mBtnTransitionLine, mBtnTransitionArc, mBtnEraser, mBtnHand, mBtnZoom, mBtnBigState,
-                                    new Separator(Orientation.VERTICAL), mBtnUndo, mBtnRedo); //, new Separator(), txtGuard, txtProbability, txtLabel);
+        mToolbar.getItems().addAll(mBtnArrow, mBtnState, mBtnTransitionLine, mBtnTransitionArc, mBtnEraser, mBtnHand, mBtnZoom, mBtnBigState/*,
+                                    new Separator(Orientation.VERTICAL), mBtnUndo, mBtnRedo*/); //, new Separator(), txtGuard, txtProbability, txtLabel);
 
         mStateToolbar = new ToolBar();
         mStateToolbar.setVisible(false);
@@ -720,7 +720,26 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
                         mViewer.getComponent().remove(v);
                     } else if (mComponentSobMouse instanceof TransitionView) {
                         Transition t = ((TransitionView) mComponentSobMouse).getTransition();
+                        State iniTransition = t.getSource();
+                        State fimTransition = t.getDestiny();
                         mViewer.getComponent().remove(t);
+                        //Verificar Mais de uma Trasition do mesmo Source e Destiny
+                        List<Transition> multiplasTransicoes = iniTransition.getTransitionsTo(fimTransition);
+                        if(multiplasTransicoes.size() > 0){
+                            //deletar da tela
+                            for(Transition trans : multiplasTransicoes){
+                                mViewer.getComponent().remove(trans);
+                            }
+                            //recriar transitions
+                            for(Transition trans : multiplasTransicoes){
+                                mViewer.getComponent().buildTransition(iniTransition, fimTransition)
+                                        .setGuard(trans.getGuard())
+                                        .setLabel(trans.getLabel())
+                                        .setProbability(trans.getProbability())
+                                        .setViewType(TransitionView.Geometry.CURVE)
+                                        .create();
+                            }
+                        }
                     }
                 }
             }
@@ -1262,7 +1281,8 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
                 State d = mVerticeDestinoParaAdicionarTransicao.getState();
                 mExibirPropriedadesTransicao = true;
                 Transition t = mViewer.getComponent().buildTransition(o, d)
-                        .setValue("view.type", mTransitionViewType)
+                        //.setValue("view.type", mTransitionViewType)
+                        .setViewType(mTransitionViewType)
                         .create();
                 applyDefaults(t);
             }
