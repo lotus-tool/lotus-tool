@@ -465,13 +465,13 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
         
         //ToolTips
         Tooltip arrowInfo = new Tooltip("Selection");
-        Tooltip stateInfo = new Tooltip("Create State");
-        Tooltip lineTransitionInfo = new Tooltip("Create Transition Line");
-        Tooltip arcTransitionInfo = new Tooltip("Create Transition Curve");
+        Tooltip stateInfo = new Tooltip("State");
+        Tooltip lineTransitionInfo = new Tooltip("Straight transition");
+        Tooltip arcTransitionInfo = new Tooltip("Curved transition");
         Tooltip eraserInfo = new Tooltip("Eraser");
         Tooltip handInfo = new Tooltip("Move");
         Tooltip zoomInfo = new Tooltip("Ctrl + MouseScroll ↑\nCtrl + MouseScroll ↓\nCtrl + Mouse Button Middle");
-        Tooltip bigStateInfo = new Tooltip("Create Big State");
+        Tooltip bigStateInfo = new Tooltip("Composed state");
         Tooltip undoInfo = new Tooltip("Undo (CTRL+Z");
         Tooltip redoInfo = new Tooltip("Redo (CTRL+Y");
         Tooltip.install(mBtnArrow, arrowInfo);
