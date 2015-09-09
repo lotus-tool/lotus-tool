@@ -351,8 +351,8 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
             int id = mViewer.getComponent().getStatesCount();
             State novoState = mViewer.getComponent().newState(id);
             novoState.setValue("bigstate", bigState);
-            novoState.setLayoutX(100);
-            novoState.setLayoutY(100);
+            novoState.setLayoutX(statesSelecionados.get(0).getLayoutX()+20);
+            novoState.setLayoutY(statesSelecionados.get(0).getLayoutY()+20);
             novoState.setLabel(String.valueOf(id));
             novoState.setBig(true);
             bigState.setState(novoState);
