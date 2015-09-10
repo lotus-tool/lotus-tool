@@ -422,7 +422,7 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
         
         txtLabel = new TextField();
         txtLabel.setPromptText("action");
-        txtLabel.setOnAction(event -> {
+        txtLabel.setOnKeyReleased(event -> {
             Object obj = getSelectedView();
             if (obj instanceof TransitionView) {
                 ((TransitionView) obj).getTransition().setLabel(txtLabel.getText());
@@ -430,15 +430,17 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
         });
         txtGuard = new TextField();
         txtGuard.setPromptText("guard");
-        txtGuard.setOnAction(event -> {
-            Object obj = getSelectedView();
-            if (obj instanceof TransitionView) {
-                ((TransitionView) obj).getTransition().setGuard(txtGuard.getText());
-            }
-        });
+       // txtGuard.setOnAction(event -> {
+            txtGuard.setOnKeyReleased(event -> {
+                Object obj = getSelectedView();
+                if (obj instanceof TransitionView) {
+                    ((TransitionView) obj).getTransition().setGuard(txtGuard.getText());
+                }
+            });
         txtProbability = new TextField();
         txtProbability.setPromptText("probability");
-        txtProbability.setOnAction(event -> {
+        txtProbability.setOnKeyReleased(event -> {
+            //txtProbability.setOnAction(event -> {
             Object obj = getSelectedView();
             if (obj instanceof TransitionView) {
                 try {
