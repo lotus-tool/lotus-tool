@@ -1101,7 +1101,7 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
     public boolean selecionandoComRetangulo(double inicioDoRectanguloX, double inicioDoRectanguloY, double finalDoRectanguloX, double finalDoRectanguloY) {
         boolean aux = false;
         /////////////////////////////////////////////////
-        ////////organizando as pesiÃ§Ãµes do retangulo
+        ////////ORGANIZANDO AS POSICOES DO RETANGULO DE SELECAO
         /////////////////////////////////////////////////
         if (inicioDoRectanguloX > finalDoRectanguloX) {
             double ajuda = finalDoRectanguloX;
