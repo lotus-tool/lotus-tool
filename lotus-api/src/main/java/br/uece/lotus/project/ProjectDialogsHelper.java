@@ -48,8 +48,8 @@ public class ProjectDialogsHelper extends Plugin {
         mDialogsHelper = extensionManager.get(DialogsHelper.class);
     }
 
-    public void save(Project project, ProjectSerializer serializer, String title, String extensionDescription, String extension) {
-        realSave(project, serializer, false, true, title, extensionDescription, extension);
+    public boolean save(Project project, ProjectSerializer serializer, String title, String extensionDescription, String extension) {
+         return realSave(project, serializer, false, true, title, extensionDescription, extension);
     }
 
     public void saveAs(Project project, ProjectSerializer serializer, String title, String extensionDescription, String extension) {
@@ -87,16 +87,16 @@ public class ProjectDialogsHelper extends Plugin {
         return file;
     }
 
-    private void realSave(Project project, ProjectSerializer serializer, boolean forceShowDialog, boolean cacheFileName, String title, String extensionDescription, String extension) {
+    private boolean realSave(Project project, ProjectSerializer serializer, boolean forceShowDialog, boolean cacheFileName, String title, String extensionDescription, String extension) {
         if (project == null) {
             JOptionPane.showMessageDialog(null, "Please select a project!");
-            return;
+            return false;
         }
         File f = (File) project.getValue("file");
         if (forceShowDialog || f == null) {
             f = getFileChooser(title, extensionDescription, extension, project.getName()).showSaveDialog(null);
             if (f == null) {
-                return;
+                return false;
             }
         }
         try (FileOutputStream out = new FileOutputStream(f)) {
@@ -107,6 +107,7 @@ public class ProjectDialogsHelper extends Plugin {
         } catch (Exception e) {
             mDialogsHelper.showException(e);
         }
+        return true;
     }
 
     private FileChooser getFileChooser(String title, String extensionDescription, String extension, String defaultFileName) {

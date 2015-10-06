@@ -113,7 +113,12 @@ public class BasicPlugin extends Plugin{
             JOptionPane.showMessageDialog(null, "Please select a project!");
             return;
         }
+        //////Alerte Perguntando se quer salvar, mas só pergunta se o project não tiver sido salvo já;
+
+        boolean saved=mProjectDialogsHelper.save(p, mProjectSerializer, "Save project", EXTENSION_DESCRIPTION, EXTENSION);
+        if(saved){
         mProjectExplorer.close(p);
+        }
     };
     private Runnable mCloseOthersProjects = () -> {
         Project projetoSelecionado = mProjectExplorer.getSelectedProject();
@@ -190,6 +195,7 @@ public class BasicPlugin extends Plugin{
                 .create();
         mMainMenu.newItem("File/Close Project...")
                 .setWeight(Integer.MIN_VALUE)
+                .setAction(mSaveProject)
                 .setAction(mCloseProject)
                 .create();
         mMainMenu.newItem("File/Close Others Projects...")
