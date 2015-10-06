@@ -37,9 +37,11 @@ import java.util.List;
 
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.event.EventType;
 import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
@@ -64,6 +66,7 @@ import javafx.scene.input.Dragboard;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
@@ -522,6 +525,9 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
         mViewer.getNode().setOnMousePressed(aoIniciarArrastoVerticeComOMouse);
         mViewer.getNode().setOnMouseDragged(aoArrastarVerticeComOMouse);
         mViewer.getNode().setOnMouseReleased(aoLiberarVerticeArrastadoComOMouse);
+        
+        mViewer.getNode().setOnKeyPressed(teclaPressionada);
+        mViewer.getNode().setOnKeyReleased(teclaPressionada);
 
         //////////////fiz isso/////
         mViewer.tamalhoPadrao();
@@ -596,46 +602,28 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
         mViewer.getNode().setOnScroll(zoom);
         mComponentContextMenu.getItems().addAll(mSetAsInitialMenuItem, new SeparatorMenuItem(), mSetAsNormalMenuItem, mSetAsFinalMenuItem, mSetAsErrorMenuItem, new SeparatorMenuItem(), mSaveAsPNG);
 
+        //Set Colors//////////////////////////////////////////////////////////////////////////////////////////////////
         Menu menuColor = new Menu("Colors");
         MenuItem defaultColor = new MenuItem("Default");
         defaultColor.setOnAction(mSetColor);
 
-        MenuItem pinkColor = new MenuItem("Pink");
-        pinkColor.setUserData("#FF0066");
-        pinkColor.setOnAction(mSetColor);
-
-        MenuItem purpleColor = new MenuItem("Purple");
-        purpleColor.setUserData("#660033");
-        purpleColor.setOnAction(mSetColor);
-
-        MenuItem grayColor = new MenuItem("Gray");
-        grayColor.setUserData("#999966");
-        grayColor.setOnAction(mSetColor);
-
-        MenuItem redColor = new MenuItem("Red");
-        redColor.setUserData("#FF0000");
-        redColor.setOnAction(mSetColor);
-
-        MenuItem yellowColor = new MenuItem("Yellow");
-        yellowColor.setUserData("#FFFF00");
-        yellowColor.setOnAction(mSetColor);
-
-        MenuItem blueColor = new MenuItem("Blue");
-        blueColor.setUserData("#0000ff");
-        blueColor.setOnAction(mSetColor);
-
-        MenuItem blackColor = new MenuItem("Black");
-        blackColor.setUserData("#000000");
-        blackColor.setOnAction(mSetColor);
-
-        MenuItem greenColor = new MenuItem("Green");
-        greenColor.setUserData("#00ff00");
-        greenColor.setOnAction(mSetColor);
-
-        MenuItem whiteColor = new MenuItem("White");
-        whiteColor.setUserData("#FFFFFF");
-        whiteColor.setOnAction(mSetColor);
-        menuColor.getItems().addAll(defaultColor, new SeparatorMenuItem(), greenColor, blueColor, blackColor, yellowColor, whiteColor, redColor, grayColor, pinkColor, purpleColor);
+        ColorPicker cores = new ColorPicker();
+        MenuItem changeColor = new CheckMenuItem();
+        changeColor.setGraphic(cores);
+        cores.setOnAction((ActionEvent event) -> {
+            if (mComponentSelecionado == null) {
+                return;
+            }
+            try{
+                State s = ((StateView) mComponentSelecionado).getState();
+                String hexCor = "#"+ Integer.toHexString(cores.getValue().hashCode()).substring(0, 6).toUpperCase();
+                s.setColor(hexCor);
+                System.out.println("cor: "+hexCor);
+            }catch(Exception e){}
+            cores.hide();
+        });
+        menuColor.getItems().addAll(defaultColor,changeColor);
+        
         mComponentContextMenu.getItems().addAll(new SeparatorMenuItem(), menuColor);
 
         //Resetando Zoom
@@ -1309,7 +1297,55 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
         }
 
     };
-    ///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+//                       TECLAS PRECIONADAS                             //////
+/////////////////////////////////////////////////////////////////////////////    
+    private EventHandler<KeyEvent> teclaPressionada = new EventHandler<KeyEvent>() {
+
+        @Override
+        public void handle(KeyEvent event) {
+            
+            if(event.getCode().equals(KeyCode.DELETE)){
+                System.out.println("entrou no delete");
+                if (mComponentSobMouse instanceof StateView) {
+                    State v = ((StateView) mComponentSobMouse).getState();
+                    if(v.getValue("bigstate") instanceof BigState){
+                        BigState.removeBigState((BigState) v.getValue("bigstate"));
+                    }
+                    mViewer.getComponent().remove(v);
+                } else if (mComponentSobMouse instanceof TransitionView) {
+                    Transition t = ((TransitionView) mComponentSobMouse).getTransition();
+                    State iniTransition = t.getSource();
+                    State fimTransition = t.getDestiny();
+                    mViewer.getComponent().remove(t);
+                    //Verificar Mais de uma Trasition do mesmo Source e Destiny
+                    List<Transition> multiplasTransicoes = iniTransition.getTransitionsTo(fimTransition);
+                    if(multiplasTransicoes.size() > 0){
+                        //deletar da tela
+                        for(Transition trans : multiplasTransicoes){
+                            mViewer.getComponent().remove(trans);
+                        }
+                        //recriar transitions
+                        for(Transition trans : multiplasTransicoes){
+                            mViewer.getComponent().buildTransition(iniTransition, fimTransition)
+                                    .setGuard(trans.getGuard())
+                                    .setLabel(trans.getLabel())
+                                    .setProbability(trans.getProbability())
+                                    .setViewType(TransitionView.Geometry.CURVE)
+                                    .create();
+                        }
+                    }
+                }
+            }
+            /*else if(event.getCode() ==  new KeyCombination(KeyCode.Z,KeyCombination.CONTROL_DOWN)){
+                
+            }
+            else if(event.getCode() == KeyCode.DELETE){
+                
+            }*/
+        }
+    };
+///////////////////////////////////////////////////////////////////////////////
 //                             ZOOM                                     //////
 /////////////////////////////////////////////////////////////////////////////
     private EventHandler<? super ScrollEvent> zoom = new EventHandler<ScrollEvent>() {
