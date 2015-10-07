@@ -45,6 +45,7 @@ import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.geometry.Point2D;
+import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.control.ContextMenu;
@@ -218,16 +219,6 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
             s.setColor(null);
         }
     };
-    private EventHandler<ActionEvent> mSetColor = new EventHandler<ActionEvent>() {
-        @Override
-        public void handle(ActionEvent event) {
-            if (mComponentSelecionado == null) {
-                return;
-            }
-            State s = ((StateView) mComponentSelecionado).getState();
-            s.setColor((String) ((MenuItem) event.getSource()).getUserData());
-        }
-    };
     private int mTransitionViewType;
 
     @Override
@@ -289,6 +280,7 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
     private CheckBox zoomReset;
     private DoubleProperty zoomFactor = new SimpleDoubleProperty(1);
     private Scale escala = new Scale(1, 1);
+    private HBox paleta;
 
     public DesignerWindowImpl(ComponentView viewer) {
         mViewer = viewer;
@@ -426,6 +418,23 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
             historicoViewer("Refazer");
         });
         
+        //Set Colors-----------------------------------------------------------------------------------
+        ColorPicker cores = new ColorPicker();
+        MenuButton complementoColors = new MenuButton("");
+        cores.setOnAction((ActionEvent event) -> {
+            changeColorsState(cores, "");
+        });
+        MenuItem defaultColor = new MenuItem("Default Color");
+        defaultColor.setOnAction((ActionEvent event) -> {
+            changeColorsState(cores, "Default");
+        });
+        complementoColors.getItems().add(defaultColor);
+        paleta = new HBox();
+        paleta.setAlignment(Pos.CENTER);
+        paleta.getChildren().addAll(cores,complementoColors);
+        paleta.setVisible(false);
+        
+        
         txtLabel = new TextField();
         txtLabel.setPromptText("action");
         txtLabel.setOnKeyReleased(event -> {
@@ -493,8 +502,8 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
         Tooltip.install(mBtnUndo, undoInfo);
         Tooltip.install(mBtnRedo, redoInfo);
 
-        mToolbar.getItems().addAll(mBtnArrow, mBtnState, mBtnTransitionLine, mBtnTransitionArc, mBtnEraser, mBtnHand, mBtnZoom, mBtnBigState/*,
-                                    new Separator(Orientation.VERTICAL), mBtnUndo, mBtnRedo*/); //, new Separator(), txtGuard, txtProbability, txtLabel);
+        mToolbar.getItems().addAll(mBtnArrow, mBtnState, mBtnTransitionLine, mBtnTransitionArc, mBtnEraser, mBtnHand, mBtnZoom, mBtnBigState,
+                                    new Separator(Orientation.VERTICAL),paleta);//mBtnUndo, mBtnRedo); //, new Separator(), txtGuard, txtProbability, txtLabel);
 
         mStateToolbar = new ToolBar();
         mStateToolbar.setVisible(false);
@@ -604,30 +613,6 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
         mViewer.getNode().setOnScroll(zoom);
         mComponentContextMenu.getItems().addAll(mSetAsInitialMenuItem, new SeparatorMenuItem(), mSetAsNormalMenuItem, mSetAsFinalMenuItem, mSetAsErrorMenuItem, new SeparatorMenuItem(), mSaveAsPNG);
 
-        //Set Colors//////////////////////////////////////////////////////////////////////////////////////////////////
-        Menu menuColor = new Menu("Colors");
-        MenuItem defaultColor = new MenuItem("Default");
-        defaultColor.setOnAction(mSetColor);
-
-        ColorPicker cores = new ColorPicker();
-        MenuItem changeColor = new CheckMenuItem();
-        changeColor.setGraphic(cores);
-        cores.setOnAction((ActionEvent event) -> {
-            if (mComponentSelecionado == null) {
-                return;
-            }
-            try{
-                State s = ((StateView) mComponentSelecionado).getState();
-                String hexCor = "#"+ Integer.toHexString(cores.getValue().hashCode()).substring(0, 6).toUpperCase();
-                s.setColor(hexCor);
-                System.out.println("cor: "+hexCor);
-            }catch(Exception e){}
-            cores.hide();
-        });
-        menuColor.getItems().addAll(defaultColor,new SeparatorMenuItem(),changeColor);
-        
-        mComponentContextMenu.getItems().addAll(new SeparatorMenuItem(), menuColor);
-
         //Resetando Zoom
         zoomReset.selectedProperty().addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {
             if (zoomReset.isSelected()) {
@@ -666,6 +651,7 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
             if (mModoAtual == MODO_NENHUM) {
 
                 if (mComponentSobMouse != null && (mComponentSobMouse instanceof StateView)) {
+                    paleta.setVisible(true);
                     //VERIFICANDO SE TEM UM BIGSTATE
                     if (((BigState)((StateView)mComponentSobMouse).getState().getValue("bigstate")) != null) {
                         System.out.println("NUMERO DE BIGSTATES = "+BigState.todosOsBigStates.size());
@@ -681,6 +667,8 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
                             mViewer.getComponent().remove(state);
                         }
                     }
+                }else{
+                    paleta.setVisible(false);
                 }
 
             } else {
@@ -1447,6 +1435,21 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
         node.setScaleY(node.getScaleY() * factor);
         node.setTranslateX(node.getTranslateX() + xr * dw / 2);
         node.setTranslateY(node.getTranslateY() + yr * dh / 2);
+    }
+    
+    private void changeColorsState(ColorPicker cores, String tipo){
+        if (mComponentSelecionado == null) {
+                return;
+            }
+            State s = ((StateView) mComponentSelecionado).getState();
+            if(tipo.equals("Default")){
+                s.setColor(null);
+                return;
+            }
+            String hexCor = "#"+ Integer.toHexString(cores.getValue().hashCode()).substring(0, 6).toUpperCase();
+            s.setColor(hexCor);
+            System.out.println("cor: "+hexCor);
+            
     }
 
     @Override
