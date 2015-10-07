@@ -121,13 +121,28 @@ public class ElipseTransitionViewImpl extends TransitionViewImpl {
 
         private int quantidadeFilhos(Transition mTransition) {
             int index = 0;
+            boolean temLine = false;
             List<Transition> listaT = mTransition.getSource().getTransitionsTo(mTransition.getDestiny());
             for(int i=0;i<listaT.size();i++){
                 if(listaT.get(i) == mTransition){
                     index = i;
                 }
             }
+            temLine = verificarSeExisteTransitionLine(listaT);
+            if(temLine){
+                index = index-1;
+            }
             return index;
         }
+        
+        private boolean verificarSeExisteTransitionLine(List<Transition> transitions){
+            boolean line = false;
+            for(Transition t : transitions){
+                if((int)t.getValue("view.type") == 0){
+                    line = true;
+                }
+            }
+            return line;
+        } 
     }
 }

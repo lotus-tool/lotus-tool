@@ -41,7 +41,6 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.event.EventType;
 import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
@@ -171,6 +170,7 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
             s.setError(false);
             s.setFinal(false);
             s.setAsInitial();
+            s.setColor(null);
         }
     };
     private EventHandler<ActionEvent> mSetStateAsNormal = new EventHandler<ActionEvent>() {
@@ -182,6 +182,7 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
             State s = ((StateView) mComponentSelecionado).getState();
             s.setFinal(false);
             s.setError(false);
+            s.setColor(null);
         }
     };
     private EventHandler<ActionEvent> mSetStateAsError = new EventHandler<ActionEvent>() {
@@ -195,10 +196,10 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
                 JOptionPane.showMessageDialog(null, "Impossible to change an initial state for Erro", "Alert", JOptionPane.WARNING_MESSAGE);
                 return;
             }
-
             s.setFinal(false);
-            s.setError(true);}
-
+            s.setError(true);
+            s.setColor(null);
+        }
     };
 
     private EventHandler<ActionEvent> mSetStateAsFinal = new EventHandler<ActionEvent>() {
@@ -214,6 +215,7 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
             }
             s.setError(false);
             s.setFinal(true);
+            s.setColor(null);
         }
     };
     private EventHandler<ActionEvent> mSetColor = new EventHandler<ActionEvent>() {
@@ -280,6 +282,7 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
     private Object mComponentSobMouse;
     private Object mComponentSelecionado;
     private final List<Listener> mListeners = new ArrayList<>();
+    //zoom e mover
     private double mViewerScaleXPadrao, mViewerScaleYPadrao, mViewerTranslateXPadrao, mViewerTranslateYPadrao;
     private double posicaoMViewerHandX = 0, posicaoMViewerHandY = 0;//posição mviewer
     private double mouseHandX = 0, mouseHandY = 0;// posiÃ§Ã£o mouse
@@ -471,8 +474,8 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
         //ToolTips
         Tooltip arrowInfo = new Tooltip("Selection");
         Tooltip stateInfo = new Tooltip("State");
-        Tooltip lineTransitionInfo = new Tooltip("Straight transition");
-        Tooltip arcTransitionInfo = new Tooltip("Curved transition");
+        Tooltip lineTransitionInfo = new Tooltip("Straight Transition");
+        Tooltip arcTransitionInfo = new Tooltip("Curved Transition");
         Tooltip eraserInfo = new Tooltip("Eraser");
         Tooltip handInfo = new Tooltip("Move");
         Tooltip zoomInfo = new Tooltip("Ctrl + MouseScroll ↑\nCtrl + MouseScroll ↓\nCtrl + Mouse Button Middle");
@@ -526,8 +529,7 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
         mViewer.getNode().setOnMouseDragged(aoArrastarVerticeComOMouse);
         mViewer.getNode().setOnMouseReleased(aoLiberarVerticeArrastadoComOMouse);
         
-        mViewer.getNode().setOnKeyPressed(teclaPressionada);
-        mViewer.getNode().setOnKeyReleased(teclaPressionada);
+        mViewer.getNode().addEventHandler(KeyEvent.ANY, teclaPressionada);
 
         //////////////fiz isso/////
         mViewer.tamalhoPadrao();
@@ -622,7 +624,7 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
             }catch(Exception e){}
             cores.hide();
         });
-        menuColor.getItems().addAll(defaultColor,changeColor);
+        menuColor.getItems().addAll(defaultColor,new SeparatorMenuItem(),changeColor);
         
         mComponentContextMenu.getItems().addAll(new SeparatorMenuItem(), menuColor);
 
@@ -774,7 +776,7 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
                     mViewer.getNode().setTranslateX(mViewerTranslateXPadrao);
                     mViewer.getNode().setTranslateY(mViewerTranslateYPadrao);
                 }
-                //gravar cordenadas x e y do mViewer de acordo com a posição do mouse
+                //gravar cordenadas x e y do mViewer de acordo com a posiÃ§Ã£o do mouse
                 mouseHandX = e.getSceneX();
                 mouseHandY = e.getSceneY();
                 //get the x and y position measure from Left-Top
@@ -919,7 +921,7 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
     private double largura = 0, altura = 0;
     private double inicioDoRectanguloX, inicioDoRectanguloY, inicioDoRectanguloXAux, inicioDoRectanguloYAux;
     //////////////////////////////////////////////////////////////////////////////////////////
-    // clickar e nÃ£o soltar e mover o mouse(precionando e movendo/dragg)
+    // clickar e nÃƒÂ£o soltar e mover o mouse(precionando e movendo/dragg)
     //////////////////////////////////////////////////////////////////////////////////////////
     private EventHandler<? super MouseEvent> aoArrastarVerticeComOMouse = new EventHandler<MouseEvent>() {
         @Override
@@ -1270,15 +1272,83 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
                 State o = mVerticeOrigemParaAdicionarTransicao.getState();
                 State d = mVerticeDestinoParaAdicionarTransicao.getState();
                 mExibirPropriedadesTransicao = true;
-                Transition t = mViewer.getComponent().buildTransition(o, d)
-                        //.setValue("view.type", mTransitionViewType)
+                
+                int qtdeTransitionOD = o.getTransitionsTo(d).size();
+                int qtdeTransitionDO = d.getTransitionsTo(o).size();
+                List<Transition> transitionsOD = o.getTransitionsTo(d);
+                List<Transition> transitionsDO = d.getTransitionsTo(o);
+                boolean temLineOD = verificarSeExisteTransitionLine(transitionsOD);
+                boolean temLineDO = verificarSeExisteTransitionLine(transitionsDO);
+                
+                if(mTransitionViewType == 1){ // curve
+                    Transition t = mViewer.getComponent().buildTransition(o, d)
                         .setViewType(mTransitionViewType)
                         .create();
-                applyDefaults(t);
+                    applyDefaults(t);
+                }
+                //line  com auto ajuste
+                else if(qtdeTransitionOD == 0 && qtdeTransitionDO == 0){
+                    Transition t = mViewer.getComponent().buildTransition(o, d)
+                        .setViewType(mTransitionViewType)
+                        .create();
+                    applyDefaults(t);
+                }
+                else if(qtdeTransitionOD == 0 && qtdeTransitionDO > 0 && !temLineDO){
+                    Transition t = mViewer.getComponent().buildTransition(o, d)
+                        .setViewType(TransitionView.Geometry.LINE)
+                        .create();
+                    applyDefaults(t);
+                }
+                else if(qtdeTransitionOD == 0 && qtdeTransitionDO > 0 && temLineDO){
+                    Transition t = mViewer.getComponent().buildTransition(o, d)
+                        .setViewType(TransitionView.Geometry.CURVE)
+                        .create();
+                    applyDefaults(t);
+                }
+                else if(qtdeTransitionOD > 0 && !temLineOD && qtdeTransitionDO == 0){
+                    Transition t = mViewer.getComponent().buildTransition(o, d)
+                        .setViewType(TransitionView.Geometry.LINE)
+                        .create();
+                    applyDefaults(t);
+                }
+                else if(qtdeTransitionOD > 0 && temLineOD && qtdeTransitionDO == 0){
+                    Transition t = mViewer.getComponent().buildTransition(o, d)
+                        .setViewType(TransitionView.Geometry.CURVE)
+                        .create();
+                    applyDefaults(t);
+                }
+                else if(qtdeTransitionOD > 0 && !temLineOD && qtdeTransitionDO > 0 && !temLineDO){
+                    Transition t = mViewer.getComponent().buildTransition(o, d)
+                        .setViewType(TransitionView.Geometry.LINE)
+                        .create();
+                    applyDefaults(t);
+                }
+                else if(qtdeTransitionOD > 0 && temLineOD && qtdeTransitionDO > 0 && !temLineDO){
+                    Transition t = mViewer.getComponent().buildTransition(o, d)
+                        .setViewType(TransitionView.Geometry.CURVE)
+                        .create();
+                    applyDefaults(t);
+                }
+                else if(qtdeTransitionOD > 0 && !temLineOD &&qtdeTransitionDO > 0 && temLineDO){
+                    Transition t = mViewer.getComponent().buildTransition(o, d)
+                        .setViewType(TransitionView.Geometry.CURVE)
+                        .create();
+                    applyDefaults(t);
+                }
             }
 
             event.setDropCompleted(true);
             event.consume();
+        }
+        
+        private boolean verificarSeExisteTransitionLine(List<Transition> transitions){
+            boolean line = false;
+            for(Transition t : transitions){
+                if((int)t.getValue("view.type") == 0){
+                    line = true;
+                }
+            }
+            return line;
         }
 
         private void applyDefaults(Transition t) {
@@ -1300,11 +1370,11 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
 ///////////////////////////////////////////////////////////////////////////////
 //                       TECLAS PRECIONADAS                             //////
 /////////////////////////////////////////////////////////////////////////////    
+   
     private EventHandler<KeyEvent> teclaPressionada = new EventHandler<KeyEvent>() {
 
         @Override
         public void handle(KeyEvent event) {
-            
             if(event.getCode().equals(KeyCode.DELETE)){
                 System.out.println("entrou no delete");
                 if (mComponentSobMouse instanceof StateView) {
