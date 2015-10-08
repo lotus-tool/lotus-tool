@@ -27,6 +27,7 @@ import br.uece.lotus.BigState;
 import br.uece.lotus.Component;
 import br.uece.lotus.State;
 import br.uece.lotus.Transition;
+import br.uece.lotus.properties.TransitionsPropertiesController;
 import br.uece.lotus.viewer.*;
 import br.uece.seed.app.ExtensibleFXToolbar;
 import br.uece.seed.app.ExtensibleToolbar;
@@ -77,6 +78,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Font;
 import javafx.scene.transform.Scale;
 import javafx.stage.FileChooser;
 
@@ -438,7 +440,7 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
         
         
         txtLabel = new TextField();
-        txtLabel.setPromptText("action");
+        txtLabel.setPromptText("Action");
         txtLabel.setOnKeyReleased(event -> {
             Object obj = getSelectedView();
             if (obj instanceof TransitionView) {
@@ -446,7 +448,7 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
             }
         });
         txtGuard = new TextField();
-        txtGuard.setPromptText("guard");
+        txtGuard.setPromptText("Guard");
        // txtGuard.setOnAction(event -> {
             txtGuard.setOnKeyReleased(event -> {
                 Object obj = getSelectedView();
@@ -455,16 +457,40 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
                 }
             });
         txtProbability = new TextField();
-        txtProbability.setPromptText("probability");
-        txtProbability.setOnKeyReleased(event -> {
-            //txtProbability.setOnAction(event -> {
+        txtProbability.setPrefWidth(50);
+        txtProbability.setAlignment(Pos.CENTER);
+        TransitionsPropertiesController.campoProbability(txtProbability);
+        txtProbability.setPromptText("%");
+        //txtProbability.setOnKeyReleased(event -> {
+        txtProbability.setOnAction(event -> {
             Object obj = getSelectedView();
             if (obj instanceof TransitionView) {
                 try {
                     if(txtProbability.getText().equals("")){
                         ((TransitionView) obj).getTransition().setProbability(null);
                     }else{
-                        ((TransitionView) obj).getTransition().setProbability(Double.parseDouble(txtProbability.getText()));
+                        String valorDoField = txtProbability.getText().trim();
+                        String auxValor = "";
+                        if(valorDoField.contains(",")){
+                            auxValor = valorDoField.replaceAll(",", ".");
+                        }
+                        else if(valorDoField.contains(".")){
+                            auxValor = valorDoField;
+                        }
+                        else if(valorDoField.contains("%")){
+                            double valorEntre0e1;
+                            auxValor = valorDoField.replaceAll("%", "");
+                            valorEntre0e1 = (Double.parseDouble(auxValor))/100;
+                            auxValor = String.valueOf(valorEntre0e1);
+                        }
+                        else{
+                            if(valorDoField.equals("0") || valorDoField.equals("1")){
+                                auxValor = valorDoField;
+                            }else{
+                                JOptionPane.showMessageDialog(null, "Imput probability need 0 to 1", "Erro", JOptionPane.ERROR_MESSAGE);
+                            }
+                        }
+                        ((TransitionView) obj).getTransition().setProbability(Double.parseDouble(auxValor));
                     }
                 } catch (Exception e) {
                     //ignora
@@ -557,14 +583,22 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
         mPainelPropriedades.getChildren().add(txtLabel);
         mPainelPropriedades.getChildren().add(new Label("Guard"));
         mPainelPropriedades.getChildren().add(txtGuard);
+        
+        HBox mPainelPropriedadeProbability = new HBox(2);
+        mPainelPropriedadeProbability.setAlignment(Pos.CENTER);
         mPainelPropriedades.getChildren().add(new Label("Probability"));
-        mPainelPropriedades.getChildren().add(txtProbability);
+        mPainelPropriedadeProbability.getChildren().add(txtProbability);
+        Label exemplo = new Label("Ex: 0,5 OR 0.5 OR 50%");
+        exemplo.setFont(new Font(10));
+        mPainelPropriedadeProbability.getChildren().add(exemplo);
+        
+        mPainelPropriedades.getChildren().add(mPainelPropriedadeProbability);
         mPainelPropriedades.setPadding(new Insets(5));
         mPainelPropriedades.setSpacing(5);
         AnchorPane.setTopAnchor(mPainelPropriedades, 44D);
         AnchorPane.setRightAnchor(mPainelPropriedades, 0D);
         AnchorPane.setBottomAnchor(mPainelPropriedades, 0D);
-        AnchorPane.setLeftAnchor(mPainelPropriedades, 0D);
+        //AnchorPane.setLeftAnchor(mPainelPropriedades, 0D);
         getChildren().add(mPainelPropriedades);
 
         /*/KeyCode Combination (Erro de nullPoint na scene)

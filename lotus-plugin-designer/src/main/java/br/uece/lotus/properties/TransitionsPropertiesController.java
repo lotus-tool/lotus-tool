@@ -157,5 +157,20 @@ public class TransitionsPropertiesController implements Transition.Listener, Cha
             mTransition.setProbability(null);
         }
     }
+    
+    // Mascara para Probabilidade
+    public static void campoProbability(final TextField textField) {
+        textField.lengthProperty().addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+                if (newValue.intValue() > oldValue.intValue()) {
+                    char ch = textField.getText().charAt(oldValue.intValue());
+                    if (!(ch >= '0' && ch <= '9' || ch == '.' || ch == ',' || ch == '%')) {
+                        textField.setText(textField.getText().substring(0, textField.getText().length() - 1));
+                    }
+                }
+            }
+        });
+    }
 
 }
