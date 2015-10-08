@@ -27,15 +27,21 @@ import br.uece.lotus.Project;
 import br.uece.seed.app.DialogsHelper;
 import br.uece.seed.ext.ExtensionManager;
 import br.uece.seed.ext.Plugin;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.util.Optional;
+
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonBar;
+import javafx.scene.control.ButtonType;
 import javafx.stage.FileChooser;
+
 import javax.swing.JOptionPane;
 
 /**
- *
  * @author emerson
  */
 public class ProjectDialogsHelper extends Plugin {
@@ -48,16 +54,17 @@ public class ProjectDialogsHelper extends Plugin {
         mDialogsHelper = extensionManager.get(DialogsHelper.class);
     }
 
-    public void save(Project project, ProjectSerializer serializer, String title, String extensionDescription, String extension) {
-        realSave(project, serializer, false, true, title, extensionDescription, extension);
+    public boolean save(Project project, ProjectSerializer serializer, String title, String extensionDescription, String extension, boolean close) {
+        return realSave(project, serializer, false, true, title, extensionDescription, extension, close);
     }
 
+
     public void saveAs(Project project, ProjectSerializer serializer, String title, String extensionDescription, String extension) {
-        realSave(project, serializer, true, true, title, extensionDescription, extension);
+        realSave(project, serializer, true, true, title, extensionDescription, extension,false);
     }
 
     public void saveCopy(Project project, ProjectSerializer serializer, String title, String extensionDescription, String extension) {
-        realSave(project, serializer, true, false, title, extensionDescription, extension);
+        realSave(project, serializer, true, false, title, extensionDescription, extension,false);
     }
 
     public Project open(ProjectSerializer serializer, String title, String extensionDescription, String extension) {
@@ -77,28 +84,53 @@ public class ProjectDialogsHelper extends Plugin {
         }
         return p;
     }
-    
-    public File findXMI(String title, String extensionDescription, String extension) throws FileNotFoundException{
+
+    public File findXMI(String title, String extensionDescription, String extension) throws FileNotFoundException {
         File file = getFileChooser(title, extensionDescription, extension, null).showOpenDialog(null);
-        if(file == null){
+        if (file == null) {
             return null;
         }
-        
+
         return file;
     }
 
-    private void realSave(Project project, ProjectSerializer serializer, boolean forceShowDialog, boolean cacheFileName, String title, String extensionDescription, String extension) {
+    private boolean realSave(Project project, ProjectSerializer serializer, boolean forceShowDialog, boolean cacheFileName, String title, String extensionDescription, String extension, boolean operationCloseProject) {
         if (project == null) {
             JOptionPane.showMessageDialog(null, "Please select a project!");
-            return;
+            return false;
         }
+
         File f = (File) project.getValue("file");
         if (forceShowDialog || f == null) {
+            if (operationCloseProject) {
+                Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+                alert.setTitle("Confimation");
+                alert.setHeaderText("Choose an option");
+                ButtonType buttonTypeSave = new ButtonType("Save");
+                ButtonType buttonTypeGoOutWithOutSave = new ButtonType("Not save");
+                ButtonType buttonTypeCancel = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
+                alert.getButtonTypes().setAll(buttonTypeSave, buttonTypeGoOutWithOutSave, buttonTypeCancel);
+                Optional<ButtonType> result = alert.showAndWait();
+
+                if (result.get() == buttonTypeSave) {
+
+                } else if (result.get() == buttonTypeGoOutWithOutSave) {
+                    return true;
+                } else if (result.get() == buttonTypeCancel) {
+                    alert.close();
+                    return false;
+                } else {
+                    return true;
+                }
+            }
+
+
             f = getFileChooser(title, extensionDescription, extension, project.getName()).showSaveDialog(null);
             if (f == null) {
-                return;
+                return false;
             }
         }
+
         try (FileOutputStream out = new FileOutputStream(f)) {
             serializer.toStream(project, out);
             if (cacheFileName) {
@@ -107,13 +139,14 @@ public class ProjectDialogsHelper extends Plugin {
         } catch (Exception e) {
             mDialogsHelper.showException(e);
         }
+        return true;
     }
 
     private FileChooser getFileChooser(String title, String extensionDescription, String extension, String defaultFileName) {
         if (mFileChooser == null) {
             mFileChooser = new FileChooser();
             mFileChooser.setInitialDirectory(
-                new File(System.getProperty("user.home"))
+                    new File(System.getProperty("user.home"))
             );
         }
         mFileChooser.setInitialFileName(defaultFileName);

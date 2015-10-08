@@ -29,10 +29,16 @@ import br.uece.seed.app.ExtensibleMenu;
 import br.uece.seed.app.UserInterface;
 import br.uece.seed.ext.ExtensionManager;
 import br.uece.seed.ext.Plugin;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonBar;
+import javafx.scene.control.ButtonType;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCombination;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
+import java.awt.*;
+import java.io.File;
+import java.util.Optional;
 
 public class BasicPlugin extends Plugin{
 
@@ -107,13 +113,51 @@ public class BasicPlugin extends Plugin{
             }
         });
     };
+    int option=0;
     private Runnable mCloseProject = () -> {
         Project p = mProjectExplorer.getSelectedProject();
         if (p == null) {
             JOptionPane.showMessageDialog(null, "Please select a project!");
             return;
         }
-        mProjectExplorer.close(p);
+
+        boolean out=mProjectDialogsHelper.save(p, mProjectSerializer, "Save project", EXTENSION_DESCRIPTION, EXTENSION,true);
+        if(out){
+            mProjectExplorer.close(p);
+        }
+
+
+//        File f  =  (File) p.getValue("file");
+//        if(f==null){
+//        Alert alert= new Alert(Alert.AlertType.CONFIRMATION);
+//        alert.setTitle("Confimation");
+//        alert.setHeaderText("Choose an option");
+//        ButtonType buttonTypeSave = new ButtonType("Save");
+//        ButtonType buttonTypeGoOutWithOutSave = new ButtonType("Not save");
+//        ButtonType buttonTypeCancel = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
+//        alert.getButtonTypes().setAll(buttonTypeSave,buttonTypeGoOutWithOutSave,buttonTypeCancel);
+//        Optional<ButtonType> result= alert.showAndWait();
+//
+//        if(result.get()== buttonTypeSave){
+//            boolean saved=mProjectDialogsHelper.save(p, mProjectSerializer, "Save project", EXTENSION_DESCRIPTION, EXTENSION);
+//            if(saved){
+//                mProjectExplorer.close(p);
+//            }
+//
+//        }else if(result.get()==buttonTypeGoOutWithOutSave){
+//            mProjectExplorer.close(p);
+//        }
+//        else if(result.get()==buttonTypeCancel) {
+//            alert.close();
+//        }
+//        }
+//        else{
+//            mProjectExplorer.close(p);
+//        }
+
+
+
+
     };
     private Runnable mCloseOthersProjects = () -> {
         Project projetoSelecionado = mProjectExplorer.getSelectedProject();
@@ -146,7 +190,7 @@ public class BasicPlugin extends Plugin{
             JOptionPane.showMessageDialog(null, "Please select a project!");
             return;
         }
-        mProjectDialogsHelper.save(p, mProjectSerializer, "Save project", EXTENSION_DESCRIPTION, EXTENSION);
+        mProjectDialogsHelper.save(p, mProjectSerializer, "Save project", EXTENSION_DESCRIPTION, EXTENSION,false);
     };
     private final Runnable mSaveAsProject = () -> {
        Project p = mProjectExplorer.getSelectedProject();
@@ -190,6 +234,7 @@ public class BasicPlugin extends Plugin{
                 .create();
         mMainMenu.newItem("File/Close Project...")
                 .setWeight(Integer.MIN_VALUE)
+                .setAction(mSaveProject)
                 .setAction(mCloseProject)
                 .create();
         mMainMenu.newItem("File/Close Others Projects...")
