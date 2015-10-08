@@ -582,6 +582,7 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
         mViewerScaleYPadrao = mViewer.getNode().getScaleY();
         mViewerTranslateXPadrao = mViewer.getNode().getTranslateX();
         mViewerTranslateYPadrao = mViewer.getNode().getTranslateY();
+        
         MenuItem mSetAsInitialMenuItem = new MenuItem("Set as initial");
         mSetAsInitialMenuItem.setOnAction(mSetStateAsInitial);
         MenuItem mSetAsNormalMenuItem = new MenuItem("Set as normal");
@@ -1442,6 +1443,12 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
                 return;
             }
             State s = ((StateView) mComponentSelecionado).getState();
+            if(s.isInitial() || s.isFinal() || s.isError()){
+                Alert alert = new Alert(Alert.AlertType.INFORMATION, "-Initial\n-Final\n-Error", ButtonType.OK);
+                alert.setHeaderText("Impossible to change color of States:");
+                alert.show();
+                return;
+            }
             if(tipo.equals("Default")){
                 s.setColor(null);
                 return;
