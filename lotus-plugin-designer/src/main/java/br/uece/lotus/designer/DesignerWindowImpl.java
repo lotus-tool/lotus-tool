@@ -461,7 +461,6 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
         txtProbability.setAlignment(Pos.CENTER);
         TransitionsPropertiesController.campoProbability(txtProbability);
         txtProbability.setPromptText("%");
-        //txtProbability.setOnKeyReleased(event -> {
         txtProbability.setOnAction(event -> {
             Object obj = getSelectedView();
             if (obj instanceof TransitionView) {
@@ -473,15 +472,33 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
                         String auxValor = "";
                         if(valorDoField.contains(",")){
                             auxValor = valorDoField.replaceAll(",", ".");
+                            double teste = Double.parseDouble(auxValor);
+                            if(teste<0 || teste >1){
+                                JOptionPane.showMessageDialog(null, "Imput probability need 0 to 1", "Erro", JOptionPane.ERROR_MESSAGE);
+                                auxValor="";
+                                txtProbability.setText("");
+                            }
                         }
                         else if(valorDoField.contains(".")){
                             auxValor = valorDoField;
+                            double teste = Double.parseDouble(auxValor);
+                            if(teste<0 || teste >1){
+                                JOptionPane.showMessageDialog(null, "Imput probability need 0 to 1", "Erro", JOptionPane.ERROR_MESSAGE);
+                                auxValor="";
+                                txtProbability.setText("");
+                            }
                         }
                         else if(valorDoField.contains("%")){
                             double valorEntre0e1;
                             auxValor = valorDoField.replaceAll("%", "");
                             valorEntre0e1 = (Double.parseDouble(auxValor))/100;
                             auxValor = String.valueOf(valorEntre0e1);
+                            double teste = Double.parseDouble(auxValor);
+                            if(teste<0 || teste >1){
+                                JOptionPane.showMessageDialog(null, "Imput probability need 0 to 1", "Erro", JOptionPane.ERROR_MESSAGE);
+                                auxValor="";
+                                txtProbability.setText("");
+                            }
                         }
                         else{
                             if(valorDoField.equals("0") || valorDoField.equals("1")){
@@ -588,7 +605,7 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
         mPainelPropriedadeProbability.setAlignment(Pos.CENTER);
         mPainelPropriedades.getChildren().add(new Label("Probability"));
         mPainelPropriedadeProbability.getChildren().add(txtProbability);
-        Label exemplo = new Label("Ex: 0,5 OR 0.5 OR 50%");
+        Label exemplo = new Label("Ex: 0,5 OR 0.5 OR 50%\nPress Enter to validate");
         exemplo.setFont(new Font(10));
         mPainelPropriedadeProbability.getChildren().add(exemplo);
         
