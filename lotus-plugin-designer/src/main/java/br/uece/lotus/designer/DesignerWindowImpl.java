@@ -69,6 +69,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -77,6 +78,7 @@ import javafx.scene.transform.Scale;
 import javafx.stage.FileChooser;
 
 import javax.swing.JOptionPane;
+import javax.swing.border.Border;
 
 /**
  * @author emerson
@@ -545,8 +547,9 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
         AnchorPane.setTopAnchor(mPainelPropriedades, 44D);
         AnchorPane.setRightAnchor(mPainelPropriedades, 0D);
         AnchorPane.setBottomAnchor(mPainelPropriedades, 0D);
+        AnchorPane.setLeftAnchor(mPainelPropriedades, 0D);
         getChildren().add(mPainelPropriedades);
-        
+
         /*/KeyCode Combination (Erro de nullPoint na scene)
         mBtnUndo.getScene().getAccelerators().put(new KeyCodeCombination(KeyCode.Z, KeyCodeCombination.CONTROL_DOWN), new Runnable() {
 
