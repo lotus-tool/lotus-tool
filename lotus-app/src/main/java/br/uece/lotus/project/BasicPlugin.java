@@ -34,22 +34,26 @@ import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCombination;
+
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import java.awt.*;
 import java.io.File;
 import java.util.Optional;
 
-public class BasicPlugin extends Plugin{
+public class BasicPlugin extends Plugin {
 
     private static final String EXTENSION_DESCRIPTION = "LoTuS files (*.xml)";
     private static final String EXTENSION = "*.xml";
-                
+
     private UserInterface mUserInterface;
-    private ProjectExplorer mProjectExplorer;        
+    private ProjectExplorer mProjectExplorer;
     private ProjectDialogsHelper mProjectDialogsHelper;
     private ProjectSerializer mProjectSerializer = new ProjectXMLSerializer();
-    
+    private static final int CANCEL = 0;
+    private static final int SAVE = 1;
+    private static final int NOTSAVE = 2;
+
     private Runnable mNewComponent = () -> {
         SwingUtilities.invokeLater(() -> {
             Project p = mProjectExplorer.getSelectedProject();
@@ -69,7 +73,7 @@ public class BasicPlugin extends Plugin{
     private Runnable mNewProject = () -> {
         SwingUtilities.invokeLater(() -> {
             Project p = new Project();
-            String namePrompt = "Untitled" + (mProjectExplorer.getAllProjects().size()+1);
+            String namePrompt = "Untitled" + (mProjectExplorer.getAllProjects().size() + 1);
             String name = JOptionPane.showInputDialog(null, "Enter the new project's name", namePrompt);
             if (name == null) {
                 return;
@@ -113,7 +117,7 @@ public class BasicPlugin extends Plugin{
             }
         });
     };
-    int option=0;
+    int option = 0;
     private Runnable mCloseProject = () -> {
         Project p = mProjectExplorer.getSelectedProject();
         if (p == null) {
@@ -121,79 +125,127 @@ public class BasicPlugin extends Plugin{
             return;
         }
 
-        boolean out=mProjectDialogsHelper.save(p, mProjectSerializer, "Save project", EXTENSION_DESCRIPTION, EXTENSION,true);
-        if(out){
+        File f = (File) p.getValue("file");
+        if (f == null) {
+            option = createDialog();
+            if (option == SAVE) {
+
+                boolean saved = mProjectDialogsHelper.save(p, mProjectSerializer, "Save project", EXTENSION_DESCRIPTION, EXTENSION/*,true*/);
+                if (saved) {
+                    mProjectExplorer.close(p);
+                }
+
+            } else if (option == NOTSAVE) {
+                mProjectExplorer.close(p);
+
+            }
+        } else {
             mProjectExplorer.close(p);
         }
 
-
-//        File f  =  (File) p.getValue("file");
-//        if(f==null){
-//        Alert alert= new Alert(Alert.AlertType.CONFIRMATION);
-//        alert.setTitle("Confimation");
-//        alert.setHeaderText("Choose an option");
-//        ButtonType buttonTypeSave = new ButtonType("Save");
-//        ButtonType buttonTypeGoOutWithOutSave = new ButtonType("Not save");
-//        ButtonType buttonTypeCancel = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
-//        alert.getButtonTypes().setAll(buttonTypeSave,buttonTypeGoOutWithOutSave,buttonTypeCancel);
-//        Optional<ButtonType> result= alert.showAndWait();
-//
-//        if(result.get()== buttonTypeSave){
-//            boolean saved=mProjectDialogsHelper.save(p, mProjectSerializer, "Save project", EXTENSION_DESCRIPTION, EXTENSION);
-//            if(saved){
-//                mProjectExplorer.close(p);
-//            }
-//
-//        }else if(result.get()==buttonTypeGoOutWithOutSave){
-//            mProjectExplorer.close(p);
-//        }
-//        else if(result.get()==buttonTypeCancel) {
-//            alert.close();
-//        }
-//        }
-//        else{
-//            mProjectExplorer.close(p);
-//        }
-
-
-
-
     };
+
+
     private Runnable mCloseOthersProjects = () -> {
         Project projetoSelecionado = mProjectExplorer.getSelectedProject();
         if (projetoSelecionado == null) {
             JOptionPane.showMessageDialog(null, "Please select a project!");
             return;
         }
-        Project[] todosProjetos =  mProjectExplorer.getAllProjects().toArray(new Project[0]);
-        for (Project projeto: todosProjetos) {
+
+        Project[] todosProjetos = mProjectExplorer.getAllProjects().toArray(new Project[0]);
+        if((mProjectExplorer.getAllProjects().size())==0){
+            return;
+        }
+        option = createDialog();
+        for (Project projeto : todosProjetos) {
             if (projeto != projetoSelecionado) {
-                mProjectExplorer.close(projeto);
+
+                File f = (File) projeto.getValue("file");
+                if (f == null) {
+
+                    if (option == SAVE) {
+
+                        boolean saved = mProjectDialogsHelper.save(projeto, mProjectSerializer, "Save project", EXTENSION_DESCRIPTION, EXTENSION/*,true*/);
+                        if (saved) {
+                            mProjectExplorer.close(projeto);
+                        }
+
+                    } else if (option == NOTSAVE) {
+                        mProjectExplorer.close(projeto);
+
+                    }
+                } else {
+                    mProjectExplorer.close(projeto);
+                }
+
+               /* boolean saved = mProjectDialogsHelper.save(projeto, mProjectSerializer, "Save project", EXTENSION_DESCRIPTION, EXTENSION*//*,false*//*);
+                if (saved) {
+                    mProjectExplorer.close(projeto);
+                }*/
             }
         }
     };
     private Runnable mCloseAllProjects = () -> {
-        for (Project p: mProjectExplorer.getAllProjects()) {
-            mProjectExplorer.close(p);
+        if(mProjectExplorer.getAllProjects().size()==0){
+            return;
+        }
+        option = createDialog();
+        for (Project p : mProjectExplorer.getAllProjects()) {
+
+            File f = (File) p.getValue("file");
+            if (f == null) {
+
+                if (option == SAVE) {
+
+                    boolean saved = mProjectDialogsHelper.save(p, mProjectSerializer, "Save project", EXTENSION_DESCRIPTION, EXTENSION/*,true*/);
+                    if (saved) {
+                        mProjectExplorer.close(p);
+                    }
+
+                } else if (option == NOTSAVE) {
+                    mProjectExplorer.close(p);
+
+                }
+            } else {
+                mProjectExplorer.close(p);
+            }
+
+
+            /*boolean saved = mProjectDialogsHelper.save(p, mProjectSerializer, "Save project", EXTENSION_DESCRIPTION, EXTENSION*//*,false*//*);
+            if (saved) {
+                mProjectExplorer.close(p);
+            }*/
         }
     };
-    
-    private Runnable mOpenProject = () -> {        
+
+    private Runnable mOpenProject = () -> {
         Project p = mProjectDialogsHelper.open(mProjectSerializer, "Open project", EXTENSION_DESCRIPTION, EXTENSION);
         if (p != null) {
             mProjectExplorer.open(p);
         }
     };
+    private final Runnable mSaveAllProject = () -> {
+        //Project p = mProjectExplorer.getSelectedProject();
+        for (Project p : mProjectExplorer.getAllProjects()) {
+//        if (p == null) {
+//            JOptionPane.showMessageDialog(null, "Please select a project!");
+//            return;
+//        }
+            mProjectDialogsHelper.save(p, mProjectSerializer, "Save project", EXTENSION_DESCRIPTION, EXTENSION/*,false*/);
+        }
+    };
     private final Runnable mSaveProject = () -> {
         Project p = mProjectExplorer.getSelectedProject();
+
         if (p == null) {
             JOptionPane.showMessageDialog(null, "Please select a project!");
             return;
         }
-        mProjectDialogsHelper.save(p, mProjectSerializer, "Save project", EXTENSION_DESCRIPTION, EXTENSION,false);
+        mProjectDialogsHelper.save(p, mProjectSerializer, "Save project", EXTENSION_DESCRIPTION, EXTENSION/*,false*/);
     };
     private final Runnable mSaveAsProject = () -> {
-       Project p = mProjectExplorer.getSelectedProject();
+        Project p = mProjectExplorer.getSelectedProject();
         if (p == null) {
             JOptionPane.showMessageDialog(null, "Please select a project!");
             return;
@@ -201,11 +253,37 @@ public class BasicPlugin extends Plugin{
         mProjectDialogsHelper.saveAs(p, mProjectSerializer, "Save project as", EXTENSION_DESCRIPTION, EXTENSION);
     };
 
+    private int createDialog() {
+
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Confimation");
+        alert.setHeaderText("Choose an option");
+        ButtonType buttonTypeSave = new ButtonType("Save");
+        ButtonType buttonTypeGoOutWithOutSave = new ButtonType("Not save");
+        ButtonType buttonTypeCancel = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
+        alert.getButtonTypes().setAll(buttonTypeSave, buttonTypeGoOutWithOutSave, buttonTypeCancel);
+        Optional<ButtonType> result = alert.showAndWait();
+
+        if (result.get() == buttonTypeSave) {
+            return SAVE;
+        } else if (result.get() == buttonTypeGoOutWithOutSave) {
+            return NOTSAVE;
+        } else if (result.get() == buttonTypeCancel) {
+            alert.close();
+            return CANCEL;
+        } else {
+            return CANCEL;
+        }
+
+
+    }
+
+
     @Override
     public void onStart(ExtensionManager extensionManager) throws Exception {
         mUserInterface = extensionManager.get(UserInterface.class);
         mProjectExplorer = extensionManager.get(ProjectExplorer.class);
-        mProjectDialogsHelper = extensionManager.get(ProjectDialogsHelper.class);        
+        mProjectDialogsHelper = extensionManager.get(ProjectDialogsHelper.class);
 
         ExtensibleMenu mMainMenu = mUserInterface.getMainMenu();
 
@@ -243,6 +321,7 @@ public class BasicPlugin extends Plugin{
                 .create();
         mMainMenu.newItem("File/Close All Projects...")
                 .setWeight(Integer.MIN_VALUE)
+                        // .setAction(mSaveAllProject)
                 .setAction(mCloseAllProjects)
                 .create();
 //        mMainMenu.newItem("File/Open Recent")
@@ -265,7 +344,7 @@ public class BasicPlugin extends Plugin{
         mMainMenu.newItem("File/Save all")
                 .setWeight(Integer.MIN_VALUE)
                 .setAccelerator(KeyCode.S, KeyCombination.CONTROL_DOWN, KeyCombination.SHIFT_DOWN)
-                .setAction(mSaveProject)
+                .setAction(mSaveAllProject)
                 .create();
         mMainMenu.newItem("File/-")
                 .setWeight(Integer.MAX_VALUE)
@@ -306,16 +385,23 @@ public class BasicPlugin extends Plugin{
                 .create();
 
         mProjectExplorer.getMenu().addItem(Integer.MIN_VALUE, "New project", mNewProject);
-        mProjectExplorer.getMenu().addItem(Integer.MIN_VALUE, "Open project...", mOpenProject);        
-        
+        mProjectExplorer.getMenu().addItem(Integer.MIN_VALUE, "Open project...", mOpenProject);
+
         mProjectExplorer.getProjectMenu().addItem(Integer.MIN_VALUE, "New Component", mNewComponent);
         mProjectExplorer.getProjectMenu().addItem(Integer.MIN_VALUE, "Rename...", mRenameProject);
         mProjectExplorer.getProjectMenu().addItem(Integer.MIN_VALUE, "-", null);
-        mProjectExplorer.getProjectMenu().addItem(Integer.MIN_VALUE, "Close project...", mCloseProject);        
+        mProjectExplorer.getProjectMenu().addItem(Integer.MIN_VALUE, "Close project...", mCloseProject);
 
         mProjectExplorer.getComponentMenu().addItem(Integer.MIN_VALUE, "Rename...", mRenameComponent);
         mProjectExplorer.getComponentMenu().addItem(Integer.MIN_VALUE, "Remove...", mRemoveComponent);
 
     }
+//
 
+    //    @Override
+    //    public void onStop(ExtensionManager extensionManager) throws Exception {
+    //        System.out.println("entrou aqui");
+    //        mCloseAllProjects.run();
+    //
+    //    }
 }
