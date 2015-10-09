@@ -54,17 +54,17 @@ public class ProjectDialogsHelper extends Plugin {
         mDialogsHelper = extensionManager.get(DialogsHelper.class);
     }
 
-    public boolean save(Project project, ProjectSerializer serializer, String title, String extensionDescription, String extension, boolean close) {
-        return realSave(project, serializer, false, true, title, extensionDescription, extension, close);
+    public boolean save(Project project, ProjectSerializer serializer, String title, String extensionDescription, String extension/*, boolean close*/) {
+         return realSave(project, serializer, false, true, title, extensionDescription, extension/*, close*/);
     }
 
 
     public void saveAs(Project project, ProjectSerializer serializer, String title, String extensionDescription, String extension) {
-        realSave(project, serializer, true, true, title, extensionDescription, extension,false);
+        realSave(project, serializer, true, true, title, extensionDescription, extension/*,false*/);
     }
 
     public void saveCopy(Project project, ProjectSerializer serializer, String title, String extensionDescription, String extension) {
-        realSave(project, serializer, true, false, title, extensionDescription, extension,false);
+        realSave(project, serializer, true, false, title, extensionDescription, extension/*,false*/);
     }
 
     public Project open(ProjectSerializer serializer, String title, String extensionDescription, String extension) {
@@ -94,15 +94,16 @@ public class ProjectDialogsHelper extends Plugin {
         return file;
     }
 
-    private boolean realSave(Project project, ProjectSerializer serializer, boolean forceShowDialog, boolean cacheFileName, String title, String extensionDescription, String extension, boolean operationCloseProject) {
+    private boolean realSave(Project project, ProjectSerializer serializer, boolean forceShowDialog, boolean cacheFileName, String title, String extensionDescription, String extension/*, boolean operationCloseProject*/) {
         if (project == null) {
             JOptionPane.showMessageDialog(null, "Please select a project!");
             return false;
+
         }
 
         File f = (File) project.getValue("file");
         if (forceShowDialog || f == null) {
-            if (operationCloseProject) {
+/*            if (operationCloseProject) {
                 Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
                 alert.setTitle("Confimation");
                 alert.setHeaderText("Choose an option");
@@ -122,12 +123,13 @@ public class ProjectDialogsHelper extends Plugin {
                 } else {
                     return true;
                 }
-            }
+            }*/
 
 
             f = getFileChooser(title, extensionDescription, extension, project.getName()).showSaveDialog(null);
             if (f == null) {
                 return false;
+
             }
         }
 
@@ -140,6 +142,7 @@ public class ProjectDialogsHelper extends Plugin {
             mDialogsHelper.showException(e);
         }
         return true;
+
     }
 
     private FileChooser getFileChooser(String title, String extensionDescription, String extension, String defaultFileName) {
