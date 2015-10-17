@@ -38,7 +38,6 @@ import java.util.List;
 
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -65,15 +64,12 @@ import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyCodeCombination;
-import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -83,7 +79,6 @@ import javafx.scene.transform.Scale;
 import javafx.stage.FileChooser;
 
 import javax.swing.JOptionPane;
-import javax.swing.border.Border;
 
 /**
  * @author emerson
@@ -121,7 +116,7 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
     private final ComponentView mViewer;
     private final ToolBar mToolbar;
     private final ToggleGroup mToggleGroup;
-    private final Button mBtnBigState;
+    private final ToggleButton mBtnBigState;
     private final ToggleButton mBtnArrow;
     private final ToggleButton mBtnState;
     private final ToggleButton mBtnTransitionLine;
@@ -133,6 +128,8 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
     private final Button mBtnRedo;
     private ComponentView[] mUndoRedo;
     private final int tamHistorico = 14;
+    private final ImageView iconBigState = new ImageView(new Image(getClass().getResourceAsStream("/images/ic_big_state.png")));
+    private final ImageView iconBigStateDismount = new ImageView(new Image(getClass().getResourceAsStream("/images/ic_big_state_dismount.png")));
 
     private final ToolBar mStateToolbar;
     private final ToolBar mTransitionToolbar;
@@ -223,6 +220,79 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
             s.setColor(null);
         }
     };
+    
+    private EventHandler<ActionEvent> mCreateDismountBigState = new EventHandler<ActionEvent>() {
+        @Override
+        public void handle(ActionEvent event) {
+            if (mComponentSelecionado == null) {
+                return;
+            }
+            //CRIANDO BIGSTATE - USERDATA            
+            BigState bigState = new BigState();
+            List<State> listaS = statesSelecionados;
+            
+            //TEST DISMOUNT BIGSTATE
+            if(statesSelecionados.size()==1){
+                BigState bigS = (BigState) statesSelecionados.get(0).getValue("bigstate");
+                if (bigS!= null){
+                    if (!bigS.dismountBigState(mViewer.getComponent())){
+                        JOptionPane.showMessageDialog(null, "You need another BigState before dismantling");                        
+                        return;
+                    }
+                    mBtnBigState.setSelected(false);
+                    mBtnBigState.setGraphic(iconBigState);
+                    mViewer.getComponent().remove(statesSelecionados.get(0));
+                    return;
+                }
+            }
+
+            if (!bigState.addStatesAndTransition(listaS)){
+                JOptionPane.showMessageDialog(null, "Add more States or initial State selected","Attention", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
+            //CRIANDO NA TELA O STATE MAIOR COM O BIGSTATE
+            int id = mViewer.getComponent().getStatesCount();
+            State novoState = mViewer.getComponent().newState(id);
+            novoState.setValue("bigstate", bigState);
+            novoState.setLayoutX(statesSelecionados.get(0).getLayoutX()+20);
+            novoState.setLayoutY(statesSelecionados.get(0).getLayoutY()+20);
+            novoState.setLabel(String.valueOf(id));
+            novoState.setBig(true);
+            bigState.setState(novoState);
+
+            if (contID == 0) {
+                updateContID();
+                novoState.setID(contID);
+            } else
+                novoState.setID(contID);
+            contID++;            
+
+            //ADD TRANSITIONS DOS BIGSTATES
+            for (Transition t : bigState.getListaTransitionsForaSaindo()) {
+                if (novoState.getTransitionsTo(t.getDestiny()).size() == 0) {
+                    Transition tNova = mViewer.getComponent().buildTransition(novoState, t.getDestiny()).setValue("view.type", 0).setLabel(t.getLabel() == null || t.getLabel().equals("") ? "" : t.getLabel()).create();
+                } else {
+                    String labelAntiga = novoState.getTransitionTo(t.getDestiny()).getLabel();
+                    novoState.getTransitionTo(t.getDestiny()).setLabel(t.getLabel() == null || t.getLabel().equals("") ? labelAntiga : labelAntiga + ", " + t.getLabel());
+                }
+            }
+            for (Transition t : bigState.getListaTransitionsForaChegando()) {
+                if (t.getSource().getTransitionsTo(novoState).size() == 0) {
+                    Transition tNova = mViewer.getComponent().buildTransition(t.getSource(), novoState).setValue("view.type", 0).setLabel(t.getLabel() == null || t.getLabel().equals("") ? "" : t.getLabel()).create();
+                } else {
+                    String labelAntiga = t.getSource().getTransitionTo(novoState).getLabel();
+                    t.getSource().getTransitionTo(novoState).setLabel(t.getLabel() == null || t.getLabel().equals("") ? labelAntiga : labelAntiga + ", " + t.getLabel());
+                }
+            }
+
+            mBtnBigState.setSelected(true);
+            mBtnBigState.setGraphic(iconBigStateDismount);
+            
+            BigState.removeStatesComponent();
+        }
+    };
+    
     private int mTransitionViewType;
 
     @Override
@@ -336,57 +406,9 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
             setModo(MODO_MOVER);
         });
 
-        mBtnBigState = new Button();
-        mBtnBigState.setGraphic(new ImageView(new Image(getClass().getResourceAsStream("/images/ic_big_state.png"))));
-        mBtnBigState.setOnAction(event -> {
-
-            //CRIANDO BIGSTATE - USERDATA            
-            BigState bigState = new BigState();
-            List<State> listaS = statesSelecionados;
-
-            if (!bigState.addStatesAndTransition(listaS)){
-                JOptionPane.showMessageDialog(null, "Add more States or initial State selected","Attention", JOptionPane.WARNING_MESSAGE);
-                return;
-            }
-
-            //CRIANDO NA TELA O STATE MAIOR COM O BIGSTATE
-            int id = mViewer.getComponent().getStatesCount();
-            State novoState = mViewer.getComponent().newState(id);
-            novoState.setValue("bigstate", bigState);
-            novoState.setLayoutX(statesSelecionados.get(0).getLayoutX()+20);
-            novoState.setLayoutY(statesSelecionados.get(0).getLayoutY()+20);
-            novoState.setLabel(String.valueOf(id));
-            novoState.setBig(true);
-            bigState.setState(novoState);
-
-            if (contID == 0) {
-                updateContID();
-                novoState.setID(contID);
-            } else
-                novoState.setID(contID);
-            contID++;            
-
-            //ADD TRANSITIONS DOS BIGSTATES
-            for (Transition t : bigState.getListaTransitionsForaSaindo()) {
-                if (novoState.getTransitionsTo(t.getDestiny()).size() == 0) {
-                    Transition tNova = mViewer.getComponent().buildTransition(novoState, t.getDestiny()).setValue("view.type", 0).setLabel(t.getLabel() == null || t.getLabel().equals("") ? "" : t.getLabel()).create();
-                } else {
-                    String labelAntiga = novoState.getTransitionTo(t.getDestiny()).getLabel();
-                    novoState.getTransitionTo(t.getDestiny()).setLabel(t.getLabel() == null || t.getLabel().equals("") ? labelAntiga : labelAntiga + ", " + t.getLabel());
-                }
-            }
-            for (Transition t : bigState.getListaTransitionsForaChegando()) {
-                if (t.getSource().getTransitionsTo(novoState).size() == 0) {
-                    Transition tNova = mViewer.getComponent().buildTransition(t.getSource(), novoState).setValue("view.type", 0).setLabel(t.getLabel() == null || t.getLabel().equals("") ? "" : t.getLabel()).create();
-                } else {
-                    String labelAntiga = t.getSource().getTransitionTo(novoState).getLabel();
-                    t.getSource().getTransitionTo(novoState).setLabel(t.getLabel() == null || t.getLabel().equals("") ? labelAntiga : labelAntiga + ", " + t.getLabel());
-                }
-            }
-
-            BigState.removeStatesComponent();
-
-        });
+        mBtnBigState = new ToggleButton();                
+        mBtnBigState.setGraphic(iconBigState);
+        mBtnBigState.setOnAction(mCreateDismountBigState);
 
         mBtnZoom = new MenuButton();
         HBox menuSlideZoom = new HBox();
@@ -533,7 +555,7 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
         Tooltip eraserInfo = new Tooltip("Eraser");
         Tooltip handInfo = new Tooltip("Move");
         Tooltip zoomInfo = new Tooltip("Ctrl + MouseScroll ↑\nCtrl + MouseScroll ↓\nCtrl + Mouse Button Middle");
-        Tooltip bigStateInfo = new Tooltip("Composed state");
+        Tooltip bigStateInfo = new Tooltip("Composed State");
         Tooltip undoInfo = new Tooltip("Undo (CTRL+Z");
         Tooltip redoInfo = new Tooltip("Redo (CTRL+Y");
         Tooltip.install(mBtnArrow, arrowInfo);
@@ -646,6 +668,8 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
         MenuItem mSetAsErrorMenuItem = new MenuItem("Set as final");
         mSetAsErrorMenuItem.setOnAction(mSetStateAsFinal);
 
+        MenuItem mCreateDismountBigStateMenuItem = new MenuItem("Create/Dismount Composed State");
+        mCreateDismountBigStateMenuItem.setOnAction(mCreateDismountBigState);        
 
         MenuItem mSaveAsPNG = new MenuItem("Save as PNG");
         mSaveAsPNG.setOnAction((ActionEvent event) -> {
@@ -666,7 +690,7 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
             JOptionPane.showMessageDialog(null, "PNG Image successfuly saved!");
         });
         mViewer.getNode().setOnScroll(zoom);
-        mComponentContextMenu.getItems().addAll(mSetAsInitialMenuItem, new SeparatorMenuItem(), mSetAsNormalMenuItem, mSetAsFinalMenuItem, mSetAsErrorMenuItem, new SeparatorMenuItem(), mSaveAsPNG);
+        mComponentContextMenu.getItems().addAll(mSetAsInitialMenuItem, new SeparatorMenuItem(), mCreateDismountBigStateMenuItem, new SeparatorMenuItem(), mSetAsNormalMenuItem, mSetAsFinalMenuItem, mSetAsErrorMenuItem, new SeparatorMenuItem(), mSaveAsPNG);
 
         //Resetando Zoom
         zoomReset.selectedProperty().addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {
@@ -679,8 +703,8 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
             }
         });
 
-    }
-
+    }  
+    
     ////////////////////////////////////////////////////////////////////////////
     // Ao Clicar o mouse(clickar e soltar)
     ////////////////////////////////////////////////////////////////////////////
@@ -688,7 +712,7 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
         @Override
         public void handle(MouseEvent e) {
             if (MouseButton.SECONDARY.equals(e.getButton())) {
-                setComponenteSelecionado(mComponentSobMouse);
+                setComponenteSelecionado(mComponentSobMouse);                
                 mComponentContextMenu.show(mViewer.getNode(), e.getScreenX(), e.getScreenY());
                 return;
             }
@@ -708,21 +732,31 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
                 if (mComponentSobMouse != null && (mComponentSobMouse instanceof StateView)) {
                     paleta.setVisible(true);
                     //VERIFICANDO SE TEM UM BIGSTATE
-                    if (((BigState)((StateView)mComponentSobMouse).getState().getValue("bigstate")) != null) {
-                        System.out.println("NUMERO DE BIGSTATES = "+BigState.todosOsBigStates.size());
-                        System.out.println(((BigState)((StateView)mComponentSobMouse).getState().getValue("bigstate")).toString());
+                    StateView stateView = (StateView) mComponentSobMouse;
+                    State state = stateView.getState();
+                    BigState bigState = (BigState) state.getValue("bigstate");
+                    if (bigState != null) {
+                        mBtnBigState.setSelected(true);
+                        mBtnBigState.setGraphic(iconBigStateDismount);
+                        /*System.out.println("NUMERO DE BIGSTATES = "+BigState.todosOsBigStates.size());
+                        System.out.println(((BigState)((StateView)mComponentSobMouse).getState().getValue("bigstate")).toString());*/
                         if (e.getClickCount() == 2) {
-                            StateView stateView = (StateView) mComponentSobMouse;
-                            State state = stateView.getState();
-                            BigState bigState = (BigState) state.getValue("bigstate");
                             if (!bigState.dismountBigState(mViewer.getComponent())){
                                 JOptionPane.showMessageDialog(null, "You need another BigState before dismantling");
                                 return;
                             }
+                            mBtnBigState.setSelected(false);
+                            mBtnBigState.setGraphic(iconBigState);
                             mViewer.getComponent().remove(state);
                         }
                     }
-                }else{
+                    else {
+                        mBtnBigState.setSelected(false);
+                        mBtnBigState.setGraphic(iconBigState);
+                    }
+                }else{                 
+                    mBtnBigState.setSelected(false);
+                    mBtnBigState.setGraphic(iconBigState);
                     paleta.setVisible(false);
                 }
 
@@ -1214,6 +1248,10 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
 
         }
         statesSelecionados.addAll(stateDentroDoRetangulo);
+        
+        //MUDANDO ICONE E SELECAO DO TOGGLEBUTON BIGSTATE
+        changeIconToggleBigState();
+        
         return aux;
     }
 
@@ -1701,6 +1739,24 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
             contPosHistoricoCheia-=1;
             mUndoRedo[contPosHistoricoCheia] = viewer;
             contPosHistoricoCheia+=1;
+        }
+    }
+    
+    private void changeIconToggleBigState(){
+        if(statesSelecionados.size()==1){
+            BigState bigState = (BigState) statesSelecionados.get(0).getValue("bigstate");
+            if (bigState != null){
+                mBtnBigState.setSelected(true);
+                mBtnBigState.setGraphic(iconBigStateDismount);
+            }
+            else {
+                mBtnBigState.setSelected(false);
+                mBtnBigState.setGraphic(iconBigState);
+            }
+        }
+        else {
+            mBtnBigState.setSelected(false);
+            mBtnBigState.setGraphic(iconBigState);
         }
     }
     
