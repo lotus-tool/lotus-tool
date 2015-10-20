@@ -26,6 +26,7 @@ package br.uece.lotus.project;
 import br.uece.lotus.Component;
 import br.uece.lotus.Project;
 import br.uece.seed.app.ExtensibleMenu;
+import br.uece.seed.app.Startup;
 import br.uece.seed.app.UserInterface;
 import br.uece.seed.ext.ExtensionManager;
 import br.uece.seed.ext.Plugin;
@@ -398,10 +399,32 @@ public class BasicPlugin extends Plugin {
     }
 //
 
-    //    @Override
-    //    public void onStop(ExtensionManager extensionManager) throws Exception {
-    //        System.out.println("entrou aqui");
-    //        mCloseAllProjects.run();
-    //
-    //    }
+        @Override
+        public void onStop(ExtensionManager extensionManager) throws Exception {
+            System.out.println("Entrou aqui");
+            Startup startup= new Startup();
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Confirm Exit");
+        alert.setHeaderText("Are you sure you want to exit LoTuS");
+        ButtonType buttonTypeExit = new ButtonType("Exit");
+        ButtonType buttonTypeCancel = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
+        alert.getButtonTypes().setAll(buttonTypeExit, buttonTypeCancel);
+        Optional<ButtonType> result = alert.showAndWait();
+
+        if (result.get() == buttonTypeExit) {
+            try {
+                startup.stop();
+                mCloseAllProjects.run();
+                extensionManager.stop();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+        }
+        //else if (result.get() == buttonTypeCancel) {
+//
+//    }
+
+
+        }
 }

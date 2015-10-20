@@ -32,16 +32,19 @@ import br.uece.seed.ext.JarModule;
 import br.uece.seed.ext.Module;
 import br.uece.seed.ext.Plugin;
 import javafx.application.Application;
+import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.JavaFXBuilderFactory;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonBar;
-import javafx.scene.control.ButtonType;
+import javafx.geometry.Insets;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.layout.StackPane;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
+import java.awt.event.WindowEvent;
 import java.io.File;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -105,6 +108,48 @@ public class Startup extends Application {
         PreLoader.stagePreloader.toFront();
     }
 
+//        stage.setOnCloseRequest(confirmCloseEventHandler);
+//        Button closeButton = new Button("Close Application");
+//        closeButton.setOnAction(event ->
+//                        stage.fireEvent(
+//                                new WindowEvent(
+//                                        stage,
+//                                        WindowEvent.W
+//                                )
+//                        )
+//        );
+//        StackPane layout = new StackPane(closeButton);
+//        layout.setPadding(new Insets(10));
+//        stage.setScene(new Scene(layout));
+//        stage.show();
+//
+//    }
+//
+//    private EventHandler<WindowEvent> confirmCloseEventHandler = event -> {
+//        Alert closeConfirmation = new Alert(
+//                Alert.AlertType.CONFIRMATION,
+//                "Are you sure you want to exit?"
+//        );
+//        Button exitButton = (Button) closeConfirmation.getDialogPane().lookupButton(
+//                ButtonType.OK
+//        );
+//        exitButton.setText("Exit");
+//        closeConfirmation.setHeaderText("Confirm Exit");
+//        closeConfirmation.initModality(Modality.APPLICATION_MODAL);
+//        closeConfirmation.initOwner(mStage);
+//
+//        // normally, you would just use the default alert positioning,
+//        // but for this simple sample the main stage is small,
+//        // so explicitly position the alert so that the main window can still be seen.
+//        closeConfirmation.setX(mStage.getX());
+//        closeConfirmation.setY(mStage.getY() + mStage.getHeight());
+//
+//        Optional<ButtonType> closeResponse = closeConfirmation.showAndWait();
+//        if (!ButtonType.OK.equals(closeResponse.get())) {
+//            event.consume();
+//        }
+//    };
+
     private void registerModules(ExtensionManager extensionManager) {
         // String aux = System.getProperty("lotus.extensions.path");
         // if (aux == null) {
@@ -138,10 +183,9 @@ public class Startup extends Application {
             e1.printStackTrace();
         }
     }
-
     @Override
     public void stop() {
-//        System.out.println("entrou aqui e morreu");
+        System.out.println("entrou aqui e morreu");
 //
 //        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
 //        alert.setTitle("Confirm Exit");
@@ -164,4 +208,6 @@ public class Startup extends Application {
 ////    }
 
     }
+
+
 }
