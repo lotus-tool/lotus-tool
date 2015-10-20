@@ -4,7 +4,7 @@
 
 	<groupId>br.uece.lotus</groupId>
 	<artifactId>lotus-root</artifactId>
-	<version>2.13_alpha-SNAPSHOT</version>
+	<version>3.0-alpha-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<modules>
