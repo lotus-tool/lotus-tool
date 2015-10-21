@@ -32,6 +32,7 @@ import br.uece.seed.ext.JarModule;
 import br.uece.seed.ext.Module;
 import br.uece.seed.ext.Plugin;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.JavaFXBuilderFactory;
@@ -49,6 +50,7 @@ import java.io.File;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Optional;
+import java.util.Timer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -105,50 +107,34 @@ public class Startup extends Application {
         mStage.setScene(scene);
         mStage.show();
         mStage.setTitle("LoTuS 3.0");
+        mStage.setOnCloseRequest(event -> {
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Confirm Exit");
+            alert.setHeaderText("Are you sure you want to exit LoTuS");
+            ButtonType buttonTypeExit = new ButtonType("Exit");
+            ButtonType buttonTypeCancel = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
+            alert.getButtonTypes().setAll(buttonTypeExit, buttonTypeCancel);
+            Optional<ButtonType> result = alert.showAndWait();
+
+            if (result.get() == buttonTypeExit) {
+                try {
+                    extensionManager.stop();
+                    System.exit(0);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            if (result.get() == buttonTypeCancel) {
+                Thread.currentThread().run();
+
+
+            }
+
+        });
+
         PreLoader.stagePreloader.toFront();
     }
 
-//        stage.setOnCloseRequest(confirmCloseEventHandler);
-//        Button closeButton = new Button("Close Application");
-//        closeButton.setOnAction(event ->
-//                        stage.fireEvent(
-//                                new WindowEvent(
-//                                        stage,
-//                                        WindowEvent.W
-//                                )
-//                        )
-//        );
-//        StackPane layout = new StackPane(closeButton);
-//        layout.setPadding(new Insets(10));
-//        stage.setScene(new Scene(layout));
-//        stage.show();
-//
-//    }
-//
-//    private EventHandler<WindowEvent> confirmCloseEventHandler = event -> {
-//        Alert closeConfirmation = new Alert(
-//                Alert.AlertType.CONFIRMATION,
-//                "Are you sure you want to exit?"
-//        );
-//        Button exitButton = (Button) closeConfirmation.getDialogPane().lookupButton(
-//                ButtonType.OK
-//        );
-//        exitButton.setText("Exit");
-//        closeConfirmation.setHeaderText("Confirm Exit");
-//        closeConfirmation.initModality(Modality.APPLICATION_MODAL);
-//        closeConfirmation.initOwner(mStage);
-//
-//        // normally, you would just use the default alert positioning,
-//        // but for this simple sample the main stage is small,
-//        // so explicitly position the alert so that the main window can still be seen.
-//        closeConfirmation.setX(mStage.getX());
-//        closeConfirmation.setY(mStage.getY() + mStage.getHeight());
-//
-//        Optional<ButtonType> closeResponse = closeConfirmation.showAndWait();
-//        if (!ButtonType.OK.equals(closeResponse.get())) {
-//            event.consume();
-//        }
-//    };
 
     private void registerModules(ExtensionManager extensionManager) {
         // String aux = System.getProperty("lotus.extensions.path");
@@ -183,31 +169,5 @@ public class Startup extends Application {
             e1.printStackTrace();
         }
     }
-    @Override
-    public void stop() {
-        System.out.println("entrou aqui e morreu");
-//
-//        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-//        alert.setTitle("Confirm Exit");
-//        alert.setHeaderText("Are you sure you want to exit LoTuS");
-//        ButtonType buttonTypeExit = new ButtonType("Exit");
-//        ButtonType buttonTypeCancel = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
-//        alert.getButtonTypes().setAll(buttonTypeExit, buttonTypeCancel);
-//        Optional<ButtonType> result = alert.showAndWait();
-//
-//        if (result.get() == buttonTypeExit) {
-//            try {
-//                extensionManager.stop();
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//            }
-//
-//        }
-//        //else if (result.get() == buttonTypeCancel) {
-////
-////    }
-
-    }
-
 
 }
