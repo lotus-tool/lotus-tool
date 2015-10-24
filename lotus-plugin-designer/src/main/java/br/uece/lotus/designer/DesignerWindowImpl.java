@@ -73,6 +73,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.transform.Scale;
@@ -130,7 +131,8 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
     private final int tamHistorico = 14;
     private final ImageView iconBigState = new ImageView(new Image(getClass().getResourceAsStream("/images/ic_big_state.png")));
     private final ImageView iconBigStateDismount = new ImageView(new Image(getClass().getResourceAsStream("/images/ic_big_state_dismount.png")));
-
+    private Line lineFake;
+    
     private final ToolBar mStateToolbar;
     private final ToolBar mTransitionToolbar;
     private final ExtensibleToolbar mExtensibleStateToolbar;
@@ -359,6 +361,8 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
     public DesignerWindowImpl(ComponentView viewer) {
         mViewer = viewer;
         mUndoRedo = new ComponentView[14];
+        lineFake = new Line();
+        lineFake.setMouseTransparent(true);
 
         mToolbar = new ToolBar();
         mToggleGroup = new ToggleGroup();
@@ -1016,6 +1020,12 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
                 mouseHandX = t.getSceneX();
                 mouseHandY = t.getSceneY();
             }
+            
+            //                          LINE FAKE
+            if(mModoAtual == MODO_TRANSICAO){
+                lineFake.setEndX(t.getX());
+                lineFake.setEndY(t.getY());
+            }
 
             if (mModoAtual != MODO_VERTICE && mModoAtual != MODO_NENHUM) {
                 return;
@@ -1135,7 +1145,11 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
             if (mModoAtual == MODO_MOVER) {
                 mViewer.getNode().setCursor(Cursor.OPEN_HAND);
             }
-
+            
+            if(mModoAtual == MODO_TRANSICAO){
+                mViewer.getNode().getChildren().remove(lineFake);
+            }
+            
             if (mModoAtual != MODO_VERTICE && mModoAtual != MODO_NENHUM) {
                 return;
             }
@@ -1304,7 +1318,7 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
 
             //guarda o objeto no qual iniciamos o drag            
             mVerticeOrigemParaAdicionarTransicao = v;
-
+            
             if (BigState.verifyIsBigState(mVerticeOrigemParaAdicionarTransicao.getState())) {
                 JOptionPane.showMessageDialog(null, "Impossible to create transitions in a Big State!", "Alert", JOptionPane.WARNING_MESSAGE);
                 return;
@@ -1317,6 +1331,15 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
             ClipboardContent content = new ClipboardContent();
             content.putString("gambiarra");
             db.setContent(content);
+            
+            //inicia a Linha fake
+            Point2D mouseSceneCoords = new Point2D(t.getSceneX(), t.getSceneY());
+            Point2D mousePaneCoords = mViewer.getNode().sceneToLocal(mouseSceneCoords);
+            lineFake.setStartX(mousePaneCoords.getX());
+            lineFake.setStartY(mousePaneCoords.getY());
+            lineFake.setEndX(mousePaneCoords.getX());
+            lineFake.setEndY(mousePaneCoords.getY());
+            mViewer.getNode().getChildren().add(lineFake);
 
             //indica que este evento foi realizado
             t.consume();
