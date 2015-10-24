@@ -32,20 +32,25 @@ import br.uece.seed.ext.JarModule;
 import br.uece.seed.ext.Module;
 import br.uece.seed.ext.Plugin;
 import javafx.application.Application;
+import javafx.application.Platform;
+import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.JavaFXBuilderFactory;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonBar;
-import javafx.scene.control.ButtonType;
+import javafx.geometry.Insets;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.layout.StackPane;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
+import java.awt.event.WindowEvent;
 import java.io.File;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Optional;
+import java.util.Timer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -102,8 +107,34 @@ public class Startup extends Application {
         mStage.setScene(scene);
         mStage.show();
         mStage.setTitle("LoTuS 3.0");
+        mStage.setOnCloseRequest(event -> {
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Confirm Exit");
+            alert.setHeaderText("Are you sure you want to exit LoTuS");
+            ButtonType buttonTypeExit = new ButtonType("Exit");
+            ButtonType buttonTypeCancel = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
+            alert.getButtonTypes().setAll(buttonTypeExit, buttonTypeCancel);
+            Optional<ButtonType> result = alert.showAndWait();
+
+            if (result.get() == buttonTypeExit) {
+                try {
+                    extensionManager.stop();
+                    System.exit(0);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            if (result.get() == buttonTypeCancel) {
+                Thread.currentThread().run();
+
+
+            }
+
+        });
+
         PreLoader.stagePreloader.toFront();
     }
+
 
     private void registerModules(ExtensionManager extensionManager) {
         // String aux = System.getProperty("lotus.extensions.path");
@@ -139,29 +170,4 @@ public class Startup extends Application {
         }
     }
 
-    @Override
-    public void stop() {
-//        System.out.println("entrou aqui e morreu");
-//
-//        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-//        alert.setTitle("Confirm Exit");
-//        alert.setHeaderText("Are you sure you want to exit LoTuS");
-//        ButtonType buttonTypeExit = new ButtonType("Exit");
-//        ButtonType buttonTypeCancel = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
-//        alert.getButtonTypes().setAll(buttonTypeExit, buttonTypeCancel);
-//        Optional<ButtonType> result = alert.showAndWait();
-//
-//        if (result.get() == buttonTypeExit) {
-//            try {
-//                extensionManager.stop();
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//            }
-//
-//        }
-//        //else if (result.get() == buttonTypeCancel) {
-////
-////    }
-
-    }
 }
