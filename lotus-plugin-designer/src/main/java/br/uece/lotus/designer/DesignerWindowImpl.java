@@ -725,8 +725,12 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
         @Override
         public void handle(MouseEvent e) {
             if (MouseButton.SECONDARY.equals(e.getButton())) {
-                setComponenteSelecionado(mComponentSobMouse);                
-                mComponentContextMenu.show(mViewer.getNode(), e.getScreenX(), e.getScreenY());
+                setComponenteSelecionado(mComponentSobMouse);
+                if(mComponentSelecionado instanceof StateView){
+                    mComponentContextMenu.show(mViewer.getNode(), e.getScreenX(), e.getScreenY());
+                }else{
+                    mComponentContextMenu.hide();
+                }                
                 return;
             }
             else {

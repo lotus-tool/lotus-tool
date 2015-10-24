@@ -146,10 +146,16 @@ public final class ProjectExplorerPlugin extends Plugin implements ProjectExplor
             if (MouseButton.SECONDARY.equals(e.getButton())) {
                 if (getSelectedComponent() != null) {
                     mMnuComponent.show(mProjectView, e.getScreenX(), e.getScreenY());
+                    mMnuProject.hide();
+                    mMnuWorkspace.hide();
                 } else if (getSelectedProject() != null) {
                     mMnuProject.show(mProjectView, e.getScreenX(), e.getScreenY());
+                    mMnuComponent.hide();
+                    mMnuWorkspace.hide();
                 } else {
                     mMnuWorkspace.show(mProjectView, e.getScreenX(), e.getScreenY());
+                    mMnuComponent.hide();
+                    mMnuProject.hide();
                 }
             } else if (e.getClickCount() == 2) {
                 Component c = getSelectedComponent();
