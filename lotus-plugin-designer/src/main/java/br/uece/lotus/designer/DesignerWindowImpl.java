@@ -273,18 +273,27 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
             //ADD TRANSITIONS DOS BIGSTATES
             for (Transition t : bigState.getListaTransitionsForaSaindo()) {
                 if (novoState.getTransitionsTo(t.getDestiny()).size() == 0) {
-                    Transition tNova = mViewer.getComponent().buildTransition(novoState, t.getDestiny()).setValue("view.type", 0).setLabel(t.getLabel() == null || t.getLabel().equals("") ? "" : t.getLabel()).create();
+                    Transition tNova = mViewer.getComponent().buildTransition(novoState, t.getDestiny())
+                            .setValue("view.type", 1)
+                            .setLabel(t.getLabel() == null || t.getLabel().equals("") ? "" : t.getLabel())
+                            .create();
                 } else {
                     String labelAntiga = novoState.getTransitionTo(t.getDestiny()).getLabel();
-                    novoState.getTransitionTo(t.getDestiny()).setLabel(t.getLabel() == null || t.getLabel().equals("") ? labelAntiga : labelAntiga + ", " + t.getLabel());
+                    novoState.getTransitionTo(t.getDestiny())
+                            .setLabel(t.getLabel() == null || t.getLabel().equals("") ? labelAntiga : labelAntiga + ", " + t.getLabel());
+                            
                 }
             }
             for (Transition t : bigState.getListaTransitionsForaChegando()) {
                 if (t.getSource().getTransitionsTo(novoState).size() == 0) {
-                    Transition tNova = mViewer.getComponent().buildTransition(t.getSource(), novoState).setValue("view.type", 0).setLabel(t.getLabel() == null || t.getLabel().equals("") ? "" : t.getLabel()).create();
+                    Transition tNova = mViewer.getComponent().buildTransition(t.getSource(), novoState)
+                            .setValue("view.type", 0)
+                            .setLabel(t.getLabel() == null || t.getLabel().equals("") ? "" : t.getLabel())
+                            .create();
                 } else {
                     String labelAntiga = t.getSource().getTransitionTo(novoState).getLabel();
-                    t.getSource().getTransitionTo(novoState).setLabel(t.getLabel() == null || t.getLabel().equals("") ? labelAntiga : labelAntiga + ", " + t.getLabel());
+                    t.getSource().getTransitionTo(novoState)
+                            .setLabel(t.getLabel() == null || t.getLabel().equals("") ? labelAntiga : labelAntiga + ", " + t.getLabel());
                 }
             }
 
@@ -1147,7 +1156,7 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
             }
             
             if(mModoAtual == MODO_TRANSICAO){
-                mViewer.getNode().getChildren().remove(lineFake);
+                //mViewer.getNode().getChildren().remove(lineFake); TESTE AINDA
             }
             
             if (mModoAtual != MODO_VERTICE && mModoAtual != MODO_NENHUM) {
@@ -1339,7 +1348,7 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
             lineFake.setStartY(mousePaneCoords.getY());
             lineFake.setEndX(mousePaneCoords.getX());
             lineFake.setEndY(mousePaneCoords.getY());
-            mViewer.getNode().getChildren().add(lineFake);
+            //mViewer.getNode().getChildren().add(lineFake);   EM TESTE AINDA
 
             //indica que este evento foi realizado
             t.consume();
