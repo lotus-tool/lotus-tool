@@ -131,7 +131,6 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
     private final int tamHistorico = 14;
     private final ImageView iconBigState = new ImageView(new Image(getClass().getResourceAsStream("/images/ic_big_state.png")));
     private final ImageView iconBigStateDismount = new ImageView(new Image(getClass().getResourceAsStream("/images/ic_big_state_dismount.png")));
-    private Line lineFake;
     
     private final ToolBar mStateToolbar;
     private final ToolBar mTransitionToolbar;
@@ -370,8 +369,6 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
     public DesignerWindowImpl(ComponentView viewer) {
         mViewer = viewer;
         mUndoRedo = new ComponentView[14];
-        lineFake = new Line();
-        lineFake.setMouseTransparent(true);
 
         mToolbar = new ToolBar();
         mToggleGroup = new ToggleGroup();
@@ -1038,12 +1035,6 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
                 mouseHandY = t.getSceneY();
             }
             
-            //                          LINE FAKE
-            if(mModoAtual == MODO_TRANSICAO){
-                lineFake.setEndX(t.getX());
-                lineFake.setEndY(t.getY());
-            }
-
             if (mModoAtual != MODO_VERTICE && mModoAtual != MODO_NENHUM) {
                 return;
             }
@@ -1161,10 +1152,6 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
 
             if (mModoAtual == MODO_MOVER) {
                 mViewer.getNode().setCursor(Cursor.OPEN_HAND);
-            }
-            
-            if(mModoAtual == MODO_TRANSICAO){
-                //mViewer.getNode().getChildren().remove(lineFake); TESTE AINDA
             }
             
             if (mModoAtual != MODO_VERTICE && mModoAtual != MODO_NENHUM) {
@@ -1316,7 +1303,7 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
     private EventHandler<MouseEvent> aoDetectarDragSobreVertice = new EventHandler<MouseEvent>() {
         @Override
         public void handle(MouseEvent t) {
-            System.out.println("EVENTO DE CLICK");
+            //System.out.println("EVENTO DE CLICK");
             if (mModoAtual != MODO_TRANSICAO) {
                 return;
             }
@@ -1346,16 +1333,6 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
             content.putString("gambiarra");
             db.setContent(content);
             
-            //inicia a Linha fake
-            /*Point2D mouseSceneCoords = new Point2D(t.getSceneX(), t.getSceneY());
-            Point2D mousePaneCoords = mViewer.getNode().sceneToLocal(mouseSceneCoords);
-            lineFake.setStartX(mousePaneCoords.getX());
-            lineFake.setStartY(mousePaneCoords.getY());
-            lineFake.setEndX(mousePaneCoords.getX());
-            lineFake.setEndY(mousePaneCoords.getY());
-            mViewer.getNode().getChildren().add(lineFake);  // EM TESTE AINDA*/
-
-
             //indica que este evento foi realizado
             t.consume();
         }
@@ -1365,7 +1342,7 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
         @Override
         public void handle(DragEvent event) {
             double xFinal=event.getX(),yFinal=event.getY();
-            System.out.println("EVENTO DE PUXAR");
+            //System.out.println("EVENTO DE PUXAR");
             //a informaÃ§ao esta sendo solta sobre o alvo
             //aceita soltar o mouse somente se nÃ£o Ã© o mesmo nodo de origem 
             //e possui uma string            
@@ -1381,7 +1358,7 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
             }
             Line linha= createViewFakeTransition(xInicial, yInical, xFinal, yFinal);
             mViewer.getNode().getChildren().add(1,linha);///<-coloca a linha por trás do state
-            System.out.println("ADICIONOU");
+            //System.out.println("ADICIONOU");
             ultimaLinha=linha;
             /*<><><><><><><><><><><><><><><><><><><><><><<><><><><><><><><><><><><><><><><><><><><><><><><><>*/
             event.consume();
@@ -1404,14 +1381,14 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
     private final EventHandler<DragEvent> aoSoltarMouseSobreVertice = new EventHandler<DragEvent>() {
         @Override
         public void handle(DragEvent event) {
-            System.out.println("EVENTO DE SOLTA");
+            //System.out.println("EVENTO DE SOLTA");
             if (mModoAtual != MODO_TRANSICAO) {
                 return;
             }
             /*<><><><><><><><><><><><><><><><><><><><><><<><><><><><><><><><><><><><><><><><><><><><><><><><>*/
             if(ultimaLinha!=null){
                 mViewer.getNode().getChildren().remove(ultimaLinha);
-                System.out.println("REMOVEU FINAL");
+                //System.out.println("REMOVEU FINAL");
             }
             /*<><><><><><><><><><><><><><><><><><><><><><<><><><><><><><><><><><><><><><><><><><><><><><><><>*/
 
