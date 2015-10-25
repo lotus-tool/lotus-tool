@@ -1311,9 +1311,12 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
     ////////////////////////////////////////////////////////////////////////////
     private StateView mVerticeOrigemParaAdicionarTransicao;
     private StateView mVerticeDestinoParaAdicionarTransicao;
+    private Line ultimaLinha;
+    private double xInicial,yInical;
     private EventHandler<MouseEvent> aoDetectarDragSobreVertice = new EventHandler<MouseEvent>() {
         @Override
         public void handle(MouseEvent t) {
+            System.out.println("EVENTO DE CLICK");
             if (mModoAtual != MODO_TRANSICAO) {
                 return;
             }
@@ -1322,6 +1325,10 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
                 return;
             }
             StateView v = (StateView) mComponentSobMouse;
+
+            ///pegando posicioes inicias (x,y)
+            xInicial=v.getState().getLayoutX();
+            yInical=v.getState().getLayoutY();
 
             //guarda o objeto no qual iniciamos o drag            
             mVerticeOrigemParaAdicionarTransicao = v;
@@ -1340,21 +1347,25 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
             db.setContent(content);
             
             //inicia a Linha fake
-            Point2D mouseSceneCoords = new Point2D(t.getSceneX(), t.getSceneY());
+            /*Point2D mouseSceneCoords = new Point2D(t.getSceneX(), t.getSceneY());
             Point2D mousePaneCoords = mViewer.getNode().sceneToLocal(mouseSceneCoords);
             lineFake.setStartX(mousePaneCoords.getX());
             lineFake.setStartY(mousePaneCoords.getY());
             lineFake.setEndX(mousePaneCoords.getX());
             lineFake.setEndY(mousePaneCoords.getY());
-            //mViewer.getNode().getChildren().add(lineFake);   EM TESTE AINDA
+            mViewer.getNode().getChildren().add(lineFake);  // EM TESTE AINDA*/
+
 
             //indica que este evento foi realizado
             t.consume();
         }
     };
+    private final double AJUSTE_X=20,AJUSTE_y=20;
     private EventHandler<DragEvent> aoDetectarPossivelAlvoParaSoltarODrag = new EventHandler<DragEvent>() {
         @Override
         public void handle(DragEvent event) {
+            double xFinal=event.getX(),yFinal=event.getY();
+            System.out.println("EVENTO DE PUXAR");
             //a informaÃ§ao esta sendo solta sobre o alvo
             //aceita soltar o mouse somente se nÃ£o Ã© o mesmo nodo de origem 
             //e possui uma string            
@@ -1364,15 +1375,45 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
 
             Object v = getComponentePelaPosicaoMouse(new Point2D(event.getSceneX(), event.getSceneY()));
             mVerticeDestinoParaAdicionarTransicao = (v instanceof StateView) ? ((StateView) v) : null;
+            /*<><><><><><><><><><><><><><><><><><><><><><<><><><><><><><><><><><><><><><><><><><><><><><><><>*/
+            if(ultimaLinha!=null){
+                mViewer.getNode().getChildren().remove(ultimaLinha);
+            }
+            Line linha= createViewFakeTransition(xInicial, yInical, xFinal, yFinal);
+            mViewer.getNode().getChildren().add(1,linha);///<-coloca a linha por trás do state
+            System.out.println("ADICIONOU");
+            ultimaLinha=linha;
+            /*<><><><><><><><><><><><><><><><><><><><><><<><><><><><><><><><><><><><><><><><><><><><><><><><>*/
             event.consume();
         }
     };
+
+    private Line createViewFakeTransition(double xInicial, double yInical, double xFinal, double yFinal) {
+        Line linha = new Line();
+        linha.setStartX(xInicial+AJUSTE_X);
+        linha.setStartY(yInical+AJUSTE_y);
+        linha.setEndX(xFinal);
+        linha.setEndY(yFinal);
+           /* System.out.println(event.getX());
+            System.out.println(event.getY());*/
+        linha.setOpacity(0.5);
+        linha.getStrokeDashArray().addAll(2d);//<-traseja o state
+        return linha;
+    }
+
     private final EventHandler<DragEvent> aoSoltarMouseSobreVertice = new EventHandler<DragEvent>() {
         @Override
         public void handle(DragEvent event) {
+            System.out.println("EVENTO DE SOLTA");
             if (mModoAtual != MODO_TRANSICAO) {
                 return;
             }
+            /*<><><><><><><><><><><><><><><><><><><><><><<><><><><><><><><><><><><><><><><><><><><><><><><><>*/
+            if(ultimaLinha!=null){
+                mViewer.getNode().getChildren().remove(ultimaLinha);
+                System.out.println("REMOVEU FINAL");
+            }
+            /*<><><><><><><><><><><><><><><><><><><><><><<><><><><><><><><><><><><><><><><><><><><><><><><><>*/
 
             if (mVerticeDestinoParaAdicionarTransicao != null) {
                 if (BigState.verifyIsBigState(mVerticeDestinoParaAdicionarTransicao.getState())) {
@@ -1390,6 +1431,8 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
                 List<Transition> transitionsDO = d.getTransitionsTo(o);
                 boolean temLineOD = verificarSeExisteTransitionLine(transitionsOD);
                 boolean temLineDO = verificarSeExisteTransitionLine(transitionsDO);
+
+                mViewer.getNode().getChildren().remove(ultimaLinha);
                 
                 if(mTransitionViewType == 1){ // curve
                     Transition t = mViewer.getComponent().buildTransition(o, d)
