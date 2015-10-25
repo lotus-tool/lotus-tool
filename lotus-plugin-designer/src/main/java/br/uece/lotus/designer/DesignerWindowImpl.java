@@ -461,7 +461,11 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
         ColorPicker cores = new ColorPicker();
         MenuButton complementoColors = new MenuButton("");
         cores.setOnAction((ActionEvent event) -> {
-            changeColorsState(cores, "");
+            if(statesSelecionados.isEmpty()){
+                changeColorsState(cores, "");
+            }else{
+                changeColorsState(cores, "MultiSelecao");
+            }
         });
         MenuItem defaultColor = new MenuItem("Default Color");
         defaultColor.setOnAction((ActionEvent event) -> {
@@ -1182,15 +1186,13 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
                     }
                     if (ultimoRetanguloAdicionado != null) {
                         mViewer.getNode().getChildren().remove(ultimoRetanguloAdicionado);
-
                     }
-
                     auxA = false;
                 }
             }
         }
     };
-    ArrayList<State> todosOsStates;
+    private ArrayList<State> todosOsStates;
 
     public boolean selecionandoComRetangulo(double inicioDoRectanguloX, double inicioDoRectanguloY, double finalDoRectanguloX, double finalDoRectanguloY) {
         boolean aux = false;
@@ -1210,8 +1212,7 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
 
 
         }
-
-
+        
         todosOsStates = (ArrayList<State>) mViewer.getComponent().getStates();
         int n = todosOsStates.size();
         if (stateDentroDoRetangulo != null) {
@@ -1242,37 +1243,30 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
                             s.setTextColor("blue");
                             s.setTextSyle(State.TEXTSTYLE_BOLD);
                             aux = true;
-
-
                         } else {
                             s.setBorderWidth(1);
                             s.setBorderColor("black");
                             s.setTextColor("black");
                             s.setTextSyle(State.TEXTSTYLE_NORMAL);
-
                         }
                     } else {
                         s.setBorderWidth(1);
                         s.setBorderColor("black");
                         s.setTextColor("black");
                         s.setTextSyle(State.TEXTSTYLE_NORMAL);
-
                     }
                 } else {
                     s.setBorderWidth(1);
                     s.setBorderColor("black");
                     s.setTextColor("black");
                     s.setTextSyle(State.TEXTSTYLE_NORMAL);
-
                 }
             } else {
                 s.setBorderWidth(1);
                 s.setBorderColor("black");
                 s.setTextColor("black");
                 s.setTextSyle(State.TEXTSTYLE_NORMAL);
-
             }
-
         }
         statesSelecionados.addAll(stateDentroDoRetangulo);
         
@@ -1569,22 +1563,27 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
     private void changeColorsState(ColorPicker cores, String tipo){
         if (mComponentSelecionado == null) {
                 return;
+        }
+        String hexCor = "#"+ Integer.toHexString(cores.getValue().hashCode()).substring(0, 6).toUpperCase();
+        State s = ((StateView) mComponentSelecionado).getState();
+        if(s.isInitial() || s.isFinal() || s.isError()){
+            Alert alert = new Alert(Alert.AlertType.INFORMATION, "-Initial\n-Final\n-Error", ButtonType.OK);
+            alert.setHeaderText("Impossible to change color of States:");
+            alert.show();
+            return;
+        }
+        if(tipo.equals("Default")){
+            s.setColor(null);
+            return;
+        }
+        if(tipo.equals("MultiSelecao")){
+            for(State state : statesSelecionados){
+                state.setColor(hexCor);
             }
-            State s = ((StateView) mComponentSelecionado).getState();
-            if(s.isInitial() || s.isFinal() || s.isError()){
-                Alert alert = new Alert(Alert.AlertType.INFORMATION, "-Initial\n-Final\n-Error", ButtonType.OK);
-                alert.setHeaderText("Impossible to change color of States:");
-                alert.show();
-                return;
-            }
-            if(tipo.equals("Default")){
-                s.setColor(null);
-                return;
-            }
-            String hexCor = "#"+ Integer.toHexString(cores.getValue().hashCode()).substring(0, 6).toUpperCase();
-            s.setColor(hexCor);
-            System.out.println("cor: "+hexCor);
-            
+            return;
+        }
+        s.setColor(hexCor);
+        System.out.println("cor: "+hexCor);
     }
 
     @Override
