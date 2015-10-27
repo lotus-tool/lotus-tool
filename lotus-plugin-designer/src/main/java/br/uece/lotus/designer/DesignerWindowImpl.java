@@ -270,10 +270,11 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
             contID++;            
 
             //ADD TRANSITIONS DOS BIGSTATES
+            int type = 0;
             for (Transition t : bigState.getListaTransitionsForaSaindo()) {
                 if (novoState.getTransitionsTo(t.getDestiny()).size() == 0) {
                     Transition tNova = mViewer.getComponent().buildTransition(novoState, t.getDestiny())
-                            .setValue("view.type", 1)
+                            .setValue("view.type", type)
                             .setLabel(t.getLabel() == null || t.getLabel().equals("") ? "" : t.getLabel())
                             .create();
                 } else {
@@ -284,9 +285,11 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
                 }
             }
             for (Transition t : bigState.getListaTransitionsForaChegando()) {
+                if(novoState.getTransitionsTo(t.getSource()).size()!=0)
+                    type = 1;                
                 if (t.getSource().getTransitionsTo(novoState).size() == 0) {
                     Transition tNova = mViewer.getComponent().buildTransition(t.getSource(), novoState)
-                            .setValue("view.type", 0)
+                            .setValue("view.type", type)
                             .setLabel(t.getLabel() == null || t.getLabel().equals("") ? "" : t.getLabel())
                             .create();
                 } else {
