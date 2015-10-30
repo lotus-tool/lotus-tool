@@ -73,6 +73,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Arc;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
@@ -1302,7 +1303,8 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
     private StateView mVerticeOrigemParaAdicionarTransicao;
     private StateView mVerticeDestinoParaAdicionarTransicao;
     private Line ultimaLinha;
-    private double xInicial,yInical;
+    private ElipseTransitionViewImpl.TransicaoEmArco ultimaLinhaCurva;
+    private double xInicial,yInicial;
     private EventHandler<MouseEvent> aoDetectarDragSobreVertice = new EventHandler<MouseEvent>() {
         @Override
         public void handle(MouseEvent t) {
@@ -1318,7 +1320,7 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
 
             ///pegando posicioes inicias (x,y)
             xInicial=v.getState().getLayoutX();
-            yInical=v.getState().getLayoutY();
+            yInicial=v.getState().getLayoutY();
 
             //guarda o objeto no qual iniciamos o drag            
             mVerticeOrigemParaAdicionarTransicao = v;
@@ -1359,19 +1361,31 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
             if(ultimaLinha!=null){
                 mViewer.getNode().getChildren().remove(ultimaLinha);
             }
-            Line linha= createViewFakeTransition(xInicial, yInical, xFinal, yFinal);
-            mViewer.getNode().getChildren().add(1,linha);///<-coloca a linha por trás do state
-            //System.out.println("ADICIONOU");
-            ultimaLinha=linha;
+            if(ultimaLinhaCurva != null){
+                mViewer.getNode().getChildren().remove(ultimaLinhaCurva);
+            }
+            if(mBtnTransitionLine.isSelected()){
+                Line linha= createViewFakeTransitionLine(xInicial, yInicial, xFinal, yFinal);
+                mViewer.getNode().getChildren().add(linha);
+                linha.toBack();///<-coloca a linha por trás do state
+                //System.out.println("ADICIONOU");
+                ultimaLinha=linha;
+            }
+            if(mBtnTransitionArc.isSelected()){
+                ElipseTransitionViewImpl.TransicaoEmArco linhaCurva = createViewFakeTransitionLineCurve(xInicial, yInicial, xFinal, yFinal);
+                mViewer.getNode().getChildren().add(linhaCurva);
+                linhaCurva.toBack();
+                ultimaLinhaCurva = linhaCurva;
+            }
             /*<><><><><><><><><><><><><><><><><><><><><><<><><><><><><><><><><><><><><><><><><><><><><><><><>*/
             event.consume();
         }
     };
 
-    private Line createViewFakeTransition(double xInicial, double yInical, double xFinal, double yFinal) {
+    private Line createViewFakeTransitionLine(double xInicial, double yInicial, double xFinal, double yFinal) {
         Line linha = new Line();
         linha.setStartX(xInicial+AJUSTE_X);
-        linha.setStartY(yInical+AJUSTE_y);
+        linha.setStartY(yInicial+AJUSTE_y);
         linha.setEndX(xFinal);
         linha.setEndY(yFinal);
            /* System.out.println(event.getX());
@@ -1379,6 +1393,11 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
         linha.setOpacity(0.5);
         linha.getStrokeDashArray().addAll(2d);//<-traseja o state
         return linha;
+    }
+    private ElipseTransitionViewImpl.TransicaoEmArco createViewFakeTransitionLineCurve(double xInicial, double yInicial, double xFinal, double yFinal){
+        ElipseTransitionViewImpl.TransicaoEmArco linhaCurva = 
+                    new ElipseTransitionViewImpl.TransicaoEmArco(xInicial, xFinal, yInicial, yFinal);
+        return linhaCurva;
     }
 
     private final EventHandler<DragEvent> aoSoltarMouseSobreVertice = new EventHandler<DragEvent>() {
@@ -1392,6 +1411,9 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
             if(ultimaLinha!=null){
                 mViewer.getNode().getChildren().remove(ultimaLinha);
                 //System.out.println("REMOVEU FINAL");
+            }
+            if(ultimaLinhaCurva != null){
+                mViewer.getNode().getChildren().remove(ultimaLinhaCurva);
             }
             /*<><><><><><><><><><><><><><><><><><><><><><<><><><><><><><><><><><><><><><><><><><><><><><><><>*/
 
@@ -1411,8 +1433,6 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
                 List<Transition> transitionsDO = d.getTransitionsTo(o);
                 boolean temLineOD = verificarSeExisteTransitionLine(transitionsOD);
                 boolean temLineDO = verificarSeExisteTransitionLine(transitionsDO);
-
-                mViewer.getNode().getChildren().remove(ultimaLinha);
                 
                 if(mTransitionViewType == 1){ // curve
                     Transition t = mViewer.getComponent().buildTransition(o, d)

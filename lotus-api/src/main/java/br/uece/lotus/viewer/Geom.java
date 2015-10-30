@@ -3,6 +3,7 @@ package br.uece.lotus.viewer;
 import javafx.beans.binding.DoubleBinding;
 import javafx.beans.binding.DoubleExpression;
 import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.scene.Node;
 
 /**
@@ -12,6 +13,10 @@ class Geom {
 
     static DoubleBinding distance(Node origem, Node destino) {
         return new DistanciaLinha(origem, destino);
+    }
+    
+    static DoubleBinding distance(Double origemX, Double origemY, Double destinoX, Double destinoY){
+        return new DistanciaLinha(origemX, origemY, destinoX, destinoY);
     }
 
     static DoubleBinding angle(Node origem, Node destino) {
@@ -194,6 +199,12 @@ class Geom {
             mYa = a.layoutYProperty();
             mXb = b.layoutXProperty();
             mYb = b.layoutYProperty();
+        }
+        public DistanciaLinha(Double origemX, Double origemY, Double destinoX, Double destinoY) {
+            mXa = new SimpleDoubleProperty(origemX);
+            mYa = new SimpleDoubleProperty(origemY);
+            mXb = new SimpleDoubleProperty(destinoX);
+            mYb = new SimpleDoubleProperty(destinoY);
         }
 
         @Override

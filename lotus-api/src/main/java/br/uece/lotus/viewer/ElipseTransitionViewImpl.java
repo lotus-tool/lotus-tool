@@ -90,7 +90,7 @@ public class ElipseTransitionViewImpl extends TransitionViewImpl {
         mCurva.rotulo.setText(getComputedLabel());
     }
 
-    static class TransicaoEmArco extends Region {
+    public static class TransicaoEmArco extends Region {
 
         Transition mTransition;
         final Label rotulo = new Label();
@@ -113,6 +113,21 @@ public class ElipseTransitionViewImpl extends TransitionViewImpl {
             seta.setLayoutY(17);
             rotulo.setLayoutY(-5);
             rotulo.layoutXProperty().bind(arco.radiusXProperty().subtract(rotulo.widthProperty().divide(2)));
+        }
+        //Para Fake ElipseTransition 
+        public TransicaoEmArco(Double origemX, Double origemY, Double destinoX, Double destinoY) {
+            getChildren().addAll(seta, arco);
+            arco.radiusXProperty().bind(Geom.distance(origemX,origemY,destinoX,destinoY).divide(2));
+            arco.radiusYProperty().bind(Geom.distance(origemX,origemY,destinoX,destinoY).divide(4).add(25));
+            arco.centerXProperty().bind(arco.radiusXProperty());
+            arco.centerYProperty().bind(arco.radiusYProperty().add(17));
+            arco.setLength(180);
+            arco.setType(ArcType.OPEN);
+            arco.setFill(null);
+            arco.setStroke(Color.BLACK);
+
+            seta.layoutXProperty().bind(arco.radiusXProperty());
+            seta.setLayoutY(17);
         }
         
         private int fatorY(Transition mTransition) {
