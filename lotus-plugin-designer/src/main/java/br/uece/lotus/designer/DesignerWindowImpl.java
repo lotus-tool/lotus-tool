@@ -1621,8 +1621,12 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
         if(statesSelecionados==null){
             return;
         }
-        String hexCor = "#"+ Integer.toHexString(cores.getValue().hashCode()).substring(0, 6).toUpperCase();
-
+        String hexCor = "";
+        if(cores.getValue().toString().equals("0x000000ff")){
+            hexCor = "black";
+        }else{
+            hexCor = "#"+ Integer.toHexString(cores.getValue().hashCode()).substring(0, 6).toUpperCase();
+        }
         for(State s : statesSelecionados){
         if(s.isInitial() || s.isFinal() || s.isError()){
             Alert alert = new Alert(Alert.AlertType.INFORMATION, "-Initial\n-Final\n-Error", ButtonType.OK);
