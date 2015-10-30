@@ -463,6 +463,7 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
         MenuButton complementoColors = new MenuButton("");
         cores.setOnAction((ActionEvent event) -> {
             if(statesSelecionados.isEmpty()){
+                System.out.println("é nulo o statesSelecionados");
                 changeColorsState(cores, "");
             }else{
                 changeColorsState(cores, "MultiSelecao");
@@ -779,7 +780,11 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
                 }else{                 
                     mBtnBigState.setSelected(false);
                     mBtnBigState.setGraphic(iconBigState);
-                    paleta.setVisible(false);
+                   // System.out.println("saiu aqui ?");
+
+                    if(!StatesSelecionadoPeloRetangulo){
+                    paleta.setVisible(false);}
+
                 }
 
             } else {
@@ -1174,6 +1179,10 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
                         coordenadaFinalY = t.getY();
 
                         StatesSelecionadoPeloRetangulo = selecionandoComRetangulo(inicioDoRectanguloXAux, inicioDoRectanguloYAux, coordenadaFinalX, coordenadaFinalY);
+                        if(StatesSelecionadoPeloRetangulo){
+                            System.out.println("chegou aqui correto");
+                            paleta.setVisible(true);
+                        }
                     }
                     if (ultimoRetanguloAdicionado != null) {
                         mViewer.getNode().getChildren().remove(ultimoRetanguloAdicionado);
@@ -1233,6 +1242,7 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
                             s.setBorderColor("blue");
                             s.setTextColor("blue");
                             s.setTextSyle(State.TEXTSTYLE_BOLD);
+
                             aux = true;
                         } else {
                             s.setBorderWidth(1);
@@ -1263,6 +1273,9 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
         
         //MUDANDO ICONE E SELECAO DO TOGGLEBUTON BIGSTATE
         changeIconToggleBigState();
+
+
+
         
         return aux;
     }
@@ -1604,11 +1617,13 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
     }
     
     private void changeColorsState(ColorPicker cores, String tipo){
-        if (mComponentSelecionado == null) {
-                return;
+        /*System.out.println("entrou no método de changeColors");*/
+        if(statesSelecionados==null){
+            return;
         }
         String hexCor = "#"+ Integer.toHexString(cores.getValue().hashCode()).substring(0, 6).toUpperCase();
-        State s = ((StateView) mComponentSelecionado).getState();
+
+        for(State s : statesSelecionados){
         if(s.isInitial() || s.isFinal() || s.isError()){
             Alert alert = new Alert(Alert.AlertType.INFORMATION, "-Initial\n-Final\n-Error", ButtonType.OK);
             alert.setHeaderText("Impossible to change color of States:");
@@ -1617,16 +1632,23 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
         }
         if(tipo.equals("Default")){
             s.setColor(null);
-            return;
+            /*return;*/
         }
-        if(tipo.equals("MultiSelecao")){
-            for(State state : statesSelecionados){
-                state.setColor(hexCor);
-            }
-            return;
+        /*if(tipo.equals("MultiSelecao")){
+            if(statesSelecionados.isEmpty()){
+                System.out.println("statesSelecionados está vazio");
+                return;
+
+            }*/
+            if(tipo.equals("MultiSelecao")){
+           /* for(State state : statesSelecionados){*/
+                s.setColor(hexCor);
+           /* }*/
+            /*return;*/}
         }
-        s.setColor(hexCor);
+        /*s.setColor(hexCor);
         System.out.println("cor: "+hexCor);
+        }*/
     }
 
     @Override

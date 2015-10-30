@@ -23,10 +23,9 @@
  */
 package br.uece.seed.app;
 
+import br.uece.lotus.Project;
 import br.uece.lotus.about.AboutPlugin;
-import br.uece.lotus.project.BasicPlugin;
-import br.uece.lotus.project.ProjectDialogsHelper;
-import br.uece.lotus.project.ProjectExplorerPlugin;
+import br.uece.lotus.project.*;
 import br.uece.seed.ext.ExtensionManager;
 import br.uece.seed.ext.JarModule;
 import br.uece.seed.ext.Module;
@@ -61,6 +60,14 @@ public class Startup extends Application {
     private static Stage mStage;
     private static File extensionsPath;
     private ExtensionManager extensionManager;
+    private ProjectExplorer mProjectExplorer ;
+    private UserInterface mUserInterface ;
+    private ProjectDialogsHelper mProjectDialogsHelper;
+    private static final String EXTENSION_DESCRIPTION = "LoTuS files (*.xml)";
+    private static final String EXTENSION =  "*.xml";
+
+    private ProjectSerializer mProjectSerializer = new ProjectXMLSerializer();
+
 
     public static void main(String[] args) {
         launch(args);
@@ -69,6 +76,7 @@ public class Startup extends Application {
     public static Stage getStage() {
         return mStage;
     }
+
 
     @Override
     public void start(Stage stage) throws Exception {
@@ -107,14 +115,36 @@ public class Startup extends Application {
         mStage.setScene(scene);
         mStage.show();
         mStage.setTitle("LoTuS 3.0");
+
+        mProjectExplorer =extensionManager.get(ProjectExplorer.class);
+        mUserInterface = extensionManager.get(UserInterface.class);
+        mProjectDialogsHelper= extensionManager.get(ProjectDialogsHelper.class);
+
+
         mStage.setOnCloseRequest(event -> {
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
             alert.setTitle("Confirm Exit");
             alert.setHeaderText("Are you sure you want to exit LoTuS");
-            ButtonType buttonTypeExit = new ButtonType("Exit");
+            ButtonType buttonTypeSave = new ButtonType("Save");
+            ButtonType buttonTypeExit = new ButtonType("Not Save");
             ButtonType buttonTypeCancel = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
-            alert.getButtonTypes().setAll(buttonTypeExit, buttonTypeCancel);
+            alert.getButtonTypes().setAll(buttonTypeSave,buttonTypeExit, buttonTypeCancel);
             Optional<ButtonType> result = alert.showAndWait();
+
+            if(result.get()== buttonTypeSave){
+               /* ExtensibleMenu mMainMenu = mUserInterface.getMainMenu();
+                mMainMenu.*/
+                for (Project projeto : mProjectExplorer.getAllProjects()) {
+                    mProjectDialogsHelper.save(projeto, mProjectSerializer, "Save project", EXTENSION_DESCRIPTION, EXTENSION/*,false*/);
+
+                }
+                try {
+                    extensionManager.stop();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                System.exit(0);
+            }
 
             if (result.get() == buttonTypeExit) {
                 try {
