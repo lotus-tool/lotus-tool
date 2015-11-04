@@ -85,7 +85,7 @@ public class DesignerWindowManager extends DefaultWindowManagerPlugin<DesignerWi
 
     @Override
     protected void onHide(DesignerWindow window) {
-
+        
     }
 
 }

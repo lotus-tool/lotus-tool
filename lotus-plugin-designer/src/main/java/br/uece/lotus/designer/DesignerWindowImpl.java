@@ -515,7 +515,7 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
                             auxValor = valorDoField.replaceAll(",", ".");
                             double teste = Double.parseDouble(auxValor);
                             if(teste<0 || teste >1){
-                                JOptionPane.showMessageDialog(null, "Imput probability need 0 to 1", "Erro", JOptionPane.ERROR_MESSAGE);
+                                JOptionPane.showMessageDialog(null, "Input probability between 0 and 1", "Erro", JOptionPane.ERROR_MESSAGE);
                                 auxValor="";
                                 txtProbability.setText("");
                             }
@@ -1617,7 +1617,6 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
     }
     
     private void changeColorsState(ColorPicker cores, String tipo){
-        /*System.out.println("entrou no método de changeColors");*/
         if(statesSelecionados==null){
             return;
         }
@@ -1628,31 +1627,19 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
             hexCor = "#"+ Integer.toHexString(cores.getValue().hashCode()).substring(0, 6).toUpperCase();
         }
         for(State s : statesSelecionados){
-        if(s.isInitial() || s.isFinal() || s.isError()){
-            Alert alert = new Alert(Alert.AlertType.INFORMATION, "-Initial\n-Final\n-Error", ButtonType.OK);
-            alert.setHeaderText("Impossible to change color of States:");
-            alert.show();
-            return;
-        }
-        if(tipo.equals("Default")){
-            s.setColor(null);
-            /*return;*/
-        }
-        /*if(tipo.equals("MultiSelecao")){
-            if(statesSelecionados.isEmpty()){
-                System.out.println("statesSelecionados está vazio");
+            if(s.isInitial() || s.isFinal() || s.isError()){
+                Alert alert = new Alert(Alert.AlertType.INFORMATION, "-Initial\n-Final\n-Error", ButtonType.OK);
+                alert.setHeaderText("Impossible to change color of States:");
+                alert.show();
                 return;
-
-            }*/
+            }
+            if(tipo.equals("Default")){
+                s.setColor(null);
+            }
             if(tipo.equals("MultiSelecao")){
-           /* for(State state : statesSelecionados){*/
                 s.setColor(hexCor);
-           /* }*/
-            /*return;*/}
+            }
         }
-        /*s.setColor(hexCor);
-        System.out.println("cor: "+hexCor);
-        }*/
     }
 
     @Override
