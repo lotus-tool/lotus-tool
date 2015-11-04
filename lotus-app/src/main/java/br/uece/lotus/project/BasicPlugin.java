@@ -79,6 +79,10 @@ public class BasicPlugin extends Plugin {
             if (name == null) {
                 return;
             }
+            if(checkExistenceName(name)){
+                JOptionPane.showMessageDialog(null,"        Existing Project" );
+                return;
+            }
             p.setName(name);
             Component c = new Component();
             c.setName("Component" + (p.getComponentsCount() + 1));
@@ -86,6 +90,17 @@ public class BasicPlugin extends Plugin {
             mProjectExplorer.open(p);
         });
     };
+
+    private boolean checkExistenceName(String name) {
+        for(Project p : mProjectExplorer.getAllProjects()){
+            if(p.getName().equals(name)){
+                return true;
+            }
+
+        }
+        return false;
+    }
+
     private Runnable mRenameProject = () -> {
         SwingUtilities.invokeLater(() -> {
             Project p = mProjectExplorer.getSelectedProject();
