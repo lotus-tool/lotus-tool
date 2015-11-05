@@ -14,10 +14,6 @@ class Geom {
     static DoubleBinding distance(Node origem, Node destino) {
         return new DistanciaLinha(origem, destino);
     }
-    
-    static DoubleBinding distance(Double origemX, Double origemY, Double destinoX, Double destinoY){
-        return new DistanciaLinha(origemX, origemY, destinoX, destinoY);
-    }
 
     static DoubleBinding angle(Node origem, Node destino) {
         return new Angulo(origem, destino);
@@ -37,7 +33,7 @@ class Geom {
             mXb = b.layoutXProperty();
             mYb = b.layoutYProperty();
         }
-
+        
         @Override
         protected double computeValue() {
             double deltaX = mXb.get() - mXa.get();
@@ -199,12 +195,6 @@ class Geom {
             mYa = a.layoutYProperty();
             mXb = b.layoutXProperty();
             mYb = b.layoutYProperty();
-        }
-        public DistanciaLinha(Double origemX, Double origemY, Double destinoX, Double destinoY) {
-            mXa = new SimpleDoubleProperty(origemX);
-            mYa = new SimpleDoubleProperty(origemY);
-            mXb = new SimpleDoubleProperty(destinoX);
-            mYb = new SimpleDoubleProperty(destinoY);
         }
 
         @Override
