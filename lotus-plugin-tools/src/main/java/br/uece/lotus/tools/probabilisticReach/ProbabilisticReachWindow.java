@@ -287,8 +287,8 @@ public class ProbabilisticReachWindow extends AnchorPane{
         }
         int source = Integer.parseInt(aux1);
         int destination = Integer.parseInt(aux2);
-        State sourceS = a.getStateByID(source);
-        State destinationS = a.getStateByID(destination);
+        State sourceS = a.getStateByID(source + 1);
+        State destinationS = a.getStateByID(destination + 1);
         double p = new ProbabilisticReachAlgorithm().probabilityBetween(a, sourceS, destinationS);
         String result = String.valueOf(p);
         

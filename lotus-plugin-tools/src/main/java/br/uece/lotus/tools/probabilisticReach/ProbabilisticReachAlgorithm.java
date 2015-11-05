@@ -27,13 +27,13 @@ public class ProbabilisticReachAlgorithm {
         int i;
         int j;
         for(Transition t : transitions){
-            i = t.getSource().getID();
-            j = t.getDestiny().getID();
+            i = (t.getSource().getID()) - 1;
+            j = (t.getDestiny().getID()) - 1;
             probabilities[i][j] = t.getProbability();
         }
         zerarDiagonal(probabilities, tam);
-        i = source.getID();
-        j = destination.getID();
+        i = source.getID() - 1;
+        j = destination.getID() - 1;
 //      multiplica as matrizes um monte de vez
         double[][] mult = probabilities;
 //      visualization
