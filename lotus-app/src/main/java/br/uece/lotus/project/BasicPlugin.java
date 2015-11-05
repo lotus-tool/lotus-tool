@@ -67,7 +67,11 @@ public class BasicPlugin extends Plugin {
                 return;
             }
             Component c = new Component();
-            c.setName(name);
+            if(name.equals("")){
+                c.setName("Component" + (p.getComponentsCount() + 1));
+            }else{
+                c.setName(name);
+            }
             p.addComponent(c);
         });
     };
@@ -76,8 +80,8 @@ public class BasicPlugin extends Plugin {
             Project p = new Project();
             String namePrompt = "Untitled" + (mProjectExplorer.getAllProjects().size() + 1);
             String name = JOptionPane.showInputDialog(null, "Enter the new project's name", namePrompt);
-            if (name == null) {
-                return;
+            if (name.equals("")) {
+                name = namePrompt;
             }
             if(checkExistenceName(name)){
                 JOptionPane.showMessageDialog(null,"        Existing Project" );
