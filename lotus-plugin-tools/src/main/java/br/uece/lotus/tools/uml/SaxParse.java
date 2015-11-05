@@ -127,12 +127,12 @@ public class SaxParse extends DefaultHandler{
         if((tagAtual.equals("UML:Actor") || tagAtual.equals("UML:Class")) && !packageInvalido.equals("UML:Package")){
             AtorAndClasse acc = new AtorAndClasse("", "","");
             if(tagAtual.equals("UML:Actor")){
-                acc.setNome(atts.getValue("name"));
+                acc.setNome(atts.getValue("name").replaceAll("\\+", ""));
                 acc.setXmiID(atts.getValue("xmi.id"));
                 acc.setTipo("actor");
             }
             else if(tagAtual.equals("UML:Class")){
-                acc.setNome(atts.getValue("name"));
+                acc.setNome(atts.getValue("name").replaceAll("\\+", ""));
                 acc.setXmiID(atts.getValue("xmi.id"));
                 acc.setTipo("class");
             }
@@ -150,7 +150,8 @@ public class SaxParse extends DefaultHandler{
             atributosMaisDe1Role = true;
             classifierRoleID = atts.getValue("xmi.id");
             if(!atts.getValue("name").equals("")){
-                AtorAndClasse aac2 = new AtorAndClasse(atts.getValue("name"), atts.getValue("xmi.id"), "class");
+                String atorEClasse = atts.getValue("name").replaceAll("\\+", "");
+                AtorAndClasse aac2 = new AtorAndClasse(atorEClasse, atts.getValue("xmi.id"), "class");
                 NamespaceOwnedElement noe2 = new NamespaceOwnedElement(atts.getValue("xmi.id"), atts.getValue("xmi.id"));
                 atoresAndClasses.add(aac2);
                 elementos.add(noe2);
