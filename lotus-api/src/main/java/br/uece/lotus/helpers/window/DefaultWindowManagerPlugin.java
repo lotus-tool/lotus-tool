@@ -52,6 +52,7 @@ public abstract class DefaultWindowManagerPlugin<T extends Window> extends Plugi
         public void onChange(Component c) {
             Integer id = mComponentWindowsIds.get(c);
             if (id != null) {
+                System.out.println("onchange");
                 mCenterPanel.renameTab(id, c.getName());
             }
         }
@@ -92,19 +93,42 @@ public abstract class DefaultWindowManagerPlugin<T extends Window> extends Plugi
     public void show(Component component) {
         checkIfStartedProperly();
         T window = mComponentWindowsMap.get(component);
+
+        System.out.println("COMPONENT:"+component.getName());
+        try {
+            System.out.println("window:"+window.getComponent().getName());
+        } catch (Exception e) {
+            System.out.println("window é nula ainda1");
+        }
+
+
+        /*System.out.println("quantidade de elementos1: "+mComponentWindowsMap.size());*/
+
         if (window == null) {
+            System.out.println("window é nula");
             window = onCreate();
+            //////////////////////////////
+            window.setComponent(component);
+            //////////////////////////////////
             for (Listener l : mListeners) {
                 l.onCreateWindow(window);
             }            
             component.addListener(mComponentListener);
-            mComponentWindowsMap.put(component, (T) window);
+            mComponentWindowsMap.put(component,  (T)window);
+            try {
+                System.out.println("window:"+window.getComponent().getName());
+            } catch (Exception e) {
+                System.out.println("window é nula ainda2");
+            }
+            /*System.out.println("quantidade de elementos2: "+mComponentWindowsMap.size());*/
         }
         onShow(window, component);
         Integer id = mComponentWindowsIds.get(component);        
         boolean visivel = id != null && mCenterPanel.isShowing(id);        
-        if (!visivel || id == null) {            
+        if (!visivel || id == null) {
+            System.out.println("id ==null");
             id = mCenterPanel.newTab(window.getTitle(), window.getNode(), true);
+            System.out.println("id :" +id);
             mComponentWindowsIds.put(component, id);
         }        
         mCenterPanel.showTab(id);
@@ -118,6 +142,7 @@ public abstract class DefaultWindowManagerPlugin<T extends Window> extends Plugi
 
     @Override
     public void hide(Component component) {
+        System.out.println("hide component");
         checkIfStartedProperly();
         Integer id = mComponentWindowsIds.get(component);
         if (id != null) {
