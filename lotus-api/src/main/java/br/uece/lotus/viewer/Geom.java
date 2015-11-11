@@ -3,6 +3,7 @@ package br.uece.lotus.viewer;
 import javafx.beans.binding.DoubleBinding;
 import javafx.beans.binding.DoubleExpression;
 import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.scene.Node;
 
 /**
@@ -32,7 +33,7 @@ class Geom {
             mXb = b.layoutXProperty();
             mYb = b.layoutYProperty();
         }
-
+        
         @Override
         protected double computeValue() {
             double deltaX = mXb.get() - mXa.get();

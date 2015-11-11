@@ -514,7 +514,7 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
                             auxValor = valorDoField.replaceAll(",", ".");
                             double teste = Double.parseDouble(auxValor);
                             if(teste<0 || teste >1){
-                                JOptionPane.showMessageDialog(null, "Imput probability need 0 to 1", "Erro", JOptionPane.ERROR_MESSAGE);
+                                JOptionPane.showMessageDialog(null, "Input probability between 0 and 1", "Erro", JOptionPane.ERROR_MESSAGE);
                                 auxValor="";
                                 txtProbability.setText("");
                             }
@@ -1315,7 +1315,7 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
     private StateView mVerticeOrigemParaAdicionarTransicao;
     private StateView mVerticeDestinoParaAdicionarTransicao;
     private Line ultimaLinha;
-    private double xInicial,yInical;
+    private double xInicial,yInicial;
     private EventHandler<MouseEvent> aoDetectarDragSobreVertice = new EventHandler<MouseEvent>() {
         @Override
         public void handle(MouseEvent t) {
@@ -1331,7 +1331,7 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
 
             ///pegando posicioes inicias (x,y)
             xInicial=v.getState().getLayoutX();
-            yInical=v.getState().getLayoutY();
+            yInicial=v.getState().getLayoutY();
 
             //guarda o objeto no qual iniciamos o drag            
             mVerticeOrigemParaAdicionarTransicao = v;
@@ -1372,19 +1372,22 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
             if(ultimaLinha!=null){
                 mViewer.getNode().getChildren().remove(ultimaLinha);
             }
-            Line linha= createViewFakeTransition(xInicial, yInical, xFinal, yFinal);
-            mViewer.getNode().getChildren().add(1,linha);///<-coloca a linha por trás do state
+            
+            Line linha= createViewFakeTransitionLine(xInicial, yInicial, xFinal, yFinal);
+            mViewer.getNode().getChildren().add(linha);
+            linha.toBack();///<-coloca a linha por trás do state
             //System.out.println("ADICIONOU");
             ultimaLinha=linha;
+            
             /*<><><><><><><><><><><><><><><><><><><><><><<><><><><><><><><><><><><><><><><><><><><><><><><><>*/
             event.consume();
         }
     };
 
-    private Line createViewFakeTransition(double xInicial, double yInical, double xFinal, double yFinal) {
+    private Line createViewFakeTransitionLine(double xInicial, double yInicial, double xFinal, double yFinal) {
         Line linha = new Line();
         linha.setStartX(xInicial+AJUSTE_X);
-        linha.setStartY(yInical+AJUSTE_y);
+        linha.setStartY(yInicial+AJUSTE_y);
         linha.setEndX(xFinal);
         linha.setEndY(yFinal);
            /* System.out.println(event.getX());
@@ -1424,8 +1427,6 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
                 List<Transition> transitionsDO = d.getTransitionsTo(o);
                 boolean temLineOD = verificarSeExisteTransitionLine(transitionsOD);
                 boolean temLineDO = verificarSeExisteTransitionLine(transitionsDO);
-
-                mViewer.getNode().getChildren().remove(ultimaLinha);
                 
                 if(mTransitionViewType == 1){ // curve
                     Transition t = mViewer.getComponent().buildTransition(o, d)
@@ -1597,38 +1598,29 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
     }
     
     private void changeColorsState(ColorPicker cores, String tipo){
-        /*System.out.println("entrou no método de changeColors");*/
         if(statesSelecionados==null){
             return;
         }
-        String hexCor = "#"+ Integer.toHexString(cores.getValue().hashCode()).substring(0, 6).toUpperCase();
-
+        String hexCor = "";
+        if(cores.getValue().toString().equals("0x000000ff")){
+            hexCor = "black";
+        }else{
+            hexCor = "#"+ Integer.toHexString(cores.getValue().hashCode()).substring(0, 6).toUpperCase();
+        }
         for(State s : statesSelecionados){
-        if(s.isInitial() || s.isFinal() || s.isError()){
-            Alert alert = new Alert(Alert.AlertType.INFORMATION, "-Initial\n-Final\n-Error", ButtonType.OK);
-            alert.setHeaderText("Impossible to change color of States:");
-            alert.show();
-            return;
-        }
-        if(tipo.equals("Default")){
-            s.setColor(null);
-            /*return;*/
-        }
-        /*if(tipo.equals("MultiSelecao")){
-            if(statesSelecionados.isEmpty()){
-                System.out.println("statesSelecionados está vazio");
+            if(s.isInitial() || s.isFinal() || s.isError()){
+                Alert alert = new Alert(Alert.AlertType.INFORMATION, "-Initial\n-Final\n-Error", ButtonType.OK);
+                alert.setHeaderText("Impossible to change color of States:");
+                alert.show();
                 return;
-
-            }*/
+            }
+            if(tipo.equals("Default")){
+                s.setColor(null);
+            }
             if(tipo.equals("MultiSelecao")){
-           /* for(State state : statesSelecionados){*/
                 s.setColor(hexCor);
-           /* }*/
-            /*return;*/}
+            }
         }
-        /*s.setColor(hexCor);
-        System.out.println("cor: "+hexCor);
-        }*/
     }
 
     @Override
