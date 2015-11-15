@@ -42,14 +42,16 @@ import java.util.Map;
  */
 public abstract class DefaultWindowManagerPlugin<T extends Window> extends Plugin implements WindowManager {
 
-    private final Map<Component, T> mComponentWindowsMap = new HashMap<>();
-    private final Map<Component, Integer> mComponentWindowsIds = new HashMap<>();
-    private final List<Listener> mListeners = new ArrayList<>();
+//    private  Map<Component, T> mComponentWindowsMap = new HashMap<Component, T>();
+    private ArrayList<T> mComponentWindows = new ArrayList<T>();
+    private  Map<Component, Integer> mComponentWindowsIds = new HashMap<Component, Integer>();
+    private  List<Listener> mListeners = new ArrayList<>();
     private ExtensibleTabPane mCenterPanel;
 
     private final Component.Listener mComponentListener = new Component.Listener() {
         @Override
         public void onChange(Component c) {
+            System.out.println("entrou aqui");
             Integer id = mComponentWindowsIds.get(c);
             if (id != null) {
                 System.out.println("onchange");
@@ -92,36 +94,48 @@ public abstract class DefaultWindowManagerPlugin<T extends Window> extends Plugi
     @Override
     public void show(Component component) {
         checkIfStartedProperly();
-        T window = mComponentWindowsMap.get(component);
-
-        System.out.println("COMPONENT:"+component.getName());
-        try {
-            System.out.println("window:"+window.getComponent().getName());
-        } catch (Exception e) {
-            System.out.println("window é nula ainda1");
+//        T window = mComponentWindowsMap.get(component);
+        T window= null;
+        for(T w : mComponentWindows){
+            if(w.getComponent()==component){
+                window= w;
+                continue;
+            }
         }
+        System.out.println("COMPONENT:"+component.getName());
+
+        if (window==null){
+            System.out.println("window DO "+ component.getName()+" é NULA ");
+        }
+
 
 
         /*System.out.println("quantidade de elementos1: "+mComponentWindowsMap.size());*/
 
-        if (window == null) {
-            System.out.println("window é nula");
+        if(window==null) {
             window = onCreate();
-            //////////////////////////////
+//            window.setComponent(component);
+//            mComponentWindowsMap.put(component,  window);
             window.setComponent(component);
+            mComponentWindows.add(window);
+            System.out.println("window "+window +" é CRIADA ");
+
+            //////////////////////////////
+//            window.setComponent(component);
             //////////////////////////////////
             for (Listener l : mListeners) {
                 l.onCreateWindow(window);
             }            
             component.addListener(mComponentListener);
-            mComponentWindowsMap.put(component,  (T)window);
-            try {
-                System.out.println("window:"+window.getComponent().getName());
-            } catch (Exception e) {
-                System.out.println("window é nula ainda2");
+//            mComponentWindowsMap.put(component,  (T)window);
+            System.out.println("window "+ window+" foi ADD no Hash");
+            if(/*mComponentWindowsMap.containsKey(component)*/mComponentWindows.contains(window)){
+                System.out.println(" hashmap CONTEM a window que eu acabei de adicionar");
             }
-            /*System.out.println("quantidade de elementos2: "+mComponentWindowsMap.size());*/
+
         }
+            /*System.out.println("quantidade de elementos2: "+mComponentWindowsMap.size());*/
+
         onShow(window, component);
         Integer id = mComponentWindowsIds.get(component);        
         boolean visivel = id != null && mCenterPanel.isShowing(id);        
@@ -132,6 +146,7 @@ public abstract class DefaultWindowManagerPlugin<T extends Window> extends Plugi
             mComponentWindowsIds.put(component, id);
         }        
         mCenterPanel.showTab(id);
+        System.out.println("<><><><><><><><><><><><><><><><><><><><><><><><><><><>");
     }
 
     private void checkIfStartedProperly() throws IllegalStateException {
@@ -142,26 +157,26 @@ public abstract class DefaultWindowManagerPlugin<T extends Window> extends Plugi
 
     @Override
     public void hide(Component component) {
-        System.out.println("hide component");
-        checkIfStartedProperly();
-        Integer id = mComponentWindowsIds.get(component);
-        if (id != null) {
-            T w = mComponentWindowsMap.get(component);
-            onHide(w);
-            mCenterPanel.closeTab(id);
-            component.removeListener(mComponentListener);
-            mComponentWindowsIds.remove(component);
-            mComponentWindowsMap.remove(component);
-        }
+//        System.out.println("hide component");
+//        checkIfStartedProperly();
+//        Integer id = mComponentWindowsIds.get(component);
+//        if (id != null) {
+//            T w = mComponentWindowsMap.get(component);
+//            onHide(w);
+//            mCenterPanel.closeTab(id);
+//            component.removeListener(mComponentListener);
+//            mComponentWindowsIds.remove(component);
+//            mComponentWindowsMap.remove(component);
+   //     }
     }
 
     @Override
     public void hideAll() {
-        checkIfStartedProperly();
-        List<Component> snapshot = new ArrayList<>(mComponentWindowsMap.keySet());
-        for (Component c : snapshot) {
-            hide(c);
-        }
+//        checkIfStartedProperly();
+//        List<Component> snapshot = new ArrayList<>(mComponentWindowsMap.keySet());
+//        for (Component c : snapshot) {
+//            hide(c);
+//        }
     }
 
     @Override
