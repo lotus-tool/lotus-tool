@@ -36,21 +36,15 @@ public class ProbabilisticReachAlgorithm {
         j = destination.getID() - 1;
 //      multiplica as matrizes um monte de vez
         double[][] mult = probabilities;
-//      visualization
-//        for (int p = 0 ; p < tam ; p++ ){
-//            for (int q = 0 ; q < tam ; q++ ){
-//               System.out.print(mult[p][q]+"\t");
-//            }
-//            System.out.print("\n");
-//        }
-//        System.out.println("------------------------------------------------");
         double difference = 1;
         double total = 0;
         int count = 0;
-        while(abs(difference) > 0.01 || count < 10){
+        //Parar se a diferença for pequena o bastante e o count > 10.
+        while(abs(difference) > 0.01 || count < 20){
             total += probabilities[i][j];
             difference = probabilities[i][j];
-            probabilities = multiply(probabilities, mult,tam);
+            probabilities = multiply(probabilities, mult, tam);
+            //mult = probabilities; <- ainda nao funciona corretamente
             difference = difference - probabilities[i][j];
             count++;
             if(abs(difference) > 0.0001){
@@ -60,17 +54,7 @@ public class ProbabilisticReachAlgorithm {
         if(total > 1){
            total = 1;
         }
-//      visualization        
-//        for (int p = 0 ; p < tam ; p++ ){
-//            for (int q = 0 ; q < tam ; q++ ){
-//               System.out.print(probabilities[p][q]+"\t");
-//            }
-//            System.out.print("\n");
-//        }
-//        i = source.getID();
-//        j = destination.getID();
         total = ProbabilisticReachAlgorithm.truncar(total, 5);
-//        JOptionPane.showMessageDialog(null, "Probability to reach state " + destination + " from state " + source + " is: " + total);
         return total;
     }
     

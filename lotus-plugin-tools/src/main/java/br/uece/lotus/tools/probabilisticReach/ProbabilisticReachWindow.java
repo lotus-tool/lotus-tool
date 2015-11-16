@@ -253,7 +253,7 @@ public class ProbabilisticReachWindow extends AnchorPane{
             }
             State undesirable;
             for(int id : ids){
-                undesirable = a.getStateByID(id);
+                undesirable = a.getStateByID(id+1);
                 List<Transition> undesirableTransitions = undesirable.getOutgoingTransitionsList();
                 for(Transition t : undesirableTransitions){
                     t.setProbability(0.0);
@@ -285,8 +285,43 @@ public class ProbabilisticReachWindow extends AnchorPane{
             JOptionPane.showMessageDialog(null, "Provide source and target states!");
             return null;
         }
+
         int source = Integer.parseInt(aux1);
-        int destination = Integer.parseInt(aux2);
+        int destination = -1;
+        // Checar se o estado alvo pedido foi E (final) ou -1 (erro).
+        // Se sim, achar qual estado (ID) corresponde ao final/erro.
+        aux2 = aux2.trim();
+        switch (aux2){
+            case "E":
+                for(State finalState : a.getStates()){
+                    if(finalState.isFinal()){
+                        destination = finalState.getID() - 1;
+                        break;
+                    }
+                }
+                break;
+
+            case "e":
+                for(State finalState : a.getStates()){
+                    if(finalState.isFinal()){
+                        destination = finalState.getID() - 1;
+                        break;
+                    }
+                }
+                break;
+
+            case "-1":
+                for(State errorState : a.getStates()){
+                    if(errorState.isError()){
+                        destination = errorState.getID() - 1;
+                        break;
+                    }
+                }
+                break;
+
+            default:
+                destination = Integer.parseInt(aux2);
+        }
         State sourceS = a.getStateByID(source + 1);
         State destinationS = a.getStateByID(destination + 1);
         double p = new ProbabilisticReachAlgorithm().probabilityBetween(a, sourceS, destinationS);
