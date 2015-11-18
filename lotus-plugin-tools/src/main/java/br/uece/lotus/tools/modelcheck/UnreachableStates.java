@@ -28,6 +28,10 @@ import java.util.Collection;
 import br.uece.lotus.viewer.TransitionViewFactory;
 import br.uece.lotus.tools.modelcheck.DeadlockDetection;
 
+/**
+ *
+ * @author Ranniery
+ */
 public class UnreachableStates extends Plugin {
     
     public List<State> detectUnreachableStates (Component a) {
@@ -49,6 +53,8 @@ public class UnreachableStates extends Plugin {
             for(State aux : unreachablePath){
                 a.remove(aux);
             }
+//            int allStates = a.getStatesCount();
+//            int allTransitions = a.getTransitionsCount();
             unreachablePath = detectUnreachableStates(a);
         }
     }

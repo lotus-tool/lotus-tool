@@ -63,4 +63,13 @@ public class ProbabilitiesCheck extends Plugin {
         return true;
     }
 
+    /*public boolean isDouble (String str){
+        try {
+            Double.parseDouble(str);
+        } catch (NumberFormatException e) {
+            return false;
+        }
+        return true;
+    }*/
+
 }
