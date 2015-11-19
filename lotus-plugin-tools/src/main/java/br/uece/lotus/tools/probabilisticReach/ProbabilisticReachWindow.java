@@ -286,8 +286,20 @@ public class ProbabilisticReachWindow extends AnchorPane{
             return null;
         }
 
-        int source = Integer.parseInt(aux1);
+        int source = -1;
         int destination = -1;
+
+        //State?
+        if(aux1.matches("\\d+")){
+            source = Integer.parseInt(aux1);
+        }
+        /*try {
+            source = Integer.parseInt(aux1);
+        }
+        catch(NumberFormatException nfe) {
+            source = -1;
+        }*/
+
         // Checar se o estado alvo pedido foi E (final) ou -1 (erro).
         // Se sim, achar qual estado (ID) corresponde ao final/erro.
         aux2 = aux2.trim();
@@ -322,7 +334,16 @@ public class ProbabilisticReachWindow extends AnchorPane{
             default:
                 destination = Integer.parseInt(aux2);
         }
-        State sourceS = a.getStateByID(source);
+
+        State sourceS = a.getStateByID(0);
+        //source = -1 => not state, transition.
+        if(source == -1){
+            aux1 = aux1.trim();
+            sourceS = a.getTransitionByLabel(aux1).getDestiny();
+        }else{
+            sourceS = a.getStateByID(source);
+        }
+
         State destinationS = a.getStateByID(destination);
         double p = new ProbabilisticReachAlgorithm().probabilityBetween(a, sourceS, destinationS);
         String result = String.valueOf(p);
@@ -410,37 +431,7 @@ public class ProbabilisticReachWindow extends AnchorPane{
     private void start() {
         mBtnCalculate.setText("Calculate");
     }
-/*
-    private void applyEnableStyle(State s) {
-        s.setColor(null);
-        s.setTextColor("black");
-        s.setTextSyle(State.TEXTSTYLE_NORMAL);
-        s.setBorderColor("black");
-        s.setBorderWidth(1);
-    }
 
-    private void applyEnableStyle(Transition t) {
-        t.setColor("black");
-        t.setTextSyle(Transition.TEXTSTYLE_NORMAL);
-        t.setTextColor("black");
-        t.setWidth(1);
-    }
-
-    private void applyDisabledStyle(State s) {
-        s.setColor("#d0d0d0");
-        s.setTextColor("#c0c0c0");
-        s.setTextSyle(State.TEXTSTYLE_NORMAL);
-        s.setBorderColor("gray");
-        s.setBorderWidth(1);
-    }
-
-    private void applyDisabledStyle(Transition t) {
-        t.setColor("#d0d0d0");
-        t.setTextColor("#c0c0c0");
-        t.setTextSyle(Transition.TEXTSTYLE_NORMAL);
-        t.setWidth(1);
-    }
-*/
     public void setComponent(Component c) {
         mViewer.setComponent(c);
         start();
