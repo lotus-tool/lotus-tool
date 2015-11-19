@@ -51,8 +51,7 @@ public class ModelCheckPlugin extends Plugin {
                         for (int i = 1; i < tam; i++) {
                             output += ", " + inconsistentStates.get(i).getLabel();
                         }
-                        output += ".";
-                        JOptionPane.showMessageDialog(null, "Inconsistent States: " + output,
+                        JOptionPane.showMessageDialog(null, "State(s) " + output + " have sum of probabilities different than 1.",
                                 "Inconsistent States Detection", JOptionPane.WARNING_MESSAGE);
                     }else{
                         JOptionPane.showMessageDialog(null, "No inconsistent states!",
