@@ -227,6 +227,15 @@ public class Component {
         }
     }
 
+    public Transition getTransitionByLabel(String label){
+        for(Transition transition : mTransitions){
+            if(label.equals(transition.getLabel())){
+                return transition;
+            }
+        }
+        return null;
+    }
+
     public void remove(Transition transition) {
         transition.getSource().removeOutgoingTransition(transition);
         transition.getDestiny().removeIncomingTransition(transition);
