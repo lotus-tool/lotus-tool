@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package br.uece.lotus.tools.uml;
+package br.uece.lotus.uml.sequenceDiagram;
 
 import br.uece.lotus.Component;
 import br.uece.lotus.Project;
@@ -17,11 +17,11 @@ import br.uece.seed.ext.Plugin;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JOptionPane;
-import br.uece.lotus.tools.uml.xmi.AtorAndClasse;
-import br.uece.lotus.tools.uml.xmi.Collaboration;
-import br.uece.lotus.tools.uml.xmi.Interaction;
-import br.uece.lotus.tools.uml.xmi.InteractionFragments;
-import br.uece.lotus.tools.uml.xmi.NamespaceOwnedElement;
+import br.uece.lotus.uml.sequenceDiagram.xmi.AtorAndClasse;
+import br.uece.lotus.uml.sequenceDiagram.xmi.Collaboration;
+import br.uece.lotus.uml.sequenceDiagram.xmi.Interaction;
+import br.uece.lotus.uml.sequenceDiagram.xmi.InteractionFragments;
+import br.uece.lotus.uml.sequenceDiagram.xmi.NamespaceOwnedElement;
 import java.io.File;
 import java.util.Optional;
 import javafx.beans.value.ObservableValue;

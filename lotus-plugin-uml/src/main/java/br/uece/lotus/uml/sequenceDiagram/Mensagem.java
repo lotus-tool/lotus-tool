@@ -3,9 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package br.uece.lotus.tools.uml;
+package br.uece.lotus.uml.sequenceDiagram;
 
-import br.uece.lotus.tools.uml.xmi.AtorAndClasse;
+import br.uece.lotus.uml.sequenceDiagram.xmi.AtorAndClasse;
 
 /**
  *

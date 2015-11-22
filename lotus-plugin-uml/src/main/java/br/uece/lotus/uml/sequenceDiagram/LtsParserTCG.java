@@ -3,15 +3,15 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package br.uece.lotus.tools.uml;
+package br.uece.lotus.uml.sequenceDiagram;
 
 import br.uece.lotus.Component;
 import br.uece.lotus.State;
 import br.uece.lotus.Transition;
-import br.uece.lotus.tools.uml.xmi.CombinedFragments;
-import br.uece.lotus.tools.uml.xmi.InteractionFragments;
-import br.uece.lotus.tools.uml.xmi.InteractionOperand;
-import br.uece.lotus.tools.uml.xmi.SuportLoopTCG;
+import br.uece.lotus.uml.sequenceDiagram.xmi.CombinedFragments;
+import br.uece.lotus.uml.sequenceDiagram.xmi.InteractionFragments;
+import br.uece.lotus.uml.sequenceDiagram.xmi.InteractionOperand;
+import br.uece.lotus.uml.sequenceDiagram.xmi.SuportLoopTCG;
 import br.uece.lotus.viewer.TransitionView;
 import java.util.ArrayList;
 import java.util.Collection;
