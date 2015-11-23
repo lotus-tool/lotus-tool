@@ -40,7 +40,7 @@ public class ProbabilitiesCheck extends Plugin {
             }
         }
 
-        if( (sum < 0.9999 || sum > 1) && transitionsCount > 0){
+        if( (sum < 0.999 || sum > 1) && transitionsCount > 0){
             return true;
         }else{
             return false;

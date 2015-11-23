@@ -38,10 +38,9 @@ public class ModelCheckPlugin extends Plugin {
                 .setWeight(Integer.MAX_VALUE)
                 .setAction(() -> {
                     if (mProjectExplorer.getSelectedComponents().size() != 1) {
-                        throw new RuntimeException("Select exactly ONE components!");
+                        throw new RuntimeException("Select exactly ONE component!");
                     }
                     Component a = mProjectExplorer.getSelectedComponents().get(0);
-//                        System.out.println("clicou em " + a +", "+ b);
                     List<State> inconsistentStates = new ProbabilitiesCheck().checkProbabilities(a);
 
                     String output = new String();
@@ -51,7 +50,8 @@ public class ModelCheckPlugin extends Plugin {
                         for (int i = 1; i < tam; i++) {
                             output += ", " + inconsistentStates.get(i).getLabel();
                         }
-                        JOptionPane.showMessageDialog(null, "State(s) " + output + " have sum of probabilities different than 1.",
+                        JOptionPane.showMessageDialog(null, "The sum of the probabilities of transitions from State(s) "
+                                                            + output + " is lower/greater than 1.",
                                 "Inconsistent States Detection", JOptionPane.WARNING_MESSAGE);
                     }else{
                         JOptionPane.showMessageDialog(null, "No inconsistent states!",
