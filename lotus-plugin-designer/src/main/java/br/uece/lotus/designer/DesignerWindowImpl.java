@@ -113,7 +113,7 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
     public static final int MODO_TRANSICAO = 2;
     public static final int MODO_REMOVER = 3;
     public static final int MODO_MOVER = 4;
-    private int contID = -1;
+    private int contID = 0;
     private final ComponentView mViewer;
     private final ToolBar mToolbar;
     private final ToggleGroup mToggleGroup;
@@ -253,19 +253,21 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
             }
 
             //CRIANDO NA TELA O STATE MAIOR COM O BIGSTATE
-            if (contID == -1) {
-                updateContID();                            
-            }
             int id = mViewer.getComponent().getStatesCount();
             State novoState = mViewer.getComponent().newState(id);
-            novoState.setID(contID);
-            contID++;
             novoState.setValue("bigstate", bigState);
             novoState.setLayoutX(statesSelecionados.get(0).getLayoutX()+20);
             novoState.setLayoutY(statesSelecionados.get(0).getLayoutY()+20);
             novoState.setLabel(String.valueOf(id));
             novoState.setBig(true);
             bigState.setState(novoState);
+
+            if (contID == 0) {
+                updateContID();
+                novoState.setID(contID);
+            } else
+                novoState.setID(contID);
+            contID++;            
 
             //ADD TRANSITIONS DOS BIGSTATES
             int type = 0;
@@ -787,16 +789,18 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
             } else {
                 if (mModoAtual == MODO_VERTICE) {
                     if (!(mComponentSobMouse instanceof StateView)) {
-                        if (contID == -1) {
-                            updateContID();                            
-                        }    
                         int id = mViewer.getComponent().getStatesCount();
                         State s = mViewer.getComponent().newState(id);
-                        s.setID(contID);
-                        contID++;
                         s.setLayoutX(e.getX());
                         s.setLayoutY(e.getY());
                         s.setLabel(String.valueOf(id));
+
+                        if (contID == 0) {
+                            updateContID();
+                            s.setID(contID);
+                        } else
+                            s.setID(contID);
+                        contID++;
 
                         if (mViewer.getComponent().getStatesCount() == 0) {
                             mViewer.getComponent().setInitialState(s);
@@ -1337,6 +1341,16 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
                 return;
             }
 
+            if(mVerticeOrigemParaAdicionarTransicao.getState().isFinal()){
+                JOptionPane.showMessageDialog(null, "Impossible to create transitions in a Final State!", "Alert", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
+            if(mVerticeOrigemParaAdicionarTransicao.getState().isError()){
+                JOptionPane.showMessageDialog(null, "Impossible to create transitions in a Error State!", "Alert", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
             //inicia o drag'n'drop
             Dragboard db = mVerticeOrigemParaAdicionarTransicao.getNode().startDragAndDrop(TransferMode.ANY);
 
@@ -1770,7 +1784,7 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
     }
 
     private void updateContID() {
-        int aux = -1;
+        int aux = 0;
         for (State s : mViewer.getComponent().getStates()) {
             if (s.getID() > aux) {
                 aux = s.getID();
