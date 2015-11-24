@@ -19,7 +19,7 @@ import javax.swing.JOptionPane;
  */
 public class ProbabilisticReachAlgorithm {
     
-    public double probabilityBetween (Component a, State source, State destination) {
+    public double probabilityBetween (Component a, int source, int target) {
         int tam = a.getStatesCount();
         double[][] probabilities = new double[tam][tam];
         probabilities = zerar(probabilities, tam);
@@ -32,8 +32,8 @@ public class ProbabilisticReachAlgorithm {
             probabilities[i][j] = t.getProbability();
         }
         zerarDiagonal(probabilities, tam);
-        i = source.getID();
-        j = destination.getID();
+        i = source;
+        j = target;
 //      multiplica as matrizes um monte de vez
         double[][] mult = probabilities;
         double difference = 1;

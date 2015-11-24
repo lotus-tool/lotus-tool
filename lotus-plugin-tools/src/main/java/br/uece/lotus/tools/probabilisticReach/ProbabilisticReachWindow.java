@@ -288,70 +288,50 @@ public class ProbabilisticReachWindow extends AnchorPane{
 
         int sourceID = -1;
         int targetID = -1;
+        aux1 = aux1.trim();
+        aux2 = aux2.trim();
 
         //State?
         if(aux1.matches("\\d+")){
             sourceID = Integer.parseInt(aux1);
+        }else{
+            sourceID = a.getTransitionByLabel(aux1).getDestiny().getID();
         }
 
         // Checar se o estado alvo pedido foi E (final) ou -1 (erro).
         // Se sim, achar qual estado (ID) corresponde ao final/erro.
-        aux2 = aux2.trim();
         switch (aux2){
             case "E":
-                for(State finalState : a.getStates()){
-                    if(finalState.isFinal()){
-                        targetID = finalState.getID();
-                        break;
-                    }
-                }
-                break;
-
             case "e":
-                for(State finalState : a.getStates()){
-                    if(finalState.isFinal()){
-                        targetID = finalState.getID();
-                        break;
-                    }
-                }
+                State finalState = a.getFinalState();
+                targetID = finalState.getID();
                 break;
 
             case "-1":
-                for(State errorState : a.getStates()){
-                    if(errorState.isError()){
-                        targetID = errorState.getID();
-                        break;
-                    }
-                }
+                State errorState = a.getErrorState();
+                targetID = errorState.getID();
                 break;
 
             default:
                 if(aux2.matches("\\d+")){
                     targetID = Integer.parseInt(aux2);
+                }else{
+                    targetID = a.getTransitionByLabel(aux2).getDestiny().getID();
                 }
         }
 
-        State source = a.getStateByID(0);//Initialization
-
         //sourceID = -1 => not state, transition.
-        if(sourceID == -1){
+        /*if(sourceID == -1){
             aux1 = aux1.trim();
-            source = a.getTransitionByLabel(aux1).getDestiny();
-        }else{
-            source = a.getStateByID(sourceID);
-        }
-
-        State target = a.getStateByID(0); //Initialization
+            sourceID = a.getTransitionByLabel(aux1).getDestiny().getID();
+        }*/
 
         //targetID = -1 => not state, transition.
-        if(targetID == -1){
-            target = a.getTransitionByLabel(aux2).getDestiny();
-        }else{
-            target = a.getStateByID(targetID);
-        }
+        /*if(targetID == -1){
+            targetID = a.getTransitionByLabel(aux2).getDestiny().getID();
+        }*/
 
-
-        double p = new ProbabilisticReachAlgorithm().probabilityBetween(a, source, target);
+        double p = new ProbabilisticReachAlgorithm().probabilityBetween(a, sourceID, targetID);
         String result = String.valueOf(p);
         
         if(aux4 == null || aux4.trim().isEmpty()){
