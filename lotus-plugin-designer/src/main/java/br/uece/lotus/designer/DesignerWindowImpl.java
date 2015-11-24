@@ -199,8 +199,11 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
                 JOptionPane.showMessageDialog(null, "Impossible to change an initial state for Erro", "Alert", JOptionPane.WARNING_MESSAGE);
                 return;
             }
+
+            Component c = mViewer.getComponent();
+
             s.setFinal(false);
-            s.setError(true);
+            c.setErrorState(s);
             s.setColor(null);
         }
     };
@@ -216,8 +219,11 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
                 JOptionPane.showMessageDialog(null, "Impossible to change an initial state for Final", "Alert", JOptionPane.WARNING_MESSAGE);
                 return;
             }
+
+            Component c = mViewer.getComponent();
+
             s.setError(false);
-            s.setFinal(true);
+            c.setFinalState(s);
             s.setColor(null);
         }
     };
