@@ -221,12 +221,15 @@ public class ProjectXMLSerializer implements ProjectSerializer {
         mState.setLayoutY(Double.parseDouble(attributes.getValue("y")));
         if (Boolean.parseBoolean(attributes.getValue("initial"))) {
             mState.setAsInitial();
+            mComponent.setInitialState(mState);
         }
         if (Boolean.parseBoolean(attributes.getValue("final"))) {
             mState.setFinal(true);
+            mComponent.setFinalState(mState);
         }
         if (Boolean.parseBoolean(attributes.getValue("error"))) {
             mState.setError(true);
+            mComponent.setErrorState(mState);
         }
         mState.setLabel(attributes.getValue("label"));
         //VERIFICANDO SE EH UM BIGSTATE        
