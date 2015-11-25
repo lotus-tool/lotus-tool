@@ -13,14 +13,13 @@
     <packaging>jar</packaging>
 
     <name>lotus-plugin-uml</name>
-
-   
+    
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>lotus-plugin-tools</artifactId>
             <version>${project.version}</version>
-            <scope>provided</scope>
+            <scope>compile</scope>
         </dependency>
     </dependencies>
 </project>
