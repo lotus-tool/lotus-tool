@@ -294,6 +294,7 @@ public class ProbabilisticReachWindow extends AnchorPane{
         //State?
         if(aux1.matches("\\d+")){
             sourceID = Integer.parseInt(aux1);
+            if(sourceID >= a.getStatesCount()) sourceID = -1;
         }else{
             sourceID = a.getTransitionByLabel(aux1).getDestiny().getID();
         }
@@ -303,33 +304,41 @@ public class ProbabilisticReachWindow extends AnchorPane{
         switch (aux2){
             case "E":
             case "e":
+                /* Só funcionará se os .xml forem consertados:
                 State finalState = a.getFinalState();
-                targetID = finalState.getID();
+                targetID = finalState.getID();*/
+                for(State finalState : a.getStates()){
+                    if(finalState.isFinal()) targetID = finalState.getID();
+                }
                 break;
 
             case "-1":
+                /* Só funcionará se os .xml forem consertados:
                 State errorState = a.getErrorState();
-                targetID = errorState.getID();
+                targetID = errorState.getID();*/
+                for(State errorState : a.getStates()){
+                    if(errorState.isFinal()) targetID = errorState.getID();
+                }
                 break;
 
             default:
                 if(aux2.matches("\\d+")){
                     targetID = Integer.parseInt(aux2);
+                    if(targetID >= a.getStatesCount()) targetID = -1;
                 }else{
                     targetID = a.getTransitionByLabel(aux2).getDestiny().getID();
                 }
         }
 
-        //sourceID = -1 => not state, transition.
-        /*if(sourceID == -1){
-            aux1 = aux1.trim();
-            sourceID = a.getTransitionByLabel(aux1).getDestiny().getID();
-        }*/
+        if(sourceID == -1){
+            JOptionPane.showMessageDialog(null, "State/Transition " + aux1 + " is not in this component.",
+                    "Probabilistic Reachability", JOptionPane.WARNING_MESSAGE);
+        }
 
-        //targetID = -1 => not state, transition.
-        /*if(targetID == -1){
-            targetID = a.getTransitionByLabel(aux2).getDestiny().getID();
-        }*/
+        if(targetID == -1){
+            JOptionPane.showMessageDialog(null, "State/Transition " + aux2 + " is not in this component.",
+                    "Probabilistic Reachability", JOptionPane.WARNING_MESSAGE);
+        }
 
         double p = new ProbabilisticReachAlgorithm().probabilityBetween(a, sourceID, targetID);
         String result = String.valueOf(p);
