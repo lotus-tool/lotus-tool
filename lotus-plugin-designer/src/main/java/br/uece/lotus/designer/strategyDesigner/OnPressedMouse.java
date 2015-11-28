@@ -1,5 +1,5 @@
 
-package br.uece.lotus.designer.Strategy;
+package br.uece.lotus.designer.strategyDesigner;
 
 import br.uece.lotus.State;
 import br.uece.lotus.designer.DesignerWindowImpl;

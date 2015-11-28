@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package br.uece.lotus.designer.Strategy;
+package br.uece.lotus.designer.strategyDesigner;
 
 import br.uece.lotus.BigState;
 import br.uece.lotus.State;

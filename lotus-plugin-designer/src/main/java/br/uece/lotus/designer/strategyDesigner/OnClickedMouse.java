@@ -1,4 +1,4 @@
-package br.uece.lotus.designer.Strategy;
+package br.uece.lotus.designer.strategyDesigner;
 
 import br.uece.lotus.BigState;
 import br.uece.lotus.State;

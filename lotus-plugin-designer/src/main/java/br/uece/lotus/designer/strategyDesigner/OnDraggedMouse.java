@@ -1,5 +1,7 @@
+package br.uece.lotus.designer.strategyDesigner;
 
-package br.uece.lotus.designer.strategy;
+
+
 
 import br.uece.lotus.State;
 import br.uece.lotus.designer.DesignerWindowImpl;
@@ -7,7 +9,6 @@ import static br.uece.lotus.designer.DesignerWindowImpl.MODO_MOVER;
 import static br.uece.lotus.designer.DesignerWindowImpl.MODO_NENHUM;
 import static br.uece.lotus.designer.DesignerWindowImpl.MODO_VERTICE;
 import static br.uece.lotus.designer.DesignerWindowImpl.RAIO_CIRCULO;
-import br.uece.lotus.designer.Strategy.Strategy;
 import br.uece.lotus.viewer.StateView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
