@@ -10,7 +10,10 @@ import static br.uece.lotus.designer.DesignerWindowImpl.MODO_NENHUM;
 import static br.uece.lotus.designer.DesignerWindowImpl.MODO_VERTICE;
 import static br.uece.lotus.designer.DesignerWindowImpl.RAIO_CIRCULO;
 import br.uece.lotus.viewer.StateView;
+import javafx.scene.input.DragEvent;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.input.ScrollEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
@@ -148,16 +151,25 @@ public class OnDraggedMouse implements Strategy{
     public void onDragDetectedMouse(DesignerWindowImpl dwi, MouseEvent event) {}
 
     @Override
-    public void onDragOverMouse(DesignerWindowImpl dwi, MouseEvent event) {}
+    public void onDragOverMouse(DesignerWindowImpl dwi, DragEvent event) {}
 
     @Override
-    public void onDragDroppedMouse(DesignerWindowImpl dwi, MouseEvent event) {}
+    public void onDragDroppedMouse(DesignerWindowImpl dwi, DragEvent event) {}
 
     @Override
     public void onPressedMouse(DesignerWindowImpl dwi, MouseEvent event) {}
 
     @Override
     public void onReleasedMouse(DesignerWindowImpl dwi, MouseEvent event) {}
+
+    @Override
+    public void onScrollMouse(DesignerWindowImpl dwi, ScrollEvent event) {}
+
+    @Override
+    public void onKeyPressed(DesignerWindowImpl dwi, KeyEvent event) {}
+
+    @Override
+    public void onKeyReleased(DesignerWindowImpl dwi, KeyEvent event) {}
     
     
     

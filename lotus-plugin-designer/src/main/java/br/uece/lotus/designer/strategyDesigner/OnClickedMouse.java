@@ -10,8 +10,11 @@ import static br.uece.lotus.designer.DesignerWindowImpl.MODO_VERTICE;
 import br.uece.lotus.viewer.StateView;
 import br.uece.lotus.viewer.TransitionView;
 import java.util.List;
+import javafx.scene.input.DragEvent;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.input.ScrollEvent;
 import javax.swing.JOptionPane;
 
 
@@ -144,11 +147,7 @@ public class OnClickedMouse implements Strategy {
     }
 
     @Override
-    public void onDragOverMouse(DesignerWindowImpl Dwi, MouseEvent event) {
-    }
-
-    @Override
-    public void onDragDroppedMouse(DesignerWindowImpl Dwi, MouseEvent event) {
+    public void onDragDroppedMouse(DesignerWindowImpl Dwi, DragEvent event) {
     }
 
     @Override
@@ -162,4 +161,16 @@ public class OnClickedMouse implements Strategy {
     @Override
     public void onReleasedMouse(DesignerWindowImpl Dwi, MouseEvent event) {
     }
+
+    @Override
+    public void onDragOverMouse(DesignerWindowImpl dwi, DragEvent event) {}
+
+    @Override
+    public void onScrollMouse(DesignerWindowImpl dwi, ScrollEvent event) {}
+
+    @Override
+    public void onKeyPressed(DesignerWindowImpl dwi, KeyEvent event) {}
+
+    @Override
+    public void onKeyReleased(DesignerWindowImpl dwi, KeyEvent event) {}
 }

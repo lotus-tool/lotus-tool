@@ -14,7 +14,10 @@ import static br.uece.lotus.designer.DesignerWindowImpl.MODO_VERTICE;
 import static br.uece.lotus.designer.DesignerWindowImpl.RAIO_CIRCULO;
 import java.util.ArrayList;
 import javafx.scene.Cursor;
+import javafx.scene.input.DragEvent;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.input.ScrollEvent;
 
 /**
  *
@@ -168,16 +171,25 @@ public class OnReleasedMouse implements Strategy{
     public void onDragDetectedMouse(DesignerWindowImpl dwi, MouseEvent event) {}
 
     @Override
-    public void onDragOverMouse(DesignerWindowImpl dwi, MouseEvent event) {}
+    public void onDragOverMouse(DesignerWindowImpl dwi, DragEvent event) {}
 
     @Override
-    public void onDragDroppedMouse(DesignerWindowImpl dwi, MouseEvent event) {}
+    public void onDragDroppedMouse(DesignerWindowImpl dwi, DragEvent event) {}
 
     @Override
     public void onDraggedMouse(DesignerWindowImpl dwi, MouseEvent event) {}
 
     @Override
     public void onPressedMouse(DesignerWindowImpl dwi, MouseEvent event) {}
+
+    @Override
+    public void onScrollMouse(DesignerWindowImpl dwi, ScrollEvent event) {}
+
+    @Override
+    public void onKeyPressed(DesignerWindowImpl dwi, KeyEvent event) {}
+
+    @Override
+    public void onKeyReleased(DesignerWindowImpl dwi, KeyEvent event) {}
 
     
 }

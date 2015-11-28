@@ -29,10 +29,14 @@ import br.uece.lotus.State;
 import br.uece.lotus.Transition;
 import br.uece.lotus.designer.strategyDesigner.Context;
 import br.uece.lotus.designer.strategyDesigner.OnClickedMouse;
+import br.uece.lotus.designer.strategyDesigner.OnDragDropped;
+import br.uece.lotus.designer.strategyDesigner.OnDragOverMouse;
 import br.uece.lotus.designer.strategyDesigner.OnMovedMouse;
 import br.uece.lotus.designer.strategyDesigner.OnPressedMouse;
 import br.uece.lotus.designer.strategyDesigner.OnReleasedMouse;
 import br.uece.lotus.designer.strategyDesigner.OnDraggedMouse;
+import br.uece.lotus.designer.strategyDesigner.OnKeyPressed;
+import br.uece.lotus.designer.strategyDesigner.OnScrollMouse;
 import br.uece.lotus.properties.TransitionsPropertiesController;
 import br.uece.lotus.viewer.*;
 import br.uece.seed.app.ExtensibleFXToolbar;
@@ -152,7 +156,7 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
     private final ExtensibleToolbar mExtensibleTransitionToolbar;
 
     private final ScrollPane mScrollPanel;
-    private boolean mExibirPropriedadesTransicao;
+    public boolean mExibirPropriedadesTransicao;
 
     public ComponentView getMViewer() {
         return this.mViewer;
@@ -173,10 +177,10 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
 
         }
     };
-    private String mDefaultTransitionColor;
-    private String mDefaultTransitionTextColor;
-    private Integer mDefaultTransitionWidth;
-    private String mDefaultTransitionLabel;
+    public String mDefaultTransitionColor;
+    public String mDefaultTransitionTextColor;
+    public Integer mDefaultTransitionWidth;
+    public String mDefaultTransitionLabel;
     private EventHandler<ActionEvent> mSetStateAsInitial = new EventHandler<ActionEvent>() {
         @Override
         public void handle(ActionEvent event) {
@@ -325,7 +329,7 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
         }
     };
 
-    private int mTransitionViewType;
+    public int mTransitionViewType;
 
     @Override
     public ExtensibleToolbar getTransitionContextToolbar() {
@@ -388,7 +392,7 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
     public double posicaoMViewerHandY = 0;//posição mviewer
     public double mouseHandX = 0;
     public double mouseHandY = 0;// posiÃ§Ã£o mouse
-    private CheckBox zoomReset;
+    public CheckBox zoomReset;
     private DoubleProperty zoomFactor = new SimpleDoubleProperty(1);
     private Scale escala = new Scale(1, 1);
     public HBox paleta;
@@ -731,7 +735,9 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
             mViewer.saveAsPng(arq);
             JOptionPane.showMessageDialog(null, "PNG Image successfuly saved!");
         });
+        
         mViewer.getNode().setOnScroll(zoom);
+        
         mComponentContextMenu.getItems().addAll(mSetAsInitialMenuItem, new SeparatorMenuItem(), mCreateDismountBigStateMenuItem, new SeparatorMenuItem(), mSetAsNormalMenuItem, mSetAsFinalMenuItem, mSetAsErrorMenuItem, new SeparatorMenuItem(), mSaveAsPNG);
 
         //Resetando Zoom
@@ -868,8 +874,7 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
     ////////////////////////////////////////////////////////////////////////////////
 // Mover o mouse(mover o cursor do mouse)
 ////////////////////////////////////////////////////////////////////////////
-    private double coordenadaIniX = 0;
-    private double coordenadaIniY = 0;
+    
     private EventHandler<? super MouseEvent> aoMoverMouse = new EventHandler<MouseEvent>() {
         @Override
         public void handle(MouseEvent t) {
@@ -902,6 +907,7 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
     private EventHandler<? super MouseEvent> aoIniciarArrastoVerticeComOMouse = new EventHandler<MouseEvent>() {
         @Override
         public void handle(MouseEvent e) {
+            
             Context context = new Context(new OnPressedMouse());
             context.executeStrategyOnPressedMouse((DesignerWindowImpl) getNode(), e);
 
@@ -1350,15 +1356,19 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
     ////////////////////////////////////////////////////////////////////////////
     // Adicionar transiÃ§Ã£o
     ////////////////////////////////////////////////////////////////////////////
-    private StateView mVerticeOrigemParaAdicionarTransicao;
-    private StateView mVerticeDestinoParaAdicionarTransicao;
-    private Line ultimaLinha;
-    private double xInicial,yInicial;
+    public StateView mVerticeOrigemParaAdicionarTransicao;
+    public StateView mVerticeDestinoParaAdicionarTransicao;
+    public Line ultimaLinha;
+    public double xInicial,yInicial;
     private EventHandler<MouseEvent> aoDetectarDragSobreVertice = new EventHandler<MouseEvent>() {
         @Override
         public void handle(MouseEvent t) {
+            
+            Context context = new Context(new OnDraggedMouse());
+            context.executeStrategyOnDragDetectedMouse((DesignerWindowImpl)getNode(), t);
+
             //System.out.println("EVENTO DE CLICK");
-            if (mModoAtual != MODO_TRANSICAO) {
+            /*if (mModoAtual != MODO_TRANSICAO) {
                 return;
             }
 
@@ -1398,26 +1408,30 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
             db.setContent(content);
 
             //indica que este evento foi realizado
-            t.consume();
+            t.consume();*/
         }
     };
-    private final double AJUSTE_X=20,AJUSTE_y=20;
+    
     private EventHandler<DragEvent> aoDetectarPossivelAlvoParaSoltarODrag = new EventHandler<DragEvent>() {
         @Override
         public void handle(DragEvent event) {
-            double xFinal=event.getX(),yFinal=event.getY();
+            
+            Context context = new Context(new OnDragOverMouse());
+            context.executeStrategyOnDragOverMouse((DesignerWindowImpl)getNode(), event);
+            
+            //double xFinal=event.getX(),yFinal=event.getY();
             //System.out.println("EVENTO DE PUXAR");
             //a informaÃ§ao esta sendo solta sobre o alvo
             //aceita soltar o mouse somente se nÃ£o Ã© o mesmo nodo de origem 
             //e possui uma string            
-            if (event.getGestureSource() != event.getSource()) {
+            /*if (event.getGestureSource() != event.getSource()) {
                 event.acceptTransferModes(TransferMode.COPY_OR_MOVE);
             }
 
             Object v = getComponentePelaPosicaoMouse(new Point2D(event.getSceneX(), event.getSceneY()));
             mVerticeDestinoParaAdicionarTransicao = (v instanceof StateView) ? ((StateView) v) : null;
             /*<><><><><><><><><><><><><><><><><><><><><><<><><><><><><><><><><><><><><><><><><><><><><><><><>*/
-            if(ultimaLinha!=null){
+            /*if(ultimaLinha!=null){
                 mViewer.getNode().getChildren().remove(ultimaLinha);
             }
 
@@ -1428,11 +1442,11 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
             ultimaLinha=linha;
             
             /*<><><><><><><><><><><><><><><><><><><><><><<><><><><><><><><><><><><><><><><><><><><><><><><><>*/
-            event.consume();
+            //event.consume();
         }
     };
 
-    private Line createViewFakeTransitionLine(double xInicial, double yInicial, double xFinal, double yFinal) {
+    /*private Line createViewFakeTransitionLine(double xInicial, double yInicial, double xFinal, double yFinal) {
         Line linha = new Line();
         linha.setStartX(xInicial+AJUSTE_X);
         linha.setStartY(yInicial+AJUSTE_y);
@@ -1440,26 +1454,29 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
         linha.setEndY(yFinal);
            /* System.out.println(event.getX());
             System.out.println(event.getY());*/
-        linha.setOpacity(0.5);
+        /*linha.setOpacity(0.5);
         linha.getStrokeDashArray().addAll(2d);//<-traseja o state
         return linha;
-    }
+    }*/
 
     private final EventHandler<DragEvent> aoSoltarMouseSobreVertice = new EventHandler<DragEvent>() {
         @Override
         public void handle(DragEvent event) {
+            
+            Context context = new Context(new OnDragDropped());
+            context.executeStrategyOnDragDroppedMouse((DesignerWindowImpl)getNode(), event);
             //System.out.println("EVENTO DE SOLTA");
-            if (mModoAtual != MODO_TRANSICAO) {
+            /*if (mModoAtual != MODO_TRANSICAO) {
                 return;
             }
             /*<><><><><><><><><><><><><><><><><><><><><><<><><><><><><><><><><><><><><><><><><><><><><><><><>*/
-            if(ultimaLinha!=null){
+            /*if(ultimaLinha!=null){
                 mViewer.getNode().getChildren().remove(ultimaLinha);
                 //System.out.println("REMOVEU FINAL");
             }
             /*<><><><><><><><><><><><><><><><><><><><><><<><><><><><><><><><><><><><><><><><><><><><><><><><>*/
 
-            if (mVerticeDestinoParaAdicionarTransicao != null) {
+            /*if (mVerticeDestinoParaAdicionarTransicao != null) {
                 if (BigState.verifyIsBigState(mVerticeDestinoParaAdicionarTransicao.getState())) {
                     JOptionPane.showMessageDialog(null, "Impossible to create transitions for a BigState!", "Alert", JOptionPane.WARNING_MESSAGE);
                     return;
@@ -1559,7 +1576,7 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
             }
             if (mDefaultTransitionWidth != null) {
                 t.setWidth(mDefaultTransitionWidth);
-            }
+            }*/
         }
 
     };
@@ -1571,7 +1588,11 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
 
         @Override
         public void handle(KeyEvent event) {
-            if(event.getCode().equals(KeyCode.DELETE)){
+            
+            Context context = new Context(new OnKeyPressed());
+            context.executeStrategyOnKeyPressed((DesignerWindowImpl)getNode(), event);
+            
+            /*if(event.getCode().equals(KeyCode.DELETE)){
                 System.out.println("entrou no delete");
                 if (mComponentSobMouse instanceof StateView) {
                     State v = ((StateView) mComponentSobMouse).getState();
@@ -1602,7 +1623,7 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
                         }
                     }
                 }
-            }
+            }*/
             /*else if(event.getCode() ==  new KeyCombination(KeyCode.Z,KeyCombination.CONTROL_DOWN)){
                 
             }
@@ -1618,16 +1639,20 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
 
         @Override
         public void handle(ScrollEvent event) {
-            if (event.isControlDown()) {
+            
+            Context context = new Context(new OnScrollMouse());
+            context.executeStrategyOnScrollMouse((DesignerWindowImpl)getNode(), event);
+            
+            /*if (event.isControlDown()) {
                 zoomReset.setSelected(false);
                 final double SCALE_DELTA = 1.1;
                 double scaleFactor = (event.getDeltaY() > 0) ? SCALE_DELTA : 1 / SCALE_DELTA;
                 zoom(mViewer.getNode(), event.getX(), event.getY(), scaleFactor);
-            }
+            }*/
         }
     };
 
-    private void zoom(Node node, double centerX, double centerY, double factor) {
+    /*private void zoom(Node node, double centerX, double centerY, double factor) {
         final Point2D center = node.localToParent(centerX, centerY);
         final Bounds bounds = node.getBoundsInParent();
         final double w = bounds.getWidth();
@@ -1643,7 +1668,7 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
         node.setScaleY(node.getScaleY() * factor);
         node.setTranslateX(node.getTranslateX() + xr * dw / 2);
         node.setTranslateY(node.getTranslateY() + yr * dh / 2);
-    }
+    }*/
 
     private void changeColorsState(ColorPicker cores, String tipo){
         if(statesSelecionados==null){
@@ -1708,11 +1733,6 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
             updatePropriedades(t);
             applySelectedStyles(mComponentSelecionado);
         }
-        //System.out.println("chegou aqui ");
-
-//        for (Listener l : mListeners) {
-//            l.onSelectionChange(this);
-//        }
     }
 
     private void updatePropriedades(Object t) {

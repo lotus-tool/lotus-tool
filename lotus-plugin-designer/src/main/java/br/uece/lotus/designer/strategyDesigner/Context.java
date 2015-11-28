@@ -1,7 +1,10 @@
 package br.uece.lotus.designer.strategyDesigner;
 
 import br.uece.lotus.designer.DesignerWindowImpl;
+import javafx.scene.input.DragEvent;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.input.ScrollEvent;
 
 /**
  * Created by lva on 19/11/15.
@@ -31,5 +34,29 @@ public class Context {
     
     public void executeStrategyOnDraggedMouse(DesignerWindowImpl dwi, MouseEvent e){
         strategy.onDraggedMouse(dwi, e);
+    }
+    
+    public void executeStrategyOnDragDetectedMouse(DesignerWindowImpl dwi, MouseEvent e){
+        strategy.onDraggedMouse(dwi, e);
+    }
+    
+    public void executeStrategyOnDragOverMouse(DesignerWindowImpl dwi, DragEvent e){
+        strategy.onDragOverMouse(dwi, e);
+    }
+    
+    public void executeStrategyOnDragDroppedMouse(DesignerWindowImpl dwi, DragEvent e){
+        strategy.onDragDroppedMouse(dwi, e);
+    }
+    
+    public void executeStrategyOnScrollMouse(DesignerWindowImpl dwi, ScrollEvent e){
+        strategy.onScrollMouse(dwi, e);
+    }
+    
+    public void executeStrategyOnKeyPressed(DesignerWindowImpl dwi, KeyEvent e){
+        strategy.onKeyPressed(dwi, e);
+    }
+    
+    public void executeStrategyOnKeyReleased(DesignerWindowImpl dwi, KeyEvent e){
+        strategy.onKeyReleased(dwi, e);
     }
 }
