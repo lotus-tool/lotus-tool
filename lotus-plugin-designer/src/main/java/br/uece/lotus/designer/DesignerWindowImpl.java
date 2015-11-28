@@ -27,6 +27,12 @@ import br.uece.lotus.BigState;
 import br.uece.lotus.Component;
 import br.uece.lotus.State;
 import br.uece.lotus.Transition;
+import br.uece.lotus.designer.Strategy.Context;
+import br.uece.lotus.designer.Strategy.OnClickedMouse;
+import br.uece.lotus.designer.Strategy.OnMovedMouse;
+import br.uece.lotus.designer.Strategy.OnPressedMouse;
+import br.uece.lotus.designer.Strategy.OnReleasedMouse;
+import br.uece.lotus.designer.strategy.OnDraggedMouse;
 import br.uece.lotus.properties.TransitionsPropertiesController;
 import br.uece.lotus.viewer.*;
 import br.uece.seed.app.ExtensibleFXToolbar;
@@ -65,7 +71,6 @@ import javafx.scene.input.DragEvent;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.input.TransferMode;
@@ -86,38 +91,48 @@ import javax.swing.JOptionPane;
  */
 public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
 
-    private final TextField txtLabel;
-    private final TextField txtGuard;
-    private final TextField txtProbability;
-    Rectangle ultimoRetanguloAdicionado;
-    double coordenadaInicialX, coordenadaInicialY, coordenadaFinalX, coordenadaFinalY,
-            coornenadaIstanteX, coordenadaIstanteY;
+    public final TextField txtLabel;
+    public final TextField txtGuard;
+    public final TextField txtProbability;
+    public Rectangle ultimoRetanguloAdicionado;
+    public double coordenadaInicialX;
+    public double coordenadaInicialY;
+    public double coordenadaFinalX;
+    public double coordenadaFinalY;
+    public double coornenadaIstanteX;
+    public double coordenadaIstanteY;
     boolean shifPrecionado = false;
-    boolean StatesSelecionadoPeloRetangulo = false;
+    public boolean statesSelecionadoPeloRetangulo = false;
     boolean ctrlPressionado = false;
-    double posicaoDoEstadoXMaisRaio;
-    double posicaoDoEstadoYMaisRaio;
-    double posicaoDoEstadoXMenosRaio;
-    double posicaoDoEstadoYMenosRaio;
-    ArrayList<State> stateDentroDoRetangulo = new ArrayList<State>();
-    double posCircleX;
-    double posCircleY;
+    public double posicaoDoEstadoXMaisRaio;
+    public double posicaoDoEstadoYMaisRaio;
+    public double posicaoDoEstadoXMenosRaio;
+    public double posicaoDoEstadoYMenosRaio;
+    public ArrayList<State> stateDentroDoRetangulo = new ArrayList<State>();
+    public double posCircleX;
+    public double posCircleY;
     double variacaoDeX;
     double variacaoDeY;
     double stateDoPrimeiroClickX, stateDoPrimeiroClickY;
-    boolean caso1, caso2, caso3, caso4, retorno, aux, modoCriacaoDoRetangulo = false;
-    static final int RAIO_CIRCULO = 15;
+    boolean caso1;
+    boolean caso2;
+    boolean caso3;
+    boolean caso4;
+    boolean retorno;
+    boolean aux;
+    public boolean modoCriacaoDoRetangulo = false;
+    public static final int RAIO_CIRCULO = 15;
 
     public static final int MODO_NENHUM = 0;
     public static final int MODO_VERTICE = 1;
     public static final int MODO_TRANSICAO = 2;
     public static final int MODO_REMOVER = 3;
     public static final int MODO_MOVER = 4;
-    private int contID = -1;
-    private final ComponentView mViewer;
+    public int contID = -1;
+    public ComponentView mViewer;
     private final ToolBar mToolbar;
     private final ToggleGroup mToggleGroup;
-    private final ToggleButton mBtnBigState;
+    public final ToggleButton mBtnBigState;
     private final ToggleButton mBtnArrow;
     private final ToggleButton mBtnState;
     private final ToggleButton mBtnTransitionLine;
@@ -129,8 +144,8 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
     private final Button mBtnRedo;
     private ComponentView[] mUndoRedo;
     private final int tamHistorico = 14;
-    private final ImageView iconBigState = new ImageView(new Image(getClass().getResourceAsStream("/images/ic_big_state.png")));
-    private final ImageView iconBigStateDismount = new ImageView(new Image(getClass().getResourceAsStream("/images/ic_big_state_dismount.png")));
+    public final ImageView iconBigState = new ImageView(new Image(getClass().getResourceAsStream("/images/ic_big_state.png")));
+    public final ImageView iconBigStateDismount = new ImageView(new Image(getClass().getResourceAsStream("/images/ic_big_state_dismount.png")));
 
     private final ToolBar mStateToolbar;
     private final ToolBar mTransitionToolbar;
@@ -359,20 +374,25 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
         void onSelectionChange(DesignerWindowImpl v);
     }
 
-    private int mModoAtual;
-    private final ContextMenu mComponentContextMenu;
+    public int mModoAtual;
+    public final ContextMenu mComponentContextMenu;
     //seleÃ§Ã£o e destaque
-    private Object mComponentSobMouse;
-    private Object mComponentSelecionado;
+    public Object mComponentSobMouse;
+    public Object mComponentSelecionado;
     private final List<Listener> mListeners = new ArrayList<>();
     //zoom e mover
-    private double mViewerScaleXPadrao, mViewerScaleYPadrao, mViewerTranslateXPadrao, mViewerTranslateYPadrao;
-    private double posicaoMViewerHandX = 0, posicaoMViewerHandY = 0;//posição mviewer
-    private double mouseHandX = 0, mouseHandY = 0;// posiÃ§Ã£o mouse
+    public double mViewerScaleXPadrao;
+    public double mViewerScaleYPadrao;
+    public double mViewerTranslateXPadrao;
+    public double mViewerTranslateYPadrao;
+    public double posicaoMViewerHandX = 0;
+    public double posicaoMViewerHandY = 0;//posição mviewer
+    public double mouseHandX = 0;
+    public double mouseHandY = 0;// posiÃ§Ã£o mouse
     private CheckBox zoomReset;
     private DoubleProperty zoomFactor = new SimpleDoubleProperty(1);
     private Scale escala = new Scale(1, 1);
-    private HBox paleta;
+    public HBox paleta;
 
     public DesignerWindowImpl(ComponentView viewer) {
         mViewer = viewer;
@@ -734,7 +754,9 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
     private EventHandler<? super MouseEvent> aoClicarMouse = new EventHandler<MouseEvent>() {
         @Override
         public void handle(MouseEvent e) {
-            if (MouseButton.SECONDARY.equals(e.getButton())) {
+            Context context = new Context(new OnClickedMouse());
+            context.executeStrategyOnClikedMouse((DesignerWindowImpl) getNode(),e);
+       /*     if (MouseButton.SECONDARY.equals(e.getButton())) {
                 setComponenteSelecionado(mComponentSobMouse);
                 if(mComponentSelecionado instanceof StateView){
                     mComponentContextMenu.show(mViewer.getNode(), e.getScreenX(), e.getScreenY());
@@ -752,9 +774,9 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
                 mViewer.getNode().setScaleY(mViewerScaleYPadrao);
                 mViewer.getNode().setTranslateX(mViewerTranslateXPadrao);
                 mViewer.getNode().setTranslateY(mViewerTranslateYPadrao);
-            }
+            }*/
 
-            if (mModoAtual == MODO_NENHUM) {
+            /*if (mModoAtual == MODO_NENHUM) {
 
                 if (mComponentSobMouse != null && (mComponentSobMouse instanceof StateView)) {
                     paleta.setVisible(true);
@@ -766,7 +788,7 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
                         mBtnBigState.setSelected(true);
                         mBtnBigState.setGraphic(iconBigStateDismount);
                         /*System.out.println("NUMERO DE BIGSTATES = "+BigState.todosOsBigStates.size());
-                        System.out.println(((BigState)((StateView)mComponentSobMouse).getState().getValue("bigstate")).toString());*/
+                        System.out.println(((BigState)((StateView)mComponentSobMouse).getState().getValue("bigstate")).toString());
                         if (e.getClickCount() == 2) {
                             if (!bigState.dismountBigState(mViewer.getComponent())){
                                 JOptionPane.showMessageDialog(null, "You need another BigState before dismantling");
@@ -786,13 +808,13 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
                     mBtnBigState.setGraphic(iconBigState);
                     // System.out.println("saiu aqui ?");
 
-                    if(!StatesSelecionadoPeloRetangulo){
+                    if(!statesSelecionadoPeloRetangulo){
                         paleta.setVisible(false);}
 
                 }
 
-            } else {
-                if (mModoAtual == MODO_VERTICE) {
+            } else {*/
+                /*if (mModoAtual == MODO_VERTICE) {
                     if (!(mComponentSobMouse instanceof StateView)) {
                         if (contID == -1) {
                             updateContID();
@@ -840,7 +862,7 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
                         }
                     }
                 }
-            }
+            }*/
         }
     };
 
@@ -852,31 +874,40 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
     private EventHandler<? super MouseEvent> aoMoverMouse = new EventHandler<MouseEvent>() {
         @Override
         public void handle(MouseEvent t) {
-            Object aux = getComponentePelaPosicaoMouse(new Point2D(t.getSceneX(), t.getSceneY()));
+            Context context = new Context(new OnMovedMouse());
+            context.executeStrategyOnMovedMouse((DesignerWindowImpl) getNode(),t);
+           /* Object aux = getComponentePelaPosicaoMouse(new Point2D(t.getSceneX(), t.getSceneY()));
 //            if (mComponentSobMouse != null) {
 //                mComponentSobMouse.setHighlighted(false);
 //            }
 //            if (aux != null) {
 //                aux.setHighlighted(true);
 //            }
-            mComponentSobMouse = aux;
+            mComponentSobMouse = aux;*/
         }
     };
     ////////////////////////////////////////////////////////////////////////////
     // Mover state (clickar sem soltar)
     ////////////////////////////////////////////////////////////////////////////
-    private boolean verificacao = false, auxA = false;
-    private double variacaoXCliqueMouseComOCantoSuperiorEsquerdoVertice, ultimoInstanteX;
-    private double variacaoYCliqueMouseComOCantoSuperiorEsquerdoVertice, ultimoInstanteY;
-    private boolean downShift, selecionadoUm, selecioneiComShift, selecaoPadrao;
-    ArrayList<State> statesSelecionados = new ArrayList<State>();
+    public boolean verificacao = false, auxA = false;
+    public double variacaoXCliqueMouseComOCantoSuperiorEsquerdoVertice;
+    public double ultimoInstanteX;
+    public double variacaoYCliqueMouseComOCantoSuperiorEsquerdoVertice;
+    public double ultimoInstanteY;
+    public boolean downShift;
+    public boolean selecionadoUm;
+    public boolean selecioneiComShift;
+    public boolean selecaoPadrao;
+    public ArrayList<State> statesSelecionados = new ArrayList<State>();
 
     private EventHandler<? super MouseEvent> aoIniciarArrastoVerticeComOMouse = new EventHandler<MouseEvent>() {
         @Override
         public void handle(MouseEvent e) {
+            Context context = new Context(new OnPressedMouse());
+            context.executeStrategyOnPressedMouse((DesignerWindowImpl) getNode(), e);
 
             //                         HAND MOVE                                     //
-            if (mModoAtual == MODO_MOVER) {
+            /*if (mModoAtual == MODO_MOVER) {
                 mViewer.getNode().setCursor(Cursor.CLOSED_HAND);
                 if (e.getClickCount() == 2) {
                     mViewer.getNode().setTranslateX(mViewerTranslateXPadrao);
@@ -888,21 +919,21 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
                 //get the x and y position measure from Left-Top
                 posicaoMViewerHandX = mViewer.getNode().getTranslateX();
                 posicaoMViewerHandY = mViewer.getNode().getTranslateY();
-            }
-
+            }*/
+/*
             if (mModoAtual != MODO_VERTICE && mModoAtual != MODO_NENHUM) {
                 return;
-            }
-            if (mModoAtual == MODO_NENHUM) {
+            }*/
+            /*if (mModoAtual == MODO_NENHUM) {
                 coordenadaInicialX = e.getX();
                 coordenadaInicialY = e.getY();
                 ultimoInstanteX = 0;
                 ultimoInstanteY = 0;
-                segundaVezEmDiante = false;
+                segundaVezEmDiante = false;*/
                 //selecioneiComShift=false;
 
 
-                if (e.isShiftDown()) {
+               /* if (e.isShiftDown()) {
                     downShift = true;
 
                 }
@@ -931,7 +962,7 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
                     return;
                 } else {
 
-                    if (!StatesSelecionadoPeloRetangulo && mComponentSobMouse != null && !selecioneiComShift) {
+                    if (!statesSelecionadoPeloRetangulo && mComponentSobMouse != null && !selecioneiComShift) {
 
 
                         selecaoPadrao = true;
@@ -979,7 +1010,7 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
                             } else {
                                 selecaoPadrao = false;
                                 modoCriacaoDoRetangulo = true;
-                                StatesSelecionadoPeloRetangulo = false;
+                                statesSelecionadoPeloRetangulo = false;
                                 selecioneiComShift = false;
                                 if (selecionadoUm) {
                                     selecionadoUm = false;
@@ -1017,24 +1048,27 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
 
                 variacaoXCliqueMouseComOCantoSuperiorEsquerdoVertice = v.getNode().getLayoutX() - e.getX() + RAIO_CIRCULO;
                 variacaoYCliqueMouseComOCantoSuperiorEsquerdoVertice = v.getNode().getLayoutY() - e.getY() + RAIO_CIRCULO;
-            }
+            }*/
         }
     };
 
 
-    private double variacaoX, variacaoY;
-    private boolean segundaVezEmDiante;
-    private double largura = 0, altura = 0;
-    private double inicioDoRectanguloX, inicioDoRectanguloY, inicioDoRectanguloXAux, inicioDoRectanguloYAux;
+    public double variacaoX, variacaoY;
+    public boolean segundaVezEmDiante;
+    public double largura = 0, altura = 0;
+    public double inicioDoRectanguloX, inicioDoRectanguloY, inicioDoRectanguloXAux, inicioDoRectanguloYAux;
     //////////////////////////////////////////////////////////////////////////////////////////
     // clickar e nÃƒÂ£o soltar e mover o mouse(precionando e movendo/dragg)
     //////////////////////////////////////////////////////////////////////////////////////////
     private EventHandler<? super MouseEvent> aoArrastarVerticeComOMouse = new EventHandler<MouseEvent>() {
         @Override
         public void handle(MouseEvent t) {
+            
+            Context context = new Context(new OnDraggedMouse());
+            context.executeStrategyOnDraggedMouse((DesignerWindowImpl)getNode(), t);
 
             //                         HAND MOVE                                     //
-            if (mModoAtual == MODO_MOVER) {
+            /*if (mModoAtual == MODO_MOVER) {
                 //Pegar Moviemnto do mouse
                 posicaoMViewerHandX += t.getSceneX() - mouseHandX;
                 posicaoMViewerHandY += t.getSceneY() - mouseHandY;
@@ -1050,14 +1084,14 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
                 return;
             }
             if (mModoAtual == MODO_NENHUM) {
-                if ((StatesSelecionadoPeloRetangulo || selecionadoUm ) && !selecaoPadrao) {
+                if ((statesSelecionadoPeloRetangulo || selecionadoUm ) && !selecaoPadrao) {*/
 //                        if(selecioneiComShift){
 //                            System.out.println("retornou?");
 //                            //selecioneiComShift=false;
 //                            return;
 //                        }
 
-                    if (!segundaVezEmDiante //&& downShift
+                    /*if (!segundaVezEmDiante //&& downShift
                             ) {
                         //System.out.println("primeira vez");
                         variacaoX = t.getX() - coordenadaInicialX;
@@ -1151,7 +1185,7 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
                         s.setLayoutY(t.getY() + variacaoYCliqueMouseComOCantoSuperiorEsquerdoVertice - RAIO_CIRCULO);
                     }
                 }
-            }
+            }*/
         }
     };
     ////////////////////////////////////////////////////////////////////
@@ -1161,7 +1195,9 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
         @Override
         public void handle(MouseEvent t) {
 
-            if (mModoAtual == MODO_MOVER) {
+            Context context = new Context(new OnReleasedMouse());
+            context.executeStrategyOnReleasedMouse((DesignerWindowImpl) getNode(), t);
+            /*if (mModoAtual == MODO_MOVER) {
                 mViewer.getNode().setCursor(Cursor.OPEN_HAND);
             }
 
@@ -1180,8 +1216,8 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
                         coordenadaFinalX = t.getX();
                         coordenadaFinalY = t.getY();
 
-                        StatesSelecionadoPeloRetangulo = selecionandoComRetangulo(inicioDoRectanguloXAux, inicioDoRectanguloYAux, coordenadaFinalX, coordenadaFinalY);
-                        if(StatesSelecionadoPeloRetangulo){
+                        statesSelecionadoPeloRetangulo = selecionandoComRetangulo(inicioDoRectanguloXAux, inicioDoRectanguloYAux, coordenadaFinalX, coordenadaFinalY);
+                        if(statesSelecionadoPeloRetangulo){
                             System.out.println("chegou aqui correto");
                             paleta.setVisible(true);
                         }
@@ -1191,12 +1227,12 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
                     }
                     auxA = false;
                 }
-            }
+            }*/
         }
     };
-    private ArrayList<State> todosOsStates;
+    public ArrayList<State> todosOsStates;
 
-    public boolean selecionandoComRetangulo(double inicioDoRectanguloX, double inicioDoRectanguloY, double finalDoRectanguloX, double finalDoRectanguloY) {
+    /*public boolean selecionandoComRetangulo(double inicioDoRectanguloX, double inicioDoRectanguloY, double finalDoRectanguloX, double finalDoRectanguloY) {
         boolean aux = false;
         /////////////////////////////////////////////////
         ////////ORGANIZANDO AS POSICOES DO RETANGULO DE SELECAO
@@ -1280,9 +1316,9 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
 
 
         return aux;
-    }
+    }*/
 
-    public boolean SeClickeiEntreSelecionados(double x, double y) {
+    /*public boolean SeClickeiEntreSelecionados(double x, double y) {
         boolean aux = false;
         if (statesSelecionados != null) {
 
@@ -1309,7 +1345,7 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
         }
 
         return aux;
-    }
+    }*/
 
 
     ////////////////////////////////////////////////////////////////////////////
@@ -1656,7 +1692,7 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
         }
     }
 
-    private Object getComponentePelaPosicaoMouse(Point2D point) {
+    public Object getComponentePelaPosicaoMouse(Point2D point) {
         Object v = mViewer.locateStateView(point);
         if (v == null) {
             v = mViewer.locateTransitionView(point);
@@ -1664,7 +1700,7 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
         return v;
     }
 
-    private void setComponenteSelecionado(Object t) {
+    public void setComponenteSelecionado(Object t) {
         if (mComponentSelecionado != null) {
             removeSelectedStyles(mComponentSelecionado);
         }
@@ -1711,7 +1747,7 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
         }
     }
 
-    private void removeSelectedStyles(Object v) {
+    public void removeSelectedStyles(Object v) {
         // System.out.println("removeselectedstyles " + v);
         if (v instanceof StateView) {
             State s = ((StateView) v).getState();
@@ -1734,17 +1770,17 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
         }
     }
 
-    double posXAntes;
-    double posYAntes;
-
-    public void posicionandoConjuntoDeStates(State v, double mX, double mY) {
-        double posX = v.getLayoutX();
-        double posY = v.getLayoutY();
-        posXAntes = posX;
-        posYAntes = posY;
-        double distanciaClick;
-        double distanciaState;
-        double deltaX, deltaY;
+    //double posXAntes;
+    //double posYAntes;
+    
+    //public void posicionandoConjuntoDeStates(State v, double mX, double mY) {
+       // double posX = v.getLayoutX();
+       // double posY = v.getLayoutY();
+       // posXAntes = posX;
+       // posYAntes = posY;
+       // double distanciaClick;
+       // double distanciaState;
+       // double deltaX, deltaY;
 //        mX = mX - RAIO_CIRCULO;
 //        mY = mY - RAIO_CIRCULO;
         //System.out.println("varuacaoX-raio" + mX);
@@ -1772,11 +1808,11 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
 //
 //        }
 
-        v.setLayoutX(v.getLayoutX() + mX);
-        v.setLayoutY(v.getLayoutY() + mY);
+        //v.setLayoutX(v.getLayoutX() + mX);
+        //v.setLayoutY(v.getLayoutY() + mY);
         //System.out.println(v.getLayoutX());
         //System.out.println(v.getLayoutY());
-    }
+    //}
 
     public void addListener(Listener l) {
         mListeners.add(l);
@@ -1786,7 +1822,7 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
         mListeners.remove(l);
     }
 
-    private void updateContID() {
+    public void updateContID() {
         int aux = -1;
         for (State s : mViewer.getComponent().getStates()) {
             if (s.getID() > aux) {
@@ -1827,7 +1863,7 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
         }
     }
 
-    private void changeIconToggleBigState(){
+    /*public void changeIconToggleBigState(){
         if(statesSelecionados.size()==1){
             BigState bigState = (BigState) statesSelecionados.get(0).getValue("bigstate");
             if (bigState != null){
@@ -1843,6 +1879,6 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
             mBtnBigState.setSelected(false);
             mBtnBigState.setGraphic(iconBigState);
         }
-    }
+    }*/
 
 }
