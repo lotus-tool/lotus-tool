@@ -71,6 +71,7 @@ public class OnPressedMouse implements Strategy {
 
                 dwi.modoCriacaoDoRetangulo=false;
                 dwi.selecaoPadrao=false;
+                dwi.downShift = false;
                 return;
             }
             else{
