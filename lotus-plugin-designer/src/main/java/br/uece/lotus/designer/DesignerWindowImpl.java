@@ -477,13 +477,13 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
         mBtnUndo = new Button();
         mBtnUndo.setGraphic(new ImageView(new Image(getClass().getResourceAsStream("/images/ic_undo.png"))));
         mBtnUndo.setOnAction((ActionEvent event) -> {
-            historicoViewer("Desfazer");
+            //historicoViewer("Desfazer");
         });
 
         mBtnRedo = new Button();
         mBtnRedo.setGraphic(new ImageView(new Image(getClass().getResourceAsStream("/images/ic_redo.png"))));
         mBtnRedo.setOnAction((ActionEvent event) -> {
-            historicoViewer("Refazer");
+            //historicoViewer("Refazer");
         });
 
         //Set Colors-----------------------------------------------------------------------------------
@@ -687,16 +687,6 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
         //AnchorPane.setLeftAnchor(mPainelPropriedades, 0D);
         getChildren().add(mPainelPropriedades);
 
-        /*/KeyCode Combination (Erro de nullPoint na scene)
-        mBtnUndo.getScene().getAccelerators().put(new KeyCodeCombination(KeyCode.Z, KeyCodeCombination.CONTROL_DOWN), new Runnable() {
-
-            @Override
-            public void run() {
-                mBtnUndo.fire();
-                System.out.println("Desfazer keycode");
-            }
-        });*/
-
 //       mViewer.getNode().minHeightProperty().bind(mScrollPanel.heightProperty());
 //       mViewer.getNode().minWidthProperty().bind(mScrollPanel.widthProperty());
 
@@ -762,113 +752,7 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
         public void handle(MouseEvent e) {
             Context context = new Context(new OnClickedMouse());
             context.executeStrategyOnClikedMouse((DesignerWindowImpl) getNode(),e);
-       /*     if (MouseButton.SECONDARY.equals(e.getButton())) {
-                setComponenteSelecionado(mComponentSobMouse);
-                if(mComponentSelecionado instanceof StateView){
-                    mComponentContextMenu.show(mViewer.getNode(), e.getScreenX(), e.getScreenY());
-                }else{
-                    mComponentContextMenu.hide();
-                }
-                return;
-            }
-            else {
-                mComponentContextMenu.hide();
-            }
-
-            if (e.isControlDown() && e.getButton() == MouseButton.MIDDLE) {
-                mViewer.getNode().setScaleX(mViewerScaleXPadrao);
-                mViewer.getNode().setScaleY(mViewerScaleYPadrao);
-                mViewer.getNode().setTranslateX(mViewerTranslateXPadrao);
-                mViewer.getNode().setTranslateY(mViewerTranslateYPadrao);
-            }*/
-
-            /*if (mModoAtual == MODO_NENHUM) {
-
-                if (mComponentSobMouse != null && (mComponentSobMouse instanceof StateView)) {
-                    paleta.setVisible(true);
-                    //VERIFICANDO SE TEM UM BIGSTATE
-                    StateView stateView = (StateView) mComponentSobMouse;
-                    State state = stateView.getState();
-                    BigState bigState = (BigState) state.getValue("bigstate");
-                    if (bigState != null) {
-                        mBtnBigState.setSelected(true);
-                        mBtnBigState.setGraphic(iconBigStateDismount);
-                        /*System.out.println("NUMERO DE BIGSTATES = "+BigState.todosOsBigStates.size());
-                        System.out.println(((BigState)((StateView)mComponentSobMouse).getState().getValue("bigstate")).toString());
-                        if (e.getClickCount() == 2) {
-                            if (!bigState.dismountBigState(mViewer.getComponent())){
-                                JOptionPane.showMessageDialog(null, "You need another BigState before dismantling");
-                                return;
-                            }
-                            mBtnBigState.setSelected(false);
-                            mBtnBigState.setGraphic(iconBigState);
-                            mViewer.getComponent().remove(state);
-                        }
-                    }
-                    else {
-                        mBtnBigState.setSelected(false);
-                        mBtnBigState.setGraphic(iconBigState);
-                    }
-                }else{
-                    mBtnBigState.setSelected(false);
-                    mBtnBigState.setGraphic(iconBigState);
-                    // System.out.println("saiu aqui ?");
-
-                    if(!statesSelecionadoPeloRetangulo){
-                        paleta.setVisible(false);}
-
-                }
-
-            } else {*/
-                /*if (mModoAtual == MODO_VERTICE) {
-                    if (!(mComponentSobMouse instanceof StateView)) {
-                        if (contID == -1) {
-                            updateContID();
-                        }
-                        int id = mViewer.getComponent().getStatesCount();
-                        State s = mViewer.getComponent().newState(id);
-                        s.setID(contID);
-                        contID++;
-                        s.setLayoutX(e.getX());
-                        s.setLayoutY(e.getY());
-                        s.setLabel(String.valueOf(id));
-
-                        if (mViewer.getComponent().getStatesCount() == 0) {
-                            mViewer.getComponent().setInitialState(s);
-                        }
-                    }
-                } else if (mModoAtual == MODO_REMOVER) {
-                    if (mComponentSobMouse instanceof StateView) {
-                        State v = ((StateView) mComponentSobMouse).getState();
-                        if(v.getValue("bigstate") instanceof BigState){
-                            BigState.removeBigState((BigState) v.getValue("bigstate"));
-                        }
-                        mViewer.getComponent().remove(v);
-                    } else if (mComponentSobMouse instanceof TransitionView) {
-                        Transition t = ((TransitionView) mComponentSobMouse).getTransition();
-                        State iniTransition = t.getSource();
-                        State fimTransition = t.getDestiny();
-                        mViewer.getComponent().remove(t);
-                        //Verificar Mais de uma Trasition do mesmo Source e Destiny
-                        List<Transition> multiplasTransicoes = iniTransition.getTransitionsTo(fimTransition);
-                        if(multiplasTransicoes.size() > 0){
-                            //deletar da tela
-                            for(Transition trans : multiplasTransicoes){
-                                mViewer.getComponent().remove(trans);
-                            }
-                            //recriar transitions
-                            for(Transition trans : multiplasTransicoes){
-                                mViewer.getComponent().buildTransition(iniTransition, fimTransition)
-                                        .setGuard(trans.getGuard())
-                                        .setLabel(trans.getLabel())
-                                        .setProbability(trans.getProbability())
-                                        .setViewType(TransitionView.Geometry.CURVE)
-                                        .create();
-                            }
-                        }
-                    }
-                }
-            }*/
+       
         }
     };
 
@@ -881,14 +765,7 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
         public void handle(MouseEvent t) {
             Context context = new Context(new OnMovedMouse());
             context.executeStrategyOnMovedMouse((DesignerWindowImpl) getNode(),t);
-           /* Object aux = getComponentePelaPosicaoMouse(new Point2D(t.getSceneX(), t.getSceneY()));
-//            if (mComponentSobMouse != null) {
-//                mComponentSobMouse.setHighlighted(false);
-//            }
-//            if (aux != null) {
-//                aux.setHighlighted(true);
-//            }
-            mComponentSobMouse = aux;*/
+           
         }
     };
     ////////////////////////////////////////////////////////////////////////////
@@ -912,149 +789,6 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
             Context context = new Context(new OnPressedMouse());
             context.executeStrategyOnPressedMouse((DesignerWindowImpl) getNode(), e);
 
-            //                         HAND MOVE                                     //
-            /*if (mModoAtual == MODO_MOVER) {
-                mViewer.getNode().setCursor(Cursor.CLOSED_HAND);
-                if (e.getClickCount() == 2) {
-                    mViewer.getNode().setTranslateX(mViewerTranslateXPadrao);
-                    mViewer.getNode().setTranslateY(mViewerTranslateYPadrao);
-                }
-                //gravar cordenadas x e y do mViewer de acordo com a posiÃ§Ã£o do mouse
-                mouseHandX = e.getSceneX();
-                mouseHandY = e.getSceneY();
-                //get the x and y position measure from Left-Top
-                posicaoMViewerHandX = mViewer.getNode().getTranslateX();
-                posicaoMViewerHandY = mViewer.getNode().getTranslateY();
-            }*/
-/*
-            if (mModoAtual != MODO_VERTICE && mModoAtual != MODO_NENHUM) {
-                return;
-            }*/
-            /*if (mModoAtual == MODO_NENHUM) {
-                coordenadaInicialX = e.getX();
-                coordenadaInicialY = e.getY();
-                ultimoInstanteX = 0;
-                ultimoInstanteY = 0;
-                segundaVezEmDiante = false;*/
-                //selecioneiComShift=false;
-
-
-               /* if (e.isShiftDown()) {
-                    downShift = true;
-
-                }
-
-                if (downShift && mComponentSobMouse != null) {
-
-                    StateView stateView = (StateView) mComponentSobMouse;
-                    State state = stateView.getState();
-
-                    for(State s : statesSelecionados){
-                        if(s==state){
-                            return;
-                        }
-                    }
-                    state.setBorderWidth(2);
-                    state.setBorderColor("blue");
-                    state.setTextColor("blue");
-                    state.setTextSyle(State.TEXTSTYLE_BOLD);
-                    statesSelecionados.add(state);
-                    selecionadoUm = true;
-                    selecioneiComShift = true;
-
-                    modoCriacaoDoRetangulo = false;
-                    downShift = false;
-                    selecaoPadrao = false;
-                    return;
-                } else {
-
-                    if (!statesSelecionadoPeloRetangulo && mComponentSobMouse != null && !selecioneiComShift) {
-
-
-                        selecaoPadrao = true;
-                        if (statesSelecionados != null) {
-                            statesSelecionados.clear();
-                        }
-                        if (mComponentSobMouse instanceof StateView) {
-                            setComponenteSelecionado(mComponentSobMouse);
-                            StateView stateView = (StateView) mComponentSobMouse;
-                            State state = stateView.getState();
-                            statesSelecionados.add(state);
-                            modoCriacaoDoRetangulo = false;
-                            return;
-                        } else {
-                            setComponenteSelecionado(mComponentSobMouse);
-                        }
-                    } else {
-                        if (!SeClickeiEntreSelecionados(e.getX(), e.getY()) && statesSelecionados != null) {
-
-                            verificacao = true;
-                            for (State s : statesSelecionados) {
-                                s.setBorderWidth(1);
-                                s.setBorderColor("black");
-                                s.setTextColor("black");
-                                s.setTextSyle(State.TEXTSTYLE_NORMAL);
-                            }
-                            if (mComponentSobMouse != null) {
-                                selecaoPadrao = true;
-                                if (statesSelecionados != null) {
-                                    statesSelecionados.clear();
-                                    modoCriacaoDoRetangulo = false;
-                                }
-
-                                StateView stateView = null;
-                                setComponenteSelecionado(mComponentSobMouse);
-                                try {
-                                    stateView = (StateView) mComponentSobMouse;
-                                } catch (ClassCastException exception){
-                                    return;
-                                }
-                                State state = stateView.getState();
-                                statesSelecionados.add(state);
-
-
-                            } else {
-                                selecaoPadrao = false;
-                                modoCriacaoDoRetangulo = true;
-                                statesSelecionadoPeloRetangulo = false;
-                                selecioneiComShift = false;
-                                if (selecionadoUm) {
-                                    selecionadoUm = false;
-                                }
-                                for (State s : statesSelecionados) {
-                                    s.setBorderWidth(1);
-                                    s.setBorderColor("black");
-                                    s.setTextColor("black");
-                                    s.setTextSyle(State.TEXTSTYLE_NORMAL);
-                                }
-
-                                statesSelecionados.clear();
-                                //System.out.println("Removendo estilo selecionado state/trans");
-                                Object v = getSelectedView();
-                                if(v instanceof TransitionView){
-                                    removeSelectedStyles(v);
-                                }
-
-                            }
-
-                        } else {
-                            verificacao = false;
-                            modoCriacaoDoRetangulo = false;
-                        }
-
-                    }
-                }
-
-                if (!(mComponentSobMouse instanceof StateView)) {
-
-                    return;
-                }
-
-                StateView v = (StateView) mComponentSobMouse;
-
-                variacaoXCliqueMouseComOCantoSuperiorEsquerdoVertice = v.getNode().getLayoutX() - e.getX() + RAIO_CIRCULO;
-                variacaoYCliqueMouseComOCantoSuperiorEsquerdoVertice = v.getNode().getLayoutY() - e.getY() + RAIO_CIRCULO;
-            }*/
         }
     };
 
@@ -1072,126 +806,6 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
             
             Context context = new Context(new OnDraggedMouse());
             context.executeStrategyOnDraggedMouse((DesignerWindowImpl)getNode(), t);
-
-            //                         HAND MOVE                                     //
-            /*if (mModoAtual == MODO_MOVER) {
-                //Pegar Moviemnto do mouse
-                posicaoMViewerHandX += t.getSceneX() - mouseHandX;
-                posicaoMViewerHandY += t.getSceneY() - mouseHandY;
-                //setar nova posição apos calculo do movimento
-                mViewer.getNode().setTranslateX(posicaoMViewerHandX);
-                mViewer.getNode().setTranslateY(posicaoMViewerHandY);
-                //setar nova posição do mouse no mViewer
-                mouseHandX = t.getSceneX();
-                mouseHandY = t.getSceneY();
-            }
-
-            if (mModoAtual != MODO_VERTICE && mModoAtual != MODO_NENHUM) {
-                return;
-            }
-            if (mModoAtual == MODO_NENHUM) {
-                if ((statesSelecionadoPeloRetangulo || selecionadoUm ) && !selecaoPadrao) {*/
-//                        if(selecioneiComShift){
-//                            System.out.println("retornou?");
-//                            //selecioneiComShift=false;
-//                            return;
-//                        }
-
-                    /*if (!segundaVezEmDiante //&& downShift
-                            ) {
-                        //System.out.println("primeira vez");
-                        variacaoX = t.getX() - coordenadaInicialX;
-                        variacaoY = t.getY() - coordenadaInicialY;
-                        segundaVezEmDiante = true;
-                        ultimoInstanteX = t.getX();
-                        ultimoInstanteY = t.getY();
-
-                    } else {
-                        //System.out.println("seunda vez");
-                        variacaoX = (t.getX() - ultimoInstanteX);
-                        variacaoY = (t.getY() - ultimoInstanteY);
-                        ultimoInstanteX = t.getX();
-                        ultimoInstanteY = t.getY();
-
-                    }
-
-                    for (State s : statesSelecionados) {
-                        posicionandoConjuntoDeStates(s, variacaoX, variacaoY);
-                    }
-
-                } else {
-
-                    if (modoCriacaoDoRetangulo) {
-                        //System.out.println("entra aqui 1");
-
-                        auxA = true;
-
-                        coornenadaIstanteX = t.getX();
-                        coordenadaIstanteY = t.getY();
-
-
-                        if (coornenadaIstanteX <= coordenadaInicialX) {
-
-                            if (coordenadaIstanteY <= coordenadaInicialY) {
-                                largura = coordenadaInicialY - coordenadaIstanteY;
-                                altura = coordenadaInicialX - coornenadaIstanteX;
-                                inicioDoRectanguloX = coornenadaIstanteX;
-                                inicioDoRectanguloY = coordenadaIstanteY;
-                                inicioDoRectanguloXAux = coordenadaInicialX;
-                                inicioDoRectanguloYAux = coordenadaInicialY;
-                            }
-                            if (coordenadaIstanteY >= coordenadaInicialY) {
-                                altura = coordenadaInicialX - coornenadaIstanteX;
-                                largura = coordenadaIstanteY - coordenadaInicialY;
-                                inicioDoRectanguloX = coordenadaInicialX - altura;
-                                inicioDoRectanguloY = coordenadaInicialY;
-                                inicioDoRectanguloXAux = coordenadaInicialX;
-                                inicioDoRectanguloYAux = coordenadaInicialY;
-                            }
-
-                        } else {
-                            if (coordenadaIstanteY <= coordenadaInicialY) {
-                                altura = coornenadaIstanteX - coordenadaInicialX;
-                                largura = coordenadaInicialY - coordenadaIstanteY;
-                                inicioDoRectanguloX = coordenadaInicialX;
-                                inicioDoRectanguloY = coordenadaInicialY - largura;
-                                inicioDoRectanguloXAux = coordenadaInicialX;
-                                inicioDoRectanguloYAux = coordenadaInicialY;
-                            }
-                            if (coordenadaIstanteY >= coordenadaInicialY) {
-                                altura = coornenadaIstanteX - coordenadaInicialX;
-                                largura = coordenadaIstanteY - coordenadaInicialY;
-                                inicioDoRectanguloX = coordenadaInicialX;
-                                inicioDoRectanguloY = coordenadaInicialY;
-                                inicioDoRectanguloXAux = coordenadaInicialX;
-                                inicioDoRectanguloYAux = coordenadaInicialY;
-                            }
-
-                        }
-                        if (ultimoRetanguloAdicionado != null) {
-                            mViewer.getNode().getChildren().remove(ultimoRetanguloAdicionado);
-                        }
-
-                        Rectangle retangulo = new Rectangle((int) inicioDoRectanguloX, (int) inicioDoRectanguloY, (int) altura, (int) largura);
-                        ultimoRetanguloAdicionado = retangulo;
-                        retangulo.setFill(Color.BLUE);
-                        retangulo.setOpacity(0.4);
-                        retangulo.setVisible(true);
-                        mViewer.getNode().getChildren().add(retangulo);
-
-                    } else {
-
-                        if (!(mComponentSobMouse instanceof StateView) || !selecaoPadrao) {
-                            return;
-                        }
-                        //System.out.println("entra aqui 2");
-
-                        State s = ((StateView) mComponentSobMouse).getState();
-                        s.setLayoutX(t.getX() + variacaoXCliqueMouseComOCantoSuperiorEsquerdoVertice - RAIO_CIRCULO);
-                        s.setLayoutY(t.getY() + variacaoYCliqueMouseComOCantoSuperiorEsquerdoVertice - RAIO_CIRCULO);
-                    }
-                }
-            }*/
         }
     };
     ////////////////////////////////////////////////////////////////////
@@ -1203,156 +817,9 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
 
             Context context = new Context(new OnReleasedMouse());
             context.executeStrategyOnReleasedMouse((DesignerWindowImpl) getNode(), t);
-            /*if (mModoAtual == MODO_MOVER) {
-                mViewer.getNode().setCursor(Cursor.OPEN_HAND);
-            }
-
-            if (mModoAtual != MODO_VERTICE && mModoAtual != MODO_NENHUM) {
-                return;
-            }
-            if (mModoAtual == MODO_NENHUM) {
-                variacaoXCliqueMouseComOCantoSuperiorEsquerdoVertice = 0;
-                variacaoYCliqueMouseComOCantoSuperiorEsquerdoVertice = 0;
-                if (modoCriacaoDoRetangulo) {
-                    if (!auxA) {
-                        inicioDoRectanguloXAux = coordenadaInicialX;
-                        inicioDoRectanguloYAux = coordenadaInicialY;
-                    }
-                    if (!selecionadoUm) {
-                        coordenadaFinalX = t.getX();
-                        coordenadaFinalY = t.getY();
-
-                        statesSelecionadoPeloRetangulo = selecionandoComRetangulo(inicioDoRectanguloXAux, inicioDoRectanguloYAux, coordenadaFinalX, coordenadaFinalY);
-                        if(statesSelecionadoPeloRetangulo){
-                            System.out.println("chegou aqui correto");
-                            paleta.setVisible(true);
-                        }
-                    }
-                    if (ultimoRetanguloAdicionado != null) {
-                        mViewer.getNode().getChildren().remove(ultimoRetanguloAdicionado);
-                    }
-                    auxA = false;
-                }
-            }*/
         }
     };
     public ArrayList<State> todosOsStates;
-
-    /*public boolean selecionandoComRetangulo(double inicioDoRectanguloX, double inicioDoRectanguloY, double finalDoRectanguloX, double finalDoRectanguloY) {
-        boolean aux = false;
-        /////////////////////////////////////////////////
-        ////////ORGANIZANDO AS POSICOES DO RETANGULO DE SELECAO
-        /////////////////////////////////////////////////
-        if (inicioDoRectanguloX > finalDoRectanguloX) {
-            double ajuda = finalDoRectanguloX;
-            finalDoRectanguloX = inicioDoRectanguloX;
-            inicioDoRectanguloX = ajuda;
-
-        }
-        if (inicioDoRectanguloY > finalDoRectanguloY) {
-            double ajuda = finalDoRectanguloY;
-            finalDoRectanguloY = inicioDoRectanguloY;
-            inicioDoRectanguloY = ajuda;
-
-
-        }
-
-        todosOsStates = (ArrayList<State>) mViewer.getComponent().getStates();
-        int n = todosOsStates.size();
-        if (stateDentroDoRetangulo != null) {
-            for (State s : stateDentroDoRetangulo) {
-                statesSelecionados.remove(s);
-            }
-            stateDentroDoRetangulo.clear();
-        }
-
-        for (int i = 0; i < n; i++) {
-            State s = todosOsStates.get(i);
-            posCircleX = s.getLayoutX() + RAIO_CIRCULO;
-            posCircleY = s.getLayoutY() + RAIO_CIRCULO;
-
-            posicaoDoEstadoXMaisRaio = posCircleX + RAIO_CIRCULO;
-            posicaoDoEstadoYMaisRaio = posCircleY + RAIO_CIRCULO;
-            posicaoDoEstadoXMenosRaio = posCircleX - RAIO_CIRCULO;
-            posicaoDoEstadoYMenosRaio = posCircleY - RAIO_CIRCULO;
-
-            //verificando se a area do retangulo estÃ¡ pegando atÃ© o centro do state
-            if (posicaoDoEstadoXMenosRaio == inicioDoRectanguloX || posicaoDoEstadoXMenosRaio > inicioDoRectanguloX) {
-                if (posicaoDoEstadoXMaisRaio == finalDoRectanguloX || posicaoDoEstadoXMaisRaio < finalDoRectanguloX) {
-                    if (posicaoDoEstadoYMenosRaio == inicioDoRectanguloY || posicaoDoEstadoYMenosRaio > inicioDoRectanguloY) {
-                        if (posicaoDoEstadoYMaisRaio == finalDoRectanguloY || posicaoDoEstadoYMaisRaio < finalDoRectanguloY) {
-                            stateDentroDoRetangulo.add(s);
-                            s.setBorderWidth(2);
-                            s.setBorderColor("blue");
-                            s.setTextColor("blue");
-                            s.setTextSyle(State.TEXTSTYLE_BOLD);
-
-                            aux = true;
-                        } else {
-                            s.setBorderWidth(1);
-                            s.setBorderColor("black");
-                            s.setTextColor("black");
-                            s.setTextSyle(State.TEXTSTYLE_NORMAL);
-                        }
-                    } else {
-                        s.setBorderWidth(1);
-                        s.setBorderColor("black");
-                        s.setTextColor("black");
-                        s.setTextSyle(State.TEXTSTYLE_NORMAL);
-                    }
-                } else {
-                    s.setBorderWidth(1);
-                    s.setBorderColor("black");
-                    s.setTextColor("black");
-                    s.setTextSyle(State.TEXTSTYLE_NORMAL);
-                }
-            } else {
-                s.setBorderWidth(1);
-                s.setBorderColor("black");
-                s.setTextColor("black");
-                s.setTextSyle(State.TEXTSTYLE_NORMAL);
-            }
-        }
-        statesSelecionados.addAll(stateDentroDoRetangulo);
-
-        //MUDANDO ICONE E SELECAO DO TOGGLEBUTON BIGSTATE
-        changeIconToggleBigState();
-
-
-
-
-        return aux;
-    }*/
-
-    /*public boolean SeClickeiEntreSelecionados(double x, double y) {
-        boolean aux = false;
-        if (statesSelecionados != null) {
-
-            for (State s : statesSelecionados) {
-                posCircleX = s.getLayoutX() + RAIO_CIRCULO;
-                posCircleY = s.getLayoutY() + RAIO_CIRCULO;
-
-                posicaoDoEstadoXMaisRaio = posCircleX + RAIO_CIRCULO;
-                posicaoDoEstadoYMaisRaio = posCircleY + RAIO_CIRCULO;
-                posicaoDoEstadoXMenosRaio = posCircleX - RAIO_CIRCULO;
-                posicaoDoEstadoYMenosRaio = posCircleY - RAIO_CIRCULO;
-
-                if (x == posicaoDoEstadoXMenosRaio || x > posicaoDoEstadoXMenosRaio) {
-                    if (x == posicaoDoEstadoXMaisRaio || x < posicaoDoEstadoXMaisRaio) {
-                        if (y == posicaoDoEstadoYMenosRaio || y > posicaoDoEstadoYMenosRaio) {
-                            if (y == posicaoDoEstadoYMaisRaio || y < posicaoDoEstadoYMaisRaio) {
-                                return true;
-                            }
-
-                        }
-                    }
-                }
-            }
-        }
-
-        return aux;
-    }*/
-
 
     ////////////////////////////////////////////////////////////////////////////
     // Adicionar transiÃ§Ã£o
@@ -1367,49 +834,6 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
             
             Context context = new Context(new OnDragDetectedMouse());
             context.executeStrategyOnDragDetectedMouse((DesignerWindowImpl)getNode(), t);
-
-            //System.out.println("EVENTO DE CLICK");
-            /*if (mModoAtual != MODO_TRANSICAO) {
-                return;
-            }
-
-            if (!(mComponentSobMouse instanceof StateView)) {
-                return;
-            }
-            StateView v = (StateView) mComponentSobMouse;
-
-            ///pegando posicioes inicias (x,y)
-            xInicial=v.getState().getLayoutX();
-            yInicial=v.getState().getLayoutY();
-
-            //guarda o objeto no qual iniciamos o drag            
-            mVerticeOrigemParaAdicionarTransicao = v;
-
-            if (BigState.verifyIsBigState(mVerticeOrigemParaAdicionarTransicao.getState())) {
-                JOptionPane.showMessageDialog(null, "Impossible to create transitions in a Big State!", "Alert", JOptionPane.WARNING_MESSAGE);
-                return;
-            }
-
-            if(mVerticeOrigemParaAdicionarTransicao.getState().isFinal()){
-                JOptionPane.showMessageDialog(null, "Impossible to create transitions in a Final State!", "Alert", JOptionPane.WARNING_MESSAGE);
-                return;
-            }
-
-            if(mVerticeOrigemParaAdicionarTransicao.getState().isError()){
-                JOptionPane.showMessageDialog(null, "Impossible to create transitions in a Error State!", "Alert", JOptionPane.WARNING_MESSAGE);
-                return;
-            }
-
-            //inicia o drag'n'drop
-            Dragboard db = mVerticeOrigemParaAdicionarTransicao.getNode().startDragAndDrop(TransferMode.ANY);
-
-            //soh funciona com as trÃªs linhas a seguir. Porque? Eu nÃ£o sei.
-            ClipboardContent content = new ClipboardContent();
-            content.putString("gambiarra");
-            db.setContent(content);
-
-            //indica que este evento foi realizado
-            t.consume();*/
         }
     };
     
@@ -1420,45 +844,8 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
             Context context = new Context(new OnDragOverMouse());
             context.executeStrategyOnDragOverMouse((DesignerWindowImpl)getNode(), event);
             
-            //double xFinal=event.getX(),yFinal=event.getY();
-            //System.out.println("EVENTO DE PUXAR");
-            //a informaÃ§ao esta sendo solta sobre o alvo
-            //aceita soltar o mouse somente se nÃ£o Ã© o mesmo nodo de origem 
-            //e possui uma string            
-            /*if (event.getGestureSource() != event.getSource()) {
-                event.acceptTransferModes(TransferMode.COPY_OR_MOVE);
-            }
-
-            Object v = getComponentePelaPosicaoMouse(new Point2D(event.getSceneX(), event.getSceneY()));
-            mVerticeDestinoParaAdicionarTransicao = (v instanceof StateView) ? ((StateView) v) : null;
-            /*<><><><><><><><><><><><><><><><><><><><><><<><><><><><><><><><><><><><><><><><><><><><><><><><>*/
-            /*if(ultimaLinha!=null){
-                mViewer.getNode().getChildren().remove(ultimaLinha);
-            }
-
-            Line linha= createViewFakeTransitionLine(xInicial, yInicial, xFinal, yFinal);
-            mViewer.getNode().getChildren().add(linha);
-            linha.toBack();///<-coloca a linha por trás do state
-            //System.out.println("ADICIONOU");
-            ultimaLinha=linha;
-            
-            /*<><><><><><><><><><><><><><><><><><><><><><<><><><><><><><><><><><><><><><><><><><><><><><><><>*/
-            //event.consume();
         }
     };
-
-    /*private Line createViewFakeTransitionLine(double xInicial, double yInicial, double xFinal, double yFinal) {
-        Line linha = new Line();
-        linha.setStartX(xInicial+AJUSTE_X);
-        linha.setStartY(yInicial+AJUSTE_y);
-        linha.setEndX(xFinal);
-        linha.setEndY(yFinal);
-           /* System.out.println(event.getX());
-            System.out.println(event.getY());*/
-        /*linha.setOpacity(0.5);
-        linha.getStrokeDashArray().addAll(2d);//<-traseja o state
-        return linha;
-    }*/
 
     private final EventHandler<DragEvent> aoSoltarMouseSobreVertice = new EventHandler<DragEvent>() {
         @Override
@@ -1466,118 +853,6 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
             
             Context context = new Context(new OnDragDropped());
             context.executeStrategyOnDragDroppedMouse((DesignerWindowImpl)getNode(), event);
-            //System.out.println("EVENTO DE SOLTA");
-            /*if (mModoAtual != MODO_TRANSICAO) {
-                return;
-            }
-            /*<><><><><><><><><><><><><><><><><><><><><><<><><><><><><><><><><><><><><><><><><><><><><><><><>*/
-            /*if(ultimaLinha!=null){
-                mViewer.getNode().getChildren().remove(ultimaLinha);
-                //System.out.println("REMOVEU FINAL");
-            }
-            /*<><><><><><><><><><><><><><><><><><><><><><<><><><><><><><><><><><><><><><><><><><><><><><><><>*/
-
-            /*if (mVerticeDestinoParaAdicionarTransicao != null) {
-                if (BigState.verifyIsBigState(mVerticeDestinoParaAdicionarTransicao.getState())) {
-                    JOptionPane.showMessageDialog(null, "Impossible to create transitions for a BigState!", "Alert", JOptionPane.WARNING_MESSAGE);
-                    return;
-                }
-
-                State o = mVerticeOrigemParaAdicionarTransicao.getState();
-                State d = mVerticeDestinoParaAdicionarTransicao.getState();
-                mExibirPropriedadesTransicao = true;
-
-                int qtdeTransitionOD = o.getTransitionsTo(d).size();
-                int qtdeTransitionDO = d.getTransitionsTo(o).size();
-                List<Transition> transitionsOD = o.getTransitionsTo(d);
-                List<Transition> transitionsDO = d.getTransitionsTo(o);
-                boolean temLineOD = verificarSeExisteTransitionLine(transitionsOD);
-                boolean temLineDO = verificarSeExisteTransitionLine(transitionsDO);
-
-                if(mTransitionViewType == 1){ // curve
-                    Transition t = mViewer.getComponent().buildTransition(o, d)
-                            .setViewType(mTransitionViewType)
-                            .create();
-                    applyDefaults(t);
-                }
-                //line  com auto ajuste
-                else if(qtdeTransitionOD == 0 && qtdeTransitionDO == 0){
-                    Transition t = mViewer.getComponent().buildTransition(o, d)
-                            .setViewType(mTransitionViewType)
-                            .create();
-                    applyDefaults(t);
-                }
-                else if(qtdeTransitionOD == 0 && qtdeTransitionDO > 0 && !temLineDO){
-                    Transition t = mViewer.getComponent().buildTransition(o, d)
-                            .setViewType(TransitionView.Geometry.LINE)
-                            .create();
-                    applyDefaults(t);
-                }
-                else if(qtdeTransitionOD == 0 && qtdeTransitionDO > 0 && temLineDO){
-                    Transition t = mViewer.getComponent().buildTransition(o, d)
-                            .setViewType(TransitionView.Geometry.CURVE)
-                            .create();
-                    applyDefaults(t);
-                }
-                else if(qtdeTransitionOD > 0 && !temLineOD && qtdeTransitionDO == 0){
-                    Transition t = mViewer.getComponent().buildTransition(o, d)
-                            .setViewType(TransitionView.Geometry.LINE)
-                            .create();
-                    applyDefaults(t);
-                }
-                else if(qtdeTransitionOD > 0 && temLineOD && qtdeTransitionDO == 0){
-                    Transition t = mViewer.getComponent().buildTransition(o, d)
-                            .setViewType(TransitionView.Geometry.CURVE)
-                            .create();
-                    applyDefaults(t);
-                }
-                else if(qtdeTransitionOD > 0 && !temLineOD && qtdeTransitionDO > 0 && !temLineDO){
-                    Transition t = mViewer.getComponent().buildTransition(o, d)
-                            .setViewType(TransitionView.Geometry.LINE)
-                            .create();
-                    applyDefaults(t);
-                }
-                else if(qtdeTransitionOD > 0 && temLineOD && qtdeTransitionDO > 0 && !temLineDO){
-                    Transition t = mViewer.getComponent().buildTransition(o, d)
-                            .setViewType(TransitionView.Geometry.CURVE)
-                            .create();
-                    applyDefaults(t);
-                }
-                else if(qtdeTransitionOD > 0 && !temLineOD &&qtdeTransitionDO > 0 && temLineDO){
-                    Transition t = mViewer.getComponent().buildTransition(o, d)
-                            .setViewType(TransitionView.Geometry.CURVE)
-                            .create();
-                    applyDefaults(t);
-                }
-            }
-
-            event.setDropCompleted(true);
-            event.consume();
-        }
-
-        private boolean verificarSeExisteTransitionLine(List<Transition> transitions){
-            boolean line = false;
-            for(Transition t : transitions){
-                if((int)t.getValue("view.type") == 0){
-                    line = true;
-                }
-            }
-            return line;
-        }
-
-        private void applyDefaults(Transition t) {
-            if (mDefaultTransitionLabel != null) {
-                t.setLabel(mDefaultTransitionLabel);
-            }
-            if (mDefaultTransitionColor != null) {
-                t.setColor(mDefaultTransitionColor);
-            }
-            if (mDefaultTransitionTextColor != null) {
-                t.setTextColor(mDefaultTransitionTextColor);
-            }
-            if (mDefaultTransitionWidth != null) {
-                t.setWidth(mDefaultTransitionWidth);
-            }*/
         }
 
     };
@@ -1593,44 +868,6 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
             Context context = new Context(new OnKeyPressed());
             context.executeStrategyOnKeyPressed((DesignerWindowImpl)getNode(), event);
             
-            /*if(event.getCode().equals(KeyCode.DELETE)){
-                System.out.println("entrou no delete");
-                if (mComponentSobMouse instanceof StateView) {
-                    State v = ((StateView) mComponentSobMouse).getState();
-                    if(v.getValue("bigstate") instanceof BigState){
-                        BigState.removeBigState((BigState) v.getValue("bigstate"));
-                    }
-                    mViewer.getComponent().remove(v);
-                } else if (mComponentSobMouse instanceof TransitionView) {
-                    Transition t = ((TransitionView) mComponentSobMouse).getTransition();
-                    State iniTransition = t.getSource();
-                    State fimTransition = t.getDestiny();
-                    mViewer.getComponent().remove(t);
-                    //Verificar Mais de uma Trasition do mesmo Source e Destiny
-                    List<Transition> multiplasTransicoes = iniTransition.getTransitionsTo(fimTransition);
-                    if(multiplasTransicoes.size() > 0){
-                        //deletar da tela
-                        for(Transition trans : multiplasTransicoes){
-                            mViewer.getComponent().remove(trans);
-                        }
-                        //recriar transitions
-                        for(Transition trans : multiplasTransicoes){
-                            mViewer.getComponent().buildTransition(iniTransition, fimTransition)
-                                    .setGuard(trans.getGuard())
-                                    .setLabel(trans.getLabel())
-                                    .setProbability(trans.getProbability())
-                                    .setViewType(TransitionView.Geometry.CURVE)
-                                    .create();
-                        }
-                    }
-                }
-            }*/
-            /*else if(event.getCode() ==  new KeyCombination(KeyCode.Z,KeyCombination.CONTROL_DOWN)){
-                
-            }
-            else if(event.getCode() == KeyCode.DELETE){
-                
-            }*/
         }
     };
     ///////////////////////////////////////////////////////////////////////////////
@@ -1643,33 +880,8 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
             
             Context context = new Context(new OnScrollMouse());
             context.executeStrategyOnScrollMouse((DesignerWindowImpl)getNode(), event);
-            
-            /*if (event.isControlDown()) {
-                zoomReset.setSelected(false);
-                final double SCALE_DELTA = 1.1;
-                double scaleFactor = (event.getDeltaY() > 0) ? SCALE_DELTA : 1 / SCALE_DELTA;
-                zoom(mViewer.getNode(), event.getX(), event.getY(), scaleFactor);
-            }*/
         }
     };
-
-    /*private void zoom(Node node, double centerX, double centerY, double factor) {
-        final Point2D center = node.localToParent(centerX, centerY);
-        final Bounds bounds = node.getBoundsInParent();
-        final double w = bounds.getWidth();
-        final double h = bounds.getHeight();
-
-        final double dw = w * (factor - 1);
-        final double xr = 2 * (w / 2 - (center.getX() - bounds.getMinX())) / w;
-
-        final double dh = h * (factor - 1);
-        final double yr = 2 * (h / 2 - (center.getY() - bounds.getMinY())) / h;
-
-        node.setScaleX(node.getScaleX() * factor);
-        node.setScaleY(node.getScaleY() * factor);
-        node.setTranslateX(node.getTranslateX() + xr * dw / 2);
-        node.setTranslateY(node.getTranslateY() + yr * dh / 2);
-    }*/
 
     private void changeColorsState(ColorPicker cores, String tipo){
         if(statesSelecionados==null){
@@ -1790,50 +1002,6 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
         }
     }
 
-    //double posXAntes;
-    //double posYAntes;
-    
-    //public void posicionandoConjuntoDeStates(State v, double mX, double mY) {
-       // double posX = v.getLayoutX();
-       // double posY = v.getLayoutY();
-       // posXAntes = posX;
-       // posYAntes = posY;
-       // double distanciaClick;
-       // double distanciaState;
-       // double deltaX, deltaY;
-//        mX = mX - RAIO_CIRCULO;
-//        mY = mY - RAIO_CIRCULO;
-        //System.out.println("varuacaoX-raio" + mX);
-        //System.out.println("varuacaoY-raio" + mY);
-//        System.out.println("mX" + mX);
-//        System.out.println("mY" + mY);
-//        System.out.println("posX" + posX);
-//        System.out.println("posY" + posY);
-//        distanciaClick = Math.floor(Math.sqrt((mX * mX) + (mY * mY)));
-//        distanciaState = Math.floor(Math.sqrt((posX * posX) + (posY * posY)));
-//        System.out.println("distanciaClick" + distanciaClick);
-//        System.out.println("distanciaState" + distanciaState);
-//        if (distanciaClick > distanciaState) {
-//            deltaX = mX - posX;
-//            deltaY = mY - posY;
-//            v.setLayoutX(posX + deltaX);
-//            v.setLayoutY(posY + deltaY);
-//
-//        }
-//        if (distanciaClick < distanciaState) {
-//            deltaX = posX - mX;
-//            deltaY = posY - mY;
-//            v.setLayoutX(posX + deltaX);
-//            v.setLayoutY(posY + deltaY);
-//
-//        }
-
-        //v.setLayoutX(v.getLayoutX() + mX);
-        //v.setLayoutY(v.getLayoutY() + mY);
-        //System.out.println(v.getLayoutX());
-        //System.out.println(v.getLayoutY());
-    //}
-
     public void addListener(Listener l) {
         mListeners.add(l);
     }
@@ -1854,7 +1022,7 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
     }
 
     //Historico para Desfazer e Refazer
-    private void historicoViewer(String opcao) {
+    /*private void historicoViewer(String opcao) {
         switch(opcao){
             case "Desfazer":{
                 if(contPosHistoricoCheia>0){
@@ -1881,7 +1049,7 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
             mUndoRedo[contPosHistoricoCheia] = viewer;
             contPosHistoricoCheia+=1;
         }
-    }
+    }*/
 
     /*public void changeIconToggleBigState(){
         if(statesSelecionados.size()==1){
