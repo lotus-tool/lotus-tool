@@ -37,7 +37,7 @@ public class Context {
     }
     
     public void executeStrategyOnDragDetectedMouse(DesignerWindowImpl dwi, MouseEvent e){
-        strategy.onDraggedMouse(dwi, e);
+        strategy.onDragDetectedMouse(dwi, e);
     }
     
     public void executeStrategyOnDragOverMouse(DesignerWindowImpl dwi, DragEvent e){

@@ -29,6 +29,7 @@ import br.uece.lotus.State;
 import br.uece.lotus.Transition;
 import br.uece.lotus.designer.strategyDesigner.Context;
 import br.uece.lotus.designer.strategyDesigner.OnClickedMouse;
+import br.uece.lotus.designer.strategyDesigner.OnDragDetectedMouse;
 import br.uece.lotus.designer.strategyDesigner.OnDragDropped;
 import br.uece.lotus.designer.strategyDesigner.OnDragOverMouse;
 import br.uece.lotus.designer.strategyDesigner.OnMovedMouse;
@@ -1364,7 +1365,7 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
         @Override
         public void handle(MouseEvent t) {
             
-            Context context = new Context(new OnDraggedMouse());
+            Context context = new Context(new OnDragDetectedMouse());
             context.executeStrategyOnDragDetectedMouse((DesignerWindowImpl)getNode(), t);
 
             //System.out.println("EVENTO DE CLICK");

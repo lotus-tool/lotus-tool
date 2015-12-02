@@ -61,7 +61,7 @@ public class OnDragDetectedMouse implements Strategy{
 
         //inicia o drag'n'drop
         Dragboard db = dwi.mVerticeOrigemParaAdicionarTransicao.getNode().startDragAndDrop(TransferMode.ANY);
-
+        
         //soh funciona com as trÃªs linhas a seguir. Porque? Eu nÃ£o sei.
         ClipboardContent content = new ClipboardContent();
         content.putString("gambiarra");
