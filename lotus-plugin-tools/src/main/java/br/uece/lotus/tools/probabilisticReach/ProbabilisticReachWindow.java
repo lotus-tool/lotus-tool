@@ -304,21 +304,11 @@ public class ProbabilisticReachWindow extends AnchorPane{
         switch (aux2){
             case "E":
             case "e":
-                /* Só funcionará se os .xml forem consertados:
-                State finalState = a.getFinalState();
-                targetID = finalState.getID();*/
-                for(State finalState : a.getStates()){
-                    if(finalState.isFinal()) targetID = finalState.getID();
-                }
+                targetID = a.getFinalState().getID();
                 break;
 
             case "-1":
-                /* Só funcionará se os .xml forem consertados:
-                State errorState = a.getErrorState();
-                targetID = errorState.getID();*/
-                for(State errorState : a.getStates()){
-                    if(errorState.isFinal()) targetID = errorState.getID();
-                }
+                targetID = a.getErrorState().getID();
                 break;
 
             default:

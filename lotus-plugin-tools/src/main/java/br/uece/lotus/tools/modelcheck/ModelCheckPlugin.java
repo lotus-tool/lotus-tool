@@ -6,17 +6,18 @@
 package br.uece.lotus.tools.modelcheck;
 
 import br.uece.lotus.tools.probabilisticReach.ProbabilisticReachAlgorithm;
-
 import br.uece.lotus.tools.modelcheck.UnreachableStates;
 import br.uece.lotus.tools.modelcheck.ProbabilitiesCheck;
 import br.uece.lotus.Component;
 import br.uece.lotus.State;
+import br.uece.lotus.Transition;
 import br.uece.lotus.project.ProjectExplorer;
 import br.uece.seed.app.UserInterface;
 import br.uece.seed.ext.ExtensionManager;
 import br.uece.seed.ext.Plugin;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import javax.swing.JOptionPane;
 
 /**
@@ -69,14 +70,12 @@ public class ModelCheckPlugin extends Plugin {
                     }
                     Component a = mProjectExplorer.getSelectedComponents().get(0);
                     Component b = mProjectExplorer.getSelectedComponents().get(1);
-//                        System.out.println("clicou em " + a +", "+ b);
                     Component c = new ParallelCompositor().compor(a, b);
                     c.setName(a.getName() + " || " + b.getName());
                     mProjectExplorer.getSelectedProject().addComponent(c);
                 })
                 .create();
 
-        List<Component> aux = new ArrayList<>();
         mUserInterface.getMainMenu().newItem("Verification/Unreachable States")
             .setWeight(Integer.MIN_VALUE+20)
             .setAction(() -> {
@@ -106,9 +105,9 @@ public class ModelCheckPlugin extends Plugin {
                 }
             })
                 .create();
-        
+
         mUserInterface.getMainMenu().newItem("Verification/Deadlock Detection")
-                .setWeight(Integer.MIN_VALUE+20)
+                .setWeight(Integer.MIN_VALUE + 20)
                 .setAction(() -> {
                     if (mProjectExplorer.getSelectedComponents().size() != 1) {
                         throw new RuntimeException("Select exactly ONE component!");
@@ -117,17 +116,17 @@ public class ModelCheckPlugin extends Plugin {
                     List<State> deadlocks = new DeadlockDetection().detectDeadlocks(a);
                     String output = new String();
                     int tam = deadlocks.size();
-                    if(deadlocks.size() > 0){
+                    if (deadlocks.size() > 0) {
                         output += deadlocks.get(0).getLabel();
                         for (int i = 1; i < deadlocks.size(); i++) {
                             output += ", " + deadlocks.get(i).getLabel();
                         }
                         output += ".";
-                        JOptionPane.showMessageDialog(null, "Deadlock States: " + output, 
-                                                    "Deadlock Detection", JOptionPane.WARNING_MESSAGE);
-                    }else{
-                        JOptionPane.showMessageDialog(null, "No deadlocks!", 
-                                                    "Deadlock Detection", JOptionPane.INFORMATION_MESSAGE);
+                        JOptionPane.showMessageDialog(null, "Deadlock States: " + output,
+                                "Deadlock Detection", JOptionPane.WARNING_MESSAGE);
+                    } else {
+                        JOptionPane.showMessageDialog(null, "No deadlocks!",
+                                "Deadlock Detection", JOptionPane.INFORMATION_MESSAGE);
                     }
                 })
                 .create();
