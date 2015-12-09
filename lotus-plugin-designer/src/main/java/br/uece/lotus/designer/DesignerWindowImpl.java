@@ -326,6 +326,8 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
             mBtnBigState.setSelected(true);
             mBtnBigState.setGraphic(iconBigStateDismount);
 
+            statesSelecionados.clear();
+            
             BigState.removeStatesComponent();
         }
     };
