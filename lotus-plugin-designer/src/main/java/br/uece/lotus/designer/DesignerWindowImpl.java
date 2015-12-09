@@ -251,7 +251,7 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
     private EventHandler<ActionEvent> mCreateDismountBigState = new EventHandler<ActionEvent>() {
         @Override
         public void handle(ActionEvent event) {
-            if (mComponentSelecionado == null) {
+            if (mComponentSelecionado == null && statesSelecionados.size()==0) {
                 return;
             }
             //CRIANDO BIGSTATE - USERDATA            
