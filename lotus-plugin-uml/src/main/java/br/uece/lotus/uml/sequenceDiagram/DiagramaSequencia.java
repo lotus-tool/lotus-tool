@@ -13,7 +13,7 @@ import br.uece.lotus.uml.sequenceDiagram.xmi.Collaboration;
  *
  * @author Bruno Barbosa
  */
-class DiagramaSequencia {
+public class DiagramaSequencia {
     
     private List<Collaboration> grupo;
     private List<AtorAndClasse> atoresEclasses;

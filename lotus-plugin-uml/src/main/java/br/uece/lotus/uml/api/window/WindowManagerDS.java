@@ -3,12 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package br.uece.lotus.uml.api.ds;
+package br.uece.lotus.uml.api.window;
 
 /**
  *
  * @author Bruno Barbosa
  */
-public class TransitionSequenceDiagram {
+public interface WindowManagerDS {
     
 }

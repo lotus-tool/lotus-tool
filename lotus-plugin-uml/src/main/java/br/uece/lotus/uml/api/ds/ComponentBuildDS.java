@@ -10,5 +10,13 @@ package br.uece.lotus.uml.api.ds;
  * @author Bruno Barbosa
  */
 public class ComponentBuildDS {
+
+    public void setName(String s) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    public String getName() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
     
 }
