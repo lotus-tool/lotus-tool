@@ -13,7 +13,9 @@ import br.uece.seed.app.UserInterface;
 import br.uece.seed.ext.ExtensionManager;
 import br.uece.seed.ext.Plugin;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 
@@ -28,9 +30,22 @@ public abstract class DefaultWindowManagerPluginDS<T extends WindowDS> extends P
     private ExtensibleTabPane mCenterPanel;
     private  List<Listener> mListeners = new ArrayList<>();
     
+    private ArrayList<T> mComponentsWindows = new ArrayList<T>();
+    private Map<ComponentBuildDS, Integer> mComponentBuildDSids =new HashMap<>();
+    private Map<ComponentDS, Integer> mComponentDSids = new HashMap<>();
+    private Map<Component, Integer> mComponentIds = new HashMap<>();
+    
+    private boolean mOnStartCalled;
+    protected abstract T onCreate();
+    protected abstract void onShow(T window, ComponentBuildDS buildDS);
+    protected abstract void onShow(T window, ComponentDS cds);
+    protected abstract void onShow(T window, Component c);
+    protected abstract void onHide(T window);
+    
     @Override
     public void onStart(ExtensionManager extensionManager) throws Exception {
         mCenterPanel = ((UserInterface)extensionManager.get(UserInterface.class)).getCenterPanel();
+        mOnStartCalled = true;
     }
     
     
@@ -81,4 +96,10 @@ public abstract class DefaultWindowManagerPluginDS<T extends WindowDS> extends P
             
         }
     };
+    
+    private void checkIfStartedProperly() throws IllegalStateException {
+        if (!mOnStartCalled) {
+            throw new IllegalStateException("super.onStart() not called in your plugin!");
+        }
+    }
 }
