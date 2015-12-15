@@ -5,10 +5,25 @@
  */
 package br.uece.lotus.uml.api.window;
 
+import br.uece.lotus.Component;
+import br.uece.lotus.uml.api.ds.ComponentBuildDS;
+import br.uece.lotus.uml.api.ds.ComponentDS;
+import javafx.scene.Node;
+
 /**
  *
  * @author Bruno Barbosa
  */
 public interface WindowDS {
     
+    ComponentBuildDS getComponentBuildDS();
+    ComponentDS getComponentDS();
+    Component getComponentLTS();
+    
+    void setComponentBuildDS(ComponentBuildDS buildDS);
+    void setComponentDS(ComponentDS cds);
+    void setComponentLTS(Component c);
+    
+    String getTitle();
+    Node getNode();
 }

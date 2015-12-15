@@ -3,12 +3,16 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package br.uece.lotus.uml.app.project;
+package br.uece.lotus.uml.sequenceDiagram.Astah;
+
+import java.io.File;
 
 /**
  *
  * @author Bruno Barbosa
  */
-public class SequenceDiagramPlugin {
+abstract class DiagramaSequenciaFactory {
+    
+    abstract DiagramaSequencia build(File file);
     
 }

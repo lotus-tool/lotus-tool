@@ -3,15 +3,15 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package br.uece.lotus.uml.sequenceDiagram;
+package br.uece.lotus.uml.sequenceDiagram.Astah;
 
-import br.uece.lotus.uml.sequenceDiagram.xmi.AtorAndClasse;
-import br.uece.lotus.uml.sequenceDiagram.xmi.Collaboration;
-import br.uece.lotus.uml.sequenceDiagram.xmi.CombinedFragments;
-import br.uece.lotus.uml.sequenceDiagram.xmi.Interaction;
-import br.uece.lotus.uml.sequenceDiagram.xmi.InteractionFragments;
-import br.uece.lotus.uml.sequenceDiagram.xmi.InteractionOperand;
-import br.uece.lotus.uml.sequenceDiagram.xmi.NamespaceOwnedElement;
+import br.uece.lotus.uml.sequenceDiagram.Astah.xmi.AtorAndClasse;
+import br.uece.lotus.uml.sequenceDiagram.Astah.xmi.Collaboration;
+import br.uece.lotus.uml.sequenceDiagram.Astah.xmi.CombinedFragments;
+import br.uece.lotus.uml.sequenceDiagram.Astah.xmi.Interaction;
+import br.uece.lotus.uml.sequenceDiagram.Astah.xmi.InteractionFragments;
+import br.uece.lotus.uml.sequenceDiagram.Astah.xmi.InteractionOperand;
+import br.uece.lotus.uml.sequenceDiagram.Astah.xmi.NamespaceOwnedElement;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;

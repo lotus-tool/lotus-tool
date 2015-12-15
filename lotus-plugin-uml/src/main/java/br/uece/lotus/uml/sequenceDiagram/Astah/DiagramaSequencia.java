@@ -3,11 +3,11 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package br.uece.lotus.uml.sequenceDiagram;
+package br.uece.lotus.uml.sequenceDiagram.Astah;
 
 import java.util.List;
-import br.uece.lotus.uml.sequenceDiagram.xmi.AtorAndClasse;
-import br.uece.lotus.uml.sequenceDiagram.xmi.Collaboration;
+import br.uece.lotus.uml.sequenceDiagram.Astah.xmi.AtorAndClasse;
+import br.uece.lotus.uml.sequenceDiagram.Astah.xmi.Collaboration;
 
 /**
  *

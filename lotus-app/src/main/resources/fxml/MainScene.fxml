@@ -31,7 +31,7 @@
                 </TabPane>
             </bottom>
          <center>
-            <SplitPane dividerPositions="0.25" prefHeight="160.0" prefWidth="200.0" scaleShape="false" BorderPane.alignment="CENTER">
+            <SplitPane dividerPositions="0.3" prefHeight="160.0" prefWidth="200.0" scaleShape="false" BorderPane.alignment="CENTER">
                <items>
                       <TabPane fx:id="mTabLeft" prefHeight="551.0" prefWidth="47.0" style=" -fx-border-color: #d0d0d0;" tabClosingPolicy="ALL_TABS" SplitPane.resizableWithParent="false" />
                   <!--<SplitPane dividerPositions="0.5" prefHeight="160.0" SplitPane.resizableWithParent="false">

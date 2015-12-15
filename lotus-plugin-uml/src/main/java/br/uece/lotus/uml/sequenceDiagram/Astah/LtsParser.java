@@ -3,14 +3,14 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package br.uece.lotus.uml.sequenceDiagram;
+package br.uece.lotus.uml.sequenceDiagram.Astah;
 
 import br.uece.lotus.Component;
 import br.uece.lotus.State;
 import br.uece.lotus.Transition;
-import br.uece.lotus.uml.sequenceDiagram.xmi.CombinedFragments;
-import br.uece.lotus.uml.sequenceDiagram.xmi.InteractionFragments;
-import br.uece.lotus.uml.sequenceDiagram.xmi.InteractionOperand;
+import br.uece.lotus.uml.sequenceDiagram.Astah.xmi.CombinedFragments;
+import br.uece.lotus.uml.sequenceDiagram.Astah.xmi.InteractionFragments;
+import br.uece.lotus.uml.sequenceDiagram.Astah.xmi.InteractionOperand;
 import br.uece.lotus.viewer.TransitionView;
 import java.util.ArrayList;
 import java.util.HashMap;

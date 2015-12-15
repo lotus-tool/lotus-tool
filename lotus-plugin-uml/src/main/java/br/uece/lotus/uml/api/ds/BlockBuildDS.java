@@ -7,7 +7,7 @@ package br.uece.lotus.uml.api.ds;
 
 import static br.uece.lotus.State.TEXTSTYLE_BOLD;
 import static br.uece.lotus.State.TEXTSTYLE_NORMAL;
-import br.uece.lotus.uml.sequenceDiagram.DiagramaSequencia;
+import br.uece.lotus.uml.sequenceDiagram.Astah.DiagramaSequencia;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;

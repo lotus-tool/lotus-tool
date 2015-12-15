@@ -24,6 +24,7 @@
 package br.uece.seed.app;
 
 import javafx.application.Platform;
+import javafx.collections.ObservableList;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
@@ -117,6 +118,11 @@ public class ExtensibleFXTabPane implements ExtensibleTabPane {
     public boolean isShowing(int id) {
         Tab t = getTabById(id);        
         return t != null;
+    }
+
+    @Override
+    public ObservableList<Tab> getTabs() {
+        return mTabPane.getTabs();
     }
 
 }

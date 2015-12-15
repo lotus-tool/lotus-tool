@@ -40,6 +40,7 @@ public interface ProjectExplorerDS {
     List<ProjectDS> getSelectedProjectsDS();
     List<ComponentDS> getSelectedComponentsDS();
     List<Component> getSelectedComponentsLTS();
+    List<ProjectDS> getAllProjectsDS();
     
     void addListener(Listener l);
     void removeListener(Listener l);
