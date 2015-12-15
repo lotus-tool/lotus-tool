@@ -9,6 +9,12 @@ package br.uece.lotus.uml.api.viewer;
  *
  * @author Bruno Barbosa
  */
-public class BlockDSViewFactory {
+public class BlockDSViewFactory implements BlockDSView.Factory{
+
+        @Override
+        public BlockDSView create() {
+            return new BlockDSViewImpl();
+        }
+
     
 }
