@@ -16,7 +16,7 @@ import br.uece.lotus.uml.api.ds.ComponentDS;
 public interface WindowManagerDS {
     
     public interface Listener{
-        void onCreateWindow();
+        void onCreateWindow(WindowDS w);
     }
     
     public void show(ComponentBuildDS buildDS);

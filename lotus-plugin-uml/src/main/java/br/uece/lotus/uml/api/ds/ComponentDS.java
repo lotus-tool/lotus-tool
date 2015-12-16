@@ -15,13 +15,17 @@ import java.util.List;
  */
 public class ComponentDS {
 
-    private int id;
+    
+    public interface Listener{
+        void onChange(ComponentDS cds);
+        //falta adicionar os outros listener. Quando for adicionar me avisa, pq tem que implementar o restante
+        //que falta nas outras classes que dependen desses listener. se nao ja vai dar erro na compilacao ou na abertura
+        //da tela
+    }
+    
     private List<Component> mComponentsLTS = new ArrayList<>();
+    private final List<Listener> mListeners = new ArrayList<>();
     private String mName;
-    
-    
-    
-    
     
     
     
@@ -40,14 +44,6 @@ public class ComponentDS {
         mComponentsLTS.remove(c);
     }
     
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-    
     public void setName(String s) {
         this.mName = s;
     }
@@ -56,4 +52,11 @@ public class ComponentDS {
         return this.mName;
     }
     
+    public void addListener(Listener l) {
+        mListeners.add(l);
+    }
+
+    public void removeListener(Listener l) {
+        mListeners.remove(l);
+    }
 }

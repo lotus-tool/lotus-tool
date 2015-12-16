@@ -6,8 +6,12 @@
 package br.uece.lotus.uml.api.window;
 
 import br.uece.lotus.Component;
+import br.uece.lotus.State;
+import br.uece.lotus.Transition;
+import br.uece.lotus.uml.api.ds.BlockBuildDS;
 import br.uece.lotus.uml.api.ds.ComponentBuildDS;
 import br.uece.lotus.uml.api.ds.ComponentDS;
+import br.uece.lotus.uml.api.ds.TransitionBuildDS;
 import br.uece.seed.app.ExtensibleTabPane;
 import br.uece.seed.app.UserInterface;
 import br.uece.seed.ext.ExtensionManager;
@@ -17,7 +21,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.event.EventHandler;
+import javafx.scene.control.Tab;
 
 /**
  *
@@ -31,9 +37,9 @@ public abstract class DefaultWindowManagerPluginDS<T extends WindowDS> extends P
     private  List<Listener> mListeners = new ArrayList<>();
     
     private ArrayList<T> mComponentsWindows = new ArrayList<T>();
-    private Map<ComponentBuildDS, Integer> mComponentBuildDSids =new HashMap<>();
+    private Map<ComponentBuildDS, Integer> mComponentBuildDSids = new HashMap<>();
     private Map<ComponentDS, Integer> mComponentDSids = new HashMap<>();
-    private Map<Component, Integer> mComponentIds = new HashMap<>();
+    private Map<Component, Integer> mComponentLTSids = new HashMap<>();
     
     private boolean mOnStartCalled;
     protected abstract T onCreate();
@@ -51,17 +57,92 @@ public abstract class DefaultWindowManagerPluginDS<T extends WindowDS> extends P
     
     @Override
     public void show(ComponentBuildDS buildDS) {
-        
+        checkIfStartedProperly();
+        T window = null;
+        for(T w : mComponentsWindows){
+            if(w.getComponentBuildDS() != null){
+                if(w.getComponentBuildDS() == buildDS){
+                    window= w;
+                }
+            }
+        }
+        if(window == null){
+            window = onCreate();
+            window.setComponentBuildDS(buildDS);
+            mComponentsWindows.add(window);
+            for(Listener l : mListeners){
+                l.onCreateWindow(window);
+            }
+            buildDS.addListener(mComponentBuildDSListener);
+            onShow(window, buildDS);
+            Integer id = mComponentBuildDSids.get(buildDS);
+            boolean visivel = id != null && mCenterPanel.isShowing(id);
+            if(!visivel || id == null){
+                id = mCenterPanel.newTab(window.getTitle(), window.getNode(), true);
+                mComponentBuildDSids.put(buildDS, id);
+            }
+            mCenterPanel.showTab(id);
+        }
     }
 
     @Override
     public void show(ComponentDS cds) {
-        
+        checkIfStartedProperly();
+        T window = null;
+        for(T w : mComponentsWindows){
+            if(w.getComponentDS() != null){
+                if(w.getComponentDS() == cds){
+                    window= w;
+                }
+            }
+        }
+        if(window == null){
+            window = onCreate();
+            window.setComponentDS(cds);
+            mComponentsWindows.add(window);
+            for(Listener l : mListeners){
+                l.onCreateWindow(window);
+            }
+            cds.addListener(mComponentDSListener);
+            onShow(window, cds);
+            Integer id = mComponentDSids.get(cds);
+            boolean visivel = id != null && mCenterPanel.isShowing(id);
+            if(!visivel || id == null){
+                id = mCenterPanel.newTab(window.getTitle(), window.getNode(), true);
+                mComponentDSids.put(cds, id);
+            }
+            mCenterPanel.showTab(id);
+        }
     }
 
     @Override
     public void show(Component c) {
-        
+        checkIfStartedProperly();
+        T window = null;
+        for(T w : mComponentsWindows){
+            if(w.getComponentLTS()!= null){
+                if(w.getComponentLTS() == c){
+                    window= w;
+                }
+            }
+        }
+        if(window == null){
+            window = onCreate();
+            window.setComponentLTS(c);
+            mComponentsWindows.add(window);
+            for(Listener l : mListeners){
+                l.onCreateWindow(window);
+            }
+            c.addListener(mComponentLTSListener);
+            onShow(window, c);
+            Integer id = mComponentLTSids.get(c);
+            boolean visivel = id != null && mCenterPanel.isShowing(id);
+            if(!visivel || id == null){
+                id = mCenterPanel.newTab(window.getTitle(), window.getNode(), true);
+                mComponentLTSids.put(c, id);
+            }
+            mCenterPanel.showTab(id);
+        }
     }
 
     @Override
@@ -89,17 +170,56 @@ public abstract class DefaultWindowManagerPluginDS<T extends WindowDS> extends P
         mListeners.add(l);
     }
     
-    private EventHandler<ActionEvent> onCloseTab = new EventHandler<ActionEvent>() {
-
-        @Override
-        public void handle(ActionEvent event) {
-            
-        }
-    };
-    
     private void checkIfStartedProperly() throws IllegalStateException {
         if (!mOnStartCalled) {
             throw new IllegalStateException("super.onStart() not called in your plugin!");
         }
     }
+    
+    private final ComponentBuildDS.Listener mComponentBuildDSListener = new ComponentBuildDS.Listener() {
+        @Override
+        public void onChange(ComponentBuildDS buildDS) {
+            Integer id = mComponentBuildDSids.get(buildDS);
+            if(id!=null){
+                mCenterPanel.renameTab(id, buildDS.getName());
+            }
+        }
+
+        @Override
+        public void onBlockCreate(ComponentBuildDS buildDS, BlockBuildDS bbds) {}
+        @Override
+        public void onBlockRemove(ComponentBuildDS buildDS, BlockBuildDS bbds) {}
+        @Override
+        public void onTransitionCreate(ComponentBuildDS buildDS, TransitionBuildDS t) {}
+        @Override
+        public void onTransitionRemove(ComponentBuildDS buildDS, TransitionBuildDS t) {}
+    };
+    
+    private final ComponentDS.Listener mComponentDSListener = new ComponentDS.Listener() {
+        @Override
+        public void onChange(ComponentDS c) {
+            Integer id = mComponentDSids.get(c);
+            if(id!=null){
+                mCenterPanel.renameTab(id, c.getName());
+            }
+        }
+    };
+    
+    private final Component.Listener mComponentLTSListener = new Component.Listener() {
+        @Override
+        public void onChange(Component component) {
+            Integer id = mComponentLTSids.get(component);
+            if(id!=null){
+                mCenterPanel.renameTab(id, component.getName());
+            }
+        }
+        @Override
+        public void onStateCreated(Component component, State state) {}
+        @Override
+        public void onStateRemoved(Component component, State state) {}
+        @Override
+        public void onTransitionCreated(Component component, Transition state) {}
+        @Override
+        public void onTransitionRemoved(Component component, Transition state) {}
+    };
 }
