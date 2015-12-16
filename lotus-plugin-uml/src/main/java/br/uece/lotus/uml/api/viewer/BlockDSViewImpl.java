@@ -16,7 +16,7 @@ public class BlockDSViewImpl extends Region implements BlockDSView, BlockDS.List
     static final double ALTURA_RETANGULO = 30;
     static final double LARGURA_RETANGULO = 30;
     private final Rectangle mRectangle;
-    private BlockDS dl;
+    private BlockDS mDs;
 
 
 
@@ -30,7 +30,7 @@ public class BlockDSViewImpl extends Region implements BlockDSView, BlockDS.List
 
     @Override
     public Node getNode() {
-        return null;
+        return this;
     }
 
     @Override
@@ -39,17 +39,25 @@ public class BlockDSViewImpl extends Region implements BlockDSView, BlockDS.List
     }
 
     @Override
-    public BlockDS getDiagramaDeSequencia() {
-        return null;
+    public BlockDS getBlockDS() {
+        return mDs;
     }
 
     @Override
-    public void setDiagramaDeSequencia(BlockDS dl) {
+    public void setBlockDS(BlockDS dl) {
+        /*  if (mDs != null) {
+            mDs.removeListener(this);
+        }
+        mDs = ds;
+        if (ds != null) {
+            mDs.addListener(this);
+            updateView();
+        }*/
 
     }
 
     @Override
-    public void onChange(BlockDS diagrama) {
-
+    public void onChange(BlockDS ds) {
+        /*updateView();*/
     }
 }

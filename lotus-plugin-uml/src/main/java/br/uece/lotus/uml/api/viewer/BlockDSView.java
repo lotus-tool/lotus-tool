@@ -17,6 +17,6 @@ public interface BlockDSView {
 
     boolean isInsideBounds(Point2D point);
 
-    BlockDS getDiagramaDeSequencia();
-    void setDiagramaDeSequencia(BlockDS dl);
+    BlockDS getBlockDS();
+    void setBlockDS(BlockDS dl);
 }
