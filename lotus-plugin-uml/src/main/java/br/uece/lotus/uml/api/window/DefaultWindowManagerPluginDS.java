@@ -20,33 +20,29 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javafx.event.ActionEvent;
-import javafx.event.Event;
-import javafx.event.EventHandler;
-import javafx.scene.control.Tab;
 
 /**
  *
  * @author Bruno Barbosa
- * @param <T>
+ * @param <E>
  */
-public abstract class DefaultWindowManagerPluginDS<T extends WindowDS> extends Plugin implements WindowManagerDS{
+public abstract class DefaultWindowManagerPluginDS<E extends WindowDS> extends Plugin implements WindowManagerDS{
 
     
     private ExtensibleTabPane mCenterPanel;
-    private  List<Listener> mListeners = new ArrayList<>();
+    private List<Listener> mListeners = new ArrayList<>();
     
-    private ArrayList<T> mComponentsWindows = new ArrayList<T>();
+    private ArrayList<E> mComponentsWindows = new ArrayList<E>();
     private Map<ComponentBuildDS, Integer> mComponentBuildDSids = new HashMap<>();
     private Map<ComponentDS, Integer> mComponentDSids = new HashMap<>();
     private Map<Component, Integer> mComponentLTSids = new HashMap<>();
     
     private boolean mOnStartCalled;
-    protected abstract T onCreate();
-    protected abstract void onShow(T window, ComponentBuildDS buildDS);
-    protected abstract void onShow(T window, ComponentDS cds);
-    protected abstract void onShow(T window, Component c);
-    protected abstract void onHide(T window);
+    protected abstract E onCreate();
+    protected abstract void onShow(E window, ComponentBuildDS buildDS);
+    protected abstract void onShow(E window, ComponentDS cds);
+    protected abstract void onShow(E window, Component c);
+    protected abstract void onHide(E window);
     
     @Override
     public void onStart(ExtensionManager extensionManager) throws Exception {
@@ -57,9 +53,10 @@ public abstract class DefaultWindowManagerPluginDS<T extends WindowDS> extends P
     
     @Override
     public void show(ComponentBuildDS buildDS) {
+        System.out.println("Entrou no show do componentBuildDS para a criacao da tela");
         checkIfStartedProperly();
-        T window = null;
-        for(T w : mComponentsWindows){
+        E window = null;
+        for(E w : mComponentsWindows){
             if(w.getComponentBuildDS() != null){
                 if(w.getComponentBuildDS() == buildDS){
                     window= w;
@@ -68,6 +65,7 @@ public abstract class DefaultWindowManagerPluginDS<T extends WindowDS> extends P
         }
         if(window == null){
             window = onCreate();
+            System.out.println("Chamou o onCreate");
             window.setComponentBuildDS(buildDS);
             mComponentsWindows.add(window);
             for(Listener l : mListeners){
@@ -82,14 +80,15 @@ public abstract class DefaultWindowManagerPluginDS<T extends WindowDS> extends P
                 mComponentBuildDSids.put(buildDS, id);
             }
             mCenterPanel.showTab(id);
+            System.out.println("inseriu na tab central");
         }
     }
 
     @Override
     public void show(ComponentDS cds) {
         checkIfStartedProperly();
-        T window = null;
-        for(T w : mComponentsWindows){
+        E window = null;
+        for(E w : mComponentsWindows){
             if(w.getComponentDS() != null){
                 if(w.getComponentDS() == cds){
                     window= w;
@@ -118,8 +117,8 @@ public abstract class DefaultWindowManagerPluginDS<T extends WindowDS> extends P
     @Override
     public void show(Component c) {
         checkIfStartedProperly();
-        T window = null;
-        for(T w : mComponentsWindows){
+        E window = null;
+        for(E w : mComponentsWindows){
             if(w.getComponentLTS()!= null){
                 if(w.getComponentLTS() == c){
                     window= w;

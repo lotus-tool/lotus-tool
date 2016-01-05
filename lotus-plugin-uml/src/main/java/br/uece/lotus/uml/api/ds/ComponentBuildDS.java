@@ -34,9 +34,19 @@ public class ComponentBuildDS {
     private final List<Listener> mListeners = new ArrayList<>();
      
     
-    public void add(BlockBuildDS b){
-        
+    public BlockBuildDS newBlock(int id){
+        BlockBuildDS bbds = new BlockBuildDS(this);
+        add(bbds);
+        return bbds;
     }
+    
+    public void add(BlockBuildDS b){
+        mBlocos.add(b);
+        for(Listener l : mListeners){
+            l.onBlockCreate(this, b);
+        }
+    }
+
     public void add(TransitionBuildDS t){
         
     }

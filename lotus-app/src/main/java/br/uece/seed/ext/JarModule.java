@@ -80,12 +80,15 @@ public class JarModule implements Module {
                     if (!Plugin.class.isAssignableFrom(pluginClass)) {
                         //logger.log(Level.INFO, "Class {0} does not extends Plugin!", className);
                     } else {
-                        logger.log(Level.INFO, "Plugin founded at {0}!", className);
-                        Object pluginInstance = pluginClass.newInstance();
-                        aux.add((Plugin) pluginInstance);
+                        if(!className.equals("br.uece.lotus.uml.api.window.DefaultWindowManagerPluginDS")){// tratando erro de instancia de classe abstrata
+                            logger.log(Level.INFO, "Plugin founded at {0}!", className);
+                            Object pluginInstance = pluginClass.newInstance();
+                            aux.add((Plugin) pluginInstance);
+                        }
                     }
                 } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
                     logger.log(Level.WARNING, null, e);
+                    System.out.println("Erro na class: "+className);
                 }
             }
         } catch (IOException ex) {

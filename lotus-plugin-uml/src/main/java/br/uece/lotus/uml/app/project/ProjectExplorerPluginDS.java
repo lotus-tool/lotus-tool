@@ -242,10 +242,12 @@ public final class ProjectExplorerPluginDS extends Plugin implements ProjectExpl
                 }
             }else if(e.getClickCount() == 2){
                 ComponentBuildDS cbds = getSelectedComponentBuildDS();
+                System.out.println("Clicou 2x no ComponentBuildDS: "+cbds);
                 ComponentDS cds = getSelectedComponentDS();
                 Component c = getSelectedComponentLTS();
                 if(cbds != null){
                     mExtMnuComponentBuildDS.triggerDefaultAction();
+                    System.out.println("Chamou o triggerDefaultAction do click 2x");
                 }else if(cds != null){
                     mExtMnuComponentDS.triggerDefaultAction();
                 }else if(c != null){
