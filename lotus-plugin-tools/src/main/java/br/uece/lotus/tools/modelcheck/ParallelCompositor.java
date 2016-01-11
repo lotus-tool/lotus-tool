@@ -52,7 +52,7 @@ public class ParallelCompositor {
         return false;
     }
     
-    public Transition recuperarTransicao(State a, Transition t){
+    /*public Transition recuperarTransicao(State a, Transition t){
         for(Transition aux : a.getOutgoingTransitions()){
             if(aux.getLabel().equals(t.getLabel())){
                 return aux;
@@ -60,7 +60,7 @@ public class ParallelCompositor {
         }
         System.out.println("Transition " + t.getLabel() + " not found in state " + a.getLabel() + "!");
         return null;
-    }
+    }*/
     
     public void layout(Component component) {
         int i = 1;
@@ -78,88 +78,133 @@ public class ParallelCompositor {
         Queue<ParallelState> Q = new LinkedList<>();
         List<ParallelState> mVisitedStates = new ArrayList<>();
 
-        System.out.println("Component A: " + cA.getName()+ " Component B: " + cB.getName());
+        //System.out.println("Component A: " + cA.getName()+ " Component B: " + cB.getName());
         
         sharedActions = compare(cA, cB);
-        System.out.println("Shared actions: ");
+        /*System.out.println("Shared actions: ");
         for(Transition action : sharedActions){
             System.out.print(action.getLabel() + " ");
         }
-        System.out.println();
-        ParallelState ps = new ParallelState(cA.getInitialState(), cB.getInitialState());
-        ps.compositeState = criarOuRecuperarEstadoParaOEstadoParalelo(PC, ps);
-        Q.add(ps);
+        System.out.println();*/
+        ParallelState firstPrlState = new ParallelState(cA.getInitialState(), cB.getInitialState());
+        firstPrlState.setCompositeState(criarOuRecuperarEstadoParaOEstadoParalelo(PC, firstPrlState));
+        Q.add(firstPrlState);
         
         while (!Q.isEmpty()) {
             ParallelState aux = Q.remove();
             if (mVisitedStates.contains(aux)) {
                 continue;
             }
-            for (Transition t : aux.a.getOutgoingTransitions()) {
-                System.out.println("Visiting state " + aux.a.getLabel() + " of LTS A.");
+            for (Transition t : aux.getA().getOutgoingTransitions()) {
+                //System.out.println("Visiting state " + aux.a.getLabel() + " of LTS A.");
+                ParallelState newPrlState = null;
+                Transition t2 = aux.getB().getTransitionByLabel(t.getLabel());
                 if(!contem(sharedActions, t)){
-                    ParallelState foo = new ParallelState(t.getDestiny(), aux.b);
-                    foo.compositeState = criarOuRecuperarEstadoParaOEstadoParalelo(PC, foo);
+                    newPrlState = new ParallelState(t.getDestiny(), aux.getB());
+                }else{
+                    if(t2 != null){
+                        newPrlState = new ParallelState(t.getDestiny(), t2.getDestiny());
+                    }else{
+                        continue;
+                    }
+                }
+                newPrlState.setCompositeState(criarOuRecuperarEstadoParaOEstadoParalelo(PC, newPrlState));
 
-                    Transition.Builder tt = PC.buildTransition(aux.compositeState, foo.compositeState);
+                Transition.Builder tt = PC.buildTransition(aux.getCompositeState(), newPrlState.getCompositeState());
+                tt.setLabel(t.getLabel());
+                tt.setViewType(1);
+                Transition transicao = tt.create();
+                //System.out.println("Added transition " + t.getLabel() + " .");
+
+                if (!Q.contains(newPrlState)) {
+                    Q.add(newPrlState);
+                }
+                /*if(!contem(sharedActions, t)){
+                    ParallelState newPrlState = new ParallelState(t.getDestiny(), aux.b);
+                    newPrlState.compositeState = criarOuRecuperarEstadoParaOEstadoParalelo(PC, newPrlState);
+
+                    Transition.Builder tt = PC.buildTransition(aux.compositeState, newPrlState.compositeState);
                     tt.setLabel(t.getLabel()); 
                     tt.setViewType(1);
                     Transition transicao = tt.create();
-                    System.out.println("Added transition " + t.getLabel() + " .");
+                    //System.out.println("Added transition " + t.getLabel() + " .");
                 
-                    if (!Q.contains(foo)) {
-                        Q.add(foo);
+                    if (!Q.contains(newPrlState)) {
+                        Q.add(newPrlState);
                     }
                 }else{
                     Transition t2 = recuperarTransicao(aux.b, t);
                     if(t2 != null){
-                        ParallelState foo = new ParallelState(t.getDestiny(), t2.getDestiny());
-                        foo.compositeState = criarOuRecuperarEstadoParaOEstadoParalelo(PC, foo);
+                        ParallelState newPrlState = new ParallelState(t.getDestiny(), t2.getDestiny());
+                        newPrlState.compositeState = criarOuRecuperarEstadoParaOEstadoParalelo(PC, newPrlState);
 
-                        Transition.Builder tt = PC.buildTransition(aux.compositeState, foo.compositeState);
+                        Transition.Builder tt = PC.buildTransition(aux.compositeState, newPrlState.compositeState);
                         tt.setLabel(t.getLabel()); 
                         tt.setViewType(1);
                         Transition transicao = tt.create();
-                        System.out.println("Added transition " + t.getLabel() + ".");
+                        //System.out.println("Added transition " + t.getLabel() + ".");
                 
-                        if (!Q.contains(foo)) {
-                            Q.add(foo);
+                        if (!Q.contains(newPrlState)) {
+                            Q.add(newPrlState);
                         }
                     }
-                }
+                }*/
                 
             }
 
-            for (Transition t : aux.b.getOutgoingTransitions()) {
-                System.out.println("Visiting state " + aux.b.getLabel() + " of LTS B.");
+            for (Transition t : aux.getB().getOutgoingTransitions()) {
+                //System.out.println("Visiting state " + aux.b.getLabel() + " of LTS B.");
+                ParallelState newPrlState = null;
+                Transition t2 = aux.getA().getTransitionByLabel(t.getLabel());
+
                 if(!contem(sharedActions, t)){
-                    ParallelState foo = new ParallelState(aux.a, t.getDestiny());
-                    foo.compositeState = criarOuRecuperarEstadoParaOEstadoParalelo(PC, foo);
-                    Transition.Builder tt = PC.buildTransition(aux.compositeState, foo.compositeState);
-                    tt.setLabel(t.getLabel()); 
+                    newPrlState = new ParallelState(aux.getA(), t.getDestiny());
+                }else{
+                    if(t2 != null){
+                        newPrlState = new ParallelState(t2.getDestiny(), t.getDestiny());
+                    }else{
+                        continue;
+                    }
+                }
+
+                newPrlState.setCompositeState(criarOuRecuperarEstadoParaOEstadoParalelo(PC, newPrlState));
+                Transition.Builder tt = PC.buildTransition(aux.getCompositeState(), newPrlState.getCompositeState());
+                tt.setLabel(t.getLabel());
+                tt.setViewType(1);
+                Transition transicao = tt.create();
+                //System.out.println("Added transition " + t.getLabel() + ".");
+
+                if (!Q.contains(newPrlState)) {
+                    Q.add(newPrlState);
+                }
+                /*if(!contem(sharedActions, t)){
+                    ParallelState newPrlState = new ParallelState(aux.a, t.getDestiny());
+                    newPrlState.compositeState = criarOuRecuperarEstadoParaOEstadoParalelo(PC, newPrlState);
+                    Transition.Builder tt = PC.buildTransition(aux.compositeState, newPrlState.compositeState);
+                    tt.setLabel(t.getLabel());
                     tt.setViewType(1);
                     Transition transicao = tt.create();
-                    System.out.println("Added transition " + t.getLabel() + ".");
-                
-                    if (!Q.contains(foo)) {
-                        Q.add(foo);
+                    //System.out.println("Added transition " + t.getLabel() + ".");
+
+                    if (!Q.contains(newPrlState)) {
+                        Q.add(newPrlState);
                     }
                 }else{
                     Transition t2 = recuperarTransicao(aux.a, t);
                     if(t2 != null){
-                        ParallelState foo = new ParallelState(t2.getDestiny(), t.getDestiny());
-                        foo.compositeState = criarOuRecuperarEstadoParaOEstadoParalelo(PC, foo); 
-                        Transition.Builder tt = PC.buildTransition(aux.compositeState, foo.compositeState);
+                        ParallelState newPrlState = new ParallelState(t2.getDestiny(), t.getDestiny());
+                        newPrlState.compositeState = criarOuRecuperarEstadoParaOEstadoParalelo(PC, newPrlState); 
+                        Transition.Builder tt = PC.buildTransition(aux.compositeState, newPrlState.compositeState);
                         tt.setLabel(t.getLabel()); 
                         tt.setViewType(1);
                         Transition transicao = tt.create();
-                        System.out.println("Added transition " + t.getLabel() + ".");
+                        //System.out.println("Added transition " + t.getLabel() + ".");
                 
-                        if (!Q.contains(foo)) {
-                            Q.add(foo);
+                        if (!Q.contains(newPrlState)) {
+                            Q.add(newPrlState);
                         }
                     }
-                }
+                }*/
             }
             mVisitedStates.add(aux);
         }
@@ -167,20 +212,20 @@ public class ParallelCompositor {
         return PC;
     }
 
-    private State criarOuRecuperarEstadoParaOEstadoParalelo(Component p, ParallelState ps) {
-        int id = ps.a.getID() * 10 + ps.b.getID();
+    private State criarOuRecuperarEstadoParaOEstadoParalelo(Component p, ParallelState PrlState) {
+        int id = PrlState.getA().getID() * 10 + PrlState.getB().getID();
         State s = p.getStateByID(id);
         if (s == null) {
             s = p.newState(id);
-            if (ps.a.isInitial() && ps.b.isInitial()) {
+            if (PrlState.getA().isInitial() && PrlState.getB().isInitial()) {
                 p.setInitialState(s);
-            } else if (ps.a.isFinal() && ps.b.isFinal()) {
+            } else if (PrlState.getA().isFinal() && PrlState.getB().isFinal()) {
                 p.setFinalState(s);
-            } else if (ps.a.isError() || ps.b.isError()) {
+            } else if (PrlState.getA().isError() || PrlState.getB().isError()) {
                 p.setErrorState(s);
             }
-            s.setLabel("<" + ps.a.getID() + ", " + ps.b.getID() + ">");  
-            System.out.println("Added state " + s.getLabel() + ".");
+            s.setLabel("<" + PrlState.getA().getID() + ", " + PrlState.getB().getID() + ">");
+            //System.out.println("Added state " + s.getLabel() + ".");
         }
         return s;
     }

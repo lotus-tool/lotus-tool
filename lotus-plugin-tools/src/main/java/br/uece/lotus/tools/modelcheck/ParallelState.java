@@ -14,13 +14,37 @@ import java.util.Objects;
  */
     public class ParallelState {
 
-        public State a;
-        public State b;
-        public State compositeState;
+        private State a;
+        private State b;
+        private State compositeState;
 
         public ParallelState(State a, State b) {
             this.a = a;
             this.b = b;
+        }
+
+        public State getA(){
+            return a;
+        }
+
+        public State getB(){
+            return b;
+        }
+
+        public State getCompositeState(){
+            return compositeState;
+        }
+
+        public void setA(State newA){
+            a = newA;
+        }
+
+        public void setB(State newB){
+            b = newB;
+        }
+
+        public void setCompositeState(State newCompositeState){
+            compositeState = newCompositeState;
         }
 
         @Override
