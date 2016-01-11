@@ -110,7 +110,14 @@ public class ParallelCompositor {
                 }
                 newPrlState.setCompositeState(criarOuRecuperarEstadoParaOEstadoParalelo(PC, newPrlState));
 
-                Transition.Builder tt = PC.buildTransition(aux.getCompositeState(), newPrlState.getCompositeState());
+                List<Transition> transitionsTo = aux.getCompositeState().getTransitionsTo(newPrlState.getCompositeState());
+                Transition.Builder tt = null;
+                if(transitionsTo.size() == 0){
+                    tt = PC.buildTransition(aux.getCompositeState(), newPrlState.getCompositeState());
+                }else{
+                    continue;
+                }
+
                 tt.setLabel(t.getLabel());
                 tt.setViewType(1);
                 Transition transicao = tt.create();
@@ -168,7 +175,14 @@ public class ParallelCompositor {
                 }
 
                 newPrlState.setCompositeState(criarOuRecuperarEstadoParaOEstadoParalelo(PC, newPrlState));
-                Transition.Builder tt = PC.buildTransition(aux.getCompositeState(), newPrlState.getCompositeState());
+
+                List<Transition> transitionsTo = aux.getCompositeState().getTransitionsTo(newPrlState.getCompositeState());
+                Transition.Builder tt = null;
+                if(transitionsTo.size() == 0){
+                    tt = PC.buildTransition(aux.getCompositeState(), newPrlState.getCompositeState());
+                }else{
+                    continue;
+                }
                 tt.setLabel(t.getLabel());
                 tt.setViewType(1);
                 Transition transicao = tt.create();
