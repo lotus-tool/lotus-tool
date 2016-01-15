@@ -12,6 +12,7 @@ import br.uece.lotus.uml.api.ds.ComponentDS;
 import br.uece.lotus.uml.api.ds.ProjectDS;
 import br.uece.lotus.uml.api.ds.TransitionBuildDS;
 import br.uece.lotus.uml.api.project.ProjectExplorerDS;
+import br.uece.lotus.uml.designer.standardModeling.StandardModelingWindowManager;
 import br.uece.seed.app.ExtensibleFXContextMenu;
 import br.uece.seed.app.ExtensibleMenu;
 import br.uece.seed.app.UserInterface;
@@ -19,6 +20,8 @@ import br.uece.seed.ext.ExtensionManager;
 import br.uece.seed.ext.Plugin;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TreeItem;
@@ -178,14 +181,14 @@ public final class ProjectExplorerPluginDS extends Plugin implements ProjectExpl
     @Override
     public void onStart(ExtensionManager extensionManager) throws Exception{
         mUserInterface = extensionManager.get(UserInterface.class);
-        
+        extension = extensionManager;
         AnchorPane.setTopAnchor(mProjectDSView, 0D);
         AnchorPane.setRightAnchor(mProjectDSView, 0D);
         AnchorPane.setBottomAnchor(mProjectDSView, 0D);
         AnchorPane.setLeftAnchor(mProjectDSView, 0D);
         mUserInterface.getLeftPanel().newTab("Projects UML", mProjectDSView, false);
     }
-    
+    ExtensionManager extension;
     public ProjectExplorerPluginDS(){
         mListeners = new ArrayList<>();
         mMnuWorkspace = new ContextMenu();
@@ -246,6 +249,13 @@ public final class ProjectExplorerPluginDS extends Plugin implements ProjectExpl
                 ComponentDS cds = getSelectedComponentDS();
                 Component c = getSelectedComponentLTS();
                 if(cbds != null){
+                    StandardModelingWindowManager smwm = new StandardModelingWindowManager();
+                    try {
+                        smwm.onStart(extension);
+                    } catch (Exception ex) {
+                        Logger.getLogger(ProjectExplorerPluginDS.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                    smwm.show(cbds);
                     mExtMnuComponentBuildDS.triggerDefaultAction();
                     System.out.println("Chamou o triggerDefaultAction do click 2x");
                 }else if(cds != null){

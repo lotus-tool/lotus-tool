@@ -67,7 +67,7 @@ public class StandardModelingWindow extends AnchorPane implements WindowDS, Init
 
     @Override
     public void setComponentBuildDS(ComponentBuildDS buildDS) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        mViewer.setComponentBuildDS(buildDS);
     }
 
     @Override
@@ -82,7 +82,8 @@ public class StandardModelingWindow extends AnchorPane implements WindowDS, Init
 
     @Override
     public String getTitle() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        ComponentBuildDS c = mViewer.getComponentBuildDS();
+        return c.getName();
     }
 
     @Override
