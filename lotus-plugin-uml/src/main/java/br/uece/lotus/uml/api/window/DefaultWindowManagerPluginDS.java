@@ -9,6 +9,7 @@ import br.uece.lotus.Component;
 import br.uece.lotus.State;
 import br.uece.lotus.Transition;
 import br.uece.lotus.uml.api.ds.BlockBuildDS;
+import br.uece.lotus.uml.api.ds.BlockDS;
 import br.uece.lotus.uml.api.ds.ComponentBuildDS;
 import br.uece.lotus.uml.api.ds.ComponentDS;
 import br.uece.lotus.uml.api.ds.TransitionBuildDS;
@@ -202,6 +203,11 @@ public abstract class DefaultWindowManagerPluginDS<E extends WindowDS> extends P
                 mCenterPanel.renameTab(id, c.getName());
             }
         }
+
+        @Override
+        public void onBlockDSCreated(ComponentDS componentDS, BlockDS state) {}
+        @Override
+        public void onBlockDSRemoved(ComponentDS componentDS, BlockDS state) {}
     };
     
     private final Component.Listener mComponentLTSListener = new Component.Listener() {
