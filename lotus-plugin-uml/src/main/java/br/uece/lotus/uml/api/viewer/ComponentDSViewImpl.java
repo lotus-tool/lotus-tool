@@ -46,7 +46,7 @@ public class ComponentDSViewImpl extends AnchorPane implements ComponentDSView, 
     }
 
     @Override
-    public void setmComponentDS(ComponentDS componentDS) {
+    public void setComponentDS(ComponentDS componentDS) {
         if (mComponentDS != null) {
             mComponentDS.removeListener(this);
         }
