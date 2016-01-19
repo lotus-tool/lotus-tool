@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package br.uece.lotus.uml.api.viewer;
+package br.uece.lotus.uml.api.viewer.block;
 import br.uece.lotus.uml.api.ds.*;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;

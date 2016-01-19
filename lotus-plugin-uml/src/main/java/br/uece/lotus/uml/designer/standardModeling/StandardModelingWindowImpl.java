@@ -5,8 +5,8 @@
  */
 package br.uece.lotus.uml.designer.standardModeling;
 
-import br.uece.lotus.uml.api.viewer.ComponentBuildDSView;
-import br.uece.lotus.uml.api.viewer.TransitionBuildDSView;
+import br.uece.lotus.uml.api.viewer.builder.ComponentBuildDSView;
+import br.uece.lotus.uml.api.viewer.builder.TransitionBuildDSView;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.value.ObservableValue;

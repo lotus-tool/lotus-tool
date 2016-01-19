@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package br.uece.lotus.uml.api.viewer;
+package br.uece.lotus.uml.api.viewer.builder;
 
 import br.uece.lotus.uml.api.ds.BlockBuildDS;
 import javafx.geometry.Point2D;

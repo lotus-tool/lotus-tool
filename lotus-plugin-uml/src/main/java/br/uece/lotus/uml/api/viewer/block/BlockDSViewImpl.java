@@ -1,4 +1,4 @@
-package br.uece.lotus.uml.api.viewer;
+package br.uece.lotus.uml.api.viewer.block;
 
 
 import br.uece.lotus.uml.api.ds.BlockDS;

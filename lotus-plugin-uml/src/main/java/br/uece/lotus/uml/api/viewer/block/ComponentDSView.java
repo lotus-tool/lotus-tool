@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-package br.uece.lotus.uml.api.viewer;
+package br.uece.lotus.uml.api.viewer.block;
 
 
 
