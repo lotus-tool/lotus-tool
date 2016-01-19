@@ -36,7 +36,7 @@ public class BlockBuildDS {
     private final List<TransitionBuildDS> mTransicaoSaida = new ArrayList<>();
     private final List<TransitionBuildDS> mTransicaoEntrada = new ArrayList<>();
     private final Map<String, Object> mValues = new HashMap<>();
-    private final List<BlockBuildDS.Listener> mListeners = new ArrayList<>();
+    private final List<Listener> mListeners = new ArrayList<>();
     //Propriedade do View
     private String mLabel;
     private double mLayoutX;
@@ -49,117 +49,117 @@ public class BlockBuildDS {
     private Integer mTextSize;
     private String mColorStatus = mColorBlockEmpyt;
     //Propriedade Bloco de DS
-    private DiagramaSequencia mDiagramSequence;
+    private DiagramaSequencia mDiagramSequence;//Diferenciar para poder ter diagrama sem ser do astah
     private boolean mFull = false;
 
     public BlockBuildDS(ComponentBuildDS mComponentBuildDS) {
         this.mComponentBuildDS = mComponentBuildDS;
     }
 
-    public int getmID() {
+    public int getID() {
         return mID;
     }
 
-    public void setmID(int mID) {
+    public void setID(int mID) {
         this.mID = mID;
         for(Listener l : mListeners){
             l.onChange(this);
         }
     }
 
-    public String getmLabel() {
+    public String getLabel() {
         return mLabel;
     }
 
-    public void setmLabel(String mLabel) {
+    public void setLabel(String mLabel) {
         this.mLabel = mLabel;
         for(Listener l : mListeners){
             l.onChange(this);
         }
     }
 
-    public double getmLayoutX() {
+    public double getLayoutX() {
         return mLayoutX;
     }
 
-    public void setmLayoutX(double mLayoutX) {
+    public void setLayoutX(double mLayoutX) {
         this.mLayoutX = mLayoutX;
         for(Listener l : mListeners){
             l.onChange(this);
         }
     }
 
-    public double getmLayoutY() {
+    public double getLayoutY() {
         return mLayoutY;
     }
 
-    public void setmLayoutY(double mLayoutY) {
+    public void setLayoutY(double mLayoutY) {
         this.mLayoutY = mLayoutY;
         for(Listener l : mListeners){
             l.onChange(this);
         }
     }
 
-    public String getmColor() {
+    public String getColor() {
         return mColor;
     }
 
-    public void setmColor(String mColor) {
+    public void setColor(String mColor) {
         this.mColor = mColor;
         for(Listener l : mListeners){
             l.onChange(this);
         }
     }
 
-    public String getmBorderColor() {
+    public String getBorderColor() {
         return mBorderColor;
     }
 
-    public void setmBorderColor(String mBorderColor) {
+    public void setBorderColor(String mBorderColor) {
         this.mBorderColor = mBorderColor;
         for(Listener l : mListeners){
             l.onChange(this);
         }
     }
 
-    public Integer getmBorderWidth() {
+    public Integer getBorderWidth() {
         return mBorderWidth;
     }
 
-    public void setmBorderWidth(Integer mBorderWidth) {
+    public void setBorderWidth(Integer mBorderWidth) {
         this.mBorderWidth = mBorderWidth;
         for(Listener l : mListeners){
             l.onChange(this);
         }
     }
 
-    public String getmTextColor() {
+    public String getTextColor() {
         return mTextColor;
     }
 
-    public void setmTextColor(String mTextColor) {
+    public void setTextColor(String mTextColor) {
         this.mTextColor = mTextColor;
         for(Listener l : mListeners){
             l.onChange(this);
         }
     }
 
-    public String getmTextStyle() {
+    public String getTextStyle() {
         return mTextStyle;
     }
 
-    public void setmTextStyle(String mTextStyle) {
+    public void setTextStyle(String mTextStyle) {
         this.mTextStyle = mTextStyle;
         for(Listener l : mListeners){
             l.onChange(this);
         }
     }
 
-    public Integer getmTextSize() {
+    public Integer getTextSize() {
         return mTextSize;
     }
 
-    public void setmTextSize(Integer mTextSize) {
+    public void setTextSize(Integer mTextSize) {
         this.mTextSize = mTextSize;
         for(Listener l : mListeners){
             l.onChange(this);
@@ -174,26 +174,19 @@ public class BlockBuildDS {
         mValues.put(key, value);
     }
 
-    public String getmColorStatus() {
+    public String getColorStatus() {
         return mColorStatus;
     }
 
-    public void setmColorStatus(String mColorStatus) {
+    public void setColorStatus(String mColorStatus) {
         this.mColorStatus = mColorStatus;
         for(Listener l : mListeners){
             l.onChange(this);
         }
     }
 
-    public boolean ismFull() {
-        return mFull;
-    }
-
-    public void setmFull(boolean mFull) {
-        this.mFull = mFull;
-        for(Listener l : mListeners){
-            l.onChange(this);
-        }
+    public boolean isFull() {
+        return mColorStatus.equals(mColorBlockFull);
     }
 
     public DiagramaSequencia getmDiagramSequence() {

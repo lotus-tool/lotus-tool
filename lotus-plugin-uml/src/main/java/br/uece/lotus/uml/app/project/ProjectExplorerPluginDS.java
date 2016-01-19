@@ -186,7 +186,7 @@ public final class ProjectExplorerPluginDS extends Plugin implements ProjectExpl
         AnchorPane.setRightAnchor(mProjectDSView, 0D);
         AnchorPane.setBottomAnchor(mProjectDSView, 0D);
         AnchorPane.setLeftAnchor(mProjectDSView, 0D);
-        mUserInterface.getLeftPanel().newTab("Projects UML", mProjectDSView, false);
+        mUserInterface.getLeftPanel().newTab("UML Projects", mProjectDSView, false);
     }
     ExtensionManager extension;
     public ProjectExplorerPluginDS(){

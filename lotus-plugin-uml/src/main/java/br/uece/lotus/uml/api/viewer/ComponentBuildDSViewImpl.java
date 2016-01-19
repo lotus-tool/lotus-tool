@@ -9,13 +9,20 @@ import br.uece.lotus.uml.api.ds.BlockBuildDS;
 import br.uece.lotus.uml.api.ds.ComponentBuildDS;
 import br.uece.lotus.uml.api.ds.TransitionBuildDS;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.collections.ObservableList;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
+import javafx.scene.SnapshotParameters;
 import javafx.scene.control.ContextMenu;
+import javafx.scene.image.WritableImage;
 import javafx.scene.layout.AnchorPane;
+import javax.imageio.ImageIO;
 
 /**
  *
@@ -24,14 +31,16 @@ import javafx.scene.layout.AnchorPane;
 public class ComponentBuildDSViewImpl extends AnchorPane implements ComponentBuildDSView, ComponentBuildDS.Listener{
 
     private ComponentBuildDS mComponentBuild;
+    private ContextMenu mBlockBuildContextMenu;
     private List<Listener> mListeners = new ArrayList<>();
     private List<BlockBuildDSView> mBlockViews = new ArrayList<>();
     private List<TransitionBuildDSView> mTransitionViews = new ArrayList<>();
     private BlockBuildDSViewFactory blockBuildFactory;
+    private TransitionBuildDSViewFactory transitionBuildFactory;
 
     public ComponentBuildDSViewImpl() {
         blockBuildFactory = new BlockBuildDSViewFactory();
-        //falta transitionFactory
+        transitionBuildFactory = new TransitionBuildDSViewFactory();
     }
     
     
@@ -51,7 +60,12 @@ public class ComponentBuildDSViewImpl extends AnchorPane implements ComponentBui
         }
         mComponentBuild = cbds;
         mComponentBuild.addListener(this);
-        // Precisa add os show dos block e transition
+        for(BlockBuildDS b : mComponentBuild.getBlocos()){
+            showBlock(b);
+        }
+        for(TransitionBuildDS t : mComponentBuild.getTransitions()){
+            showTransition(t);
+        }
     }
 
     @Override
@@ -66,12 +80,20 @@ public class ComponentBuildDSViewImpl extends AnchorPane implements ComponentBui
 
     @Override
     public BlockBuildDSView locateBlockBuildView(Point2D point) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        for(BlockBuildDSView b : mBlockViews){
+            if(b.isInsideBounds(point)){
+                return b;
+            }
+        }
+        return null;
     }
 
     @Override
     public TransitionBuildDSView locateTransitionBuildView(Point2D point) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        for(TransitionBuildDSView t : mTransitionViews){
+            //falta implementar a transition 
+        }
+        return null;
     }
 
     @Override
@@ -81,12 +103,17 @@ public class ComponentBuildDSViewImpl extends AnchorPane implements ComponentBui
 
     @Override
     public void setBlockBuildContextMenu(ContextMenu menu) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        mBlockBuildContextMenu = menu;
     }
 
     @Override
     public void saveAsPng(File arq) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        WritableImage img = snapshot(new SnapshotParameters(), null);
+        try {
+            ImageIO.write(SwingFXUtils.fromFXImage(img, null), "png", arq);
+        } catch (IOException ex) {
+            Logger.getLogger(ComponentBuildDSViewImpl.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     @Override

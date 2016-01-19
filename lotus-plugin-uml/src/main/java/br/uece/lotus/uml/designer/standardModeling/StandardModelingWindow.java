@@ -48,22 +48,24 @@ public class StandardModelingWindow extends AnchorPane implements WindowDS, Init
         mScrollPanel.setContent((Node)mViewer);
         mViewer.getNode().minHeightProperty().bind(mScrollPanel.heightProperty());
         mViewer.getNode().minWidthProperty().bind(mScrollPanel.widthProperty());
+        
+        StandardModelingWindowImpl controle = new StandardModelingWindowImpl(mScrollPanel, 
+                                                mPropriedadePanel, 
+                                                mInfoPanel, mToolBar, mViewer, 
+                                                this);
+        controle.start();
     }
     
     @Override
     public ComponentBuildDS getComponentBuildDS() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return mViewer.getComponentBuildDS();
     }
 
     @Override
-    public ComponentDS getComponentDS() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+    public ComponentDS getComponentDS() {return null;}
 
     @Override
-    public Component getComponentLTS() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+    public Component getComponentLTS() {return null;}
 
     @Override
     public void setComponentBuildDS(ComponentBuildDS buildDS) {
@@ -71,14 +73,10 @@ public class StandardModelingWindow extends AnchorPane implements WindowDS, Init
     }
 
     @Override
-    public void setComponentDS(ComponentDS cds) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+    public void setComponentDS(ComponentDS cds) {}
 
     @Override
-    public void setComponentLTS(Component c) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+    public void setComponentLTS(Component c) {}
 
     @Override
     public String getTitle() {
