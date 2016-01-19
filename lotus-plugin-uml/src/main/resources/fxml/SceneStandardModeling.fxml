@@ -26,5 +26,6 @@
             <AnchorPane fx:id="mInfoPanel" prefHeight="30.0" BorderPane.alignment="CENTER" />
          </bottom>
       </BorderPane>
+      <BorderPane prefHeight="200.0" prefWidth="200.0" />
    </children>
 </AnchorPane>

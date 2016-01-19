@@ -29,7 +29,7 @@ public interface ComponentDSView {
     }
     /*public Component getComponent();*/
     public ComponentDS getmComponentDS();
-    public void setmComponentDS(ComponentDS ds);
+    public void setComponentDS(ComponentDS ds);
     /*public void setComponent(Component c);*/
     public void addListener(Listener l);
     public void removeListener(Listener l);
