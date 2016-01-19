@@ -76,7 +76,7 @@ public class BasicDSPlugin extends Plugin{
         cbds.setName("Standard Modeling");
         p.setComponentBuildDS(cbds);
         mProjectExplorerDS.open(p);
-        abrirFocoNaTab("Projects UML");
+        abrirFocoNaTab("UML Projects");
     };
     
     private Runnable mNewComponentDS = () -> {
