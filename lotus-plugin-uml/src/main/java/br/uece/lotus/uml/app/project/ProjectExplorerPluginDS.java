@@ -12,6 +12,7 @@ import br.uece.lotus.uml.api.ds.ComponentDS;
 import br.uece.lotus.uml.api.ds.ProjectDS;
 import br.uece.lotus.uml.api.ds.TransitionBuildDS;
 import br.uece.lotus.uml.api.project.ProjectExplorerDS;
+import br.uece.lotus.uml.designer.blockDiagramModeling.DesingWindowImplManegerBlockDs;
 import br.uece.lotus.uml.designer.standardModeling.StandardModelingWindowManager;
 import br.uece.seed.app.ExtensibleFXContextMenu;
 import br.uece.seed.app.ExtensibleMenu;
@@ -71,11 +72,14 @@ public final class ProjectExplorerPluginDS extends Plugin implements ProjectExpl
             TreeItem<WrapperDS> raiz = findItem(mProjectDSView.getRoot(), project);
             TreeItem<WrapperDS> listaDeDiagramas = findItem(raiz, "Sequence Diagrams");
             if(listaDeDiagramas != null){
-                TreeItem<WrapperDS> cds = new TreeItem<>(new WrapperDS(componentDs)/*, */);
+                TreeItem<WrapperDS> cds = new TreeItem<>(new WrapperDS(componentDs), new ImageView(
+                                new Image(getClass().getResourceAsStream("/imagens/project/ic_component_ds.png"))));
                 listaDeDiagramas.getChildren().add(cds);
             }else{
-                TreeItem<WrapperDS> pastaDS = new TreeItem<>(new WrapperDS("Sequence Diagrams")/*,graph */);
-                TreeItem<WrapperDS> cds = new TreeItem<>(new WrapperDS(componentDs)/*, */);
+                TreeItem<WrapperDS> pastaDS = new TreeItem<>(new WrapperDS("Sequence Diagrams"), new ImageView(
+                                new Image(getClass().getResourceAsStream("/imagens/project/ic_folders.png"))));
+                TreeItem<WrapperDS> cds = new TreeItem<>(new WrapperDS(componentDs), new ImageView(
+                                new Image(getClass().getResourceAsStream("/imagens/project/ic_component_ds.png"))));
                 pastaDS.getChildren().add(cds);
                 raiz.getChildren().add(pastaDS);
                 findItem(raiz, "Sequence Diagrams").setExpanded(true);
@@ -99,8 +103,10 @@ public final class ProjectExplorerPluginDS extends Plugin implements ProjectExpl
             if(listaDeDiagramas != null){
                 listaDeFragmentos.getChildren().add(new TreeItem<>(new WrapperDS(component)));
             }else{
-                TreeItem<WrapperDS> fragment = new TreeItem<>(new WrapperDS("Fragments LTS"));
-                TreeItem<WrapperDS> c = new TreeItem<>(new WrapperDS(component));
+                TreeItem<WrapperDS> fragment = new TreeItem<>(new WrapperDS("Fragments LTS"), new ImageView(
+                                new Image(getClass().getResourceAsStream("/imagens/project/ic_folders.png"))));
+                TreeItem<WrapperDS> c = new TreeItem<>(new WrapperDS(component), new ImageView(
+                                new Image(getClass().getResourceAsStream("/imagens/project/ic_component_lts.png"))));
                 fragment.getChildren().add(c);
                 compDS.getChildren().add(fragment);
                 findItem(compDS, "Fragments LTS").setExpanded(true);
@@ -121,7 +127,8 @@ public final class ProjectExplorerPluginDS extends Plugin implements ProjectExpl
         public void onComponentLTSGeralCreated(ProjectDS projectDS, ComponentBuildDS buildDS, Component component) {
             TreeItem<WrapperDS> raiz = findItem(mProjectDSView.getRoot(), projectDS);
             TreeItem<WrapperDS> build = findItem(raiz, buildDS);
-            build.getChildren().add(new TreeItem<>(new WrapperDS(component)/*, */));
+            build.getChildren().add(new TreeItem<>(new WrapperDS(component), new ImageView(
+                                new Image(getClass().getResourceAsStream("/imagens/project/ic_component_lts_geral.png")))));
         }
 
         @Override
@@ -137,7 +144,8 @@ public final class ProjectExplorerPluginDS extends Plugin implements ProjectExpl
             TreeItem<WrapperDS> raiz = findItem(mProjectDSView.getRoot(), project);
             TreeItem<WrapperDS> build = findItem(raiz, buildDS);
             TreeItem<WrapperDS> compGeralLTS = findItem(build, componentGeralLTS);
-            compGeralLTS.getChildren().add(new TreeItem<>(new WrapperDS(frag)/*, */));
+            compGeralLTS.getChildren().add(new TreeItem<>(new WrapperDS(frag), new ImageView(
+                                new Image(getClass().getResourceAsStream("/imagens/project/ic_component_fragment.png")))));
         }
 
         @Override
@@ -245,21 +253,27 @@ public final class ProjectExplorerPluginDS extends Plugin implements ProjectExpl
                 }
             }else if(e.getClickCount() == 2){
                 ComponentBuildDS cbds = getSelectedComponentBuildDS();
-                System.out.println("Clicou 2x no ComponentBuildDS: "+cbds);
                 ComponentDS cds = getSelectedComponentDS();
                 Component c = getSelectedComponentLTS();
                 if(cbds != null){
-                    StandardModelingWindowManager smwm = new StandardModelingWindowManager();
+                    
                     try {
+                        StandardModelingWindowManager smwm = new StandardModelingWindowManager();
                         smwm.onStart(extension);
+                        smwm.show(cbds);                        
+                        mExtMnuComponentBuildDS.triggerDefaultAction();
                     } catch (Exception ex) {
                         Logger.getLogger(ProjectExplorerPluginDS.class.getName()).log(Level.SEVERE, null, ex);
                     }
-                    smwm.show(cbds);
-                    mExtMnuComponentBuildDS.triggerDefaultAction();
-                    System.out.println("Chamou o triggerDefaultAction do click 2x");
                 }else if(cds != null){
-                    mExtMnuComponentDS.triggerDefaultAction();
+                    try {
+                        DesingWindowImplManegerBlockDs dwimbd = new DesingWindowImplManegerBlockDs();
+                        dwimbd.onStart(extension);
+                        dwimbd.show(cds);
+                        mExtMnuComponentDS.triggerDefaultAction();
+                    } catch (Exception ex) {
+                        Logger.getLogger(ProjectExplorerPluginDS.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                 }else if(c != null){
                     mExtMnuComponentLTS.triggerDefaultAction();
                 }
@@ -306,14 +320,14 @@ public final class ProjectExplorerPluginDS extends Plugin implements ProjectExpl
         TreeItem<WrapperDS> project = findItem(mProjectDSView.getRoot(), p);
         if(project == null){
             p.addListener(mProjectDSListener);
-            project = new TreeItem<>(new WrapperDS(p)/*, new ImageView(
-                    new Image(getClass().getResourceAsStream("/images/ic_project.png")))*/);
+            project = new TreeItem<>(new WrapperDS(p), new ImageView(
+                    new Image(getClass().getResourceAsStream("/imagens/project/ic_project.png"))));
             List<TreeItem<WrapperDS>> filhos = project.getChildren();
             ComponentBuildDS buildDS = p.getComponentBuildDS();
             if (buildDS != null){
                 buildDS.addListener(mComponentBuildListener);
-                TreeItem<WrapperDS> compBuildDs = new TreeItem<>(new WrapperDS(buildDS)/*,new ImageView(
-                                    new Image(getClass().getResourceAsStream("/images/ic_component.png"))) */);
+                TreeItem<WrapperDS> compBuildDs = new TreeItem<>(new WrapperDS(buildDS),new ImageView(
+                                    new Image(getClass().getResourceAsStream("/imagens/project/ic_standardModeling.png"))));
                 filhos.add(compBuildDs);
             }
             // continuar para toda a hierarquia...

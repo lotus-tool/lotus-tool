@@ -1,4 +1,4 @@
-package br.uece.lotus.uml.designer.standardModeling.blockDiagramModeling;
+package br.uece.lotus.uml.designer.blockDiagramModeling;
 
 import br.uece.lotus.uml.api.viewer.block.ComponentDSView;
 import br.uece.lotus.uml.api.viewer.block.ComponentDSViewImpl;

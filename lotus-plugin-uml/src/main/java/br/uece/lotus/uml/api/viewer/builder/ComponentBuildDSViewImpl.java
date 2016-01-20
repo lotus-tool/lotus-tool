@@ -43,8 +43,6 @@ public class ComponentBuildDSViewImpl extends AnchorPane implements ComponentBui
         transitionBuildFactory = new TransitionBuildDSViewFactory();
     }
     
-    
-    
     @Override
     public ComponentBuildDS getComponentBuildDS() {
         return mComponentBuild;

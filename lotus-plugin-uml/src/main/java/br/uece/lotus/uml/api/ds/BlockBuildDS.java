@@ -25,8 +25,8 @@ public class BlockBuildDS {
         void onChange(BlockBuildDS blockBuildDS);
     }
     
-    private final String mTextStyleNormal = TEXTSTYLE_NORMAL;
-    private final String mTextStyleBold = TEXTSTYLE_BOLD;
+    public final static String mTextStyleNormal = TEXTSTYLE_NORMAL;
+    public final static String mTextStyleBold = TEXTSTYLE_BOLD;
     
     private final static String mColorBlockFull = "gren";
     private final static String mColorBlockEmpyt = "red";

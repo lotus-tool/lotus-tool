@@ -1,10 +1,9 @@
-package br.uece.lotus.uml.designer.standardModeling.blockDiagramModeling;
+package br.uece.lotus.uml.designer.blockDiagramModeling;
 
 import br.uece.lotus.Component;
 import br.uece.lotus.uml.api.ds.ComponentBuildDS;
 import br.uece.lotus.uml.api.ds.ComponentDS;
 import br.uece.lotus.uml.api.window.DefaultWindowManagerPluginDS;
-import br.uece.lotus.uml.designer.standardModeling.StandardModelingWindow;
 import br.uece.seed.ext.ExtensionManager;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.JavaFXBuilderFactory;
