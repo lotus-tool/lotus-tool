@@ -10,6 +10,8 @@ import br.uece.lotus.State;
 import br.uece.lotus.Transition;
 import br.uece.lotus.viewer.ComponentViewImpl;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -20,7 +22,9 @@ import javafx.scene.layout.AnchorPane;
 
 import javax.swing.*;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -40,7 +44,12 @@ public class ProbabilisticReachWindow extends AnchorPane{
     private final ChoiceBox mChoiceBox;
     private final TextField mOptionalField;
     private final TextField mExcStt;
+    private final TextField mAction1;
+    private final TextField mAction2;
     private final TextField mOutputField;
+    private final ChoiceBox mTemplatesMenu;
+    private final Label mTemplateLabel1;
+    private final Label mTemplateLabel2;
     private final ComponentViewImpl mViewer;
     private final ScrollPane mScrollPanel;
     private final TableView<Entry> mTableView;
@@ -58,7 +67,7 @@ public class ProbabilisticReachWindow extends AnchorPane{
         AnchorPane.setTopAnchor(mScrollPanel, 38D);
         AnchorPane.setLeftAnchor(mScrollPanel, 0D);
         AnchorPane.setRightAnchor(mScrollPanel, 0D);
-        AnchorPane.setBottomAnchor(mScrollPanel, 200D);
+        AnchorPane.setBottomAnchor(mScrollPanel, 0D);
         mViewer.minHeightProperty().bind(mScrollPanel.heightProperty());
         mViewer.minWidthProperty().bind(mScrollPanel.widthProperty());
         getChildren().add(mScrollPanel);        
@@ -74,8 +83,7 @@ public class ProbabilisticReachWindow extends AnchorPane{
         mChoiceBox = new ChoiceBox();
         mChoiceBox.getItems().addAll(">", ">=", "<", "<=", "=", "!=");
         mChoiceBox.setPrefWidth(30.0);
-        Tooltip mToolTip = new Tooltip("Inequation");
-        mChoiceBox.setTooltip(mToolTip);
+        mChoiceBox.setTooltip(new Tooltip("Inequation"));
         
         mOptionalField = new TextField();
         mOptionalField.setPromptText("Condition");
@@ -94,7 +102,103 @@ public class ProbabilisticReachWindow extends AnchorPane{
         mBtnAdd.setOnAction((ActionEvent e) -> {
             addEntry();            
         });
-        
+
+        mTemplateLabel1 = new Label();
+        mTemplateLabel1.setVisible(false);
+
+        mTemplateLabel2 = new Label();
+        mTemplateLabel2.setVisible(false);
+
+        mTemplatesMenu = new ChoiceBox(FXCollections.observableArrayList(
+                "Default", "P(Action1)", "P(Action1 ^ ~Action2)", "P(Action1 after Action2)", "P(Action1 in X steps)")
+        );
+        mTemplatesMenu.setPrefWidth(120.0);
+        mTemplatesMenu.setTooltip(new Tooltip("Templates"));
+        mTemplatesMenu.getSelectionModel().selectFirst();
+
+        mAction1 = new TextField();
+        mAction1.setPromptText("Action1");
+        mAction1.setPrefWidth(70.0);
+        mAction1.setVisible(false);
+
+        mAction2 = new TextField();
+        mAction2.setPromptText("Action2");
+        mAction2.setPrefWidth(70.0);
+        mAction2.setVisible(false);
+
+        mTemplatesMenu.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+                int chosenTemplate = newValue.intValue();
+
+                mSrcSttField.setText("");
+                mTgtSttField.setText("");
+                mExcStt.setText("");
+
+                switch(chosenTemplate){
+                    case 0: // Default
+                        mTemplateLabel1.setText("");
+                        mTemplateLabel2.setText("");
+
+                        mAction1.setVisible(false);
+                        mTemplateLabel1.setVisible(false);
+                        mAction2.setVisible(false);
+                        mTemplateLabel2.setVisible(false);
+
+                        mAction2.setPromptText("Action2");
+                        break;
+
+                    case 1: // "P(Action1)"
+                        mTemplateLabel1.setText("Probability of doing ");
+                        mTemplateLabel2.setText(".");
+
+                        mAction1.setVisible(true);
+                        mTemplateLabel1.setVisible(true);
+                        mAction2.setVisible(false);
+                        mTemplateLabel2.setVisible(true);
+
+                        mAction2.setPromptText("Action2");
+                        break;
+
+                    case 2: // "P(Action1 ^ ~Action2)"
+                        mTemplateLabel1.setText("Probability of doing ");
+                        mTemplateLabel2.setText(" and not performing ");
+
+                        mAction1.setVisible(true);
+                        mTemplateLabel1.setVisible(true);
+                        mAction2.setVisible(true);
+                        mTemplateLabel2.setVisible(true);
+
+                        mAction2.setPromptText("Action2");
+                        break;
+
+                    case 3: // "P(Action1 after Action2)"
+                        mTemplateLabel1.setText("Probability of doing ");
+                        mTemplateLabel2.setText(" after ");
+
+                        mAction1.setVisible(true);
+                        mTemplateLabel1.setVisible(true);
+                        mAction2.setVisible(true);
+                        mTemplateLabel2.setVisible(true);
+
+                        mAction2.setPromptText("Action2");
+                        break;
+
+                    case 4: // "P(Action1 in X steps)"
+                        mTemplateLabel1.setText("Probability of doing ");
+                        mTemplateLabel2.setText(" in up to ");
+
+                        mAction1.setVisible(true);
+                        mTemplateLabel1.setVisible(true);
+                        mAction2.setVisible(true);
+                        mTemplateLabel2.setVisible(true);
+
+                        mAction2.setPromptText("X steps");
+                        break;
+                }
+            }
+        });
+
         mOutputField = new TextField();
         mOutputField.setPromptText("Result");
         mOutputField.setPrefWidth(58.0);
@@ -104,7 +208,9 @@ public class ProbabilisticReachWindow extends AnchorPane{
         mOutputField.setStyle("-fx-background-color: yellow; -fx-prompt-text-fill: black;");
         
         mTableView = new TableView();
-        mTableView.setPrefHeight(200);
+        mTableView.setPrefHeight(0);
+        mTableView.setVisible(false);
+
         AnchorPane.setLeftAnchor(mTableView, 0D);
         AnchorPane.setRightAnchor(mTableView, 0D);
         AnchorPane.setBottomAnchor(mTableView, 0D);
@@ -180,6 +286,11 @@ public class ProbabilisticReachWindow extends AnchorPane{
         mToolbar.getItems().addAll(mBtnCalculate);
         mToolbar.getItems().addAll(mOutputField);
         mToolbar.getItems().addAll(mBtnAdd);
+        mToolbar.getItems().addAll(mTemplatesMenu);
+        mToolbar.getItems().addAll(mTemplateLabel1);
+        mToolbar.getItems().addAll(mAction1);
+        mToolbar.getItems().addAll(mTemplateLabel2);
+        mToolbar.getItems().addAll(mAction2);
         AnchorPane.setTopAnchor(mToolbar, 0D);
         AnchorPane.setLeftAnchor(mToolbar, 0D);
         AnchorPane.setRightAnchor(mToolbar, 0D);
@@ -193,6 +304,9 @@ public class ProbabilisticReachWindow extends AnchorPane{
     }
     
     private void addEntry(){
+        mTableView.setVisible(true);
+        mTableView.setPrefHeight(150);
+        AnchorPane.setBottomAnchor(mScrollPanel, 150D);
         calculate(false, null);
         String sourceStt = mSrcSttField.getText();
         String targetStt = mTgtSttField.getText();
@@ -243,65 +357,107 @@ public class ProbabilisticReachWindow extends AnchorPane{
             Logger.getLogger(ProbabilisticReachPlugin.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        String aux5 = mExcStt.getText();
-        if(aux5 != null && !aux5.trim().isEmpty()){
-            aux5 = aux5.replaceAll("\\s", "");
-            String[] excStates = aux5.split(",");
-            List<Integer> ids = new ArrayList<Integer>();
+        String template = (String) mTemplatesMenu.getSelectionModel().getSelectedItem();
+        int steps = Integer.MAX_VALUE;
+
+        switch(template){
+            case "P(Action1)":
+                mSrcSttField.setText("0");
+                mTgtSttField.setText(mAction1.getText());
+                break;
+
+            case "P(Action1 ^ ~Action2)":
+                mSrcSttField.setText("0");
+                mTgtSttField.setText(mAction1.getText());
+                mExcStt.setText(mAction2.getText());
+                break;
+
+            case "P(Action1 after Action2)":
+                String action2Destiny = a.getTransitionByLabel(mAction2.getText()).getDestiny().getLabel();
+                mSrcSttField.setText(action2Destiny);
+                mTgtSttField.setText(mAction1.getText());
+                break;
+
+            case "P(Action1 in X steps)":
+                mSrcSttField.setText("0");
+                mTgtSttField.setText(mAction1.getText());
+                steps = Integer.parseInt(mAction2.getText());
+                break;
+        }
+
+        String sourceStt = mSrcSttField.getText();
+        String targetStt = mTgtSttField.getText();
+        String inequation = (String) mChoiceBox.getSelectionModel().getSelectedItem();
+        String optField = mOptionalField.getText();
+        String excStt = mExcStt.getText();
+        
+        if(excStt != null && !excStt.trim().isEmpty()){
+            excStt = excStt.replaceAll("\\s", "");
+            String[] excStates = excStt.split(",");
+            List<Integer> IDs = new ArrayList<>();
+            List<String> Actions = new ArrayList<>();
+
             for(String label : excStates){
-                ids.add(Integer.parseInt(label));
+                if(label.matches("\\d+")){
+                    IDs.add(Integer.parseInt(label));
+                }else{
+                    Actions.add(label);
+                }
             }
-            State undesirable;
-            for(int id : ids){
-                undesirable = a.getStateByID(id);
-                List<Transition> undesirableTransitions = undesirable.getOutgoingTransitionsList();
+
+            State undesirableStt;
+            for(int id : IDs){
+                undesirableStt = a.getStateByID(id);
+                List<Transition> undesirableTransitions = undesirableStt.getOutgoingTransitionsList();
                 for(Transition t : undesirableTransitions){
                     t.setProbability(0.0);
                 }
             }
-        }
 
-        String aux1 = mSrcSttField.getText();
-        String aux2 = mTgtSttField.getText();
-        String aux3 = (String) mChoiceBox.getSelectionModel().getSelectedItem();
-        String aux4 = mOptionalField.getText();
+            Transition undesirableAction;
+            for(String action : Actions){
+                undesirableAction = a.getTransitionByLabel(action);
+                undesirableAction.setProbability(0.0);
+            }
+        }
         
         if(fromMenu){
-            aux1 = selectedEntry.getSource();
-            mSrcSttField.setText(aux1);
-            aux2 = selectedEntry.getTarget();
-            mTgtSttField.setText(aux2);
-            aux3 = selectedEntry.getInequation();
-            if(aux3 == null || aux3.trim().isEmpty()){
+            sourceStt = selectedEntry.getSource();
+            mSrcSttField.setText(sourceStt);
+            targetStt = selectedEntry.getTarget();
+            mTgtSttField.setText(targetStt);
+            inequation = selectedEntry.getInequation();
+            if(inequation == null || inequation.trim().isEmpty()){
                 mChoiceBox.getSelectionModel().clearSelection();
             }else{
-                mChoiceBox.getSelectionModel().select(aux3);
+                mChoiceBox.getSelectionModel().select(inequation);
             }
-            aux4 = selectedEntry.getCondition();
-            mOptionalField.setText(aux4);
+            optField = selectedEntry.getCondition();
+            mOptionalField.setText(optField);
         }
         
-        if(aux1 == null || aux1.trim().isEmpty() || aux2 == null || aux2.trim().isEmpty()){
+        if(sourceStt == null || sourceStt.trim().isEmpty() || targetStt == null || targetStt.trim().isEmpty()){
             JOptionPane.showMessageDialog(null, "Provide source and target states!");
             return null;
         }
 
         int sourceID = -1;
         int targetID = -1;
-        aux1 = aux1.trim();
-        aux2 = aux2.trim();
+        double actionP = 1;
+        sourceStt = sourceStt.trim();
+        targetStt = targetStt.trim();
 
         //State?
-        if(aux1.matches("\\d+")){
-            sourceID = Integer.parseInt(aux1);
+        if(sourceStt.matches("\\d+")){
+            sourceID = Integer.parseInt(sourceStt);
             if(sourceID >= a.getStatesCount()) sourceID = -1;
         }else{
-            sourceID = a.getTransitionByLabel(aux1).getDestiny().getID();
+            sourceID = a.getTransitionByLabel(sourceStt).getSource().getID();
         }
 
         // Checar se o estado alvo pedido foi E (final) ou -1 (erro).
         // Se sim, achar qual estado (ID) corresponde ao final/erro.
-        switch (aux2){
+        switch (targetStt){
             case "E":
             case "e":
                 targetID = a.getFinalState().getID();
@@ -312,34 +468,36 @@ public class ProbabilisticReachWindow extends AnchorPane{
                 break;
 
             default:
-                if(aux2.matches("\\d+")){
-                    targetID = Integer.parseInt(aux2);
+                if(targetStt.matches("\\d+")){
+                    targetID = Integer.parseInt(targetStt);
                     if(targetID >= a.getStatesCount()) targetID = -1;
                 }else{
-                    targetID = a.getTransitionByLabel(aux2).getDestiny().getID();
+                    targetID = a.getTransitionByLabel(targetStt).getSource().getID();
+                    actionP = a.getTransitionByLabel(targetStt).getProbability();
                 }
         }
 
         if(sourceID == -1){
-            JOptionPane.showMessageDialog(null, "State/Transition " + aux1 + " is not in this component.",
+            JOptionPane.showMessageDialog(null, "State/Transition " + sourceStt + " is not in this component.",
                     "Probabilistic Reachability", JOptionPane.WARNING_MESSAGE);
         }
 
         if(targetID == -1){
-            JOptionPane.showMessageDialog(null, "State/Transition " + aux2 + " is not in this component.",
+            JOptionPane.showMessageDialog(null, "State/Transition " + targetStt + " is not in this component.",
                     "Probabilistic Reachability", JOptionPane.WARNING_MESSAGE);
         }
 
-        double p = new ProbabilisticReachAlgorithm().probabilityBetween(a, sourceID, targetID);
+        double p = new ProbabilisticReachAlgorithm().probabilityBetween(a, sourceID, targetID, steps);
+        p = p * actionP;
         String result = String.valueOf(p);
         
-        if(aux4 == null || aux4.trim().isEmpty()){
+        if(optField == null || optField.trim().isEmpty()){
             mOutputField.setText(result);
             mOutputField.setStyle("-fx-background-color: yellow");
             if(fromMenu){ selectedEntry.setResult(result + " ok!");}
         }else{
-            double optional = Double.parseDouble(aux4);
-            switch (aux3){
+            double optional = Double.parseDouble(optField);
+            switch (inequation){
                 case ">":
                     if(p > optional){
                         mOutputField.setText("True");

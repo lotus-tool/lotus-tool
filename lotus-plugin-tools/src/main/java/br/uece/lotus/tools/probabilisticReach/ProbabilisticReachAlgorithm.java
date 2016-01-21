@@ -19,7 +19,7 @@ import javax.swing.JOptionPane;
  */
 public class ProbabilisticReachAlgorithm {
     
-    public double probabilityBetween (Component a, int source, int target) {
+    public double probabilityBetween (Component a, int source, int target, int steps) {
         int tam = a.getStatesCount();
         double[][] probabilities = new double[tam][tam];
         probabilities = zerar(probabilities, tam);
@@ -41,12 +41,14 @@ public class ProbabilisticReachAlgorithm {
         int count = 0;
         //Parar se a diferença for pequena o bastante e o count > 10.
         while(abs(difference) > 0.01 || count < 20){
+            if(steps < 1) break;
             total += probabilities[i][j];
             difference = probabilities[i][j];
             probabilities = multiply(probabilities, mult, tam);
             //mult = probabilities; <- ainda nao funciona corretamente
             difference = difference - probabilities[i][j];
             count++;
+            steps--;
             if(abs(difference) > 0.0001){
                 count = 0;
             }
