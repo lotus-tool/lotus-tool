@@ -16,27 +16,31 @@ import br.uece.lotus.uml.api.viewer.builder.TransitionBuildDSView;
 import br.uece.lotus.uml.api.window.WindowDS;
 import br.uece.lotus.uml.designer.standardModeling.strategy.Context;
 import br.uece.lotus.uml.designer.standardModeling.strategy.OnClickedMouse;
+import br.uece.lotus.uml.designer.standardModeling.strategy.OnDraggedMouse;
 import br.uece.lotus.uml.designer.standardModeling.strategy.OnMovedMouse;
+import br.uece.lotus.uml.designer.standardModeling.strategy.OnPressedMouse;
+import br.uece.lotus.uml.designer.standardModeling.strategy.OnReleasedMouse;
 import java.io.File;
-import java.net.URL;
-import java.util.ResourceBundle;
+import java.util.HashSet;
+import java.util.Set;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
+import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
+import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ContextMenu;
+import javafx.scene.control.Label;
 import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
-import javafx.scene.control.RadioButton;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Slider;
 import javafx.scene.control.ToggleButton;
@@ -45,10 +49,14 @@ import javafx.scene.control.ToolBar;
 import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
+import javafx.scene.shape.Rectangle;
+import javafx.scene.shape.StrokeLineCap;
 import javafx.scene.transform.Scale;
 import javafx.stage.FileChooser;
 
@@ -56,24 +64,14 @@ import javafx.stage.FileChooser;
  *
  * @author Bruno Barbosa
  */
-public class StandardModelingWindow extends AnchorPane implements WindowDS, Initializable{
+public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
 
-    @FXML
-    private ScrollPane mScrollPanel;
-    
-    @FXML
-    private AnchorPane mPropriedadePanel;
-
-    @FXML
-    private AnchorPane mInfoPanel;
-
-    @FXML
-    private ToolBar mToolBar;
-    
+    //Principais da Tela
+    private final ScrollPane mScrollPanel;
+    private final AnchorPane mPropriedadePanel;
+    private final AnchorPane mInfoPanel;
+    private final ToolBar mToolBar;
     public ComponentBuildDSView mViewer;
-    private Node mNode;
-    
-    
     //Botoes
     private ToggleGroup mToggleGroup;
     private ToggleButton mBtnArrow;
@@ -92,7 +90,7 @@ public class StandardModelingWindow extends AnchorPane implements WindowDS, Init
     public int contID = -1;
     private int mTransitionViewType;
     public int mModoAtual;
-    protected ContextMenu mContextMenuBlockBuild;
+    public ContextMenu mContextMenuBlockBuild;
     //Mover e Zoom
     private CheckBox zoomReset;
     private DoubleProperty zoomFactor = new SimpleDoubleProperty(1);
@@ -104,16 +102,92 @@ public class StandardModelingWindow extends AnchorPane implements WindowDS, Init
     public Object mComponentSelecionado;
     //Cores
     private HBox paleta;
+    //Variaveis gerais
+    public Set<Node> selecao = new HashSet<>();
+    public double dragContextMouseAnchorX, dragContextMouseAnchorY;
+    public Rectangle rectSelecao;
     
+    /////////////////////////////////////////////////////////////////////////
+    //                   IMPLEMENTACAO DA WINDOW_DS                        //
+    /////////////////////////////////////////////////////////////////////////
     @Override
-    public void initialize(URL location, ResourceBundle resources) {
-        mViewer = new ComponentBuildDSViewImpl();
-        mScrollPanel.setContent((Node)mViewer);
-        mViewer.getNode().minHeightProperty().bind(mScrollPanel.heightProperty());
-        mViewer.getNode().minWidthProperty().bind(mScrollPanel.widthProperty());
-        startComponentesTela();
+    public ComponentBuildDS getComponentBuildDS() {
+        return mViewer.getComponentBuildDS();
+    }
+
+    @Override
+    public ComponentDS getComponentDS() {return null;}
+
+    @Override
+    public Component getComponentLTS() {return null;}
+
+    @Override
+    public void setComponentBuildDS(ComponentBuildDS buildDS) {
+        mViewer.setComponentBuildDS(buildDS);
+    }
+
+    @Override
+    public void setComponentDS(ComponentDS cds) {}
+
+    @Override
+    public void setComponentLTS(Component c) {}
+
+    @Override
+    public String getTitle() {
+        ComponentBuildDS c = mViewer.getComponentBuildDS();
+        return c.getName();
+    }
+
+    @Override
+    public Node getNode() {
+        return this;
     }
     
+    public StandardModelingWindowImpl() {
+        mViewer = new ComponentBuildDSViewImpl();
+        mToolBar = new ToolBar();
+        mScrollPanel = new ScrollPane((Node)mViewer);
+        mPropriedadePanel = new AnchorPane();
+        mInfoPanel = new AnchorPane();
+       
+        mViewer.getNode().setPrefSize(1200, 600);
+        mScrollPanel.viewportBoundsProperty().addListener((ObservableValue<? extends Bounds> observable, Bounds oldValue, Bounds newValue) -> {
+            Node content = mScrollPanel.getContent();
+            mScrollPanel.setFitToWidth(content.prefWidth(-1)<newValue.getWidth());
+            mScrollPanel.setFitToHeight(content.prefHeight(-1)<newValue.getHeight());
+        });
+        
+        //Posicoes dos elementos
+        //toolbar
+        AnchorPane.setTopAnchor(mToolBar, 0D);
+        AnchorPane.setLeftAnchor(mToolBar, 0D);
+        AnchorPane.setRightAnchor(mToolBar, 0D);
+        getChildren().add(mToolBar);
+       
+        //scrollPane
+        getChildren().add(mScrollPanel);
+        AnchorPane.setTopAnchor(mScrollPanel, 44D);
+        AnchorPane.setLeftAnchor(mScrollPanel, 0D);
+        AnchorPane.setRightAnchor(mScrollPanel, 175D);
+        AnchorPane.setBottomAnchor(mScrollPanel, 30D);
+        
+        //propriedades
+        getChildren().add(mPropriedadePanel);
+        AnchorPane.setTopAnchor(mPropriedadePanel, 44D);
+        AnchorPane.setRightAnchor(mPropriedadePanel, 0D);
+        AnchorPane.setBottomAnchor(mPropriedadePanel, 30D);
+        
+        //info
+        getChildren().add(mInfoPanel);
+        AnchorPane.setLeftAnchor(mInfoPanel, 0D);
+        AnchorPane.setRightAnchor(mInfoPanel, 0D);
+        AnchorPane.setBottomAnchor(mInfoPanel, 0D);
+       
+        
+        startComponentesTela();
+        
+    }
+
     private void startComponentesTela() {
         ////////////////////////////////////////////////////////////////////
         // INICIANDO COMPONENTES DA INTERFACE
@@ -127,7 +201,7 @@ public class StandardModelingWindow extends AnchorPane implements WindowDS, Init
             setModo(MODO_NENHUM);
         });
         mBtnArrow.setToggleGroup(mToggleGroup);
-        //mBtnArrow.setSelected(true);
+        mBtnArrow.setSelected(true);
         
         mBtnBlock = new ToggleButton("Bloco");
         //mBtnBlock.setGraphic(new ImageView(new Image(getClass().getResourceAsStream("/imagens/"))));
@@ -188,7 +262,7 @@ public class StandardModelingWindow extends AnchorPane implements WindowDS, Init
         });
         mBtnZoom.getItems().add(zoomHBox);
         
-        mToolBar.getItems().addAll(mBtnTransitionLine,mBtnTransitionArc,mBtnEraser,mBtnHand,mBtnZoom,mBtnArrow,mBtnBlock);
+        mToolBar.getItems().addAll(mBtnArrow,mBtnBlock,mBtnTransitionLine,mBtnTransitionArc,mBtnEraser,mBtnHand,mBtnZoom);
         
         //ToolTips
         Tooltip arrowInfo = new Tooltip("Selection");
@@ -229,6 +303,8 @@ public class StandardModelingWindow extends AnchorPane implements WindowDS, Init
         mContextMenuBlockBuild.getItems().add(mSaveAsPNG);
         mViewer.setBlockBuildContextMenu(mContextMenuBlockBuild);
         
+        mViewer.getNode().getTransforms().add(escala);
+        
         //Guardando variaveis padrao
         mViewerScaleXPadrao = mViewer.getNode().getScaleX();
         mViewerScaleYPadrao = mViewer.getNode().getScaleY();
@@ -246,69 +322,69 @@ public class StandardModelingWindow extends AnchorPane implements WindowDS, Init
             }
         });
         
+        //Retangulo da selcao
+        rectSelecao = new Rectangle(0, 0, 0, 0);
+        rectSelecao.setFill(Color.LIGHTBLUE.deriveColor(0, 1.2, 1, 0.7));
+        
         //Funcoes da tela
         mViewer.getNode().setOnMouseMoved(onMovedMouse);
         mViewer.getNode().setOnMouseClicked(onMouseClicked);
+        
+        mViewer.getNode().setOnMousePressed(onMousePressed);
+        mViewer.getNode().setOnMouseDragged(onMouseDragged);
+        mViewer.getNode().setOnMouseReleased(onMouseReleased);
+        
+        //Panel de Proriedades
+        VBox blockPropriedade = new VBox(5);
+        
+        
+        //Panel de info / utilidade
+        HBox utilidade = new HBox(10); utilidade.setPrefSize(mInfoPanel.getPrefWidth(), mInfoPanel.getPrefHeight());
+        HBox infoEmpyt = new HBox(2);
+        infoEmpyt.setAlignment(Pos.CENTER);
+        HBox infoFull = new HBox(2);
+        infoFull.setAlignment(Pos.CENTER);
+        
+        Circle green = new Circle(7); green.setFill(Color.GREEN);
+        Label full = new Label("Full");
+        Circle red = new Circle(7); red.setFill(Color.RED);
+        Label empyt = new Label("Empyt");
+        infoFull.getChildren().addAll(green,full);
+        infoEmpyt.getChildren().addAll(red,empyt);
+        utilidade.getChildren().addAll(infoEmpyt,infoFull);
+        
+        mInfoPanel.getChildren().add(utilidade);
     }
-    
+
     // Ao Mover o mouse----------------------------------------------------------------------
     private final EventHandler<? super MouseEvent> onMovedMouse = (MouseEvent event) -> {
-        //Context context = new Context(new OnMovedMouse());
-        //context.executeStrategyOnMovedMouse(event);
-        Object aux = getComponentePelaPosicaoMouse(new Point2D(event.getSceneX(), event.getSceneY()));
-        mComponentSobMouse = aux;
+        Context context = new Context(new OnMovedMouse());
+        context.executeStrategyOnMovedMouse(this,event);
     };
     // Ao Clicar o mouse(clickar e soltar)---------------------------------------------------
-    private final EventHandler<? super MouseEvent> onMouseClicked = (MouseEvent e) -> {
-        //Context context = new Context(new OnClickedMouse());
-        //context.executeStrategyOnClikedMouse(event);
-        //mostrando menu dos blocos
-        
-        if (MouseButton.SECONDARY.equals(e.getButton())) {
-            setComponenteSelecionado(mComponentSobMouse);
-            
-            if (mComponentSelecionado instanceof BlockBuildDSView) {
-                mContextMenuBlockBuild.show(mViewer.getNode(), e.getScreenX(), e.getScreenY());
-            } else {
-                mContextMenuBlockBuild.hide();
-            }
-            return;
-        }else{
-           mContextMenuBlockBuild.hide();
-        }
-        //resetando zoom pelo mouse
-        if (e.isControlDown() && e.getButton() == MouseButton.MIDDLE) {
-
-            mViewer.getNode().setScaleX(mViewerScaleXPadrao);
-            mViewer.getNode().setScaleY(mViewerScaleYPadrao);
-
-            mViewer.getNode().setTranslateX(mViewerTranslateXPadrao);
-            mViewer.getNode().setTranslateY(mViewerTranslateYPadrao);
-        }
-        //verificando por controles de butoes
-        if(mModoAtual == MODO_NENHUM){
-            
-        }
-        else if(mModoAtual == MODO_BLOCO){
-            if (!(mComponentSobMouse instanceof BlockBuildDSView)) {
-                    if (contID == -1) {
-                        updateContID();
-                    }
-                    int id = mViewer.getComponentBuildDS().getBlocos().size();
-                    BlockBuildDS b = mViewer.getComponentBuildDS().newBlock(id);
-                    b.setID(contID);
-                    contID++;
-                    b.setLayoutX(e.getX());
-                    b.setLayoutY(e.getY());
-                    b.setLabel("New Block");
-                }
-        }
-        else if(mModoAtual == MODO_REMOVER){
-            
-        }
-          
+    private final EventHandler<? super MouseEvent> onMouseClicked = (MouseEvent event) -> {
+        Context context = new Context(new OnClickedMouse());
+        context.executeStrategyOnClikedMouse(this,event);
+    };
+    //Ao Clicar sem soltar
+    private final EventHandler<? super MouseEvent> onMousePressed = (MouseEvent event) -> {
+        Context context = new Context(new OnPressedMouse());
+        context.executeStrategyOnPressedMouse(this,event);
+    };
+    //Ao Arrastar o mouse
+    private final EventHandler<? super MouseEvent> onMouseDragged = (MouseEvent event) -> {
+        Context context = new Context(new OnDraggedMouse());
+        context.executeStrategyOnDraggedMouse(this,event);
+    };
+    //Ao Soltar o mouse
+    private final EventHandler<? super MouseEvent> onMouseReleased = (MouseEvent event) -> {
+        Context context = new Context(new OnReleasedMouse());
+        context.executeStrategyOnReleasedMouse(this,event);
     };
 
+    ///////////////////////////////////////////////////////////////////////////////////
+    //                         Metodos de Controle da View                           //
+    //////////////////////////////////////////////////////////////////////////////////
     private void setModo(int modo) {
         this.mModoAtual = modo;
          mViewer.getNode().setCursor(Cursor.DEFAULT);
@@ -317,11 +393,12 @@ public class StandardModelingWindow extends AnchorPane implements WindowDS, Init
         }
     }
 
-    public Object getComponentePelaPosicaoMouse(Point2D point2D) {
-        Object b = mViewer.locateBlockBuildView(point2D);
+    public Object getComponentePelaPosicaoMouse(Point2D point) {
+        Object b = mViewer.locateBlockBuildView(point);
         if(b == null){
             //b = mViewer.locateTransitionBuildView(point2D);
         }
+        System.out.println(b);
         return b;
     }
 
@@ -339,7 +416,7 @@ public class StandardModelingWindow extends AnchorPane implements WindowDS, Init
     private void applySelectedStyles(Object mComponentSelecionado) {
         if(mComponentSelecionado instanceof BlockBuildDSView){
             BlockBuildDS b = ((BlockBuildDSView) mComponentSelecionado).getBlockBuildDS();
-            b.setBorderWidth(15);
+            b.setBorderWidth(3);
             b.setBorderColor("blue");
             b.setTextColor("blue");
             b.setTextStyle(BlockBuildDS.mTextStyleBold);
@@ -352,7 +429,7 @@ public class StandardModelingWindow extends AnchorPane implements WindowDS, Init
     private void removeSelectedStyles(Object mComponentSelecionado) {
         if(mComponentSelecionado instanceof BlockBuildDSView){
             BlockBuildDS b = ((BlockBuildDSView) mComponentSelecionado).getBlockBuildDS();
-            b.setBorderWidth(10);
+            b.setBorderWidth(1);
             b.setBorderColor("black");
             b.setTextColor("black");
             b.setTextStyle(BlockBuildDS.mTextStyleNormal);
@@ -376,45 +453,28 @@ public class StandardModelingWindow extends AnchorPane implements WindowDS, Init
         contID = aux;
         contID++;
     }
+
+    ///////////////////////////////////////////////////////////////////////////////////
+    //                         Metodos de Selecao                                    //
+    //////////////////////////////////////////////////////////////////////////////////
     
-    /////////////////////////////////////////////////////////////////////////
-    //                   IMPLEMENTACAO DA WINDOW_DS                        //
-    /////////////////////////////////////////////////////////////////////////
-    @Override
-    public ComponentBuildDS getComponentBuildDS() {
-        return mViewer.getComponentBuildDS();
-    }
-
-    @Override
-    public ComponentDS getComponentDS() {return null;}
-
-    @Override
-    public Component getComponentLTS() {return null;}
-
-    @Override
-    public void setComponentBuildDS(ComponentBuildDS buildDS) {
-        mViewer.setComponentBuildDS(buildDS);
-    }
-
-    @Override
-    public void setComponentDS(ComponentDS cds) {}
-
-    @Override
-    public void setComponentLTS(Component c) {}
-
-    @Override
-    public String getTitle() {
-        ComponentBuildDS c = mViewer.getComponentBuildDS();
-        return c.getName();
-    }
-
-    @Override
-    public Node getNode() {
-        return mNode;
+    public void addNoSelecao(Node node){
+        applySelectedStyles((Object)node);
+        selecao.add(node);
     }
     
-    public void setNode(Node node) {
-        this.mNode = node;
+    public void removeNoSelecao(Node node){
+        removeSelectedStyles((Object)node);
+        selecao.remove(node);
     }
     
+    public void clearSelecao(){
+        while(!selecao.isEmpty()){
+            removeNoSelecao(selecao.iterator().next());
+        }
+    }
+    
+    public boolean containsNoSelecao(Node node){
+        return selecao.contains(node);
+    }
 }

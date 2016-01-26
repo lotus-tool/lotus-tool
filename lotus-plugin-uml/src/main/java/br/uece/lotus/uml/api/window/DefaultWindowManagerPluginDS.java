@@ -54,7 +54,6 @@ public abstract class DefaultWindowManagerPluginDS<E extends WindowDS> extends P
     
     @Override
     public void show(ComponentBuildDS buildDS) {
-        System.out.println("Entrou no show do componentBuildDS para a criacao da tela");
         checkIfStartedProperly();
         E window = null;
         for(E w : mComponentsWindows){
@@ -66,7 +65,6 @@ public abstract class DefaultWindowManagerPluginDS<E extends WindowDS> extends P
         }
         if(window == null){
             window = onCreate();
-            System.out.println("Chamou o onCreate");
             window.setComponentBuildDS(buildDS);
             mComponentsWindows.add(window);
             for(Listener l : mListeners){
@@ -81,7 +79,6 @@ public abstract class DefaultWindowManagerPluginDS<E extends WindowDS> extends P
                 mComponentBuildDSids.put(buildDS, id);
             }
             mCenterPanel.showTab(id);
-            System.out.println("inseriu na tab central");
         }
     }
 

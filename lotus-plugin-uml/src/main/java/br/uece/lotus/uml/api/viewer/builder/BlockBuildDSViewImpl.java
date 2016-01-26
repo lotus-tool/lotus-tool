@@ -53,9 +53,8 @@ public class BlockBuildDSViewImpl extends Region implements BlockBuildDSView, Bl
 
     @Override
     public boolean isInsideBounds(Point2D point) {
-        Point2D aux = mRetangulo.localToScene(Point2D.ZERO);
-        System.out.printf("(%f %f) (%f %f)\n", aux.getX(), aux.getY(), point.getX(), point.getY());
-        return mRetangulo.contains(point);
+        return mRetangulo.localToScene(point) == mRetangulo.localToScene(mRetangulo.getLayoutBounds().getMinX(), mRetangulo.getLayoutBounds().getMinY());
+        
        
     }
 
@@ -84,15 +83,14 @@ public class BlockBuildDSViewImpl extends Region implements BlockBuildDSView, Bl
     private void updateView() {
         String style = "-fx-effect: dropshadow( gaussian , gray , 3 , 0.2 , 1 , 1);";
         style += "-fx-fill: linear-gradient(to bottom right, white, " + computedColor() + ");";
-        style += "-fx-border-color: black ;";
-        style += "-fx-border-width: 10px ;";
-        style += "-fx-border-style: segments(10, 15, 15, 15)  line-cap round ;";
+        style += "-fx-stroke: " + (mBlock.getBorderColor() == null ? "black" : mBlock.getBorderColor()) + ";";
+        style += "-fx-stroke-width: " + (mBlock.getBorderWidth() == null ? "1" : mBlock.getBorderWidth()) + ";";
         mRetangulo.setStyle(style);
 
         style = "";
         style += "-fx-effect: dropshadow( gaussian , gray , 3 , 0.2 , 1 , 1);";
-        style += "-fx-border-color: black ;";
-        style += "-fx-border-width: 6px;";
+        style += "-fx-stroke: black ;";
+        style += "-fx-stroke-width: 1px;";
         style += "-fx-fill:"+mBlock.getColorStatus()+";";
         mCircle.setStyle(style);
          

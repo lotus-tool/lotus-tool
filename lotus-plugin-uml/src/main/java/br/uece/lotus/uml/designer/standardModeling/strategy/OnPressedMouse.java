@@ -6,7 +6,6 @@
 package br.uece.lotus.uml.designer.standardModeling.strategy;
 
 import br.uece.lotus.uml.designer.standardModeling.StandardModelingWindowImpl;
-import javafx.geometry.Point2D;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
@@ -16,16 +15,31 @@ import javafx.scene.input.ScrollEvent;
  *
  * @author Bruno Barbosa
  */
-public class OnMovedMouse implements Strategy{
+public class OnPressedMouse implements Strategy{
 
+    
+    @Override
+    public void onPressedMouse(StandardModelingWindowImpl s, MouseEvent e) {
+        if(s.mModoAtual == s.MODO_NENHUM){
+            s.dragContextMouseAnchorX = e.getSceneX();
+            s.dragContextMouseAnchorY = e.getSceneY();
+            
+            s.rectSelecao.setX(s.dragContextMouseAnchorX);
+            s.rectSelecao.setY(s.dragContextMouseAnchorY);
+            s.rectSelecao.setWidth(0);
+            s.rectSelecao.setHeight(0);
+            
+            s.mViewer.getNode().getChildren().add(s.rectSelecao);
+        }
+        
+        e.consume();
+    }
+    
     @Override
     public void onClickedMouse(StandardModelingWindowImpl s, MouseEvent event) {}
 
     @Override
-    public void onMovedMouse(StandardModelingWindowImpl s, MouseEvent event) {
-        Object aux = s.getComponentePelaPosicaoMouse(new Point2D(event.getSceneX(), event.getSceneY()));
-        s.mComponentSobMouse = aux;
-    }
+    public void onMovedMouse(StandardModelingWindowImpl s, MouseEvent event) {}
 
     @Override
     public void onDragDetectedMouse(StandardModelingWindowImpl s, MouseEvent event) {}
@@ -38,10 +52,7 @@ public class OnMovedMouse implements Strategy{
 
     @Override
     public void onDraggedMouse(StandardModelingWindowImpl s, MouseEvent event) {}
-
-    @Override
-    public void onPressedMouse(StandardModelingWindowImpl s, MouseEvent event) {}
-
+    
     @Override
     public void onReleasedMouse(StandardModelingWindowImpl s, MouseEvent event) {}
 

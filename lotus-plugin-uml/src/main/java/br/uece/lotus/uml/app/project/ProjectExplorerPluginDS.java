@@ -256,7 +256,6 @@ public final class ProjectExplorerPluginDS extends Plugin implements ProjectExpl
                 ComponentDS cds = getSelectedComponentDS();
                 Component c = getSelectedComponentLTS();
                 if(cbds != null){
-                    
                     try {
                         StandardModelingWindowManager smwm = new StandardModelingWindowManager();
                         smwm.onStart(extension);

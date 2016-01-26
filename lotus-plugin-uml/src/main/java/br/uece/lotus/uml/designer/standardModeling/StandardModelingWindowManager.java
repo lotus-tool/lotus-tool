@@ -8,6 +8,7 @@ package br.uece.lotus.uml.designer.standardModeling;
 import br.uece.lotus.Component;
 import br.uece.lotus.uml.api.ds.ComponentBuildDS;
 import br.uece.lotus.uml.api.ds.ComponentDS;
+import br.uece.lotus.uml.api.viewer.builder.ComponentBuildDSViewImpl;
 import br.uece.lotus.uml.api.window.DefaultWindowManagerPluginDS;
 import br.uece.seed.ext.ExtensionManager;
 import java.io.IOException;
@@ -22,7 +23,7 @@ import javafx.scene.Parent;
  *
  * @author Bruno Barbosa
  */
-public class StandardModelingWindowManager extends DefaultWindowManagerPluginDS<StandardModelingWindow>{
+public class StandardModelingWindowManager extends DefaultWindowManagerPluginDS<StandardModelingWindowImpl>{
 
     
     @Override
@@ -31,40 +32,28 @@ public class StandardModelingWindowManager extends DefaultWindowManagerPluginDS<
     }
     
     @Override
-    protected StandardModelingWindow onCreate() {
-        System.out.println("Passou no onCreate()");
-        StandardModelingWindow c = null;
-        try {
-            URL location = getClass().getResource("/fxml/SceneStandardModeling.fxml");
-            FXMLLoader loader = new FXMLLoader();
-            loader.setClassLoader(getClass().getClassLoader());
-            loader.setLocation(location);
-            loader.setBuilderFactory(new JavaFXBuilderFactory());
-            Parent root = (Parent) loader.load(location.openStream());
-            c = (StandardModelingWindow) loader.getController();
-            c.setNode(root);
-            System.out.println("carregou e setou a tela no smw");
-        } catch (IOException e) {
-            e.printStackTrace();
+    protected StandardModelingWindowImpl onCreate() {
+        try{
+            return new StandardModelingWindowImpl();
+        }catch(Exception e){
+            throw new RuntimeException(e);
         }
-        return c;
     }
 
     @Override
-    protected void onShow(StandardModelingWindow window, ComponentBuildDS buildDS) {
+    protected void onShow(StandardModelingWindowImpl window, ComponentBuildDS buildDS) {
         window.setComponentBuildDS(buildDS);
-        System.out.println("Ligou a window com o buildds");
     }
 
     @Override
-    protected void onHide(StandardModelingWindow window) {
+    protected void onHide(StandardModelingWindowImpl window) {
         
     }
     
     @Override
-    protected void onShow(StandardModelingWindow window, ComponentDS cds) {}
+    protected void onShow(StandardModelingWindowImpl window, ComponentDS cds) {}
     @Override
-    protected void onShow(StandardModelingWindow window, Component c) {}
+    protected void onShow(StandardModelingWindowImpl window, Component c) {}
 
     
     

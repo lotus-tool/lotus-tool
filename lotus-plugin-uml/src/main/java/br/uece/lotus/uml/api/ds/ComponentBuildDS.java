@@ -36,6 +36,7 @@ public class ComponentBuildDS {
     
     public BlockBuildDS newBlock(int id){
         BlockBuildDS bbds = new BlockBuildDS(this);
+        bbds.setID(id);
         add(bbds);
         return bbds;
     }

@@ -7,7 +7,7 @@ package br.uece.lotus.uml.designer.standardModeling.strategy;
 
 import br.uece.lotus.uml.api.ds.BlockBuildDS;
 import br.uece.lotus.uml.api.viewer.builder.BlockBuildDSView;
-import br.uece.lotus.uml.designer.standardModeling.StandardModelingWindow;
+import br.uece.lotus.uml.designer.standardModeling.StandardModelingWindowImpl;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
@@ -18,88 +18,87 @@ import javafx.scene.input.ScrollEvent;
  *
  * @author Bruno Barbosa
  */
-public class OnClickedMouse extends StandardModelingWindow implements Strategy{
+public class OnClickedMouse implements Strategy{
 
-    public OnClickedMouse() {
-        super();
-    }
-
+    
     @Override
-    public void onClickedMouse(MouseEvent e) {
+    public void onClickedMouse(StandardModelingWindowImpl s, MouseEvent e) {
         //mostrando menu dos blocos
         if (MouseButton.SECONDARY.equals(e.getButton())) {
-            setComponenteSelecionado(mComponentSobMouse);
+            s.setComponenteSelecionado(s.mComponentSobMouse);
             
-            if (mComponentSelecionado instanceof BlockBuildDSView) {
-                mContextMenuBlockBuild.show(mViewer.getNode(), e.getScreenX(), e.getScreenY());
+            if (s.mComponentSelecionado instanceof BlockBuildDSView) {
+                s.mContextMenuBlockBuild.show(s.mViewer.getNode(), e.getScreenX(), e.getScreenY());
             } else {
-                mContextMenuBlockBuild.hide();
+                s.mContextMenuBlockBuild.hide();
             }
             return;
         }else{
-           mContextMenuBlockBuild.hide();
+           s.mContextMenuBlockBuild.hide();
         }
         //resetando zoom pelo mouse
         if (e.isControlDown() && e.getButton() == MouseButton.MIDDLE) {
 
-            mViewer.getNode().setScaleX(mViewerScaleXPadrao);
-            mViewer.getNode().setScaleY(mViewerScaleYPadrao);
+            s.mViewer.getNode().setScaleX(s.mViewerScaleXPadrao);
+            s.mViewer.getNode().setScaleY(s.mViewerScaleYPadrao);
 
-            mViewer.getNode().setTranslateX(mViewerTranslateXPadrao);
-            mViewer.getNode().setTranslateY(mViewerTranslateYPadrao);
+            s.mViewer.getNode().setTranslateX(s.mViewerTranslateXPadrao);
+            s.mViewer.getNode().setTranslateY(s.mViewerTranslateYPadrao);
         }
         //verificando por controles de butoes
-        if(mModoAtual == MODO_NENHUM){
+        if(s.mModoAtual == s.MODO_NENHUM){
             
         }
-        else if(mModoAtual == MODO_BLOCO){
-            if (!(mComponentSobMouse instanceof BlockBuildDSView)) {
-                    if (contID == -1) {
-                        updateContID();
+        else if(s.mModoAtual == s.MODO_BLOCO){
+            if (!(s.mComponentSobMouse instanceof BlockBuildDSView)) {
+                    if (s.contID == -1) {
+                        s.updateContID();
                     }
-                    int id = mViewer.getComponentBuildDS().getBlocos().size();
-                    BlockBuildDS b = mViewer.getComponentBuildDS().newBlock(id);
-                    b.setID(contID);
-                    contID++;
+                    BlockBuildDS b = s.mViewer.getComponentBuildDS().newBlock(s.contID);
+                    s.contID++;
                     b.setLayoutX(e.getX());
                     b.setLayoutY(e.getY());
                     b.setLabel("New Block");
                 }
         }
-        else if(mModoAtual == MODO_REMOVER){
-            
+        else if(s.mModoAtual == s.MODO_REMOVER){
+            if(s.mComponentSobMouse instanceof BlockBuildDSView){
+                BlockBuildDS b = ((BlockBuildDSView)s.mComponentSobMouse).getBlockBuildDS();
+                s.mViewer.getComponentBuildDS().remove(b);
+            }
+            //falta a transition
         }
           
     }
 
     @Override
-    public void onMovedMouse(MouseEvent event) {}
+    public void onMovedMouse(StandardModelingWindowImpl s, MouseEvent event) {}
 
     @Override
-    public void onDragDetectedMouse(MouseEvent event) {}
+    public void onDragDetectedMouse(StandardModelingWindowImpl s, MouseEvent event) {}
 
     @Override
-    public void onDragOverMouse(DragEvent event) {}
+    public void onDragOverMouse(StandardModelingWindowImpl s, DragEvent event) {}
 
     @Override
-    public void onDragDroppedMouse(DragEvent event) {}
+    public void onDragDroppedMouse(StandardModelingWindowImpl s, DragEvent event) {}
 
     @Override
-    public void onDraggedMouse(MouseEvent event) {}
+    public void onDraggedMouse(StandardModelingWindowImpl s, MouseEvent event) {}
 
     @Override
-    public void onPressedMouse(MouseEvent event) {}
+    public void onPressedMouse(StandardModelingWindowImpl s, MouseEvent event) {}
 
     @Override
-    public void onReleasedMouse(MouseEvent event) {}
+    public void onReleasedMouse(StandardModelingWindowImpl s, MouseEvent event) {}
 
     @Override
-    public void onScrollMouse(ScrollEvent event) {}
+    public void onScrollMouse(StandardModelingWindowImpl s, ScrollEvent event) {}
 
     @Override
-    public void onKeyPressed(KeyEvent event) {}
+    public void onKeyPressed(StandardModelingWindowImpl s, KeyEvent event) {}
 
     @Override
-    public void onKeyReleased(KeyEvent event) {}
+    public void onKeyReleased(StandardModelingWindowImpl s, KeyEvent event) {}
     
 }

@@ -5,8 +5,7 @@
  */
 package br.uece.lotus.uml.designer.standardModeling.strategy;
 
-import br.uece.lotus.uml.designer.standardModeling.StandardModelingWindow;
-import javafx.scene.Parent;
+import br.uece.lotus.uml.designer.standardModeling.StandardModelingWindowImpl;
 import javafx.scene.input.MouseEvent;
 
 /**
@@ -21,15 +20,23 @@ public class Context{
         this.strategy = strategy;
     }
 
-    public void executeStrategyOnMovedMouse(MouseEvent e){
-        strategy.onMovedMouse(e);
+    public void executeStrategyOnMovedMouse(StandardModelingWindowImpl s, MouseEvent e){
+        strategy.onMovedMouse(s,e);
     }
 
-    public void executeStrategyOnClikedMouse(MouseEvent event) {
-        strategy.onClickedMouse(event);
+    public void executeStrategyOnClikedMouse(StandardModelingWindowImpl s, MouseEvent event) {
+        strategy.onClickedMouse(s,event);
     }
     
+    public void executeStrategyOnPressedMouse(StandardModelingWindowImpl s, MouseEvent event) {
+        strategy.onPressedMouse(s, event);
+    }
     
+    public void executeStrategyOnDraggedMouse(StandardModelingWindowImpl s, MouseEvent event) {
+        strategy.onDraggedMouse(s, event);
+    }
     
-    
+    public void executeStrategyOnReleasedMouse(StandardModelingWindowImpl s, MouseEvent event) {
+        strategy.onReleasedMouse(s, event);
+    }
 }
