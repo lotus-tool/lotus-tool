@@ -8,11 +8,14 @@ package br.uece.lotus.designer.strategyDesigner;
 import br.uece.lotus.designer.DesignerWindowImpl;
 import br.uece.lotus.viewer.StateView;
 import javafx.geometry.Point2D;
+import javafx.scene.control.Label;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.input.TransferMode;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 
 /**
@@ -38,14 +41,16 @@ public class OnDragOverMouse implements Strategy{
         dwi.mVerticeDestinoParaAdicionarTransicao = (v instanceof StateView) ? ((StateView) v) : null;
         /*<><><><><><><><><><><><><><><><><><><><><><<><><><><><><><><><><><><><><><><><><><><><><><><><>*/
         if(dwi.ultimaLinha!=null){
-            dwi.mViewer.getNode().getChildren().remove(dwi.ultimaLinha);
+            dwi.mViewer.getNode().getChildren().removeAll(dwi.ultimaLinha, dwi.ultimoCircle);
         }
 
         Line linha= createViewFakeTransitionLine(dwi.xInicial, dwi.yInicial, xFinal, yFinal);
-        dwi.mViewer.getNode().getChildren().add(linha);
+        Circle circulo = createViewFakeState(xFinal,yFinal);
+        dwi.mViewer.getNode().getChildren().addAll(linha,circulo);
         linha.toBack();///<-coloca a linha por trás do state
         //System.out.println("ADICIONOU");
         dwi.ultimaLinha=linha;
+        dwi.ultimoCircle=circulo;
 
         /*<><><><><><><><><><><><><><><><><><><><><><<><><><><><><><><><><><><><><><><><><><><><><><><><>*/
         event.consume();
@@ -60,6 +65,18 @@ public class OnDragOverMouse implements Strategy{
         linha.setOpacity(0.5);
         linha.getStrokeDashArray().addAll(2d);
         return linha;
+    }
+    
+    private Circle createViewFakeState(double xFinal, double yFinal) {
+        Circle c = new Circle(15);
+        c.setFill(Color.WHITESMOKE);
+        c.setLayoutX(xFinal);
+        c.setLayoutY(yFinal);
+        c.setOpacity(0.5);
+        c.setStyle("-fx-effect: innershadow(gaussian, black, 2, 1.0, 0, 0);"
+                + "-fx-stroke: black;"
+                + "-fx-stroke-width: 1;");
+        return c;
     }
     
     @Override
@@ -91,5 +108,5 @@ public class OnDragOverMouse implements Strategy{
 
     @Override
     public void onKeyReleased(DesignerWindowImpl dwi, KeyEvent event) {}
-    
+
 }

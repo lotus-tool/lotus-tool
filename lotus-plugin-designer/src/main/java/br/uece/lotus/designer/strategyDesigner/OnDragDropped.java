@@ -31,7 +31,7 @@ public class OnDragDropped implements Strategy{
         }
         
         if(dwi.ultimaLinha!=null){
-            dwi.mViewer.getNode().getChildren().remove(dwi.ultimaLinha);
+            dwi.mViewer.getNode().getChildren().removeAll(dwi.ultimaLinha, dwi.ultimoCircle);
         }
 
         if (dwi.mVerticeDestinoParaAdicionarTransicao != null) {
@@ -106,6 +106,20 @@ public class OnDragDropped implements Strategy{
                         .create();
                 applyDefaults(t,dwi);
             }
+        }else{
+            int id = dwi.mViewer.getComponent().getStatesCount();
+            State d = dwi.mViewer.getComponent().newState(id);
+            d.setID(dwi.contID);
+            dwi.contID++;
+            d.setLayoutX(event.getX());
+            d.setLayoutY(event.getY());
+            d.setLabel(String.valueOf(id));
+            
+            State o = dwi.mVerticeOrigemParaAdicionarTransicao.getState();
+            Transition t = dwi.mViewer.getComponent().buildTransition(o, d)
+                        .setViewType(dwi.mTransitionViewType)
+                        .create();
+            applyDefaults(t, dwi);
         }
 
         event.setDropCompleted(true);
