@@ -30,7 +30,7 @@ public class OnReleasedMouse implements Strategy{
     public void onReleasedMouse(DesignerWindowImpl dwi, MouseEvent event) {
         
         
-        if (dwi.mModoAtual == MODO_MOVER) {
+            if (dwi.mModoAtual == MODO_MOVER) {
                 dwi.mViewer.getNode().setCursor(Cursor.OPEN_HAND);
             }
             

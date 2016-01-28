@@ -115,6 +115,7 @@ public class OnDragDropped implements Strategy{
             d.setLayoutY(event.getY());
             d.setLabel(String.valueOf(id));
             
+            dwi.mExibirPropriedadesTransicao = true;
             State o = dwi.mVerticeOrigemParaAdicionarTransicao.getState();
             Transition t = dwi.mViewer.getComponent().buildTransition(o, d)
                         .setViewType(dwi.mTransitionViewType)
