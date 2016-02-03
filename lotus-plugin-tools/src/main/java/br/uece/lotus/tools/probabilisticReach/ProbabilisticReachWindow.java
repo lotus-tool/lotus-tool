@@ -443,6 +443,7 @@ public class ProbabilisticReachWindow extends AnchorPane{
 
         int sourceID = -1;
         int targetID = -1;
+        int actionTargetID = -1;
         double actionP = 1;
         sourceStt = sourceStt.trim();
         targetStt = targetStt.trim();
@@ -469,25 +470,30 @@ public class ProbabilisticReachWindow extends AnchorPane{
 
             default:
                 if(targetStt.matches("\\d+")){
-                    targetID = Integer.parseInt(targetStt);
-                    if(targetID >= a.getStatesCount()) targetID = -1;
+                    if(targetID >= a.getStatesCount()){ targetID = -1;}
+                    else{
+                        actionTargetID = targetID = Integer.parseInt(targetStt);
+                    }
                 }else{
                     targetID = a.getTransitionByLabel(targetStt).getSource().getID();
                     actionP = a.getTransitionByLabel(targetStt).getProbability();
+                    actionTargetID = a.getTransitionByLabel(targetStt).getDestiny().getID();;
                 }
         }
 
         if(sourceID == -1){
             JOptionPane.showMessageDialog(null, "State/Transition " + sourceStt + " is not in this component.",
                     "Probabilistic Reachability", JOptionPane.WARNING_MESSAGE);
+            return "0";
         }
 
         if(targetID == -1){
             JOptionPane.showMessageDialog(null, "State/Transition " + targetStt + " is not in this component.",
                     "Probabilistic Reachability", JOptionPane.WARNING_MESSAGE);
+            return "0";
         }
 
-        double p = new ProbabilisticReachAlgorithm().probabilityBetween(a, sourceID, targetID, steps);
+        double p = new ProbabilisticReachAlgorithm().probabilityBetween(a, sourceID, targetID, steps, actionTargetID);
         p = p * actionP;
         String result = String.valueOf(p);
         

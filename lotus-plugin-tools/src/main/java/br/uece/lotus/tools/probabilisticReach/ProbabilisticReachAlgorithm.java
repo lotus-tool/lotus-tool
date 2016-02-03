@@ -19,7 +19,12 @@ import javax.swing.JOptionPane;
  */
 public class ProbabilisticReachAlgorithm {
     
-    public double probabilityBetween (Component a, int source, int target, int steps) {
+    public double probabilityBetween (Component a, int source, int target, int steps, int actionTargetID) {
+        //adicionar mais um parametro k para saber qual estado de destino da ação, além do source.
+        //no final dos steps, caso a posição (i,k) da matriz estiver nula, return 0. caso contrario return valor normal.
+
+        //fazer com que a posição (0,0) da matriz seja sempre 1.
+
         int tam = a.getStatesCount();
         double[][] probabilities = new double[tam][tam];
         probabilities = zerar(probabilities, tam);
@@ -32,16 +37,19 @@ public class ProbabilisticReachAlgorithm {
             probabilities[i][j] = t.getProbability();
         }
         zerarDiagonal(probabilities, tam);
+        probabilities[0][0] = 1;
         i = source;
         j = target;
+        // montar a matriz de probabilidades já é um step.
+        steps--;
 //      multiplica as matrizes um monte de vez
         double[][] mult = probabilities;
         double difference = 1;
         double total = 0;
         int count = 0;
+        if(steps == 0) total = probabilities[source][target];
         //Parar se a diferença for pequena o bastante e o count > 10.
-        while(abs(difference) > 0.01 || count < 20){
-            if(steps < 1) break;
+        while((abs(difference) > 0.01 || count < 20) && (steps > 0)){
             total += probabilities[i][j];
             difference = probabilities[i][j];
             probabilities = multiply(probabilities, mult, tam);
@@ -56,7 +64,11 @@ public class ProbabilisticReachAlgorithm {
         if(total > 1){
            total = 1;
         }
-        total = ProbabilisticReachAlgorithm.truncar(total, 5);
+        total = truncar(total, 5);
+        double teste = probabilities[i][actionTargetID];
+        teste = truncar(teste, 2);
+        System.out.println(teste);
+        if(probabilities[i][actionTargetID] == 0) return 0;
         return total;
     }
     
@@ -108,9 +120,7 @@ public class ProbabilisticReachAlgorithm {
     
     public double[][] zerarDiagonal (double[][] probabilities, int tam){
         for(int i = 0; i < tam; i++){
-            if(probabilities[i][i] == 1){
-                probabilities[i][i] = 0;
-            }
+            probabilities[i][i] = 0;
         }
         return probabilities;
     }
