@@ -7,6 +7,8 @@ package br.uece.lotus.uml.designer.standardModeling.strategy;
 
 import br.uece.lotus.uml.api.ds.BlockBuildDS;
 import br.uece.lotus.uml.api.viewer.builder.BlockBuildDSView;
+import static br.uece.lotus.uml.api.viewer.builder.BlockBuildDSViewImpl.ALTURA;
+import static br.uece.lotus.uml.api.viewer.builder.BlockBuildDSViewImpl.LARGURA;
 import br.uece.lotus.uml.designer.standardModeling.StandardModelingWindowImpl;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.KeyEvent;
@@ -37,7 +39,7 @@ public class OnClickedMouse implements Strategy{
            s.mContextMenuBlockBuild.hide();
         }
         //resetando zoom pelo mouse
-        if (e.isControlDown() && e.getButton() == MouseButton.MIDDLE) {
+        if ((e.isControlDown() && e.getButton() == MouseButton.MIDDLE) || (e.getClickCount() == 2 && s.mModoAtual == s.MODO_MOVER)) {
 
             s.mViewer.getNode().setScaleX(s.mViewerScaleXPadrao);
             s.mViewer.getNode().setScaleY(s.mViewerScaleYPadrao);
@@ -47,7 +49,14 @@ public class OnClickedMouse implements Strategy{
         }
         //verificando por controles de butoes
         if(s.mModoAtual == s.MODO_NENHUM){
-            
+             if (s.mComponentSobMouse != null && (s.mComponentSobMouse instanceof BlockBuildDSView) && !s.mToolBar.getItems().contains(s.paleta)) {
+                 s.mToolBar.getItems().add(s.paleta);
+             }
+             else{
+                 if(!s.selecionadoPeloRetangulo){
+                    s.mToolBar.getItems().remove(s.paleta);
+                 }
+             }
         }
         else if(s.mModoAtual == s.MODO_BLOCO){
             if (!(s.mComponentSobMouse instanceof BlockBuildDSView)) {
@@ -56,9 +65,9 @@ public class OnClickedMouse implements Strategy{
                     }
                     BlockBuildDS b = s.mViewer.getComponentBuildDS().newBlock(s.contID);
                     s.contID++;
-                    b.setLayoutX(e.getX());
-                    b.setLayoutY(e.getY());
-                    b.setLabel("New Block");
+                    b.setLayoutX(e.getX()-(LARGURA/2));
+                    b.setLayoutY(e.getY()-(ALTURA/2));
+                    b.setLabel("New hMSC");
                 }
         }
         else if(s.mModoAtual == s.MODO_REMOVER){

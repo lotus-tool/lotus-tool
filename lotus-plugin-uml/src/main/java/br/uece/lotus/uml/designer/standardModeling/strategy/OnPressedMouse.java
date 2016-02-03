@@ -5,7 +5,11 @@
  */
 package br.uece.lotus.uml.designer.standardModeling.strategy;
 
+import br.uece.lotus.uml.api.ds.BlockBuildDS;
+import br.uece.lotus.uml.api.viewer.builder.BlockBuildDSView;
 import br.uece.lotus.uml.designer.standardModeling.StandardModelingWindowImpl;
+import javafx.scene.Cursor;
+import javafx.scene.Node;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
@@ -20,16 +24,25 @@ public class OnPressedMouse implements Strategy{
     
     @Override
     public void onPressedMouse(StandardModelingWindowImpl s, MouseEvent e) {
+        
         if(s.mModoAtual == s.MODO_NENHUM){
-            s.dragContextMouseAnchorX = e.getSceneX();
-            s.dragContextMouseAnchorY = e.getSceneY();
+            
+            s.dragContextMouseAnchorX = e.getX();
+            s.dragContextMouseAnchorY = e.getY();
+            s.segundaVezAoArrastar = false;
+            s.ultimoInstanteX = 0;
+            s.ultimoInstanteY = 0;
             
             s.rectSelecao.setX(s.dragContextMouseAnchorX);
             s.rectSelecao.setY(s.dragContextMouseAnchorY);
             s.rectSelecao.setWidth(0);
             s.rectSelecao.setHeight(0);
-            
             s.mViewer.getNode().getChildren().add(s.rectSelecao);
+
+        }
+        
+        if(s.mModoAtual == s.MODO_MOVER){
+            s.mViewer.getNode().setCursor(Cursor.CLOSED_HAND);
         }
         
         e.consume();

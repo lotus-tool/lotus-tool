@@ -5,9 +5,13 @@
  */
 package br.uece.lotus.uml.designer.standardModeling.strategy;
 
+import br.uece.lotus.uml.api.ds.BlockBuildDS;
+import br.uece.lotus.uml.api.viewer.builder.BlockBuildDSView;
 import br.uece.lotus.uml.designer.standardModeling.StandardModelingWindowImpl;
+import javafx.scene.Node;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 
@@ -20,20 +24,48 @@ public class OnDraggedMouse implements Strategy{
     @Override
     public void onDraggedMouse(StandardModelingWindowImpl s, MouseEvent e) {
         if(s.mModoAtual == s.MODO_NENHUM){
-            double offsetX = e.getSceneX() - s.dragContextMouseAnchorX;
-            double offsetY = e.getSceneY() - s.dragContextMouseAnchorY;
-            
-            if(offsetX > 0){
-                s.rectSelecao.setWidth(offsetX);
-            }else{
-                s.rectSelecao.setX(e.getSceneX());
-                s.rectSelecao.setWidth(s.dragContextMouseAnchorX - s.rectSelecao.getX());
-            }
-            if(offsetY > 0){
-                s.rectSelecao.setHeight(offsetY);
-            }else{
-                s.rectSelecao.setY(e.getSceneY());
-                s.rectSelecao.setHeight(s.dragContextMouseAnchorY - s.rectSelecao.getY());
+            if(e.getButton() == MouseButton.PRIMARY){
+                
+                double offsetX = e.getX() - s.dragContextMouseAnchorX;
+                double offsetY = e.getY() - s.dragContextMouseAnchorY;
+                if(!(s.mComponentSobMouse instanceof BlockBuildDSView)){//ajusta o retangulo se nao for arrastar um block
+                    
+                    if(offsetX > 0){
+                        s.rectSelecao.setWidth(offsetX);
+                    }else{
+                        s.rectSelecao.setX(e.getX());
+                        s.rectSelecao.setWidth(s.dragContextMouseAnchorX - s.rectSelecao.getX());
+                    }
+                    if(offsetY > 0){
+                        s.rectSelecao.setHeight(offsetY);
+                    }else{
+                        s.rectSelecao.setY(e.getY());
+                        s.rectSelecao.setHeight(s.dragContextMouseAnchorY - s.rectSelecao.getY());
+                    }
+                }else{//arrastando um block
+                    if(!s.segundaVezAoArrastar){
+                        s.segundaVezAoArrastar = true;
+                        s.ultimoInstanteX = e.getX();
+                        s.ultimoInstanteY = e.getY();
+                    }else{
+                        offsetX = e.getX() - s.ultimoInstanteX;
+                        offsetY = e.getY() - s.ultimoInstanteY;
+                        s.ultimoInstanteX = e.getX();
+                        s.ultimoInstanteY = e.getY();
+                    }
+                    if(s.selecionadoPeloRetangulo){
+                        for(Node n : s.selecao){
+                            BlockBuildDSView view = (BlockBuildDSView)n;
+                            BlockBuildDS b = view.getBlockBuildDS();
+                            b.setLayoutX(b.getLayoutX()+offsetX);
+                            b.setLayoutY(b.getLayoutY()+offsetY);
+                        }
+                    }else{
+                        BlockBuildDS b = ((BlockBuildDSView)s.mComponentSobMouse).getBlockBuildDS();
+                        b.setLayoutX(b.getLayoutX()+offsetX);
+                        b.setLayoutY(b.getLayoutY()+offsetY);
+                    }
+                }
             }
         }
         

@@ -19,7 +19,7 @@ import javafx.scene.shape.Rectangle;
  */
 public class BlockBuildDSViewImpl extends Region implements BlockBuildDSView, BlockBuildDS.Listener{
 
-    static final int LARGURA = 150,ALTURA = 70;
+    public static final int LARGURA = 150,ALTURA = 70;
     static final int RAIO = 5;
     
     private Rectangle mRetangulo;
@@ -32,8 +32,8 @@ public class BlockBuildDSViewImpl extends Region implements BlockBuildDSView, Bl
     public BlockBuildDSViewImpl() {
         mRetangulo = new Rectangle(LARGURA, ALTURA);
         getChildren().add(mRetangulo);
-        mRetangulo.setLayoutX(LARGURA);
-        mRetangulo.setLayoutY(ALTURA);
+        mRetangulo.setLayoutX(0);
+        mRetangulo.setLayoutY(0);
         
         mCircle = new Circle(RAIO);
         mCircle.layoutXProperty().bind(mRetangulo.layoutXProperty().add(mRetangulo.widthProperty().subtract(8)));
@@ -53,9 +53,15 @@ public class BlockBuildDSViewImpl extends Region implements BlockBuildDSView, Bl
 
     @Override
     public boolean isInsideBounds(Point2D point) {
-        return mRetangulo.localToScene(point) == mRetangulo.localToScene(mRetangulo.getLayoutBounds().getMinX(), mRetangulo.getLayoutBounds().getMinY());
+        Point2D aux = mRetangulo.localToScene(Point2D.ZERO);
+        //System.out.println("auxX:"+aux.getX()+" auxY:"+aux.getY());
+        //System.out.println("pointX:"+point.getX()+" pointY:"+point.getY());
+        //System.out.println("distanciaX:"+(point.getX()-aux.getX())+" distanciaY:"+(point.getY()-aux.getY()));
+        double distanciaX = point.getX()-aux.getX();
+        double distanciaY = point.getY()-aux.getY();
+        return((distanciaX >= 0 && distanciaX <= LARGURA) && (distanciaY >= 0 && distanciaY <= ALTURA));
+            
         
-       
     }
 
     @Override

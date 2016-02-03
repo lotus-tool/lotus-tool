@@ -25,7 +25,6 @@ import java.util.HashSet;
 import java.util.Set;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -35,8 +34,10 @@ import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.ColorPicker;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuButton;
@@ -56,7 +57,6 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
-import javafx.scene.shape.StrokeLineCap;
 import javafx.scene.transform.Scale;
 import javafx.stage.FileChooser;
 
@@ -69,8 +69,8 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
     //Principais da Tela
     private final ScrollPane mScrollPanel;
     private final AnchorPane mPropriedadePanel;
-    private final AnchorPane mInfoPanel;
-    private final ToolBar mToolBar;
+    private final HBox mInfoPanel;
+    public final ToolBar mToolBar;
     public ComponentBuildDSView mViewer;
     //Botoes
     private ToggleGroup mToggleGroup;
@@ -101,11 +101,13 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
     public Object mComponentSobMouse;
     public Object mComponentSelecionado;
     //Cores
-    private HBox paleta;
+    public HBox paleta;
     //Variaveis gerais
     public Set<Node> selecao = new HashSet<>();
     public double dragContextMouseAnchorX, dragContextMouseAnchorY;
     public Rectangle rectSelecao;
+    public boolean segundaVezAoArrastar;
+    public double ultimoInstanteX, ultimoInstanteY;
     
     /////////////////////////////////////////////////////////////////////////
     //                   IMPLEMENTACAO DA WINDOW_DS                        //
@@ -148,7 +150,7 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
         mToolBar = new ToolBar();
         mScrollPanel = new ScrollPane((Node)mViewer);
         mPropriedadePanel = new AnchorPane();
-        mInfoPanel = new AnchorPane();
+        mInfoPanel = new HBox(20);
        
         mViewer.getNode().setPrefSize(1200, 600);
         mScrollPanel.viewportBoundsProperty().addListener((ObservableValue<? extends Bounds> observable, Bounds oldValue, Bounds newValue) -> {
@@ -262,6 +264,25 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
         });
         mBtnZoom.getItems().add(zoomHBox);
         
+        //Set Colors-----------------------------------------------------------------------------------
+        ColorPicker cores = new ColorPicker();
+        MenuButton complementoColors = new MenuButton("");
+        cores.setOnAction((ActionEvent event) -> {
+            if(selecao.isEmpty()){
+                changeColorsBlock(cores, "");
+            }else{
+                changeColorsBlock(cores, "MultiSelecao");
+            }
+        });
+        MenuItem defaultColor = new MenuItem("Default Color");
+        defaultColor.setOnAction((ActionEvent event) -> {
+            changeColorsBlock(cores, "Default");
+        });
+        complementoColors.getItems().add(defaultColor);
+        paleta = new HBox();
+        paleta.setAlignment(Pos.CENTER);
+        paleta.getChildren().addAll(cores,complementoColors);
+        
         mToolBar.getItems().addAll(mBtnArrow,mBtnBlock,mBtnTransitionLine,mBtnTransitionArc,mBtnEraser,mBtnHand,mBtnZoom);
         
         //ToolTips
@@ -339,10 +360,13 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
         
         
         //Panel de info / utilidade
-        HBox utilidade = new HBox(10); utilidade.setPrefSize(mInfoPanel.getPrefWidth(), mInfoPanel.getPrefHeight());
+        HBox utilidade = new HBox(10); 
+        utilidade.setPrefSize(mInfoPanel.getPrefWidth(), mInfoPanel.getPrefHeight());
         HBox infoEmpyt = new HBox(2);
+        infoEmpyt.setPrefSize(utilidade.getPrefWidth(), utilidade.getPrefHeight());
         infoEmpyt.setAlignment(Pos.CENTER);
         HBox infoFull = new HBox(2);
+        infoFull.setPrefSize(utilidade.getPrefWidth(), utilidade.getPrefHeight());
         infoFull.setAlignment(Pos.CENTER);
         
         Circle green = new Circle(7); green.setFill(Color.GREEN);
@@ -353,7 +377,11 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
         infoEmpyt.getChildren().addAll(red,empyt);
         utilidade.getChildren().addAll(infoEmpyt,infoFull);
         
-        mInfoPanel.getChildren().add(utilidade);
+        Button gerarLts = new Button("Build LTS",new ImageView(new Image(getClass().getResourceAsStream("/imagens/ic_build_LTS.png"))));
+        gerarLts.setOnAction(btnGerarLTS);
+        
+        mInfoPanel.getChildren().addAll(utilidade,gerarLts);
+        
     }
 
     // Ao Mover o mouse----------------------------------------------------------------------
@@ -398,7 +426,6 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
         if(b == null){
             //b = mViewer.locateTransitionBuildView(point2D);
         }
-        System.out.println(b);
         return b;
     }
 
@@ -440,7 +467,7 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
     }
 
     private void updatePropriedades(Object mComponentSobMouse) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        
     }
     
     public void updateContID() {
@@ -454,13 +481,38 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
         contID++;
     }
 
+    private void changeColorsBlock(ColorPicker cores, String tipo) {
+        if(selecao==null){
+            return;
+        }
+        String hexCor = "";
+        if(cores.getValue().toString().equals("0x000000ff")){
+            hexCor = "black";
+        }else{
+            hexCor = "#"+ Integer.toHexString(cores.getValue().hashCode()).substring(0, 6).toUpperCase();
+        }
+        for(Node b : selecao){
+            BlockBuildDSView bview = (BlockBuildDSView)b;
+            BlockBuildDS bbds = bview.getBlockBuildDS();
+            if(tipo.equals("Default")){
+                bbds.setColor(null);
+            }
+            if(tipo.equals("MultiSelecao")){
+                bbds.setColor(hexCor);
+            }
+        }
+    }
+    
     ///////////////////////////////////////////////////////////////////////////////////
     //                         Metodos de Selecao                                    //
     //////////////////////////////////////////////////////////////////////////////////
     
+    public boolean selecionadoPeloRetangulo = false;
+    
     public void addNoSelecao(Node node){
         applySelectedStyles((Object)node);
         selecao.add(node);
+        selecionadoPeloRetangulo = true;
     }
     
     public void removeNoSelecao(Node node){
@@ -472,9 +524,31 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
         while(!selecao.isEmpty()){
             removeNoSelecao(selecao.iterator().next());
         }
+        selecionadoPeloRetangulo = false;
     }
     
     public boolean containsNoSelecao(Node node){
         return selecao.contains(node);
     }
+    
+    ///////////////////////////////////////////////////////////////////////////////////
+    //                         Metodos de Botoes                                    //
+    //////////////////////////////////////////////////////////////////////////////////
+    
+    EventHandler<ActionEvent> btnGerarLTS = (ActionEvent event) -> {
+        //verificar se tem bloco com ds vazio
+        for(Node node : mViewer.getNode().getChildren()){
+            if(node instanceof BlockBuildDSView){
+                BlockBuildDSView b = (BlockBuildDSView)node;
+                BlockBuildDS block = b.getBlockBuildDS();
+                if(!block.isFull()){
+                    Alert alerta = new Alert(Alert.AlertType.WARNING, "Algum bloco esta vazio", ButtonType.OK);
+                    alerta.show();
+                    return;
+                }
+            }
+        }
+        //gerar os lts
+        
+    };
 }

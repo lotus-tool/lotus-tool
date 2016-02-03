@@ -22,6 +22,7 @@ import javafx.scene.SnapshotParameters;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.image.WritableImage;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.paint.Color;
 import javax.imageio.ImageIO;
 
 /**
@@ -53,6 +54,7 @@ public class ComponentBuildDSViewImpl extends AnchorPane implements ComponentBui
         if(mComponentBuild != null){
             mComponentBuild.removeListener(this);
         }
+        clear();
         if(cbds == null){
             return;
         }
@@ -185,6 +187,16 @@ public class ComponentBuildDSViewImpl extends AnchorPane implements ComponentBui
 
     private void hideTransition(TransitionBuildDS t) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    private void clear() {
+        if (mComponentBuild == null) {
+            return;
+        }
+        for (BlockBuildDS b : mComponentBuild.getBlocos()) {
+            hideBlock(b);
+        }
+        mComponentBuild = null;
     }
     
 }

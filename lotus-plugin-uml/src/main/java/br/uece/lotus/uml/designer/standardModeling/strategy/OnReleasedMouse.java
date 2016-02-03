@@ -7,6 +7,7 @@ package br.uece.lotus.uml.designer.standardModeling.strategy;
 
 import br.uece.lotus.uml.api.viewer.builder.BlockBuildDSView;
 import br.uece.lotus.uml.designer.standardModeling.StandardModelingWindowImpl;
+import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.KeyEvent;
@@ -52,6 +53,14 @@ public class OnReleasedMouse implements Strategy{
                 s.rectSelecao.setWidth(0);
                 s.rectSelecao.setHeight(0);
                 s.mViewer.getNode().getChildren().remove(s.rectSelecao);
+            
+                if(s.selecionadoPeloRetangulo && !s.mToolBar.getItems().contains(s.paleta)){
+                    s.mToolBar.getItems().add(s.paleta);
+                }
+            }
+            
+            if (s.mModoAtual == s.MODO_MOVER) {
+                s.mViewer.getNode().setCursor(Cursor.OPEN_HAND);
             }
         }
         e.consume();
