@@ -8,6 +8,7 @@ import static br.uece.lotus.designer.DesignerWindowImpl.MODO_NENHUM;
 import static br.uece.lotus.designer.DesignerWindowImpl.MODO_REMOVER;
 import static br.uece.lotus.designer.DesignerWindowImpl.MODO_VERTICE;
 import br.uece.lotus.viewer.StateView;
+import br.uece.lotus.viewer.StateViewImpl;
 import br.uece.lotus.viewer.TransitionView;
 import java.util.List;
 import javafx.scene.input.DragEvent;
@@ -95,8 +96,8 @@ public class OnClickedMouse implements Strategy {
                     State s = dwi.mViewer.getComponent().newState(id);
                     s.setID(dwi.contID);
                     dwi.contID++;
-                    s.setLayoutX(e.getX());
-                    s.setLayoutY(e.getY());
+                    s.setLayoutX(e.getX()-(StateViewImpl.RAIO_CIRCULO));
+                    s.setLayoutY(e.getY()-(StateViewImpl.RAIO_CIRCULO));
                     s.setLabel(String.valueOf(id));
 
                     if (dwi.mViewer.getComponent().getStatesCount() == 0) {

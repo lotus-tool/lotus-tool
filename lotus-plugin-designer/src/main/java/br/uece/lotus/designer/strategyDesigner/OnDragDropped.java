@@ -10,6 +10,7 @@ import br.uece.lotus.State;
 import br.uece.lotus.Transition;
 import br.uece.lotus.designer.DesignerWindowImpl;
 import static br.uece.lotus.designer.DesignerWindowImpl.MODO_TRANSICAO;
+import br.uece.lotus.viewer.StateViewImpl;
 import br.uece.lotus.viewer.TransitionView;
 import java.util.List;
 import javafx.scene.input.DragEvent;
@@ -111,8 +112,8 @@ public class OnDragDropped implements Strategy{
             State d = dwi.mViewer.getComponent().newState(id);
             d.setID(dwi.contID);
             dwi.contID++;
-            d.setLayoutX(event.getX());
-            d.setLayoutY(event.getY());
+            d.setLayoutX(event.getX()-(StateViewImpl.RAIO_CIRCULO));
+            d.setLayoutY(event.getY()-(StateViewImpl.RAIO_CIRCULO));
             d.setLabel(String.valueOf(id));
             
             dwi.mExibirPropriedadesTransicao = true;

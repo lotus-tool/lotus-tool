@@ -32,7 +32,7 @@ import javafx.scene.shape.Circle;
 
 public class StateViewImpl extends Region implements StateView, State.Listener {
 
-    static final int RAIO_CIRCULO = 15;
+    public static final int RAIO_CIRCULO = 15;
 
     private final Circle mCircle;
     private final Circle mSecondCircle;
