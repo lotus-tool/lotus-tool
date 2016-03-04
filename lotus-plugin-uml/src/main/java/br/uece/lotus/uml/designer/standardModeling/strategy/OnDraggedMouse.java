@@ -42,7 +42,7 @@ public class OnDraggedMouse implements Strategy{
                         s.rectSelecao.setY(e.getY());
                         s.rectSelecao.setHeight(s.dragContextMouseAnchorY - s.rectSelecao.getY());
                     }
-                }else{//arrastando um block
+                }else{//arrastando um ou uns bloco
                     if(!s.segundaVezAoArrastar){
                         s.segundaVezAoArrastar = true;
                         s.ultimoInstanteX = e.getX();
@@ -53,7 +53,8 @@ public class OnDraggedMouse implements Strategy{
                         s.ultimoInstanteX = e.getX();
                         s.ultimoInstanteY = e.getY();
                     }
-                    if(s.selecionadoPeloRetangulo){
+                    Node node = ((BlockBuildDSView)s.mComponentSobMouse).getNode();
+                    if(s.selecionadoPeloRetangulo && s.selecao.contains(node)){
                         for(Node n : s.selecao){
                             BlockBuildDSView view = (BlockBuildDSView)n;
                             BlockBuildDS b = view.getBlockBuildDS();
@@ -61,6 +62,8 @@ public class OnDraggedMouse implements Strategy{
                             b.setLayoutY(b.getLayoutY()+offsetY);
                         }
                     }else{
+                        s.clearSelecao();
+                        s.addNoSelecao(node);
                         BlockBuildDS b = ((BlockBuildDSView)s.mComponentSobMouse).getBlockBuildDS();
                         b.setLayoutX(b.getLayoutX()+offsetX);
                         b.setLayoutY(b.getLayoutY()+offsetY);
