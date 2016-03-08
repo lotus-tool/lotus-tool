@@ -5,6 +5,7 @@
  */
 package br.uece.lotus.uml.designer.blockDiagramModeling.strategy;
 
+import br.uece.lotus.uml.designer.blockDiagramModeling.DesingWindowImplBlockDs;
 import br.uece.lotus.uml.designer.standardModeling.StandardModelingWindowImpl;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.KeyEvent;
@@ -17,19 +18,19 @@ import javafx.scene.input.ScrollEvent;
  */
 public interface Strategy {
    
-    void onClickedMouse(StandardModelingWindowImpl s, MouseEvent event);
-    void onMovedMouse(StandardModelingWindowImpl s, MouseEvent event);
+    void onClickedMouse(DesingWindowImplBlockDs s, MouseEvent event);
+    void onMovedMouse(DesingWindowImplBlockDs s, MouseEvent event);
     
-    void onDragDetectedMouse(StandardModelingWindowImpl s, MouseEvent event);
-    void onDragOverMouse(StandardModelingWindowImpl s, DragEvent event);
-    void onDragDroppedMouse(StandardModelingWindowImpl s, DragEvent event);
+    void onDragDetectedMouse(DesingWindowImplBlockDs s, MouseEvent event);
+    void onDragOverMouse(DesingWindowImplBlockDs s, DragEvent event);
+    void onDragDroppedMouse(DesingWindowImplBlockDs s, DragEvent event);
     
-    void onDraggedMouse(StandardModelingWindowImpl s, MouseEvent event);
-    void onPressedMouse(StandardModelingWindowImpl s, MouseEvent event);
-    void onReleasedMouse(StandardModelingWindowImpl s, MouseEvent event);
+    void onDraggedMouse(DesingWindowImplBlockDs s, MouseEvent event);
+    void onPressedMouse(DesingWindowImplBlockDs s, MouseEvent event);
+    void onReleasedMouse(DesingWindowImplBlockDs s, MouseEvent event);
     
-    void onScrollMouse(StandardModelingWindowImpl s, ScrollEvent event);
+    void onScrollMouse(DesingWindowImplBlockDs s, ScrollEvent event);
     
-    void onKeyPressed(StandardModelingWindowImpl s, KeyEvent event);
-    void onKeyReleased(StandardModelingWindowImpl s, KeyEvent event);
+    void onKeyPressed(DesingWindowImplBlockDs s, KeyEvent event);
+    void onKeyReleased(DesingWindowImplBlockDs s, KeyEvent event);
 }

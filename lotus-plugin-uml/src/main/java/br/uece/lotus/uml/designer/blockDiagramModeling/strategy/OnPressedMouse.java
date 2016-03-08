@@ -5,6 +5,7 @@
  */
 package br.uece.lotus.uml.designer.blockDiagramModeling.strategy;
 
+import br.uece.lotus.uml.designer.blockDiagramModeling.DesingWindowImplBlockDs;
 import br.uece.lotus.uml.designer.standardModeling.StandardModelingWindowImpl;
 import javafx.scene.Cursor;
 import javafx.scene.input.DragEvent;
@@ -20,7 +21,7 @@ public class OnPressedMouse implements Strategy {
 
     
     @Override
-    public void onPressedMouse(StandardModelingWindowImpl s, MouseEvent e) {
+    public void onPressedMouse(DesingWindowImplBlockDs s, MouseEvent e) {
         
         if(s.mModoAtual == s.MODO_NENHUM){
             
@@ -46,33 +47,33 @@ public class OnPressedMouse implements Strategy {
     }
     
     @Override
-    public void onClickedMouse(StandardModelingWindowImpl s, MouseEvent event) {}
+    public void onClickedMouse(DesingWindowImplBlockDs s, MouseEvent event) {}
 
     @Override
-    public void onMovedMouse(StandardModelingWindowImpl s, MouseEvent event) {}
+    public void onMovedMouse(DesingWindowImplBlockDs s, MouseEvent event) {}
 
     @Override
-    public void onDragDetectedMouse(StandardModelingWindowImpl s, MouseEvent event) {}
+    public void onDragDetectedMouse(DesingWindowImplBlockDs s, MouseEvent event) {}
 
     @Override
-    public void onDragOverMouse(StandardModelingWindowImpl s, DragEvent event) {}
+    public void onDragOverMouse(DesingWindowImplBlockDs s, DragEvent event) {}
 
     @Override
-    public void onDragDroppedMouse(StandardModelingWindowImpl s, DragEvent event) {}
+    public void onDragDroppedMouse(DesingWindowImplBlockDs s, DragEvent event) {}
 
     @Override
-    public void onDraggedMouse(StandardModelingWindowImpl s, MouseEvent event) {}
+    public void onDraggedMouse(DesingWindowImplBlockDs s, MouseEvent event) {}
     
     @Override
-    public void onReleasedMouse(StandardModelingWindowImpl s, MouseEvent event) {}
+    public void onReleasedMouse(DesingWindowImplBlockDs s, MouseEvent event) {}
 
     @Override
-    public void onScrollMouse(StandardModelingWindowImpl s, ScrollEvent event) {}
+    public void onScrollMouse(DesingWindowImplBlockDs s, ScrollEvent event) {}
 
     @Override
-    public void onKeyPressed(StandardModelingWindowImpl s, KeyEvent event) {}
+    public void onKeyPressed(DesingWindowImplBlockDs s, KeyEvent event) {}
 
     @Override
-    public void onKeyReleased(StandardModelingWindowImpl s, KeyEvent event) {}
+    public void onKeyReleased(DesingWindowImplBlockDs s, KeyEvent event) {}
     
 }

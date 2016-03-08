@@ -5,6 +5,7 @@
  */
 package br.uece.lotus.uml.designer.blockDiagramModeling.strategy;
 
+import br.uece.lotus.uml.designer.blockDiagramModeling.DesingWindowImplBlockDs;
 import br.uece.lotus.uml.designer.standardModeling.StandardModelingWindowImpl;
 import javafx.scene.input.MouseEvent;
 
@@ -20,23 +21,23 @@ public class Context{
         this.strategy = strategy;
     }
 
-    public void executeStrategyOnMovedMouse(StandardModelingWindowImpl s, MouseEvent e){
+    public void executeStrategyOnMovedMouse(DesingWindowImplBlockDs s, MouseEvent e){
         strategy.onMovedMouse(s,e);
     }
 
-    public void executeStrategyOnClikedMouse(StandardModelingWindowImpl s, MouseEvent event) {
+    public void executeStrategyOnClikedMouse(DesingWindowImplBlockDs s, MouseEvent event) {
         strategy.onClickedMouse(s,event);
     }
     
-    public void executeStrategyOnPressedMouse(StandardModelingWindowImpl s, MouseEvent event) {
+    public void executeStrategyOnPressedMouse(DesingWindowImplBlockDs s, MouseEvent event) {
         strategy.onPressedMouse(s, event);
     }
     
-    public void executeStrategyOnDraggedMouse(StandardModelingWindowImpl s, MouseEvent event) {
+    public void executeStrategyOnDraggedMouse(DesingWindowImplBlockDs s, MouseEvent event) {
         strategy.onDraggedMouse(s, event);
     }
     
-    public void executeStrategyOnReleasedMouse(StandardModelingWindowImpl s, MouseEvent event) {
+    public void executeStrategyOnReleasedMouse(DesingWindowImplBlockDs s, MouseEvent event) {
         strategy.onReleasedMouse(s, event);
     }
 }

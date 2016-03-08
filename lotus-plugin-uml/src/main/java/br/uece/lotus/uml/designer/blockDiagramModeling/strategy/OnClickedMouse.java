@@ -5,16 +5,12 @@
  */
 package br.uece.lotus.uml.designer.blockDiagramModeling.strategy;
 
-import br.uece.lotus.uml.api.ds.BlockBuildDS;
-import br.uece.lotus.uml.api.viewer.builder.BlockBuildDSView;
-import static br.uece.lotus.uml.api.viewer.builder.BlockBuildDSViewImpl.ALTURA;
-import static br.uece.lotus.uml.api.viewer.builder.BlockBuildDSViewImpl.LARGURA;
-import br.uece.lotus.uml.designer.standardModeling.StandardModelingWindowImpl;
-import javafx.scene.input.DragEvent;
-import javafx.scene.input.KeyEvent;
-import javafx.scene.input.MouseButton;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.input.ScrollEvent;
+
+import br.uece.lotus.uml.api.ds.*;
+import br.uece.lotus.uml.api.viewer.block.BlockDSView;
+
+import br.uece.lotus.uml.designer.blockDiagramModeling.DesingWindowImplBlockDs;
+import javafx.scene.input.*;
 
 /**
  *
@@ -22,21 +18,23 @@ import javafx.scene.input.ScrollEvent;
  */
 public class OnClickedMouse implements Strategy {
 
-    
+
+    private static final int LARGURA = 100, ALTURA = 60;
+
     @Override
-    public void onClickedMouse(StandardModelingWindowImpl s, MouseEvent e) {
+    public void onClickedMouse(DesingWindowImplBlockDs s, MouseEvent e) {
         //mostrando menu dos blocos
         if (MouseButton.SECONDARY.equals(e.getButton())) {
             s.setComponenteSelecionado(s.mComponentSobMouse);
             
-            if (s.mComponentSelecionado instanceof BlockBuildDSView) {
-                s.mContextMenuBlockBuild.show(s.mViewer.getNode(), e.getScreenX(), e.getScreenY());
+            if (s.mComponentSelecionado instanceof BlockDSView) {
+                s.mContextMenuBlockDs.show(s.mViewer.getNode(), e.getScreenX(), e.getScreenY());
             } else {
-                s.mContextMenuBlockBuild.hide();
+                s.mContextMenuBlockDs.hide();
             }
             return;
         }else{
-           s.mContextMenuBlockBuild.hide();
+           s.mContextMenuBlockDs.hide();
         }
         //resetando zoom pelo mouse
         if ((e.isControlDown() && e.getButton() == MouseButton.MIDDLE) || (e.getClickCount() == 2 && s.mModoAtual == s.MODO_MOVER)) {
@@ -49,7 +47,7 @@ public class OnClickedMouse implements Strategy {
         }
         //verificando por controles de butoes
         if(s.mModoAtual == s.MODO_NENHUM){
-             if (s.mComponentSobMouse != null && (s.mComponentSobMouse instanceof BlockBuildDSView) && !s.mToolBar.getItems().contains(s.paleta)) {
+             if (s.mComponentSobMouse != null && (s.mComponentSobMouse instanceof BlockDSView) && !s.mToolBar.getItems().contains(s.paleta)) {
                  s.mToolBar.getItems().add(s.paleta);
              }
              else{
@@ -59,21 +57,23 @@ public class OnClickedMouse implements Strategy {
              }
         }
         else if(s.mModoAtual == s.MODO_BLOCO){
-            if (!(s.mComponentSobMouse instanceof BlockBuildDSView)) {
+            if (!(s.mComponentSobMouse instanceof BlockDSView)) {
+                System.out.println("contID"+ s.contID);
                     if (s.contID == -1) {
                         s.updateContID();
                     }
-                    BlockBuildDS b = s.mViewer.getComponentBuildDS().newBlock(s.contID);
+                    BlockDS b = s.mViewer.getmComponentDS().newBlockDS(s.contID);
                     s.contID++;
-                    b.setLayoutX(e.getX()-(LARGURA/2));
+                System.out.println((e.getX()-(LARGURA/2))+"%%"+(e.getY()-(ALTURA/2)));
+                b.setLayoutX(e.getX() -(LARGURA/2));
                     b.setLayoutY(e.getY()-(ALTURA/2));
-                    b.setLabel("New hMSC");
+                    b.setLabel("New DS");
                 }
         }
         else if(s.mModoAtual == s.MODO_REMOVER){
-            if(s.mComponentSobMouse instanceof BlockBuildDSView){
-                BlockBuildDS b = ((BlockBuildDSView)s.mComponentSobMouse).getBlockBuildDS();
-                s.mViewer.getComponentBuildDS().remove(b);
+            if(s.mComponentSobMouse instanceof BlockDSView){
+                BlockDS b = ((BlockDSView)s.mComponentSobMouse).getBlockDS();
+                s.mViewer.getmComponentDS().remove(b);
             }
             //falta a transition
         }
@@ -81,33 +81,33 @@ public class OnClickedMouse implements Strategy {
     }
 
     @Override
-    public void onMovedMouse(StandardModelingWindowImpl s, MouseEvent event) {}
+    public void onMovedMouse(DesingWindowImplBlockDs s, MouseEvent event) {}
 
     @Override
-    public void onDragDetectedMouse(StandardModelingWindowImpl s, MouseEvent event) {}
+    public void onDragDetectedMouse(DesingWindowImplBlockDs s, MouseEvent event) {}
 
     @Override
-    public void onDragOverMouse(StandardModelingWindowImpl s, DragEvent event) {}
+    public void onDragOverMouse(DesingWindowImplBlockDs s, DragEvent event) {}
 
     @Override
-    public void onDragDroppedMouse(StandardModelingWindowImpl s, DragEvent event) {}
+    public void onDragDroppedMouse(DesingWindowImplBlockDs s, DragEvent event) {}
 
     @Override
-    public void onDraggedMouse(StandardModelingWindowImpl s, MouseEvent event) {}
+    public void onDraggedMouse(DesingWindowImplBlockDs s, MouseEvent event) {}
 
     @Override
-    public void onPressedMouse(StandardModelingWindowImpl s, MouseEvent event) {}
+    public void onPressedMouse(DesingWindowImplBlockDs s, MouseEvent event) {}
 
     @Override
-    public void onReleasedMouse(StandardModelingWindowImpl s, MouseEvent event) {}
+    public void onReleasedMouse(DesingWindowImplBlockDs s, MouseEvent event) {}
 
     @Override
-    public void onScrollMouse(StandardModelingWindowImpl s, ScrollEvent event) {}
+    public void onScrollMouse(DesingWindowImplBlockDs s, ScrollEvent event) {}
 
     @Override
-    public void onKeyPressed(StandardModelingWindowImpl s, KeyEvent event) {}
+    public void onKeyPressed(DesingWindowImplBlockDs s, KeyEvent event) {}
 
     @Override
-    public void onKeyReleased(StandardModelingWindowImpl s, KeyEvent event) {}
+    public void onKeyReleased(DesingWindowImplBlockDs s, KeyEvent event) {}
     
 }

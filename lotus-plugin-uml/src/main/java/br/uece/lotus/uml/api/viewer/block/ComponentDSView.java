@@ -12,6 +12,7 @@ import br.uece.lotus.uml.api.ds.*;
 import javafx.geometry.Point2D;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.shape.Circle;
 
 import java.io.File;
 
@@ -34,7 +35,7 @@ public interface ComponentDSView {
     public void addListener(Listener l);
     public void removeListener(Listener l);
 
-    BlockDSView locateBlockDSView(Point2D point);
+    BlockDSView locateBlockDSView(/*Point2D point*/Circle c);
     /*TransitionView locateTransitionView(Point2D point);*/
 
     AnchorPane getNode();

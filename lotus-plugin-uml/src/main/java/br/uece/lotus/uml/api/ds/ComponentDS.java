@@ -90,15 +90,6 @@ public class ComponentDS {
             l.onChange(this);
         }
     }
-    public int getBigStatesCount() {
-        int count = 0;
-        for (BlockDS s : mBlockDSs) {
-            /*if(s.getValue("bigstate")!=null)
-                count++;*/
-        }
-        return count;
-    }
-
 
 
    /* public Iterable<Transition> getTransitions() {
@@ -109,30 +100,18 @@ public class ComponentDS {
         return mTransitions.size();
     }*/
 
-    public BlockDS getStateByID(int id) {
-        for (BlockDS v : mBlockDSs) {
-            if (v.getID() == id) {
-                return v;
-            }
-        }
-        return null;
-    }
 
     public BlockDS newBlockDS(int id) {
-        BlockDS v = new BlockDS(this);
-        v.setID(id);
-        add(v);
-        /*if (mInitialState == null) {
-            setInitialState(v);
-        }*/
-        return v;
+        BlockDS ds = new BlockDS(this);
+        ds.setID(id);
+        add(ds);
+        return ds;
     }
 
-    public void add(BlockDS v) {
-        mBlockDSs.add(v);
-        updateStateLabels();
+    public void add(BlockDS ds) {
+        mBlockDSs.add(ds);
         for (Listener l : mListeners) {
-            l.onBlockDSCreated(this, v);
+            l.onBlockDSCreated(this, ds);
         }
     }
 
@@ -194,18 +173,18 @@ public class ComponentDS {
                 setInitialState(mStates.get(0));
             }
         }*/
-        updateStateLabels();
+//        updateStateLabels();
     }
 
-    private void updateStateLabels() {
-        if (!mAutoUpdateLabels) {
-            return;
-        }
-        int i = 0;
-        for (BlockDS v : mBlockDSs) {
-            v.setLabel(String.valueOf(i++));
-        }
-    }
+//    private void updateStateLabels() {
+//        if (!mAutoUpdateLabels) {
+//            return;
+//        }
+//        int i = 0;
+//        for (BlockDS v : mBlockDSs) {
+//            v.setLabel(String.valueOf(i++));
+//        }
+//    }
 
    /* public Transition getTransitionByLabel(String label){
         for(Transition transition : mTransitions){

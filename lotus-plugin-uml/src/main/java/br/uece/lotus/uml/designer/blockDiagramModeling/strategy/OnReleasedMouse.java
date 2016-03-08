@@ -4,16 +4,11 @@
  * and open the template in the editor.
  */
 package br.uece.lotus.uml.designer.blockDiagramModeling.strategy;
-
-import br.uece.lotus.uml.api.viewer.builder.BlockBuildDSView;
-import br.uece.lotus.uml.designer.standardModeling.StandardModelingWindowImpl;
+import br.uece.lotus.uml.api.viewer.block.BlockDSView;
+import br.uece.lotus.uml.designer.blockDiagramModeling.DesingWindowImplBlockDs;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
-import javafx.scene.input.DragEvent;
-import javafx.scene.input.KeyEvent;
-import javafx.scene.input.MouseButton;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.input.ScrollEvent;
+import javafx.scene.input.*;
 
 /**
  *
@@ -22,7 +17,8 @@ import javafx.scene.input.ScrollEvent;
 public class OnReleasedMouse implements Strategy {
 
     @Override
-    public void onReleasedMouse(StandardModelingWindowImpl s, MouseEvent e) {
+    public void onReleasedMouse(DesingWindowImplBlockDs s, MouseEvent e) {
+
         if(e.getButton() == MouseButton.PRIMARY){
             if(s.mModoAtual == s.MODO_NENHUM){
 
@@ -30,7 +26,7 @@ public class OnReleasedMouse implements Strategy {
                     s.clearSelecao();
                 }
                 for(Node node : s.mViewer.getNode().getChildren()){
-                    if(node instanceof BlockBuildDSView){
+                    if(node instanceof BlockDSView){
                         if(node.getBoundsInParent().intersects(s.rectSelecao.getBoundsInParent())){
                             if(e.isShiftDown()){
                                 s.addNoSelecao(node);
@@ -44,9 +40,12 @@ public class OnReleasedMouse implements Strategy {
                             }
                             else{
                                 s.addNoSelecao(node);
+                                System.out.println(node.getLayoutX()+"||"+node.getLayoutY());
                             }
                         }
                     }
+
+
                 }
                 s.rectSelecao.setX(0);
                 s.rectSelecao.setY(0);
@@ -67,33 +66,33 @@ public class OnReleasedMouse implements Strategy {
     }
 
     @Override
-    public void onClickedMouse(StandardModelingWindowImpl s, MouseEvent event) {}
+    public void onClickedMouse(DesingWindowImplBlockDs s, MouseEvent event) {}
 
     @Override
-    public void onMovedMouse(StandardModelingWindowImpl s, MouseEvent event) {}
+    public void onMovedMouse(DesingWindowImplBlockDs s, MouseEvent event) {}
 
     @Override
-    public void onDragDetectedMouse(StandardModelingWindowImpl s, MouseEvent event) {}
+    public void onDragDetectedMouse(DesingWindowImplBlockDs s, MouseEvent event) {}
 
     @Override
-    public void onDragOverMouse(StandardModelingWindowImpl s, DragEvent event) {}
+    public void onDragOverMouse(DesingWindowImplBlockDs s, DragEvent event) {}
 
     @Override
-    public void onDragDroppedMouse(StandardModelingWindowImpl s, DragEvent event) {}
+    public void onDragDroppedMouse(DesingWindowImplBlockDs s, DragEvent event) {}
 
     @Override
-    public void onDraggedMouse(StandardModelingWindowImpl s, MouseEvent event) {}
+    public void onDraggedMouse(DesingWindowImplBlockDs s, MouseEvent event) {}
 
     @Override
-    public void onPressedMouse(StandardModelingWindowImpl s, MouseEvent event) {}
+    public void onPressedMouse(DesingWindowImplBlockDs s, MouseEvent event) {}
 
     @Override
-    public void onScrollMouse(StandardModelingWindowImpl s, ScrollEvent event) {}
+    public void onScrollMouse(DesingWindowImplBlockDs s, ScrollEvent event) {}
 
     @Override
-    public void onKeyPressed(StandardModelingWindowImpl s, KeyEvent event) {}
+    public void onKeyPressed(DesingWindowImplBlockDs s, KeyEvent event) {}
 
     @Override
-    public void onKeyReleased(StandardModelingWindowImpl s, KeyEvent event) {}
+    public void onKeyReleased(DesingWindowImplBlockDs s, KeyEvent event) {}
     
 }

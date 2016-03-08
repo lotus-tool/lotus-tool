@@ -81,6 +81,7 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
     private ToggleButton mBtnEraser;
     private ToggleButton mBtnHand;
     private MenuButton mBtnZoom;
+
     //Controles de acoes
     public final int MODO_NENHUM = 0;
     public final int MODO_BLOCO = 1;
