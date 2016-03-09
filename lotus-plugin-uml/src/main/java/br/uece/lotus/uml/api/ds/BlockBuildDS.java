@@ -7,7 +7,6 @@ package br.uece.lotus.uml.api.ds;
 
 import static br.uece.lotus.State.TEXTSTYLE_BOLD;
 import static br.uece.lotus.State.TEXTSTYLE_NORMAL;
-import br.uece.lotus.uml.sequenceDiagram.Astah.DiagramaSequencia;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -49,8 +48,7 @@ public class BlockBuildDS {
     private Integer mTextSize;
     private String mColorStatus = mColorBlockEmpyt;
     //Propriedade Bloco de DS
-    private DiagramaSequencia mDiagramSequence;//Diferenciar para poder ter diagrama sem ser do astah
-    private boolean mFull = false;
+    private ComponentDS mDiagramSequence;
 
     public BlockBuildDS(ComponentBuildDS mComponentBuildDS) {
         this.mComponentBuildDS = mComponentBuildDS;
@@ -189,12 +187,15 @@ public class BlockBuildDS {
         return mColorStatus.equals(mColorBlockFull);
     }
 
-    public DiagramaSequencia getmDiagramSequence() {
+    public ComponentDS getmDiagramSequence() {
         return mDiagramSequence;
     }
 
-    public void setmDiagramSequence(DiagramaSequencia mDiagramSequence) {
-        this.mDiagramSequence = mDiagramSequence;
+    public void setmDiagramSequence(ComponentDS mDiagramSequence){
+        if(mDiagramSequence != null){
+            this.mDiagramSequence = mDiagramSequence;
+            setColorStatus(mColorBlockFull);
+        }
     }
     
 
