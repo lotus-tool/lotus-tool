@@ -10,6 +10,7 @@ import javafx.scene.Node;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.layout.AnchorPane;
 import javafx.geometry.Point2D;
+import javafx.scene.shape.Circle;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -159,9 +160,9 @@ public class ComponentDSViewImpl extends AnchorPane implements ComponentDSView, 
     public void removeListener(Listener l) {mListeners.remove(l);}
 
     @Override
-    public BlockDSView locateBlockDSView(Point2D point) {
+    public BlockDSView locateBlockDSView(/*Point2D point*/Circle c) {
         for (BlockDSView v: mBlocksDSView) {
-            if (v.isInsideBounds(point)) {
+            if (v.isInsideBounds(c)) {
                 return v;
             }
         }
@@ -196,7 +197,6 @@ public class ComponentDSViewImpl extends AnchorPane implements ComponentDSView, 
 
     @Override
     public void onChange(ComponentDS componentDS) {
-
     }
 
     @Override

@@ -6,10 +6,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static br.uece.lotus.State.TEXTSTYLE_BOLD;
+import static br.uece.lotus.State.TEXTSTYLE_NORMAL;
+
 /**
  * Created by lva on 11/12/15.
  */
 public class BlockDS {
+    public final static String mTextStyleBold = TEXTSTYLE_BOLD;
+    public final static String mTextStyleNormal = TEXTSTYLE_NORMAL;
+
     private final List<Transition> mTransicoesSaida = new ArrayList<>();
     private final List<Transition> mTransicoesEntrada = new ArrayList<>();
     private final Map<String, Object> mValues = new HashMap<>();
@@ -41,14 +47,16 @@ public class BlockDS {
     }
 
     public void setLayoutX(double layoutX) {
-        mLayoutX = layoutX;
+        this.mLayoutX = layoutX;
+        System.out.println(getLayoutX());
         for (Listener l : mListeners) {
             l.onChange(this);
         }
     }
 
     public void setLayoutY(double layoutY) {
-        mLayoutY = layoutY;
+        this.mLayoutY = layoutY;
+        System.out.println(getLayoutY());
         for (Listener l : mListeners) {
             l.onChange(this);
         }
@@ -88,6 +96,21 @@ public class BlockDS {
 
     public double getLayoutY() {
         return mLayoutY;
+    }
+
+    public void setBorderColor(String mBorderColor) {
+        this.mBorderColor = mBorderColor;
+        for(Listener l : mListeners){
+            l.onChange(this);
+        }
+    }
+
+    public void setTextStyle(String mTextStyle) {
+        this.mTextStyle = mTextStyle;
+        for(Listener l : mListeners){
+            l.onChange(this);
+        }
+
     }
 
     public interface Listener{

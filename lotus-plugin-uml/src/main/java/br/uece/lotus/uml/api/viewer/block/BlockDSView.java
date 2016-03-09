@@ -3,6 +3,7 @@ package br.uece.lotus.uml.api.viewer.block;
 import br.uece.lotus.uml.api.ds.BlockDS;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
+import javafx.scene.shape.Circle;
 
 
 /**
@@ -15,7 +16,7 @@ public interface BlockDSView {
         BlockDSView create();
     }
 
-    boolean isInsideBounds(Point2D point);
+    boolean isInsideBounds(/*Point2D point*/Circle c);
 
     BlockDS getBlockDS();
     void setBlockDS(BlockDS dl);

@@ -2,9 +2,14 @@ package br.uece.lotus.uml.api.viewer.block;
 
 
 import br.uece.lotus.uml.api.ds.BlockDS;
+import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
+import javafx.scene.control.Label;
 import javafx.scene.layout.Region;
+import javafx.scene.paint.Paint;
+import javafx.scene.shape.Circle;
+import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 
 
@@ -13,11 +18,14 @@ import javafx.scene.shape.Rectangle;
  * Created by lva on 11/12/15.
  */
 public class BlockDSViewImpl extends Region implements BlockDSView, BlockDS.Listener{
-    static final double ALTURA_RETANGULO = 30;
-    static final double LARGURA_RETANGULO = 25;
+    static final double ALTURA_RETANGULO = 60;
+    static final double LARGURA_RETANGULO = 100;
+    private static final String DEFAULT_COLOR = "green" ;
     private final Rectangle mRectangle;
     private BlockDS mDS;
-    private static final String DEFAULT_NORMAL_COLOR = "aqua";
+    private Line mLine;
+    private Label mName;
+
 
 
 
@@ -25,13 +33,20 @@ public class BlockDSViewImpl extends Region implements BlockDSView, BlockDS.List
     public BlockDSViewImpl(){
         mRectangle  = new Rectangle(LARGURA_RETANGULO,ALTURA_RETANGULO);
         getChildren().addAll(mRectangle);
-        mRectangle.setLayoutX(ALTURA_RETANGULO);
-        mRectangle.setLayoutY(LARGURA_RETANGULO);
+        mRectangle.setLayoutX(0);
+        mRectangle.setLayoutY(0);
 
-        /*mText = new Label();
-        mText.layoutXProperty().bind(mCircle.layoutXProperty().subtract(mText.widthProperty().divide(2)));
-        mText.layoutYProperty().bind(mCircle.layoutYProperty().subtract(mText.heightProperty().divide(2)));
-        getChildren().add(mText);*/
+        mName = new Label();
+        mName.layoutXProperty().bind(mRectangle.layoutXProperty().add(mRectangle.widthProperty().divide(2)).subtract(mName.widthProperty().divide(2)));
+        mName.layoutYProperty().bind(mRectangle.layoutYProperty().add(mRectangle.heightProperty().divide(2)).subtract(mName.heightProperty().divide(2)));
+        getChildren().add(mName);
+
+        mLine =new Line(0,0,0,0);
+        mLine.startXProperty().bind(mRectangle.layoutXProperty().add(mRectangle.widthProperty().divide(2)));
+        mLine.endXProperty().bind(mRectangle.layoutXProperty().add(mRectangle.widthProperty().divide(2)));
+        mLine.startYProperty().bind(mRectangle.layoutXProperty().add(mRectangle.heightProperty()));
+        mLine.endYProperty().setValue(500);
+        getChildren().add(mLine);
     }
 
 
@@ -41,12 +56,34 @@ public class BlockDSViewImpl extends Region implements BlockDSView, BlockDS.List
     }
 
     @Override
-    public boolean isInsideBounds(Point2D point) {
-        /*Point2D aux = mCircle.localToScene(Point2D.ZERO);
-        //System.out.printf("(%f %f) (%f %f)\n", aux.getX(), aux.getY(), point.getX(), point.getY());
-        return aux.distance(point) <= RAIO_CIRCULO;*/
+    public boolean isInsideBounds(Circle circle) {
+        if(circle.getBoundsInParent().intersects(mLine.getBoundsInParent())){
+            return true;
+        }
+        if(circle.getBoundsInParent().intersects(mRectangle.getBoundsInParent())){
+            return true;
+        }
         return false;
     }
+
+    /*@Override
+    public boolean isInsideBounds(Point2D point) {
+        Point2D auxRec= mRectangle.localToScene(Point2D.ZERO);
+        double deltaX = point.getX()-auxRec.getX();
+        double deltaY= point.getY()-auxRec.getY();
+        if((deltaX>=0 && deltaX<=LARGURA_RETANGULO) && (deltaY>=0 && deltaY<=ALTURA_RETANGULO)){
+            return true;
+        }
+        double constante = 10;
+        Point2D auxLine = mLine.localToParent(Point2D.ZERO);
+        Bounds aux = mLine.getBoundsInParent();
+        double xMaisConstante=point.getX()+constante;
+        double yMaisConstante=point.getY()+constante;
+        if((aux.getWidth() == (point.getX()-auxLine.getX()) && (aux.getHeight() == (point.getY()-auxLine.getY())))){
+            return true;
+        }
+        return false;
+    }*/
 
     @Override
     public BlockDS getBlockDS() {
@@ -69,48 +106,27 @@ public class BlockDSViewImpl extends Region implements BlockDSView, BlockDS.List
     public void onChange(BlockDS ds) {updateView();}
 
     private void updateView() {
-        /*String style = "-fx-effect: dropshadow( gaussian , gray , 3 , 0.2 , 1 , 1);";
+        String style = "-fx-effect: dropshadow( gaussian , gray , 3 , 0.2 , 1 , 1);";
         style += "-fx-fill: linear-gradient(to bottom right, white, " + computedColor() + ");";
-        style += "-fx-stroke: " + (mState.getBorderColor() == null ? "black" : mState.getBorderColor()) + ";";
-        style += "-fx-stroke-width: " + (mState.getBorderWidth() == null ? "1" : mState.getBorderWidth()) + ";";
-        mCircle.setStyle(style);
-
-        if (mState.isFinal()) {
-            mSecondCircle.setStyle(style);
-        }
-        else{
-            mSecondCircle.setStyle(null);
-        }
-
-        if(mState.isBig()){
-            mCircle.setRadius(RAIO_CIRCULO+3);
-            mSecondCircle.setRadius(RAIO_CIRCULO+1);
-            mSecondCircle.setStyle(style);
-        }
-
-        style = "-fx-text-fill: " + (mState.getTextColor() == null ? "black" : mState.getTextColor()) + ";";
-        style += "-fx-font-weight: " + (mState.getTextStyle() == null ? "normal" : mState.getTextStyle()) + ";";
-        style += "-fx-font-size: " + (mState.getTextSize() == null ? "12" : mState.getTextSize()) + ";";
-        mText.setStyle(style);
-        setLayoutX(mState.getLayoutX());
-        setLayoutY(mState.getLayoutY());
-        mText.setText(computedLabel());*/
+        style += "-fx-stroke: " + (mDS.getBorderColor() == null ? "black" : mDS.getBorderColor()) + ";";
+        style += "-fx-stroke-width: " + (mDS.getBorderWidth() == null ? "1" : mDS.getBorderWidth()) + ";";
+        mRectangle.setStyle(style);
+        mName.setText(mDS.getLabel());
+//
+//        style = "-fx-text-fill: " + (mState.getTextColor() == null ? "black" : mState.getTextColor()) + ";";
+//        style += "-fx-font-weight: " + (mState.getTextStyle() == null ? "normal" : mState.getTextStyle()) + ";";
+//        style += "-fx-font-size: " + (mState.getTextSize() == null ? "12" : mState.getTextSize()) + ";";
+//        mText.setStyle(style);
+        setLayoutX(mDS.getLayoutX());
+        setLayoutY(mDS.getLayoutY());
+//        mText.setText(computedLabel());
     }
     private String computedColor() {
-       /* String cor = mState.getColor();
+        String cor = mDS.getColor();
         if (cor == null) {
-            if (mState.isInitial()) {
-                return DEFAULT_INITIAL_COLOR;
-            } else if (mState.isFinal()) {
-                return DEFAULT_FINAL_COLOR;
-            } else if (mState.isError()) {
-                return DEFAULT_ERROR_COLOR;
-            } else {
-                return DEFAULT_NORMAL_COLOR;
-            }
+          return DEFAULT_COLOR;
         }
-        return cor;*/
-        return null;
+        return cor;
     }
     private String computedLabel() {
         /*if (mState.isError()) {

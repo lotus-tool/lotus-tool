@@ -103,6 +103,7 @@ public class BasicDSPlugin extends Plugin{
         ComponentDS cds = new ComponentDS();
         cds.setName(mName);
         p.addComponentDS(cds);
+
     };
     
     private boolean checkExistenceName(String name) {
