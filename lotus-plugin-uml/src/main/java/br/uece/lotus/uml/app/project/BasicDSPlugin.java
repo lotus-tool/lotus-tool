@@ -5,7 +5,7 @@
  */
 package br.uece.lotus.uml.app.project;
 
-import br.uece.lotus.uml.api.ds.ComponentBuildDS;
+import br.uece.lotus.uml.api.ds.StandardModeling;
 import br.uece.lotus.uml.api.ds.ComponentDS;
 import br.uece.lotus.uml.api.ds.ProjectDS;
 import br.uece.lotus.uml.api.project.ProjectExplorerDS;
@@ -72,7 +72,7 @@ public class BasicDSPlugin extends Plugin{
         }
         
         p.setName(pName);
-        ComponentBuildDS  cbds= new ComponentBuildDS();
+        StandardModeling  cbds= new StandardModeling();
         cbds.setName("Standard Modeling");
         p.setComponentBuildDS(cbds);
         mProjectExplorerDS.open(p);

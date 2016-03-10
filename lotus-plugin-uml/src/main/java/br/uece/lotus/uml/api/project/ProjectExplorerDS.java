@@ -6,7 +6,7 @@
 package br.uece.lotus.uml.api.project;
 
 import br.uece.lotus.Component;
-import br.uece.lotus.uml.api.ds.ComponentBuildDS;
+import br.uece.lotus.uml.api.ds.StandardModeling;
 import br.uece.lotus.uml.api.ds.ComponentDS;
 import br.uece.lotus.uml.api.ds.ProjectDS;
 import br.uece.seed.app.ExtensibleMenu;
@@ -33,7 +33,7 @@ public interface ProjectExplorerDS {
     void close(ProjectDS p);
     
     ProjectDS getSelectedProjectDS();
-    ComponentBuildDS getSelectedComponentBuildDS();
+    StandardModeling getSelectedComponentBuildDS();
     ComponentDS getSelectedComponentDS();
     Component getSelectedComponentLTS();
     

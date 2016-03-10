@@ -16,12 +16,12 @@ import java.util.Map;
  *
  * @author Bruno Barbosa
  */
-public class BlockBuildDS {
+public class Hmsc {
     
-    private final ComponentBuildDS mComponentBuildDS;
+    private final StandardModeling mComponentBuildDS;
     
     public interface Listener{
-        void onChange(BlockBuildDS blockBuildDS);
+        void onChange(Hmsc blockBuildDS);
     }
     
     public final static String mTextStyleNormal = TEXTSTYLE_NORMAL;
@@ -32,8 +32,8 @@ public class BlockBuildDS {
     
     //Propriedade do grafico
     private int mID;
-    private final List<TransitionBuildDS> mTransicaoSaida = new ArrayList<>();
-    private final List<TransitionBuildDS> mTransicaoEntrada = new ArrayList<>();
+    private final List<TransitionMSC> mTransicaoSaida = new ArrayList<>();
+    private final List<TransitionMSC> mTransicaoEntrada = new ArrayList<>();
     private final Map<String, Object> mValues = new HashMap<>();
     private final List<Listener> mListeners = new ArrayList<>();
     //Propriedade do View
@@ -50,7 +50,7 @@ public class BlockBuildDS {
     //Propriedade Bloco de DS
     private ComponentDS mDiagramSequence;
 
-    public BlockBuildDS(ComponentBuildDS mComponentBuildDS) {
+    public Hmsc(StandardModeling mComponentBuildDS) {
         this.mComponentBuildDS = mComponentBuildDS;
     }
 
@@ -214,34 +214,34 @@ public class BlockBuildDS {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final BlockBuildDS other = (BlockBuildDS) obj;
+        final Hmsc other = (Hmsc) obj;
         if (this.mID != other.mID) {
             return false;
         }
         return true;
     }
     
-    public void addListener(BlockBuildDS.Listener l) {
+    public void addListener(Hmsc.Listener l) {
         mListeners.add(l);
     }
 
-    public void removeListener(BlockBuildDS.Listener l) {
+    public void removeListener(Hmsc.Listener l) {
         mListeners.remove(l);
     }
     
-    void addIncomingTransition(TransitionBuildDS t) {
+    void addIncomingTransition(TransitionMSC t) {
         mTransicaoEntrada.add(t);
     }
 
-    void addOutgoingTransition(TransitionBuildDS t) {
+    void addOutgoingTransition(TransitionMSC t) {
         mTransicaoSaida.add(t);
     }
 
-    void removeIncomingTransition(TransitionBuildDS transition) {
+    void removeIncomingTransition(TransitionMSC transition) {
         mTransicaoEntrada.remove(transition);
     }
 
-    void removeOutgoingTransition(TransitionBuildDS transition) {
+    void removeOutgoingTransition(TransitionMSC transition) {
         mTransicaoSaida.remove(transition);
     }
 
@@ -253,16 +253,16 @@ public class BlockBuildDS {
         return mTransicaoEntrada.size();
     }
     
-    public TransitionBuildDS getTransitionBuildDSTo(BlockBuildDS bbds){
-        for(TransitionBuildDS t: mTransicaoSaida){
+    public TransitionMSC getTransitionBuildDSTo(Hmsc bbds){
+        for(TransitionMSC t: mTransicaoSaida){
             //falta implementar a transition
         }
         return null;
     }
     
-    public List<TransitionBuildDS> getTransitionsBuildDSTo(BlockBuildDS bbds){
-        List<TransitionBuildDS> l = new ArrayList<>();
-        for(TransitionBuildDS t:mTransicaoSaida){
+    public List<TransitionMSC> getTransitionsBuildDSTo(Hmsc bbds){
+        List<TransitionMSC> l = new ArrayList<>();
+        for(TransitionMSC t:mTransicaoSaida){
             //falta implementar a transition
         }
         return l;

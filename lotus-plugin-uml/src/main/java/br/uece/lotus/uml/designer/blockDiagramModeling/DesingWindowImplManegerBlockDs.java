@@ -1,7 +1,7 @@
 package br.uece.lotus.uml.designer.blockDiagramModeling;
 
 import br.uece.lotus.Component;
-import br.uece.lotus.uml.api.ds.ComponentBuildDS;
+import br.uece.lotus.uml.api.ds.StandardModeling;
 import br.uece.lotus.uml.api.ds.ComponentDS;
 import br.uece.lotus.uml.api.window.DefaultWindowManagerPluginDS;
 import br.uece.seed.ext.ExtensionManager;
@@ -31,7 +31,7 @@ public class DesingWindowImplManegerBlockDs extends DefaultWindowManagerPluginDS
     }
 
     @Override
-    protected void onShow(DesingWindowImplBlockDs window, ComponentBuildDS buildDS) {
+    protected void onShow(DesingWindowImplBlockDs window, StandardModeling buildDS) {
     }
 
     @Override

@@ -6,11 +6,11 @@
 package br.uece.lotus.uml.app.project;
 
 import br.uece.lotus.Component;
-import br.uece.lotus.uml.api.ds.BlockBuildDS;
-import br.uece.lotus.uml.api.ds.ComponentBuildDS;
+import br.uece.lotus.uml.api.ds.Hmsc;
+import br.uece.lotus.uml.api.ds.StandardModeling;
 import br.uece.lotus.uml.api.ds.ComponentDS;
 import br.uece.lotus.uml.api.ds.ProjectDS;
-import br.uece.lotus.uml.api.ds.TransitionBuildDS;
+import br.uece.lotus.uml.api.ds.TransitionMSC;
 import br.uece.lotus.uml.api.project.ProjectExplorerDS;
 import br.uece.lotus.uml.designer.blockDiagramModeling.DesingWindowImplManegerBlockDs;
 import br.uece.lotus.uml.designer.standardModeling.StandardModelingWindowManager;
@@ -124,7 +124,7 @@ public final class ProjectExplorerPluginDS extends Plugin implements ProjectExpl
         }
 
         @Override
-        public void onComponentLTSGeralCreated(ProjectDS projectDS, ComponentBuildDS buildDS, Component component) {
+        public void onComponentLTSGeralCreated(ProjectDS projectDS, StandardModeling buildDS, Component component) {
             TreeItem<WrapperDS> raiz = findItem(mProjectDSView.getRoot(), projectDS);
             TreeItem<WrapperDS> build = findItem(raiz, buildDS);
             build.getChildren().add(new TreeItem<>(new WrapperDS(component), new ImageView(
@@ -132,7 +132,7 @@ public final class ProjectExplorerPluginDS extends Plugin implements ProjectExpl
         }
 
         @Override
-        public void onComponentLTSGeralRemove(ProjectDS project, ComponentBuildDS buildDS, Component component) {
+        public void onComponentLTSGeralRemove(ProjectDS project, StandardModeling buildDS, Component component) {
             TreeItem<WrapperDS> raiz = findItem(mProjectDSView.getRoot(), project);
             TreeItem<WrapperDS> build = findItem(raiz, buildDS);
             TreeItem<WrapperDS> compGeralLTS = findItem(build, component);
@@ -140,7 +140,7 @@ public final class ProjectExplorerPluginDS extends Plugin implements ProjectExpl
         }
 
         @Override
-        public void onComponentLTSFragmentOfBuildDSCreate(ProjectDS project, ComponentBuildDS buildDS, Component componentGeralLTS, Component frag) {
+        public void onComponentLTSFragmentOfBuildDSCreate(ProjectDS project, StandardModeling buildDS, Component componentGeralLTS, Component frag) {
             TreeItem<WrapperDS> raiz = findItem(mProjectDSView.getRoot(), project);
             TreeItem<WrapperDS> build = findItem(raiz, buildDS);
             TreeItem<WrapperDS> compGeralLTS = findItem(build, componentGeralLTS);
@@ -149,7 +149,7 @@ public final class ProjectExplorerPluginDS extends Plugin implements ProjectExpl
         }
 
         @Override
-        public void onComponentLTSFragmentOfBuildDSRemove(ProjectDS project, ComponentBuildDS buildDS, Component componentGeralLTS, Component frag) {
+        public void onComponentLTSFragmentOfBuildDSRemove(ProjectDS project, StandardModeling buildDS, Component componentGeralLTS, Component frag) {
             TreeItem<WrapperDS> raiz = findItem(mProjectDSView.getRoot(), project);
             TreeItem<WrapperDS> build = findItem(raiz, buildDS);
             TreeItem<WrapperDS> compGeralLTS = findItem(build, componentGeralLTS);
@@ -159,10 +159,10 @@ public final class ProjectExplorerPluginDS extends Plugin implements ProjectExpl
 
     };
     
-    private  final ComponentBuildDS.Listener mComponentBuildListener = new ComponentBuildDS.Listener() {
+    private  final StandardModeling.Listener mComponentBuildListener = new StandardModeling.Listener() {
 
         @Override
-        public void onChange(ComponentBuildDS buildDS) {
+        public void onChange(StandardModeling buildDS) {
             for(TreeItem<WrapperDS> p : mProjectDSView.getRoot().getChildren()){
                 for(TreeItem<WrapperDS> itm : p.getChildren()){
                     if(itm.getValue().getObject() == buildDS){
@@ -175,13 +175,13 @@ public final class ProjectExplorerPluginDS extends Plugin implements ProjectExpl
             }
         }
         @Override
-        public void onBlockCreate(ComponentBuildDS buildDS, BlockBuildDS bbds) {}
+        public void onBlockCreate(StandardModeling buildDS, Hmsc bbds) {}
         @Override
-        public void onBlockRemove(ComponentBuildDS buildDS, BlockBuildDS bbds) {}
+        public void onBlockRemove(StandardModeling buildDS, Hmsc bbds) {}
         @Override
-        public void onTransitionCreate(ComponentBuildDS buildDS, TransitionBuildDS t) {}
+        public void onTransitionCreate(StandardModeling buildDS, TransitionMSC t) {}
         @Override
-        public void onTransitionRemove(ComponentBuildDS buildDS, TransitionBuildDS t) {}
+        public void onTransitionRemove(StandardModeling buildDS, TransitionMSC t) {}
     };
 
     //Falta os listeners do componentDS e ComponentLTS <- (o normal)
@@ -252,7 +252,7 @@ public final class ProjectExplorerPluginDS extends Plugin implements ProjectExpl
                     mMnuWorkspace.show(mProjectDSView, e.getSceneX(),e.getSceneY());
                 }
             }else if(e.getClickCount() == 2){
-                ComponentBuildDS cbds = getSelectedComponentBuildDS();
+                StandardModeling cbds = getSelectedComponentBuildDS();
                 ComponentDS cds = getSelectedComponentDS();
                 Component c = getSelectedComponentLTS();
                 if(cbds != null){
@@ -322,7 +322,7 @@ public final class ProjectExplorerPluginDS extends Plugin implements ProjectExpl
             project = new TreeItem<>(new WrapperDS(p), new ImageView(
                     new Image(getClass().getResourceAsStream("/imagens/project/ic_project.png"))));
             List<TreeItem<WrapperDS>> filhos = project.getChildren();
-            ComponentBuildDS buildDS = p.getComponentBuildDS();
+            StandardModeling buildDS = p.getComponentBuildDS();
             if (buildDS != null){
                 buildDS.addListener(mComponentBuildListener);
                 TreeItem<WrapperDS> compBuildDs = new TreeItem<>(new WrapperDS(buildDS),new ImageView(
@@ -349,7 +349,7 @@ public final class ProjectExplorerPluginDS extends Plugin implements ProjectExpl
             return null;
         }
         Object obj = projeto.getValue().getObject();
-        if(obj instanceof ComponentBuildDS){
+        if(obj instanceof StandardModeling){
             projeto = projeto.getParent();
         }
         else if(obj instanceof ComponentDS){
@@ -362,13 +362,13 @@ public final class ProjectExplorerPluginDS extends Plugin implements ProjectExpl
     }
 
     @Override
-    public ComponentBuildDS getSelectedComponentBuildDS() {
+    public StandardModeling getSelectedComponentBuildDS() {
         TreeItem<WrapperDS> buildDs = mProjectDSView.getSelectionModel().getSelectedItem();
         if(buildDs == null){
             return null;
         }
         Object obj = buildDs.getValue().getObject();
-        return obj instanceof ComponentBuildDS ? (ComponentBuildDS)obj : null;
+        return obj instanceof StandardModeling ? (StandardModeling)obj : null;
     }
 
     @Override
@@ -476,8 +476,8 @@ class WrapperDS {
         if (mObj instanceof ProjectDS) {
             ((ProjectDS) mObj).setName(s);
         } 
-        else if(mObj instanceof ComponentBuildDS){
-            ((ComponentBuildDS) mObj).setName(s);
+        else if(mObj instanceof StandardModeling){
+            ((StandardModeling) mObj).setName(s);
         }
         else if(mObj instanceof ComponentDS){
             ((ComponentDS) mObj).setName(s);
@@ -493,8 +493,8 @@ class WrapperDS {
         if(mObj instanceof ProjectDS){
             s = ((ProjectDS) mObj).getName();
         }
-        else if(mObj instanceof ComponentBuildDS){
-            s = ((ComponentBuildDS) mObj).getName();
+        else if(mObj instanceof StandardModeling){
+            s = ((StandardModeling) mObj).getName();
         }
         else if(mObj instanceof ComponentDS){
             s = ((ComponentDS) mObj).getName();

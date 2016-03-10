@@ -5,8 +5,8 @@
  */
 package br.uece.lotus.uml.designer.standardModeling.strategy;
 
-import br.uece.lotus.uml.api.ds.BlockBuildDS;
-import br.uece.lotus.uml.api.viewer.builder.BlockBuildDSView;
+import br.uece.lotus.uml.api.ds.Hmsc;
+import br.uece.lotus.uml.api.viewer.hMSC.HmscView;
 import br.uece.lotus.uml.designer.standardModeling.StandardModelingWindowImpl;
 import javafx.scene.Cursor;
 import javafx.scene.Node;

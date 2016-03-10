@@ -3,28 +3,28 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package br.uece.lotus.uml.api.viewer.builder;
+package br.uece.lotus.uml.api.viewer.transition;
 
-import br.uece.lotus.uml.api.ds.TransitionBuildDS;
-import javafx.geometry.Point2D;
+import br.uece.lotus.uml.api.ds.TransitionMSC;
 import javafx.scene.Node;
+import javafx.scene.shape.Circle;
 
 /**
  *
  * @author Bruno Barbosa
  */
-public interface TransitionBuildDSView {
+public interface TransitionMSCView {
     
     Node getNode();
 
     interface Factory {
-        TransitionBuildDSView create(TransitionBuildDSView t);
+        TransitionMSCView create(TransitionMSC t);
     }
 
-    abstract boolean isInsideBounds(Point2D point);
+    abstract boolean isInsideBounds(Circle circle);
 
-    TransitionBuildDS getTransition();
-    void setTransitionBuildDS(TransitionBuildDS t);
+    TransitionMSC getTransition();
+    void setTransitionMSC(TransitionMSC t, Node component);
 
 
     public class Geometry {

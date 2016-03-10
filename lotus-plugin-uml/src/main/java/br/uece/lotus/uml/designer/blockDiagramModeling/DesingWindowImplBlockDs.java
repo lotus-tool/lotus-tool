@@ -2,13 +2,13 @@ package br.uece.lotus.uml.designer.blockDiagramModeling;
 
 import br.uece.lotus.Component;
 import br.uece.lotus.uml.api.ds.BlockDS;
-import br.uece.lotus.uml.api.ds.ComponentBuildDS;
+import br.uece.lotus.uml.api.ds.StandardModeling;
 import br.uece.lotus.uml.api.ds.ComponentDS;
-import br.uece.lotus.uml.api.viewer.block.BlockDSView;
-import br.uece.lotus.uml.api.viewer.block.ComponentDSView;
-import br.uece.lotus.uml.api.viewer.block.ComponentDSViewImpl;
-import br.uece.lotus.uml.api.viewer.builder.BlockBuildDSView;
-import br.uece.lotus.uml.api.viewer.builder.TransitionBuildDSView;
+import br.uece.lotus.uml.api.viewer.bMSC.BlockDSView;
+import br.uece.lotus.uml.api.viewer.bMSC.ComponentDSView;
+import br.uece.lotus.uml.api.viewer.bMSC.ComponentDSViewImpl;
+import br.uece.lotus.uml.api.viewer.hMSC.HmscView;
+import br.uece.lotus.uml.api.viewer.transition.TransitionMSCView;
 import br.uece.lotus.uml.api.window.WindowDS;
 import br.uece.lotus.uml.designer.blockDiagramModeling.strategy.*;
 import javafx.beans.property.DoubleProperty;
@@ -84,7 +84,7 @@ public class DesingWindowImplBlockDs extends AnchorPane implements WindowDS {
     public boolean selecionadoPeloRetangulo;
 
     @Override
-    public ComponentBuildDS getComponentBuildDS() {
+    public StandardModeling getComponentBuildDS() {
         return null;
     }
 
@@ -99,7 +99,7 @@ public class DesingWindowImplBlockDs extends AnchorPane implements WindowDS {
     }
 
     @Override
-    public void setComponentBuildDS(ComponentBuildDS buildDS) {}
+    public void setComponentBuildDS(StandardModeling buildDS) {}
 
     @Override
     public void setComponentDS(ComponentDS cds) {
@@ -192,7 +192,7 @@ public class DesingWindowImplBlockDs extends AnchorPane implements WindowDS {
         mBtnTransitionLine.setGraphic(new ImageView(new Image(getClass().getResourceAsStream("/imagens/ic_transition_line.png"))));
         mBtnTransitionLine.setOnAction((ActionEvent event) -> {
             setModo(MODO_TRANSICAO);
-            mTransitionViewType = TransitionBuildDSView.Geometry.LINE;
+            mTransitionViewType = TransitionMSCView.Geometry.LINE;
         });
         mBtnTransitionLine.setToggleGroup(mToggleGroup);
 
@@ -200,7 +200,7 @@ public class DesingWindowImplBlockDs extends AnchorPane implements WindowDS {
         mBtnTransitionArc.setGraphic(new ImageView(new Image(getClass().getResourceAsStream("/imagens/ic_transition_semicircle.png"))));
         mBtnTransitionArc.setOnAction((ActionEvent event) -> {
             setModo(MODO_TRANSICAO);
-            mTransitionViewType = TransitionBuildDSView.Geometry.CURVE;
+            mTransitionViewType = TransitionMSCView.Geometry.CURVE;
         });
         mBtnTransitionArc.setToggleGroup(mToggleGroup);
 
@@ -408,7 +408,7 @@ public class DesingWindowImplBlockDs extends AnchorPane implements WindowDS {
             b.setTextColor("blue");
             b.setTextStyle(BlockDS.mTextStyleBold);
         }
-        else if(mComponentSelecionado instanceof TransitionBuildDSView){
+        else if(mComponentSelecionado instanceof TransitionMSCView){
             ///FAZER AINDA!!!
         }
     }
@@ -421,7 +421,7 @@ public class DesingWindowImplBlockDs extends AnchorPane implements WindowDS {
             b.setTextColor("black");
             b.setTextStyle(BlockDS.mTextStyleNormal);
         }
-        else if(mComponentSelecionado instanceof TransitionBuildDSView){
+        else if(mComponentSelecionado instanceof TransitionMSCView){
 
         }
     }

@@ -5,8 +5,8 @@
  */
 package br.uece.lotus.uml.designer.standardModeling.strategy;
 
-import br.uece.lotus.uml.api.ds.BlockBuildDS;
-import br.uece.lotus.uml.api.viewer.builder.BlockBuildDSView;
+import br.uece.lotus.uml.api.ds.Hmsc;
+import br.uece.lotus.uml.api.viewer.hMSC.HmscView;
 import br.uece.lotus.uml.designer.standardModeling.StandardModelingWindowImpl;
 import javafx.scene.Node;
 import javafx.scene.input.DragEvent;
@@ -28,7 +28,7 @@ public class OnDraggedMouse implements Strategy{
                 
                 double offsetX = e.getX() - s.dragContextMouseAnchorX;
                 double offsetY = e.getY() - s.dragContextMouseAnchorY;
-                if(!(s.mComponentSobMouse instanceof BlockBuildDSView)){//ajusta o retangulo se nao for arrastar um block
+                if(!(s.mComponentSobMouse instanceof HmscView)){//ajusta o retangulo se nao for arrastar um block
                     
                     if(offsetX > 0){
                         s.rectSelecao.setWidth(offsetX);
@@ -53,18 +53,18 @@ public class OnDraggedMouse implements Strategy{
                         s.ultimoInstanteX = e.getX();
                         s.ultimoInstanteY = e.getY();
                     }
-                    Node node = ((BlockBuildDSView)s.mComponentSobMouse).getNode();
+                    Node node = ((HmscView)s.mComponentSobMouse).getNode();
                     if(s.selecionadoPeloRetangulo && s.selecao.contains(node)){
                         for(Node n : s.selecao){
-                            BlockBuildDSView view = (BlockBuildDSView)n;
-                            BlockBuildDS b = view.getBlockBuildDS();
+                            HmscView view = (HmscView)n;
+                            Hmsc b = view.getBlockBuildDS();
                             b.setLayoutX(b.getLayoutX()+offsetX);
                             b.setLayoutY(b.getLayoutY()+offsetY);
                         }
                     }else{
                         s.clearSelecao();
                         s.addNoSelecao(node);
-                        BlockBuildDS b = ((BlockBuildDSView)s.mComponentSobMouse).getBlockBuildDS();
+                        Hmsc b = ((HmscView)s.mComponentSobMouse).getBlockBuildDS();
                         b.setLayoutX(b.getLayoutX()+offsetX);
                         b.setLayoutY(b.getLayoutY()+offsetY);
                     }

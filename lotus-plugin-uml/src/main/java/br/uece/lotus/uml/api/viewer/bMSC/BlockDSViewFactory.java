@@ -3,12 +3,18 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package br.uece.lotus.uml.api.viewer.builder;
+package br.uece.lotus.uml.api.viewer.bMSC;
 
 /**
  *
  * @author Bruno Barbosa
  */
-public class TransitionBuildDSViewImpl {
+public class BlockDSViewFactory implements BlockDSView.Factory{
+
+        @Override
+        public BlockDSView create() {
+            return new BlockDSViewImpl();
+        }
+
     
 }

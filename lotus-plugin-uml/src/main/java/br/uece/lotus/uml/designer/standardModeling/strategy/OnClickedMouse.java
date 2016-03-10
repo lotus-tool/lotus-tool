@@ -5,10 +5,10 @@
  */
 package br.uece.lotus.uml.designer.standardModeling.strategy;
 
-import br.uece.lotus.uml.api.ds.BlockBuildDS;
-import br.uece.lotus.uml.api.viewer.builder.BlockBuildDSView;
-import static br.uece.lotus.uml.api.viewer.builder.BlockBuildDSViewImpl.ALTURA;
-import static br.uece.lotus.uml.api.viewer.builder.BlockBuildDSViewImpl.LARGURA;
+import br.uece.lotus.uml.api.ds.Hmsc;
+import br.uece.lotus.uml.api.viewer.hMSC.HmscView;
+import static br.uece.lotus.uml.api.viewer.hMSC.HmscViewImpl.ALTURA;
+import static br.uece.lotus.uml.api.viewer.hMSC.HmscViewImpl.LARGURA;
 import br.uece.lotus.uml.designer.standardModeling.StandardModelingWindowImpl;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.KeyEvent;
@@ -29,7 +29,7 @@ public class OnClickedMouse implements Strategy{
         if (MouseButton.SECONDARY.equals(e.getButton())) {
             s.setComponenteSelecionado(s.mComponentSobMouse);
             
-            if (s.mComponentSelecionado instanceof BlockBuildDSView) {
+            if (s.mComponentSelecionado instanceof HmscView) {
                 s.mContextMenuBlockBuild.show(s.mViewer.getNode(), e.getScreenX(), e.getScreenY());
             } else {
                 s.mContextMenuBlockBuild.hide();
@@ -49,7 +49,7 @@ public class OnClickedMouse implements Strategy{
         }
         //verificando por controles de butoes
         if(s.mModoAtual == s.MODO_NENHUM){
-             if (s.mComponentSobMouse != null && (s.mComponentSobMouse instanceof BlockBuildDSView) && !s.mToolBar.getItems().contains(s.paleta)) {
+             if (s.mComponentSobMouse != null && (s.mComponentSobMouse instanceof HmscView) && !s.mToolBar.getItems().contains(s.paleta)) {
                  s.mToolBar.getItems().add(s.paleta);
              }
              else{
@@ -59,11 +59,11 @@ public class OnClickedMouse implements Strategy{
              }
         }
         else if(s.mModoAtual == s.MODO_BLOCO){
-            if (!(s.mComponentSobMouse instanceof BlockBuildDSView)) {
+            if (!(s.mComponentSobMouse instanceof HmscView)) {
                     if (s.contID == -1) {
                         s.updateContID();
                     }
-                    BlockBuildDS b = s.mViewer.getComponentBuildDS().newBlock(s.contID);
+                    Hmsc b = s.mViewer.getComponentBuildDS().newBlock(s.contID);
                     s.contID++;
                     b.setLayoutX(e.getX()-(LARGURA/2));
                     b.setLayoutY(e.getY()-(ALTURA/2));
@@ -71,8 +71,8 @@ public class OnClickedMouse implements Strategy{
                 }
         }
         else if(s.mModoAtual == s.MODO_REMOVER){
-            if(s.mComponentSobMouse instanceof BlockBuildDSView){
-                BlockBuildDS b = ((BlockBuildDSView)s.mComponentSobMouse).getBlockBuildDS();
+            if(s.mComponentSobMouse instanceof HmscView){
+                Hmsc b = ((HmscView)s.mComponentSobMouse).getBlockBuildDS();
                 s.mViewer.getComponentBuildDS().remove(b);
             }
             //falta a transition

@@ -6,9 +6,9 @@
 package br.uece.lotus.uml.designer.standardModeling;
 
 import br.uece.lotus.Component;
-import br.uece.lotus.uml.api.ds.ComponentBuildDS;
+import br.uece.lotus.uml.api.ds.StandardModeling;
 import br.uece.lotus.uml.api.ds.ComponentDS;
-import br.uece.lotus.uml.api.viewer.builder.ComponentBuildDSViewImpl;
+import br.uece.lotus.uml.api.viewer.hMSC.StandardModelingViewImpl;
 import br.uece.lotus.uml.api.window.DefaultWindowManagerPluginDS;
 import br.uece.seed.ext.ExtensionManager;
 import java.io.IOException;
@@ -41,7 +41,7 @@ public class StandardModelingWindowManager extends DefaultWindowManagerPluginDS<
     }
 
     @Override
-    protected void onShow(StandardModelingWindowImpl window, ComponentBuildDS buildDS) {
+    protected void onShow(StandardModelingWindowImpl window, StandardModeling buildDS) {
         window.setComponentBuildDS(buildDS);
     }
 

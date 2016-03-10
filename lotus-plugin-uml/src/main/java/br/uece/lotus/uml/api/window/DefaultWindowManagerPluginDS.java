@@ -8,11 +8,11 @@ package br.uece.lotus.uml.api.window;
 import br.uece.lotus.Component;
 import br.uece.lotus.State;
 import br.uece.lotus.Transition;
-import br.uece.lotus.uml.api.ds.BlockBuildDS;
+import br.uece.lotus.uml.api.ds.Hmsc;
 import br.uece.lotus.uml.api.ds.BlockDS;
-import br.uece.lotus.uml.api.ds.ComponentBuildDS;
+import br.uece.lotus.uml.api.ds.StandardModeling;
 import br.uece.lotus.uml.api.ds.ComponentDS;
-import br.uece.lotus.uml.api.ds.TransitionBuildDS;
+import br.uece.lotus.uml.api.ds.TransitionMSC;
 import br.uece.seed.app.ExtensibleTabPane;
 import br.uece.seed.app.UserInterface;
 import br.uece.seed.ext.ExtensionManager;
@@ -34,13 +34,13 @@ public abstract class DefaultWindowManagerPluginDS<E extends WindowDS> extends P
     private List<Listener> mListeners = new ArrayList<>();
     
     private ArrayList<E> mComponentsWindows = new ArrayList<E>();
-    private Map<ComponentBuildDS, Integer> mComponentBuildDSids = new HashMap<>();
+    private Map<StandardModeling, Integer> mComponentBuildDSids = new HashMap<>();
     private Map<ComponentDS, Integer> mComponentDSids = new HashMap<>();
     private Map<Component, Integer> mComponentLTSids = new HashMap<>();
     
     private boolean mOnStartCalled;
     protected abstract E onCreate();
-    protected abstract void onShow(E window, ComponentBuildDS buildDS);
+    protected abstract void onShow(E window, StandardModeling buildDS);
     protected abstract void onShow(E window, ComponentDS cds);
     protected abstract void onShow(E window, Component c);
     protected abstract void onHide(E window);
@@ -53,7 +53,7 @@ public abstract class DefaultWindowManagerPluginDS<E extends WindowDS> extends P
     
     
     @Override
-    public void show(ComponentBuildDS buildDS) {
+    public void show(StandardModeling buildDS) {
         checkIfStartedProperly();
         E window = null;
         for(E w : mComponentsWindows){
@@ -143,7 +143,7 @@ public abstract class DefaultWindowManagerPluginDS<E extends WindowDS> extends P
     }
 
     @Override
-    public void hide(ComponentBuildDS buildDS) {
+    public void hide(StandardModeling buildDS) {
         
     }
 
@@ -173,9 +173,9 @@ public abstract class DefaultWindowManagerPluginDS<E extends WindowDS> extends P
         }
     }
     
-    private final ComponentBuildDS.Listener mComponentBuildDSListener = new ComponentBuildDS.Listener() {
+    private final StandardModeling.Listener mComponentBuildDSListener = new StandardModeling.Listener() {
         @Override
-        public void onChange(ComponentBuildDS buildDS) {
+        public void onChange(StandardModeling buildDS) {
             Integer id = mComponentBuildDSids.get(buildDS);
             if(id!=null){
                 mCenterPanel.renameTab(id, buildDS.getName());
@@ -183,13 +183,13 @@ public abstract class DefaultWindowManagerPluginDS<E extends WindowDS> extends P
         }
 
         @Override
-        public void onBlockCreate(ComponentBuildDS buildDS, BlockBuildDS bbds) {}
+        public void onBlockCreate(StandardModeling buildDS, Hmsc bbds) {}
         @Override
-        public void onBlockRemove(ComponentBuildDS buildDS, BlockBuildDS bbds) {}
+        public void onBlockRemove(StandardModeling buildDS, Hmsc bbds) {}
         @Override
-        public void onTransitionCreate(ComponentBuildDS buildDS, TransitionBuildDS t) {}
+        public void onTransitionCreate(StandardModeling buildDS, TransitionMSC t) {}
         @Override
-        public void onTransitionRemove(ComponentBuildDS buildDS, TransitionBuildDS t) {}
+        public void onTransitionRemove(StandardModeling buildDS, TransitionMSC t) {}
     };
     
     private final ComponentDS.Listener mComponentDSListener = new ComponentDS.Listener() {

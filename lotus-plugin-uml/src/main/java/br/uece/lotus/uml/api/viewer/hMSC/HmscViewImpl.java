@@ -3,9 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package br.uece.lotus.uml.api.viewer.builder;
+package br.uece.lotus.uml.api.viewer.hMSC;
 
-import br.uece.lotus.uml.api.ds.BlockBuildDS;
+import br.uece.lotus.uml.api.ds.Hmsc;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
@@ -17,7 +17,7 @@ import javafx.scene.shape.Rectangle;
  *
  * @author Bruno Barbosa
  */
-public class BlockBuildDSViewImpl extends Region implements BlockBuildDSView, BlockBuildDS.Listener{
+public class HmscViewImpl extends Region implements HmscView, Hmsc.Listener{
 
     public static final int LARGURA = 150,ALTURA = 70;
     static final int RAIO = 5;
@@ -26,10 +26,10 @@ public class BlockBuildDSViewImpl extends Region implements BlockBuildDSView, Bl
     private Circle mCircle;
     private Label mTitulo;
     
-    private BlockBuildDS mBlock;
+    private Hmsc mBlock;
     private static final String DEFAULT_COLOR = "yellow";
     
-    public BlockBuildDSViewImpl() {
+    public HmscViewImpl() {
         mRetangulo = new Rectangle(LARGURA, ALTURA);
         getChildren().add(mRetangulo);
         mRetangulo.setLayoutX(0);
@@ -65,12 +65,12 @@ public class BlockBuildDSViewImpl extends Region implements BlockBuildDSView, Bl
     }
 
     @Override
-    public BlockBuildDS getBlockBuildDS() {
+    public Hmsc getBlockBuildDS() {
         return mBlock;
     }
 
     @Override
-    public void setBlockBuildDS(BlockBuildDS bbds) {
+    public void setBlockBuildDS(Hmsc bbds) {
         if(mBlock != null){
             mBlock.removeListener(this);
         }
@@ -82,7 +82,7 @@ public class BlockBuildDSViewImpl extends Region implements BlockBuildDSView, Bl
     }
 
     @Override
-    public void onChange(BlockBuildDS blockBuildDS) {
+    public void onChange(Hmsc blockBuildDS) {
         updateView();
     }
 

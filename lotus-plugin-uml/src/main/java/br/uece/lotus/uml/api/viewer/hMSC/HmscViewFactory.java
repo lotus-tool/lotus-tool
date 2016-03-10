@@ -3,17 +3,17 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package br.uece.lotus.uml.api.viewer.builder;
+package br.uece.lotus.uml.api.viewer.hMSC;
 
 /**
  *
  * @author Bruno Barbosa
  */
-public class BlockBuildDSViewFactory implements BlockBuildDSView.Factory{
+public class HmscViewFactory implements HmscView.Factory{
 
     @Override
-    public BlockBuildDSView create() {
-        return new BlockBuildDSViewImpl();
+    public HmscView create() {
+        return new HmscViewImpl();
     }
     
 }

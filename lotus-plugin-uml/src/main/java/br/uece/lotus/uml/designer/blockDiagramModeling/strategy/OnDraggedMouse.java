@@ -7,7 +7,7 @@ package br.uece.lotus.uml.designer.blockDiagramModeling.strategy;
 
 
 import br.uece.lotus.uml.api.ds.BlockDS;
-import br.uece.lotus.uml.api.viewer.block.BlockDSView;
+import br.uece.lotus.uml.api.viewer.bMSC.BlockDSView;
 import br.uece.lotus.uml.designer.blockDiagramModeling.DesingWindowImplBlockDs;
 import javafx.scene.Node;
 import javafx.scene.input.*;

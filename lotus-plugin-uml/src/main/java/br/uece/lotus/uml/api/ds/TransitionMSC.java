@@ -15,53 +15,64 @@ import java.util.Objects;
  *
  * @author Bruno Barbosa
  */
-public class TransitionBuildDS {
+public class TransitionMSC {
+
     
     public static class Builder {
-        private final ComponentBuildDS mComponentBuild;
-        private final TransitionBuildDS mTransitionBuild;
+        private final StandardModeling mComponentBuild;
+        private final TransitionMSC mTransitionMSC;
 
-       public Builder(ComponentBuildDS mComponentBuild, TransitionBuildDS mTransitionBuild) {
+       public Builder(StandardModeling mComponentBuild, TransitionMSC mTransitionMSC) {
            this.mComponentBuild = mComponentBuild;
-           this.mTransitionBuild = mTransitionBuild;
+           this.mTransitionMSC = mTransitionMSC;
        }
 
        public Builder setValue(String s, Object o) {
-           mTransitionBuild.setValue(s, o);
+           mTransitionMSC.setValue(s, o);
            return this;
        }
 
-       public TransitionBuildDS create() {
-           mComponentBuild.add(mTransitionBuild);
-           return mTransitionBuild;
+       public TransitionMSC create() {
+           mComponentBuild.add(mTransitionMSC);
+           return mTransitionMSC;
+       }
+       
+       public Builder setIdSequence(int id){
+           mTransitionMSC.setIdSequence(id);
+           return this;
        }
 
        public Builder setLabel(String label) {
-           mTransitionBuild.setLabel(label);
+           mTransitionMSC.setLabel(label);
            return this;
        }
 
        public Builder setProbability(Double probability) {
-           mTransitionBuild.setProbability(probability);
+           mTransitionMSC.setProbability(probability);
            return this;            
+       }
+       
+       public Builder setGuard(String guard){
+           mTransitionMSC.setGuard(guard);
+           return this;
        }
 
        public Builder setViewType(int type) {
-           mTransitionBuild.setValue("view.type", type);
+           mTransitionMSC.setValue("view.type", type);
            return this;
        }
     }
     
     public interface Listener {
 
-        void onChange(TransitionBuildDS transitionBuildDS);
+        void onChange(TransitionMSC transitionMSC);
     }
     
     public static final String TEXTSTYLE_NORMAL = "normal";
     public static final String TEXTSTYLE_BOLD = "bold";
     //Grafica
-    private BlockBuildDS mSource;
-    private BlockBuildDS mDestiny;
+    private Object mSource;  // declarado como object para ser tanto hMSC como MSC
+    private Object mDestiny;
     private final Map<String, Object> mValues = new HashMap<>();
     private final List<Listener> mListeners = new ArrayList<>();
     //View
@@ -73,17 +84,19 @@ public class TransitionBuildDS {
     //Transition
     private String mLabel;
     private Double mProbability;
+    private String mGuard;
+    private int mIdSequence;
 
-    public TransitionBuildDS(BlockBuildDS mSource, BlockBuildDS mDestiny) {
+    public TransitionMSC(Object mSource, Object mDestiny) {
         this.mSource = mSource;
         this.mDestiny = mDestiny;
     }
 
-    public BlockBuildDS getSource() {
+    public Object getSource() {
         return mSource;
     }
 
-    public BlockBuildDS getDestiny() {
+    public Object getDestiny() {
         return mDestiny;
     }
 
@@ -163,6 +176,28 @@ public class TransitionBuildDS {
             l.onChange(this);
         }
     }
+    
+    public void setGuard(String guard) {
+        this.mGuard = guard;
+        for(Listener l : mListeners){
+            l.onChange(this);
+        }
+    }
+    
+    public String getGuard(){
+        return mGuard;
+    }
+
+    public void setIdSequence(int id) {
+        this.mIdSequence = id;
+        for(Listener l : mListeners){
+            l.onChange(this);
+        }
+    }
+    
+    public int getIdSequence(){
+        return mIdSequence;
+    }
 
     @Override
     public int hashCode() {
@@ -181,7 +216,7 @@ public class TransitionBuildDS {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final TransitionBuildDS other = (TransitionBuildDS) obj;
+        final TransitionMSC other = (TransitionMSC) obj;
         if (!Objects.equals(this.mSource, other.mSource)) {
             return false;
         }
@@ -194,8 +229,16 @@ public class TransitionBuildDS {
         if (!Objects.equals(this.mProbability, other.mProbability)) {
             return false;
         }
+        if (!Objects.equals(this.mGuard, other.mGuard)) {
+            return false;
+        }
+        if (this.mIdSequence != other.mIdSequence) {
+            return false;
+        }
         return true;
     }
+
+    
     
     
     public void addListener(Listener l) {

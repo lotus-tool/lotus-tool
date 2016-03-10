@@ -6,13 +6,13 @@
 package br.uece.lotus.uml.designer.standardModeling;
 
 import br.uece.lotus.Component;
-import br.uece.lotus.uml.api.ds.BlockBuildDS;
-import br.uece.lotus.uml.api.ds.ComponentBuildDS;
+import br.uece.lotus.uml.api.ds.Hmsc;
+import br.uece.lotus.uml.api.ds.StandardModeling;
 import br.uece.lotus.uml.api.ds.ComponentDS;
-import br.uece.lotus.uml.api.viewer.builder.BlockBuildDSView;
-import br.uece.lotus.uml.api.viewer.builder.ComponentBuildDSView;
-import br.uece.lotus.uml.api.viewer.builder.ComponentBuildDSViewImpl;
-import br.uece.lotus.uml.api.viewer.builder.TransitionBuildDSView;
+import br.uece.lotus.uml.api.viewer.hMSC.HmscView;
+import br.uece.lotus.uml.api.viewer.hMSC.StandardModelingView;
+import br.uece.lotus.uml.api.viewer.hMSC.StandardModelingViewImpl;
+import br.uece.lotus.uml.api.viewer.transition.TransitionMSCView;
 import br.uece.lotus.uml.api.window.WindowDS;
 import br.uece.lotus.uml.designer.standardModeling.strategy.Context;
 import br.uece.lotus.uml.designer.standardModeling.strategy.OnClickedMouse;
@@ -71,7 +71,7 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
     private final AnchorPane mPropriedadePanel;
     private final HBox mInfoPanel;
     public final ToolBar mToolBar;
-    public ComponentBuildDSView mViewer;
+    public StandardModelingView mViewer;
     //Botoes
     private ToggleGroup mToggleGroup;
     private ToggleButton mBtnArrow;
@@ -114,7 +114,7 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
     //                   IMPLEMENTACAO DA WINDOW_DS                        //
     /////////////////////////////////////////////////////////////////////////
     @Override
-    public ComponentBuildDS getComponentBuildDS() {
+    public StandardModeling getComponentBuildDS() {
         return mViewer.getComponentBuildDS();
     }
 
@@ -125,7 +125,7 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
     public Component getComponentLTS() {return null;}
 
     @Override
-    public void setComponentBuildDS(ComponentBuildDS buildDS) {
+    public void setComponentBuildDS(StandardModeling buildDS) {
         mViewer.setComponentBuildDS(buildDS);
     }
 
@@ -137,7 +137,7 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
 
     @Override
     public String getTitle() {
-        ComponentBuildDS c = mViewer.getComponentBuildDS();
+        StandardModeling c = mViewer.getComponentBuildDS();
         return c.getName();
     }
 
@@ -147,7 +147,7 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
     }
     
     public StandardModelingWindowImpl() {
-        mViewer = new ComponentBuildDSViewImpl();
+        mViewer = new StandardModelingViewImpl();
         mToolBar = new ToolBar();
         mScrollPanel = new ScrollPane((Node)mViewer);
         mPropriedadePanel = new AnchorPane();
@@ -217,7 +217,7 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
         mBtnTransitionLine.setGraphic(new ImageView(new Image(getClass().getResourceAsStream("/imagens/ic_transition_line.png"))));
         mBtnTransitionLine.setOnAction((ActionEvent event) -> {
             setModo(MODO_TRANSICAO);
-            mTransitionViewType = TransitionBuildDSView.Geometry.LINE;
+            mTransitionViewType = TransitionMSCView.Geometry.LINE;
         });
         mBtnTransitionLine.setToggleGroup(mToggleGroup);
         
@@ -225,7 +225,7 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
         mBtnTransitionArc.setGraphic(new ImageView(new Image(getClass().getResourceAsStream("/imagens/ic_transition_semicircle.png"))));
         mBtnTransitionArc.setOnAction((ActionEvent event) -> {
             setModo(MODO_TRANSICAO);
-            mTransitionViewType = TransitionBuildDSView.Geometry.CURVE;
+            mTransitionViewType = TransitionMSCView.Geometry.CURVE;
         });
         mBtnTransitionArc.setToggleGroup(mToggleGroup);
         
@@ -442,27 +442,27 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
     }
 
     private void applySelectedStyles(Object mComponentSelecionado) {
-        if(mComponentSelecionado instanceof BlockBuildDSView){
-            BlockBuildDS b = ((BlockBuildDSView) mComponentSelecionado).getBlockBuildDS();
+        if(mComponentSelecionado instanceof HmscView){
+            Hmsc b = ((HmscView) mComponentSelecionado).getBlockBuildDS();
             b.setBorderWidth(3);
             b.setBorderColor("blue");
             b.setTextColor("blue");
-            b.setTextStyle(BlockBuildDS.mTextStyleBold);
+            b.setTextStyle(Hmsc.mTextStyleBold);
         }
-        else if(mComponentSelecionado instanceof TransitionBuildDSView){
+        else if(mComponentSelecionado instanceof TransitionMSCView){
             
         }
     }
 
     private void removeSelectedStyles(Object mComponentSelecionado) {
-        if(mComponentSelecionado instanceof BlockBuildDSView){
-            BlockBuildDS b = ((BlockBuildDSView) mComponentSelecionado).getBlockBuildDS();
+        if(mComponentSelecionado instanceof HmscView){
+            Hmsc b = ((HmscView) mComponentSelecionado).getBlockBuildDS();
             b.setBorderWidth(1);
             b.setBorderColor("black");
             b.setTextColor("black");
-            b.setTextStyle(BlockBuildDS.mTextStyleNormal);
+            b.setTextStyle(Hmsc.mTextStyleNormal);
         }
-        else if(mComponentSelecionado instanceof TransitionBuildDSView){
+        else if(mComponentSelecionado instanceof TransitionMSCView){
             
         }
     }
@@ -473,7 +473,7 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
     
     public void updateContID() {
         int aux = -1;
-        for (BlockBuildDS b : mViewer.getComponentBuildDS().getBlocos()) {
+        for (Hmsc b : mViewer.getComponentBuildDS().getBlocos()) {
             if (b.getID() > aux) {
                 aux = b.getID();
             }
@@ -493,8 +493,8 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
             hexCor = "#"+ Integer.toHexString(cores.getValue().hashCode()).substring(0, 6).toUpperCase();
         }
         for(Node b : selecao){
-            BlockBuildDSView bview = (BlockBuildDSView)b;
-            BlockBuildDS bbds = bview.getBlockBuildDS();
+            HmscView bview = (HmscView)b;
+            Hmsc bbds = bview.getBlockBuildDS();
             if(tipo.equals("Default")){
                 bbds.setColor(null);
             }
@@ -539,9 +539,9 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
     EventHandler<ActionEvent> btnGerarLTS = (ActionEvent event) -> {
         //verificar se tem bloco com ds vazio
         for(Node node : mViewer.getNode().getChildren()){
-            if(node instanceof BlockBuildDSView){
-                BlockBuildDSView b = (BlockBuildDSView)node;
-                BlockBuildDS block = b.getBlockBuildDS();
+            if(node instanceof HmscView){
+                HmscView b = (HmscView)node;
+                Hmsc block = b.getBlockBuildDS();
                 if(!block.isFull()){
                     Alert alerta = new Alert(Alert.AlertType.WARNING, "Algum bloco esta vazio", ButtonType.OK);
                     alerta.show();

@@ -15,46 +15,46 @@ import java.util.Objects;
  *
  * @author Bruno Barbosa
  */
-public class ComponentBuildDS {
+public class StandardModeling {
     
     private final Map<String, Object> mValues = new HashMap<>();
     private String mName;
     
     public interface Listener{
-        void onChange(ComponentBuildDS buildDS);
-        void onBlockCreate(ComponentBuildDS buildDS, BlockBuildDS bbds);
-        void onBlockRemove(ComponentBuildDS buildDS, BlockBuildDS bbds);
-        void onTransitionCreate(ComponentBuildDS buildDS, TransitionBuildDS t);
-        void onTransitionRemove(ComponentBuildDS buildDS, TransitionBuildDS t);
+        void onChange(StandardModeling buildDS);
+        void onBlockCreate(StandardModeling buildDS, Hmsc bbds);
+        void onBlockRemove(StandardModeling buildDS, Hmsc bbds);
+        void onTransitionCreate(StandardModeling buildDS, TransitionMSC t);
+        void onTransitionRemove(StandardModeling buildDS, TransitionMSC t);
     }
     
     
-    private List<BlockBuildDS> mBlocos = new ArrayList<>();
-    private List<TransitionBuildDS> mTransitions = new ArrayList<>();
+    private List<Hmsc> mBlocos = new ArrayList<>();
+    private List<TransitionMSC> mTransitions = new ArrayList<>();
     private final List<Listener> mListeners = new ArrayList<>();
      
     
-    public BlockBuildDS newBlock(int id){
-        BlockBuildDS bbds = new BlockBuildDS(this);
+    public Hmsc newBlock(int id){
+        Hmsc bbds = new Hmsc(this);
         bbds.setID(id);
         add(bbds);
         return bbds;
     }
     
-    public void add(BlockBuildDS b){
+    public void add(Hmsc b){
         mBlocos.add(b);
         for(Listener l : mListeners){
             l.onBlockCreate(this, b);
         }
     }
 
-    public void add(TransitionBuildDS t){
+    public void add(TransitionMSC t){
         
     }
-    public void remove(BlockBuildDS b){
+    public void remove(Hmsc b){
         
     }
-    public void remove(TransitionBuildDS t){
+    public void remove(TransitionMSC t){
         
     }
     
@@ -74,19 +74,19 @@ public class ComponentBuildDS {
         return this.mName;
     }
 
-    public List<BlockBuildDS> getBlocos() {
+    public List<Hmsc> getBlocos() {
         return mBlocos;
     }
 
-    public void setBlocos(List<BlockBuildDS> mBlocos) {
+    public void setBlocos(List<Hmsc> mBlocos) {
         this.mBlocos = mBlocos;
     }
 
-    public List<TransitionBuildDS> getTransitions() {
+    public List<TransitionMSC> getTransitions() {
         return mTransitions;
     }
 
-    public void setTransitions(List<TransitionBuildDS> mTransitions) {
+    public void setTransitions(List<TransitionMSC> mTransitions) {
         this.mTransitions = mTransitions;
     }
     
@@ -116,7 +116,7 @@ public class ComponentBuildDS {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final ComponentBuildDS other = (ComponentBuildDS) obj;
+        final StandardModeling other = (StandardModeling) obj;
         if (!Objects.equals(this.mValues, other.mValues)) {
             return false;
         }

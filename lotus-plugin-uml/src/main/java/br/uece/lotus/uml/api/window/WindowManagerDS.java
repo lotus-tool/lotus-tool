@@ -6,7 +6,7 @@
 package br.uece.lotus.uml.api.window;
 
 import br.uece.lotus.Component;
-import br.uece.lotus.uml.api.ds.ComponentBuildDS;
+import br.uece.lotus.uml.api.ds.StandardModeling;
 import br.uece.lotus.uml.api.ds.ComponentDS;
 
 /**
@@ -19,11 +19,11 @@ public interface WindowManagerDS {
         void onCreateWindow(WindowDS w);
     }
     
-    public void show(ComponentBuildDS buildDS);
+    public void show(StandardModeling buildDS);
     public void show(ComponentDS cds);
     public void show(Component c);
     
-    public void hide(ComponentBuildDS buildDS);
+    public void hide(StandardModeling buildDS);
     public void hide(ComponentDS cds);
     public void hide(Component c);
     

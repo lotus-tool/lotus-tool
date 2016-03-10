@@ -3,9 +3,10 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package br.uece.lotus.uml.api.viewer.builder;
+package br.uece.lotus.uml.api.viewer.hMSC;
 
-import br.uece.lotus.uml.api.ds.ComponentBuildDS;
+import br.uece.lotus.uml.api.viewer.transition.TransitionMSCView;
+import br.uece.lotus.uml.api.ds.StandardModeling;
 import java.io.File;
 import javafx.geometry.Point2D;
 import javafx.scene.control.ContextMenu;
@@ -15,21 +16,21 @@ import javafx.scene.layout.AnchorPane;
  *
  * @author Bruno Barbosa
  */
-public interface ComponentBuildDSView {
+public interface StandardModelingView {
     
     
     public interface Listener{
-        void onBlockBuildViewCreated(ComponentBuildDSView cbv, BlockBuildDSView bb);
-        void onTransitionBuildViewCreated(ComponentBuildDSView cbv, TransitionBuildDSView tb);
+        void onBlockBuildViewCreated(StandardModelingView cbv, HmscView bb);
+        void onTransitionBuildViewCreated(StandardModelingView cbv, TransitionMSCView tb);
     }
     
-    public ComponentBuildDS getComponentBuildDS();
-    public void setComponentBuildDS(ComponentBuildDS cbds);
+    public StandardModeling getComponentBuildDS();
+    public void setComponentBuildDS(StandardModeling cbds);
     public void addListener(Listener l);
     public void removeListener(Listener l);
     
-    BlockBuildDSView locateBlockBuildView(Point2D point);
-    TransitionBuildDSView locateTransitionBuildView(Point2D point);
+    HmscView locateBlockBuildView(Point2D point);
+    TransitionMSCView locateTransitionBuildView(Point2D point);
     
     AnchorPane getNode();
     void setBlockBuildContextMenu(ContextMenu menu);

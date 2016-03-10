@@ -3,11 +3,13 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package br.uece.lotus.uml.api.viewer.builder;
+package br.uece.lotus.uml.api.viewer.hMSC;
 
-import br.uece.lotus.uml.api.ds.BlockBuildDS;
-import br.uece.lotus.uml.api.ds.ComponentBuildDS;
-import br.uece.lotus.uml.api.ds.TransitionBuildDS;
+import br.uece.lotus.uml.api.viewer.transition.TransitionMSCView;
+import br.uece.lotus.uml.api.viewer.transition.TransitionMSCViewFactory;
+import br.uece.lotus.uml.api.ds.Hmsc;
+import br.uece.lotus.uml.api.ds.StandardModeling;
+import br.uece.lotus.uml.api.ds.TransitionMSC;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -29,28 +31,28 @@ import javax.imageio.ImageIO;
  *
  * @author Bruno Barbosa
  */
-public class ComponentBuildDSViewImpl extends AnchorPane implements ComponentBuildDSView, ComponentBuildDS.Listener{
+public class StandardModelingViewImpl extends AnchorPane implements StandardModelingView, StandardModeling.Listener{
 
-    private ComponentBuildDS mComponentBuild;
+    private StandardModeling mComponentBuild;
     private ContextMenu mBlockBuildContextMenu;
     private List<Listener> mListeners = new ArrayList<>();
-    private List<BlockBuildDSView> mBlockViews = new ArrayList<>();
-    private List<TransitionBuildDSView> mTransitionViews = new ArrayList<>();
-    private BlockBuildDSViewFactory blockBuildFactory;
-    private TransitionBuildDSViewFactory transitionBuildFactory;
+    private List<HmscView> mBlockViews = new ArrayList<>();
+    private List<TransitionMSCView> mTransitionViews = new ArrayList<>();
+    private HmscViewFactory blockBuildFactory;
+    private TransitionMSCViewFactory transitionBuildFactory;
 
-    public ComponentBuildDSViewImpl() {
-        blockBuildFactory = new BlockBuildDSViewFactory();
-        transitionBuildFactory = new TransitionBuildDSViewFactory();
+    public StandardModelingViewImpl() {
+        blockBuildFactory = new HmscViewFactory();
+        transitionBuildFactory = new TransitionMSCViewFactory();
     }
     
     @Override
-    public ComponentBuildDS getComponentBuildDS() {
+    public StandardModeling getComponentBuildDS() {
         return mComponentBuild;
     }
 
     @Override
-    public void setComponentBuildDS(ComponentBuildDS cbds) {
+    public void setComponentBuildDS(StandardModeling cbds) {
         if(mComponentBuild != null){
             mComponentBuild.removeListener(this);
         }
@@ -60,10 +62,10 @@ public class ComponentBuildDSViewImpl extends AnchorPane implements ComponentBui
         }
         mComponentBuild = cbds;
         mComponentBuild.addListener(this);
-        for(BlockBuildDS b : mComponentBuild.getBlocos()){
+        for(Hmsc b : mComponentBuild.getBlocos()){
             showBlock(b);
         }
-        for(TransitionBuildDS t : mComponentBuild.getTransitions()){
+        for(TransitionMSC t : mComponentBuild.getTransitions()){
             showTransition(t);
         }
     }
@@ -79,8 +81,8 @@ public class ComponentBuildDSViewImpl extends AnchorPane implements ComponentBui
     }
 
     @Override
-    public BlockBuildDSView locateBlockBuildView(Point2D point) {
-        for(BlockBuildDSView b : mBlockViews){
+    public HmscView locateBlockBuildView(Point2D point) {
+        for(HmscView b : mBlockViews){
             if(b.isInsideBounds(point)){
                 return b;
             }
@@ -89,8 +91,8 @@ public class ComponentBuildDSViewImpl extends AnchorPane implements ComponentBui
     }
 
     @Override
-    public TransitionBuildDSView locateTransitionBuildView(Point2D point) {
-        for(TransitionBuildDSView t : mTransitionViews){
+    public TransitionMSCView locateTransitionBuildView(Point2D point) {
+        for(TransitionMSCView t : mTransitionViews){
             //falta implementar a transition 
         }
         return null;
@@ -112,37 +114,37 @@ public class ComponentBuildDSViewImpl extends AnchorPane implements ComponentBui
         try {
             ImageIO.write(SwingFXUtils.fromFXImage(img, null), "png", arq);
         } catch (IOException ex) {
-            Logger.getLogger(ComponentBuildDSViewImpl.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(StandardModelingViewImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
     @Override
-    public void onChange(ComponentBuildDS buildDS) {
+    public void onChange(StandardModeling buildDS) {
         
     }
 
     @Override
-    public void onBlockCreate(ComponentBuildDS buildDS, BlockBuildDS bbds) {
+    public void onBlockCreate(StandardModeling buildDS, Hmsc bbds) {
         showBlock(bbds);
     }
 
     @Override
-    public void onBlockRemove(ComponentBuildDS buildDS, BlockBuildDS bbds) {
+    public void onBlockRemove(StandardModeling buildDS, Hmsc bbds) {
         hideBlock(bbds);
     }
 
     @Override
-    public void onTransitionCreate(ComponentBuildDS buildDS, TransitionBuildDS t) {
+    public void onTransitionCreate(StandardModeling buildDS, TransitionMSC t) {
         showTransition(t);
     }
 
     @Override
-    public void onTransitionRemove(ComponentBuildDS buildDS, TransitionBuildDS t) {
+    public void onTransitionRemove(StandardModeling buildDS, TransitionMSC t) {
         hideTransition(t);
     }
 
-    private void showBlock(BlockBuildDS bbds) {
-        BlockBuildDSView view;
+    private void showBlock(Hmsc bbds) {
+        HmscView view;
         Node node;
         synchronized (this){
             if (bbds.getValue("view") == null) {
@@ -156,13 +158,13 @@ public class ComponentBuildDSViewImpl extends AnchorPane implements ComponentBui
         }
     }
 
-    private void hideBlock(BlockBuildDS bbds) {
+    private void hideBlock(Hmsc bbds) {
         ObservableList<Node> aux = getChildren();
-        BlockBuildDSView view;
-        BlockBuildDS b = null;
+        HmscView view;
+        Hmsc b = null;
         
         synchronized (this){
-            view = (BlockBuildDSView) bbds.getValue("view");
+            view = (HmscView) bbds.getValue("view");
             if (view != null) {
                 b = view.getBlockBuildDS();
             }
@@ -181,11 +183,11 @@ public class ComponentBuildDSViewImpl extends AnchorPane implements ComponentBui
         }
     }
 
-    private void showTransition(TransitionBuildDS t) {
+    private void showTransition(TransitionMSC t) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    private void hideTransition(TransitionBuildDS t) {
+    private void hideTransition(TransitionMSC t) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
@@ -193,7 +195,7 @@ public class ComponentBuildDSViewImpl extends AnchorPane implements ComponentBui
         if (mComponentBuild == null) {
             return;
         }
-        for (BlockBuildDS b : mComponentBuild.getBlocos()) {
+        for (Hmsc b : mComponentBuild.getBlocos()) {
             hideBlock(b);
         }
         mComponentBuild = null;

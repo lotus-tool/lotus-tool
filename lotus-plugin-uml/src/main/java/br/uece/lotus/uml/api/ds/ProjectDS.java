@@ -22,11 +22,11 @@ public class ProjectDS {
     public interface Listener{
         void onChange(ProjectDS project);
         
-        void onComponentLTSGeralCreated(ProjectDS project, ComponentBuildDS buildDS, Component component);
-        void onComponentLTSGeralRemove(ProjectDS project, ComponentBuildDS buildDS, Component component);
+        void onComponentLTSGeralCreated(ProjectDS project, StandardModeling buildDS, Component component);
+        void onComponentLTSGeralRemove(ProjectDS project, StandardModeling buildDS, Component component);
         
-        void onComponentLTSFragmentOfBuildDSCreate(ProjectDS project, ComponentBuildDS buildDS, Component componentGeralLTS, Component frag );
-        void onComponentLTSFragmentOfBuildDSRemove(ProjectDS project, ComponentBuildDS buildDS, Component componentGeralLTS, Component frag );
+        void onComponentLTSFragmentOfBuildDSCreate(ProjectDS project, StandardModeling buildDS, Component componentGeralLTS, Component frag );
+        void onComponentLTSFragmentOfBuildDSRemove(ProjectDS project, StandardModeling buildDS, Component componentGeralLTS, Component frag );
         
         void onComponentDSCreated(ProjectDS project, ComponentDS componentDs);
         void onComponentDSRemoved(ProjectDS project, ComponentDS componentDs);
@@ -36,7 +36,7 @@ public class ProjectDS {
     }
     
     private String mName;
-    private ComponentBuildDS componentBuildDS = new ComponentBuildDS();
+    private StandardModeling componentBuildDS = new StandardModeling();
     private Component mComponentGeralLTS = new Component();
     private final List<Component> fragmentsBuildDS = new ArrayList<>();
     private final List<ComponentDS> mComponentsDS = new ArrayList<>();
@@ -92,11 +92,11 @@ public class ProjectDS {
         this.mName = mName;
     }
 
-    public ComponentBuildDS getComponentBuildDS() {
+    public StandardModeling getComponentBuildDS() {
         return componentBuildDS;
     }
 
-    public void setComponentBuildDS(ComponentBuildDS componentBuildDS) {
+    public void setComponentBuildDS(StandardModeling componentBuildDS) {
         this.componentBuildDS = componentBuildDS;
         for(Listener l : mListeners){
             l.onChange(this);
