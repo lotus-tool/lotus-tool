@@ -40,7 +40,7 @@ public class OnReleasedMouse implements Strategy {
                             }
                             else{
                                 s.addNoSelecao(node);
-                                System.out.println(node.getLayoutX()+"||"+node.getLayoutY());
+                                System.out.println("selecionou um ds");
                             }
                         }
                     }

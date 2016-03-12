@@ -20,7 +20,7 @@ public class BlockDS {
     private final List<Transition> mTransicoesEntrada = new ArrayList<>();
     private final Map<String, Object> mValues = new HashMap<>();
     private double mLayoutX;
-    private double mLayoutY;
+   /* private double mLayoutY;*/
     private final List<Listener> mListeners = new ArrayList<>();
     private final ComponentDS componentDS;
     private int mID;
@@ -32,6 +32,7 @@ public class BlockDS {
     private String mTextStyle;
     private String mLabel;
     private int mVisitedBlockDSCount;
+    private  final  static double LAYOUT_Y =50;
 
     BlockDS(ComponentDS c) {
         componentDS =c;}
@@ -54,13 +55,13 @@ public class BlockDS {
         }
     }
 
-    public void setLayoutY(double layoutY) {
-        this.mLayoutY = layoutY;
-        System.out.println(getLayoutY());
-        for (Listener l : mListeners) {
-            l.onChange(this);
-        }
-    }
+//    public void setLayoutY(double layoutY) {
+//        this.mLayoutY = layoutY;
+//        System.out.println(getLayoutY());
+//        for (Listener l : mListeners) {
+//            l.onChange(this);
+//        }
+//    }
 
     public String getColor(){return mColor;}
 
@@ -95,7 +96,7 @@ public class BlockDS {
 
 
     public double getLayoutY() {
-        return mLayoutY;
+        return LAYOUT_Y;
     }
 
     public void setBorderColor(String mBorderColor) {
@@ -195,7 +196,7 @@ public class BlockDS {
         mColor = ds.mColor;
         mLabel = ds.mLabel;
         mLayoutX = ds.mLayoutX;
-        mLayoutY = ds.mLayoutY;
+//        mLayoutY = ds.mLayoutY;
         mTextColor = ds.mTextColor;
         mTextSize = ds.mTextSize;
     }

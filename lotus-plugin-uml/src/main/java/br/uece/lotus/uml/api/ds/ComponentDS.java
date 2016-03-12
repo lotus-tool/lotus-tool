@@ -40,7 +40,7 @@ public class ComponentDS {
     private void copyBlockDS(BlockDS from, BlockDS to) {
         to.setLabel(from.getLabel());
         to.setLayoutX(from.getLayoutX());
-        to.setLayoutY(from.getLayoutY());
+//        to.setLayoutY(from.getLayoutY());
     }
 
     public List<Component> getmComponentsLTS() {return mComponentsLTS;}

@@ -29,7 +29,6 @@ public class OnDraggedMouse implements Strategy{
                 double offsetX = e.getX() - s.dragContextMouseAnchorX;
                 double offsetY = e.getY() - s.dragContextMouseAnchorY;
                 if(!(s.mComponentSobMouse instanceof BlockBuildDSView)){//ajusta o retangulo se nao for arrastar um block
-                    
                     if(offsetX > 0){
                         s.rectSelecao.setWidth(offsetX);
                     }else{

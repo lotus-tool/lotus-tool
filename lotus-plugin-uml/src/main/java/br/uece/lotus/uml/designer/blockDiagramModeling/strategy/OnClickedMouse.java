@@ -66,7 +66,7 @@ public class OnClickedMouse implements Strategy {
                     s.contID++;
                 System.out.println((e.getX()-(LARGURA/2))+"%%"+(e.getY()-(ALTURA/2)));
                 b.setLayoutX(e.getX() -(LARGURA/2));
-                    b.setLayoutY(e.getY()-(ALTURA/2));
+//                    b.setLayoutY(e.getY()-(ALTURA/2));
                     b.setLabel("New DS");
                 }
         }
