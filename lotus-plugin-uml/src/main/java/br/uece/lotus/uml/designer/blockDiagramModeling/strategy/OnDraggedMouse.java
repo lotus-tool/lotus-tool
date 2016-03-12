@@ -22,11 +22,12 @@ public class OnDraggedMouse implements Strategy {
     public void onDraggedMouse(DesingWindowImplBlockDs s, MouseEvent e) {
         if(s.mModoAtual == s.MODO_NENHUM){
             if(e.getButton() == MouseButton.PRIMARY){
+                System.out.println("entrou no drag");
                 
                 double offsetX = e.getX() - s.dragContextMouseAnchorX;
                 double offsetY = e.getY() - s.dragContextMouseAnchorY;
-                if(!(s.mComponentSobMouse instanceof BlockDSView)){//ajusta o retangulo se nao for arrastar um block
-                    
+                if(!(s.mComponentSobMouse instanceof BlockDSView) ){//ajusta o retangulo se nao for arrastar um block
+                    System.out.println("construindo retangulo");
                     if(offsetX > 0){
                         s.rectSelecao.setWidth(offsetX);
                     }else{
@@ -41,6 +42,7 @@ public class OnDraggedMouse implements Strategy {
                     }
                 }else{//arrastando um block
                     if(!s.segundaVezAoArrastar){
+
                         s.segundaVezAoArrastar = true;
                         s.ultimoInstanteX = e.getX();
                         s.ultimoInstanteY = e.getY();
@@ -50,17 +52,21 @@ public class OnDraggedMouse implements Strategy {
                         s.ultimoInstanteX = e.getX();
                         s.ultimoInstanteY = e.getY();
                     }
-                    if(s.selecionadoPeloRetangulo){
+                    /*Node node = ((BlockDSView) s.mComponentSobMouse).getNode();*/
+                    if(s.selecionadoPeloRetangulo /*&& s.selecao.contains(node)*/){
+                        System.out.println("entra aqui ?");
                         for(Node n : s.selecao){
                             BlockDSView view = (BlockDSView)n;
                             BlockDS b = view.getBlockDS();
                             b.setLayoutX(b.getLayoutX()+offsetX);
-                            b.setLayoutY(b.getLayoutY()+offsetY);
+//                            b.setLayoutY(b.getLayoutY()+offsetY);
                         }
                     }else{
+//                        s.clearSelecao();
+//                        s.addNoSelecao(node);
                         BlockDS b = ((BlockDSView)s.mComponentSobMouse).getBlockDS();
                         b.setLayoutX(b.getLayoutX()+offsetX);
-                        b.setLayoutY(b.getLayoutY()+offsetY);
+//                        b.setLayoutY(b.getLayoutY()+offsetY);
                     }
                 }
             }
