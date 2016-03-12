@@ -65,12 +65,12 @@ public class HmscViewImpl extends Region implements HmscView, Hmsc.Listener{
     }
 
     @Override
-    public Hmsc getBlockBuildDS() {
+    public Hmsc getHMSC() {
         return mBlock;
     }
 
     @Override
-    public void setBlockBuildDS(Hmsc bbds) {
+    public void setHMSC(Hmsc bbds) {
         if(mBlock != null){
             mBlock.removeListener(this);
         }

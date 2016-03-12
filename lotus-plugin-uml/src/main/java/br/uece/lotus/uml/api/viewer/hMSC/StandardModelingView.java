@@ -11,6 +11,7 @@ import java.io.File;
 import javafx.geometry.Point2D;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.shape.Circle;
 
 /**
  *
@@ -30,7 +31,7 @@ public interface StandardModelingView {
     public void removeListener(Listener l);
     
     HmscView locateBlockBuildView(Point2D point);
-    TransitionMSCView locateTransitionBuildView(Point2D point);
+    TransitionMSCView locateTransitionBuildView(Circle c);
     
     AnchorPane getNode();
     void setBlockBuildContextMenu(ContextMenu menu);

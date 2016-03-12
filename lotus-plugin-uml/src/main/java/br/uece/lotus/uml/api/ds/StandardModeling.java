@@ -48,14 +48,58 @@ public class StandardModeling {
         }
     }
 
+    public TransitionMSC newTransition(Hmsc src, Hmsc dst){
+        if (src == null) {
+            throw new IllegalArgumentException("src hMSC can't be null!");
+        }
+        if (dst == null) {
+            throw new IllegalArgumentException("dst hMSC can't be null!");
+        }
+        TransitionMSC t = new TransitionMSC(src, dst);
+        add(t);
+        return t;
+    }
+    
+    public TransitionMSC.Builder buildTransition(Hmsc src, Hmsc dst){
+        if (src == null) {
+            throw new IllegalArgumentException("src hMSC can't be null!");
+        }
+        if (dst == null) {
+            throw new IllegalArgumentException("dst hMSC can't be null!");
+        }
+        TransitionMSC t = new TransitionMSC(src, dst);
+        return new TransitionMSC.Builder(this, t);
+    }
+    
     public void add(TransitionMSC t){
-        
+        ((Hmsc)t.getSource()).addOutgoingTransition(t);
+        ((Hmsc)t.getDestiny()).addIncomingTransition(t);
+        mTransitions.add(t);
+        for(Listener l : mListeners){
+            l.onTransitionCreate(this, t);
+        }
     }
+    
     public void remove(Hmsc b){
-        
+        List<TransitionMSC> transition = new ArrayList<>();
+        transition.addAll(b.getIncomingTransitionsList());
+        transition.addAll(b.getOutgoingTransitionsList());
+        for(TransitionMSC t : transition){
+            remove(t);
+        }
+        mBlocos.remove(b);
+        for(Listener l : mListeners){
+            l.onBlockRemove(this, b);
+        }
     }
+    
     public void remove(TransitionMSC t){
-        
+        ((Hmsc)t.getSource()).removeOutgoingTransition(t);
+        ((Hmsc)t.getDestiny()).removeIncomingTransition(t);
+        mTransitions.remove(t);
+        for(Listener l : mListeners){
+            l.onTransitionRemove(this, t);
+        }
     }
     
     public Object getValue(String key) {

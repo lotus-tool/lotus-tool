@@ -24,7 +24,7 @@ public interface TransitionMSCView {
     abstract boolean isInsideBounds(Circle circle);
 
     TransitionMSC getTransition();
-    void setTransitionMSC(TransitionMSC t, Node component);
+    void setTransitionMSC(TransitionMSC t, Object component);
 
 
     public class Geometry {

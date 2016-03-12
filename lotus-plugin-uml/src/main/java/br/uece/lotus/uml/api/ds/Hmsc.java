@@ -8,6 +8,7 @@ package br.uece.lotus.uml.api.ds;
 import static br.uece.lotus.State.TEXTSTYLE_BOLD;
 import static br.uece.lotus.State.TEXTSTYLE_NORMAL;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -266,5 +267,13 @@ public class Hmsc {
             //falta implementar a transition
         }
         return l;
+    }
+    
+    public List<TransitionMSC> getOutgoingTransitionsList(){
+        return Collections.unmodifiableList(mTransicaoSaida);
+    }
+    
+    public List<TransitionMSC> getIncomingTransitionsList(){
+        return Collections.unmodifiableList(mTransicaoEntrada);
     }
 }

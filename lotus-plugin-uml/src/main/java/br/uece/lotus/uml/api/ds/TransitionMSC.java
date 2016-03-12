@@ -71,7 +71,7 @@ public class TransitionMSC {
     public static final String TEXTSTYLE_NORMAL = "normal";
     public static final String TEXTSTYLE_BOLD = "bold";
     //Grafica
-    private Object mSource;  // declarado como object para ser tanto hMSC como MSC
+    private Object mSource;  // declarado como object para ser tanto hMSC como bMSC
     private Object mDestiny;
     private final Map<String, Object> mValues = new HashMap<>();
     private final List<Listener> mListeners = new ArrayList<>();
@@ -85,7 +85,7 @@ public class TransitionMSC {
     private String mLabel;
     private Double mProbability;
     private String mGuard;
-    private int mIdSequence;
+    private Integer mIdSequence;
 
     public TransitionMSC(Object mSource, Object mDestiny) {
         this.mSource = mSource;
@@ -195,7 +195,7 @@ public class TransitionMSC {
         }
     }
     
-    public int getIdSequence(){
+    public Integer getIdSequence(){
         return mIdSequence;
     }
 
@@ -238,8 +238,6 @@ public class TransitionMSC {
         return true;
     }
 
-    
-    
     
     public void addListener(Listener l) {
         mListeners.add(l);

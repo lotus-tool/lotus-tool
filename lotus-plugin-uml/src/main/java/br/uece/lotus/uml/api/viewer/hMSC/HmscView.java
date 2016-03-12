@@ -21,6 +21,6 @@ public interface HmscView {
     
     Node getNode();
     boolean isInsideBounds(Point2D point);
-    Hmsc getBlockBuildDS();
-    void setBlockBuildDS(Hmsc bbds);
+    Hmsc getHMSC();
+    void setHMSC(Hmsc bbds);
 }

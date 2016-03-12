@@ -57,14 +57,14 @@ public class OnDraggedMouse implements Strategy{
                     if(s.selecionadoPeloRetangulo && s.selecao.contains(node)){
                         for(Node n : s.selecao){
                             HmscView view = (HmscView)n;
-                            Hmsc b = view.getBlockBuildDS();
+                            Hmsc b = view.getHMSC();
                             b.setLayoutX(b.getLayoutX()+offsetX);
                             b.setLayoutY(b.getLayoutY()+offsetY);
                         }
                     }else{
                         s.clearSelecao();
                         s.addNoSelecao(node);
-                        Hmsc b = ((HmscView)s.mComponentSobMouse).getBlockBuildDS();
+                        Hmsc b = ((HmscView)s.mComponentSobMouse).getHMSC();
                         b.setLayoutX(b.getLayoutX()+offsetX);
                         b.setLayoutY(b.getLayoutY()+offsetY);
                     }

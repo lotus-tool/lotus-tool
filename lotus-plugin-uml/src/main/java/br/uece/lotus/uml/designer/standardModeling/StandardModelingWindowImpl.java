@@ -443,7 +443,7 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
 
     private void applySelectedStyles(Object mComponentSelecionado) {
         if(mComponentSelecionado instanceof HmscView){
-            Hmsc b = ((HmscView) mComponentSelecionado).getBlockBuildDS();
+            Hmsc b = ((HmscView) mComponentSelecionado).getHMSC();
             b.setBorderWidth(3);
             b.setBorderColor("blue");
             b.setTextColor("blue");
@@ -456,7 +456,7 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
 
     private void removeSelectedStyles(Object mComponentSelecionado) {
         if(mComponentSelecionado instanceof HmscView){
-            Hmsc b = ((HmscView) mComponentSelecionado).getBlockBuildDS();
+            Hmsc b = ((HmscView) mComponentSelecionado).getHMSC();
             b.setBorderWidth(1);
             b.setBorderColor("black");
             b.setTextColor("black");
@@ -494,7 +494,7 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
         }
         for(Node b : selecao){
             HmscView bview = (HmscView)b;
-            Hmsc bbds = bview.getBlockBuildDS();
+            Hmsc bbds = bview.getHMSC();
             if(tipo.equals("Default")){
                 bbds.setColor(null);
             }
@@ -541,7 +541,7 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
         for(Node node : mViewer.getNode().getChildren()){
             if(node instanceof HmscView){
                 HmscView b = (HmscView)node;
-                Hmsc block = b.getBlockBuildDS();
+                Hmsc block = b.getHMSC();
                 if(!block.isFull()){
                     Alert alerta = new Alert(Alert.AlertType.WARNING, "Algum bloco esta vazio", ButtonType.OK);
                     alerta.show();

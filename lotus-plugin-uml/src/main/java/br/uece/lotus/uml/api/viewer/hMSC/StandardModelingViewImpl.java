@@ -10,6 +10,8 @@ import br.uece.lotus.uml.api.viewer.transition.TransitionMSCViewFactory;
 import br.uece.lotus.uml.api.ds.Hmsc;
 import br.uece.lotus.uml.api.ds.StandardModeling;
 import br.uece.lotus.uml.api.ds.TransitionMSC;
+import br.uece.lotus.uml.api.viewer.transition.SelfTransitionMSCViewImpl;
+import br.uece.lotus.uml.api.viewer.transition.TransitionMSCViewImpl;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -24,7 +26,7 @@ import javafx.scene.SnapshotParameters;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.image.WritableImage;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 import javax.imageio.ImageIO;
 
 /**
@@ -91,9 +93,11 @@ public class StandardModelingViewImpl extends AnchorPane implements StandardMode
     }
 
     @Override
-    public TransitionMSCView locateTransitionBuildView(Point2D point) {
+    public TransitionMSCView locateTransitionBuildView(Circle c) {
         for(TransitionMSCView t : mTransitionViews){
-            //falta implementar a transition 
+            if(t.isInsideBounds(c)){
+                return t;
+            } 
         }
         return null;
     }
@@ -151,7 +155,7 @@ public class StandardModelingViewImpl extends AnchorPane implements StandardMode
                 view = blockBuildFactory.create();
                 mBlockViews.add(view);
                 node = view.getNode();
-                view.setBlockBuildDS(bbds);
+                view.setHMSC(bbds);
                 bbds.setValue("view", view);
                 getChildren().add(node);
             }
@@ -166,29 +170,61 @@ public class StandardModelingViewImpl extends AnchorPane implements StandardMode
         synchronized (this){
             view = (HmscView) bbds.getValue("view");
             if (view != null) {
-                b = view.getBlockBuildDS();
+                b = view.getHMSC();
             }
         }
         if (view == null) {
             return;
         }
         
-        //Adicionar for apos implementacao das transitionBuild
+        for(TransitionMSC t : b.getIncomingTransitionsList()){
+            hideTransition(t);
+        }
+        for(TransitionMSC t : b.getOutgoingTransitionsList()){
+            hideTransition(t);
+        }
         
         synchronized (this) {
             aux.remove(view);
             bbds.setValue("view", null);
-            view.setBlockBuildDS(null);
+            view.setHMSC(null);
             mBlockViews.remove(view);
         }
     }
 
     private void showTransition(TransitionMSC t) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        TransitionMSCView view;
+        Node node;
+        synchronized(this){
+            if(t.getValue("view") == null){
+                view = transitionBuildFactory.create(t);
+                mTransitionViews.add(view);
+                view.setTransitionMSC(t, mComponentBuild);
+                t.setValue("view", view);
+                node = view.getNode();
+                getChildren().add(node);
+                if (view instanceof SelfTransitionMSCViewImpl) {
+                    ((SelfTransitionMSCViewImpl) view).gethMSCsourceView().getNode().toFront();
+                } else {
+                    node.toBack();
+                }
+                for (Listener l: mListeners) {
+                    l.onTransitionBuildViewCreated(this, view);
+                }
+            }
+        }
     }
 
     private void hideTransition(TransitionMSC t) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        synchronized(this){
+            TransitionMSCViewImpl view = (TransitionMSCViewImpl) t.getValue("view");
+            if(view != null){
+                mTransitionViews.remove(view);
+                view.setTransitionMSC(null, null);
+                t.setValue("view", null);
+                getChildren().remove(view);
+            }
+        }
     }
 
     private void clear() {

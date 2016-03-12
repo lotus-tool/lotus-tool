@@ -72,7 +72,7 @@ public class OnClickedMouse implements Strategy{
         }
         else if(s.mModoAtual == s.MODO_REMOVER){
             if(s.mComponentSobMouse instanceof HmscView){
-                Hmsc b = ((HmscView)s.mComponentSobMouse).getBlockBuildDS();
+                Hmsc b = ((HmscView)s.mComponentSobMouse).getHMSC();
                 s.mViewer.getComponentBuildDS().remove(b);
             }
             //falta a transition

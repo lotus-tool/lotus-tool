@@ -5,13 +5,13 @@
  */
 package br.uece.lotus.uml.api.viewer.transition;
 
+import br.uece.lotus.uml.api.ds.StandardModeling;
 import br.uece.lotus.uml.api.ds.TransitionMSC;
 import br.uece.lotus.uml.api.viewer.bMSC.BlockDSView;
 import br.uece.lotus.uml.api.viewer.hMSC.HmscView;
 import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.layout.Region;
-import javafx.scene.shape.Circle;
 
 /**
  *
@@ -22,9 +22,9 @@ public abstract class TransitionMSCViewImpl extends Region implements Transition
     protected TransitionMSC mTransition;
     protected HmscView hMscSource;
     protected HmscView hMscDestiny;
-    protected BlockDSView mscSource;
-    protected BlockDSView mscDestiny;
-    
+    protected BlockDSView bMscSource;
+    protected BlockDSView bMscDestiny;
+    protected String mValueType;
     
     
     @Override
@@ -38,21 +38,100 @@ public abstract class TransitionMSCViewImpl extends Region implements Transition
     }
 
     @Override
-    public void setTransitionMSC(TransitionMSC t, Node component) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public void setTransitionMSC(TransitionMSC t, Object component) {
+        if(mTransition != null){
+            mTransition.removeListener(this);
+            hMscSource = null;
+            hMscDestiny = null;
+            bMscSource = null;
+            bMscDestiny = null;
+        }
+        mTransition = t;
+        if(mTransition != null){
+            if(component instanceof StandardModeling){
+                hMscSource = (HmscView)((HmscView) t.getSource()).getHMSC().getValue("view");
+                hMscDestiny = (HmscView)((HmscView) t.getDestiny()).getHMSC().getValue("view");
+                mValueType = "hMSC";
+                mTransition.addListener(this);
+                prepareView();
+                updateView();
+            }else{
+                bMscSource = (BlockDSView)((BlockDSView) t.getSource()).getBlockDS().getValue("view");
+                bMscDestiny = (BlockDSView)((BlockDSView) t.getDestiny()).getBlockDS().getValue("view");
+                mValueType = "bMSC";
+                mTransition.addListener(this);
+                prepareView();
+                updateView();
+            }
+        }
     }
     
     protected abstract void prepareView();
     protected abstract void updateView();
     
     @Override
-    public void onChange(TransitionMSC transitionBuildDS) {
+    public void onChange(TransitionMSC transitionMSC) {
         Platform.runLater(this::updateView);
     }
     
     protected String getComputedLabel(){
         String s = "";
-        //Falta implementar
+        ///////////////////////////////////////////////////////////////////////////
+        if(mValueType.equals("hMSC")){
+            if(mTransition.getLabel() != null){
+                s += mTransition.getLabel();
+            }
+            if(mTransition.getProbability() != null){
+                if(mTransition.getProbability() == null){
+                    s += "";
+                }else{
+                    s += String.format(" (%.2f)", mTransition.getProbability());
+                }
+            }
+            if(mTransition.getGuard() != null){
+                if(mTransition.getGuard().equals("")){
+                    s += "";
+                }else{
+                    s += " ["+mTransition.getGuard()+"]";
+                }
+            }
+        }
+        ///////////////////////////////////////////////////////////////////////////
+        else if(mValueType.equals("bMSC")){
+            if(mTransition.getIdSequence() != null){
+                s += String.valueOf(mTransition.getIdSequence())+".";
+            }
+            if(mTransition.getLabel() != null){
+                if(mTransition.getLabel().equals("")){
+                    s += "";
+                }else{
+                    s += " "+mTransition.getLabel();
+                }
+            }
+            if(mTransition.getGuard() != null){
+                if(mTransition.getGuard().equals("")){
+                    s += "";
+                }else{
+                    s += " ["+mTransition.getGuard()+"]";
+                }
+            }
+        }
         return s;
+    }
+    
+    public HmscView gethMSCsourceView(){
+        return hMscSource;
+    }
+    
+    public HmscView gethMSCdestinyView(){
+        return hMscDestiny;
+    }
+    
+    public BlockDSView getbMSCsourceView(){
+        return bMscSource;
+    }
+    
+    public BlockDSView getbMSCdestinyView(){
+        return bMscDestiny;
     }
 }

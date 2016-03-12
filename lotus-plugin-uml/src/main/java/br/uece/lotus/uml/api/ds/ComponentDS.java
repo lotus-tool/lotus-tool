@@ -212,48 +212,6 @@ public class ComponentDS {
         mListeners.remove(l);
     }
 
-/*    public State getInitialState() {
-        return mInitialState;
-    }*/
-
-    /*public void setInitialState(State initialState) {
-        if (mInitialState != null) {
-            mInitialState.markInitial(false);
-        }
-        mInitialState = initialState;
-        if (mInitialState != null) {
-            mInitialState.markInitial(true);
-        }
-    }
-
-    public State getErrorState() {
-        return mErrorState;
-    }
-
-    public void setErrorState(State errorState) {
-        if (mErrorState != null) {
-            mErrorState.setError(false);
-        }
-        mErrorState = errorState;
-        if (mErrorState != null) {
-            mErrorState.setError(true);
-        }
-    }
-
-    public State getFinalState() {
-        return mFinalState;
-    }
-
-    public void setFinalState(State finalState) {
-        if (mFinalState != null) {
-            mFinalState.setFinal(false);
-        }
-        mFinalState = finalState;
-        if (mFinalState != null) {
-            mFinalState.setFinal(true);
-        }
-    }*/
-
     public void clearVisitedBlockDSCount() {
         for (BlockDS s : mBlockDSs) {
             s.setmVisitedBlockDSCount(0);
@@ -276,21 +234,9 @@ public class ComponentDS {
             copyTransition(oldTransition, newTransition);
         }*/
 
-      /*  if (mInitialState != null) {
-            c.setInitialState(c.getStateByID(mInitialState.getID()));
-        }
-        if (mFinalState != null) {
-            c.setFinalState(c.getStateByID(mFinalState.getID()));
-        }
-        if (mErrorState != null) {
-            c.setErrorState(c.getStateByID(mErrorState.getID()));
-        }*/
         return c;
     }
 
-    public void setAutoUpdateLabels(boolean value) {
-        mAutoUpdateLabels = value;
-    }
 
     @Override
     public int hashCode() {
