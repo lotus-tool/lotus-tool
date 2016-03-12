@@ -104,7 +104,7 @@ public class TransitionMSC {
         return mColor;
     }
 
-    public void setmColor(String mColor) {
+    public void setColor(String mColor) {
         this.mColor = mColor;
         for(Listener l : mListeners){
             l.onChange(this);

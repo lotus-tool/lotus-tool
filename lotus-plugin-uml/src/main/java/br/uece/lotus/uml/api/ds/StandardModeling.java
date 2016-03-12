@@ -5,6 +5,7 @@
  */
 package br.uece.lotus.uml.api.ds;
 
+import br.uece.lotus.uml.api.viewer.hMSC.HmscView;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -60,7 +61,7 @@ public class StandardModeling {
         return t;
     }
     
-    public TransitionMSC.Builder buildTransition(Hmsc src, Hmsc dst){
+    public TransitionMSC.Builder buildTransition(HmscView src, HmscView dst){
         if (src == null) {
             throw new IllegalArgumentException("src hMSC can't be null!");
         }
@@ -72,8 +73,10 @@ public class StandardModeling {
     }
     
     public void add(TransitionMSC t){
-        ((Hmsc)t.getSource()).addOutgoingTransition(t);
-        ((Hmsc)t.getDestiny()).addIncomingTransition(t);
+        Hmsc src = ((HmscView) t.getSource()).getHMSC();
+        Hmsc dst = ((HmscView) t.getDestiny()).getHMSC();
+        src.addOutgoingTransition(t);
+        dst.addIncomingTransition(t);
         mTransitions.add(t);
         for(Listener l : mListeners){
             l.onTransitionCreate(this, t);

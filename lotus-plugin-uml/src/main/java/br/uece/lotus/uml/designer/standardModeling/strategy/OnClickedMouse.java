@@ -75,7 +75,7 @@ public class OnClickedMouse implements Strategy{
                 Hmsc b = ((HmscView)s.mComponentSobMouse).getHMSC();
                 s.mViewer.getComponentBuildDS().remove(b);
             }
-            //falta a transition
+            //falta a transition para remover
         }
           
     }

@@ -49,15 +49,15 @@ public abstract class TransitionMSCViewImpl extends Region implements Transition
         mTransition = t;
         if(mTransition != null){
             if(component instanceof StandardModeling){
-                hMscSource = (HmscView)((HmscView) t.getSource()).getHMSC().getValue("view");
-                hMscDestiny = (HmscView)((HmscView) t.getDestiny()).getHMSC().getValue("view");
+                hMscSource = (HmscView) t.getSource();
+                hMscDestiny = (HmscView) t.getDestiny();
                 mValueType = "hMSC";
                 mTransition.addListener(this);
                 prepareView();
                 updateView();
             }else{
-                bMscSource = (BlockDSView)((BlockDSView) t.getSource()).getBlockDS().getValue("view");
-                bMscDestiny = (BlockDSView)((BlockDSView) t.getDestiny()).getBlockDS().getValue("view");
+                bMscSource = (BlockDSView) t.getSource();
+                bMscDestiny = (BlockDSView) t.getDestiny();
                 mValueType = "bMSC";
                 mTransition.addListener(this);
                 prepareView();
@@ -116,6 +116,7 @@ public abstract class TransitionMSCViewImpl extends Region implements Transition
                 }
             }
         }
+        ///////////////////////////////////////////////////////////////////////////
         return s;
     }
     

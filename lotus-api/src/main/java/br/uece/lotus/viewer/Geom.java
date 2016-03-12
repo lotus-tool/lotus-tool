@@ -9,13 +9,13 @@ import javafx.scene.Node;
 /**
  * Created by emerson on 03/03/15.
  */
-class Geom {
+public class Geom {
 
     static DoubleBinding distance(Node origem, Node destino) {
         return new DistanciaLinha(origem, destino);
     }
 
-    static DoubleBinding angle(Node origem, Node destino) {
+    public static DoubleBinding angle(Node origem, Node destino) {
         return new Angulo(origem, destino);
     }
 
@@ -52,7 +52,7 @@ class Geom {
         }
     }
 
-    static class CartesianCase extends DoubleBinding {
+    public static class CartesianCase extends DoubleBinding {
 
         private final DoubleProperty mXa;
         private final DoubleProperty mYa;

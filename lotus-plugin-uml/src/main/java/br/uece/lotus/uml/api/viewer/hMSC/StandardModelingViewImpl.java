@@ -177,10 +177,11 @@ public class StandardModelingViewImpl extends AnchorPane implements StandardMode
             return;
         }
         
-        for(TransitionMSC t : b.getIncomingTransitionsList()){
+        for(TransitionMSC t : b.getOutgoingTransitionsList()){
             hideTransition(t);
         }
-        for(TransitionMSC t : b.getOutgoingTransitionsList()){
+        
+        for(TransitionMSC t : b.getIncomingTransitionsList()){
             hideTransition(t);
         }
         

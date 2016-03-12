@@ -9,6 +9,7 @@ import br.uece.lotus.Component;
 import br.uece.lotus.uml.api.ds.Hmsc;
 import br.uece.lotus.uml.api.ds.StandardModeling;
 import br.uece.lotus.uml.api.ds.ComponentDS;
+import br.uece.lotus.uml.api.ds.TransitionMSC;
 import br.uece.lotus.uml.api.viewer.hMSC.HmscView;
 import br.uece.lotus.uml.api.viewer.hMSC.StandardModelingView;
 import br.uece.lotus.uml.api.viewer.hMSC.StandardModelingViewImpl;
@@ -16,6 +17,9 @@ import br.uece.lotus.uml.api.viewer.transition.TransitionMSCView;
 import br.uece.lotus.uml.api.window.WindowDS;
 import br.uece.lotus.uml.designer.standardModeling.strategy.Context;
 import br.uece.lotus.uml.designer.standardModeling.strategy.OnClickedMouse;
+import br.uece.lotus.uml.designer.standardModeling.strategy.OnDragDetected;
+import br.uece.lotus.uml.designer.standardModeling.strategy.OnDragDropped;
+import br.uece.lotus.uml.designer.standardModeling.strategy.OnDragOver;
 import br.uece.lotus.uml.designer.standardModeling.strategy.OnDraggedMouse;
 import br.uece.lotus.uml.designer.standardModeling.strategy.OnMovedMouse;
 import br.uece.lotus.uml.designer.standardModeling.strategy.OnPressedMouse;
@@ -50,12 +54,14 @@ import javafx.scene.control.ToolBar;
 import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.DragEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
+import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.transform.Scale;
 import javafx.stage.FileChooser;
@@ -81,7 +87,6 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
     private ToggleButton mBtnEraser;
     private ToggleButton mBtnHand;
     private MenuButton mBtnZoom;
-
     //Controles de acoes
     public final int MODO_NENHUM = 0;
     public final int MODO_BLOCO = 1;
@@ -89,7 +94,7 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
     public final int MODO_REMOVER = 3;
     public final int MODO_MOVER = 4;
     public int contID = -1;
-    private int mTransitionViewType;
+    public int mTransitionViewType;
     public int mModoAtual;
     public ContextMenu mContextMenuBlockBuild;
     //Mover e Zoom
@@ -101,8 +106,15 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
     //Selecao e Destaque
     public Object mComponentSobMouse;
     public Object mComponentSelecionado;
+    public Circle mBounds = new Circle(3);
     //Cores
     public HBox paleta;
+    //Transicao
+    public HmscView hMSC_inicial;
+    public HmscView hMSC_final;
+    public Line fakeLine;
+    public double xInicial;
+    public double yInicial;
     //Variaveis gerais
     public Set<Node> selecao = new HashSet<>();
     public double dragContextMouseAnchorX, dragContextMouseAnchorY;
@@ -356,6 +368,10 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
         mViewer.getNode().setOnMouseDragged(onMouseDragged);
         mViewer.getNode().setOnMouseReleased(onMouseReleased);
         
+        mViewer.getNode().setOnDragDetected(aoDetectarDragSobreVertice);
+        mViewer.getNode().setOnDragOver(aoDetectarPossivelAlvoParaSoltarODrag);
+        mViewer.getNode().setOnDragDropped(aoSoltarMouseSobreVertice);
+        
         //Panel de Proriedades
         VBox blockPropriedade = new VBox(5);
         
@@ -410,6 +426,21 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
         Context context = new Context(new OnReleasedMouse());
         context.executeStrategyOnReleasedMouse(this,event);
     };
+    //Preparar Transicao
+    private EventHandler<MouseEvent> aoDetectarDragSobreVertice = (MouseEvent event) -> {
+        Context context = new Context(new OnDragDetected());
+        context.executeStrategyOnDragDetectedMouse(this, event);
+    };
+    //Possivel alvo para Transicao
+    private EventHandler<DragEvent> aoDetectarPossivelAlvoParaSoltarODrag = (DragEvent event) -> {
+        Context context = new Context(new OnDragOver());
+        context.executeStrategyOnDragOverMouse(this, event);
+    };
+    //Criar Transicao
+    private EventHandler<DragEvent> aoSoltarMouseSobreVertice = (DragEvent event) -> {
+        Context context = new Context(new OnDragDropped());
+        context.executeStrategyOnDragDroppedMouse(this, event);
+    };
 
     ///////////////////////////////////////////////////////////////////////////////////
     //                         Metodos de Controle da View                           //
@@ -425,7 +456,7 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
     public Object getComponentePelaPosicaoMouse(Point2D point) {
         Object b = mViewer.locateBlockBuildView(point);
         if(b == null){
-            //b = mViewer.locateTransitionBuildView(point2D);
+            b = mViewer.locateTransitionBuildView(mBounds);
         }
         return b;
     }
@@ -450,7 +481,11 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
             b.setTextStyle(Hmsc.mTextStyleBold);
         }
         else if(mComponentSelecionado instanceof TransitionMSCView){
-            
+            TransitionMSC t = ((TransitionMSCView)mComponentSelecionado).getTransition();
+            t.setWidth(2);
+            t.setColor("blue");
+            t.setTextColor("blue");
+            t.setTextStyle(TransitionMSC.TEXTSTYLE_BOLD);
         }
     }
 
@@ -463,7 +498,11 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
             b.setTextStyle(Hmsc.mTextStyleNormal);
         }
         else if(mComponentSelecionado instanceof TransitionMSCView){
-            
+            TransitionMSC t = ((TransitionMSCView)mComponentSelecionado).getTransition();
+            t.setWidth(1);
+            t.setColor("black");
+            t.setTextColor("black");
+            t.setTextStyle(TransitionMSC.TEXTSTYLE_NORMAL);
         }
     }
 
@@ -480,6 +519,10 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
         }
         contID = aux;
         contID++;
+    }
+    
+    public void applyDefaults(TransitionMSC t){
+        
     }
 
     private void changeColorsBlock(ColorPicker cores, String tipo) {

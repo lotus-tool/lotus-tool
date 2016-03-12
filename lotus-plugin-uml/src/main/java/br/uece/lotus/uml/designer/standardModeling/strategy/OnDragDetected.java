@@ -5,33 +5,51 @@
  */
 package br.uece.lotus.uml.designer.standardModeling.strategy;
 
+import br.uece.lotus.uml.api.viewer.hMSC.HmscView;
 import br.uece.lotus.uml.designer.standardModeling.StandardModelingWindowImpl;
-import javafx.geometry.Point2D;
+import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.DragEvent;
+import javafx.scene.input.Dragboard;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
+import javafx.scene.input.TransferMode;
 
 /**
  *
  * @author Bruno Barbosa
  */
-public class OnMovedMouse implements Strategy{
+public class OnDragDetected implements Strategy{
 
+    @Override
+    public void onDragDetectedMouse(StandardModelingWindowImpl s, MouseEvent event) {
+        if(s.mModoAtual != s.MODO_TRANSICAO){
+            return;
+        }
+        if(!(s.mComponentSobMouse instanceof HmscView)){
+            return;
+        }
+        
+        HmscView v = (HmscView) s.mComponentSobMouse;
+        //Pegando posicoes iniciais
+        s.xInicial = v.getHMSC().getLayoutX();
+        s.yInicial = v.getHMSC().getLayoutY();
+        //Guardar objeto pro drag
+        s.hMSC_inicial = v;
+        //Inicia o drag
+        Dragboard db = s.hMSC_inicial.getNode().startDragAndDrop(TransferMode.ANY);
+        ClipboardContent content = new ClipboardContent();
+        content.putString("gambiarra");
+        db.setContent(content);
+        
+        event.consume();
+    }
+    
     @Override
     public void onClickedMouse(StandardModelingWindowImpl s, MouseEvent event) {}
 
     @Override
-    public void onMovedMouse(StandardModelingWindowImpl s, MouseEvent event) {
-        Object aux = s.getComponentePelaPosicaoMouse(new Point2D(event.getSceneX(), event.getSceneY()));
-        s.mComponentSobMouse = aux;
-        //para a transicao
-        s.mBounds.setLayoutX(event.getSceneX());
-        s.mBounds.setLayoutY(event.getSceneY());
-    }
-
-    @Override
-    public void onDragDetectedMouse(StandardModelingWindowImpl s, MouseEvent event) {}
+    public void onMovedMouse(StandardModelingWindowImpl s, MouseEvent event) {}
 
     @Override
     public void onDragOverMouse(StandardModelingWindowImpl s, DragEvent event) {}
