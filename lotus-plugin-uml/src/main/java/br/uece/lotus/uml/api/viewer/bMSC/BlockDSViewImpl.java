@@ -57,12 +57,18 @@ public class BlockDSViewImpl extends Region implements BlockDSView, BlockDS.List
 
     @Override
     public boolean isInsideBounds(Circle circle) {
-        if(circle.getBoundsInParent().intersects(mLine.getBoundsInParent())){
+        if(circle.getBoundsInParent().intersects(mRectangle.getParent().getLayoutX(),mRectangle.getParent().getLayoutY()
+                ,0,LARGURA_RETANGULO,ALTURA_RETANGULO,0)){
+            System.out.println("true");
+            return true;
+        }
+        /*if(circle.getBoundsInParent().intersects(mLine.getBoundsInParent())){
             return true;
         }
         if(circle.getBoundsInParent().intersects(mRectangle.getBoundsInParent())){
             return true;
-        }
+        }*/
+
         return false;
     }
 
