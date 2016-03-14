@@ -106,7 +106,7 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
     //Selecao e Destaque
     public Object mComponentSobMouse;
     public Object mComponentSelecionado;
-    public Circle mBounds = new Circle(3);
+    public Circle mBounds = new Circle(8);
     //Cores
     public HBox paleta;
     //Transicao
@@ -158,13 +158,13 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
         return this;
     }
     
+    
     public StandardModelingWindowImpl() {
         mViewer = new StandardModelingViewImpl();
         mToolBar = new ToolBar();
         mScrollPanel = new ScrollPane((Node)mViewer);
         mPropriedadePanel = new AnchorPane();
         mInfoPanel = new HBox(20);
-       
         mViewer.getNode().setPrefSize(1200, 600);
         mScrollPanel.viewportBoundsProperty().addListener((ObservableValue<? extends Bounds> observable, Bounds oldValue, Bounds newValue) -> {
             Node content = mScrollPanel.getContent();
@@ -183,11 +183,11 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
         getChildren().add(mScrollPanel);
         AnchorPane.setTopAnchor(mScrollPanel, 44D);
         AnchorPane.setLeftAnchor(mScrollPanel, 0D);
-        AnchorPane.setRightAnchor(mScrollPanel, 175D);
+        AnchorPane.setRightAnchor(mScrollPanel, /*175D*/0D);
         AnchorPane.setBottomAnchor(mScrollPanel, 30D);
         
         //propriedades
-        getChildren().add(mPropriedadePanel);
+        //getChildren().add(mPropriedadePanel);
         AnchorPane.setTopAnchor(mPropriedadePanel, 44D);
         AnchorPane.setRightAnchor(mPropriedadePanel, 0D);
         AnchorPane.setBottomAnchor(mPropriedadePanel, 30D);
@@ -234,6 +234,7 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
         mBtnTransitionLine.setToggleGroup(mToggleGroup);
         
         mBtnTransitionArc = new ToggleButton();
+        mBtnTransitionArc.setDisable(true);
         mBtnTransitionArc.setGraphic(new ImageView(new Image(getClass().getResourceAsStream("/imagens/ic_transition_semicircle.png"))));
         mBtnTransitionArc.setOnAction((ActionEvent event) -> {
             setModo(MODO_TRANSICAO);
@@ -249,6 +250,7 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
         mBtnEraser.setToggleGroup(mToggleGroup);
         
         mBtnHand = new ToggleButton();
+        mBtnHand.setDisable(true);
         mBtnHand.setGraphic(new ImageView(new Image(getClass().getResourceAsStream("/imagens/ic_hand.png"))));
         mBtnHand.setOnAction((ActionEvent event) -> {
             setModo(MODO_MOVER);
@@ -334,7 +336,13 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "PNG Image successfuly saved!", ButtonType.OK);
             alert.show();
         });
-        mContextMenuBlockBuild.getItems().add(mSaveAsPNG);
+        
+        MenuItem creat_bMSC = new MenuItem("Create bMSC");
+        creat_bMSC.setOnAction((ActionEvent event) -> {
+            //implementar criacao do ds no projeto
+        });
+        
+        mContextMenuBlockBuild.getItems().addAll(creat_bMSC, mSaveAsPNG);
         mViewer.setBlockBuildContextMenu(mContextMenuBlockBuild);
         
         mViewer.getNode().getTransforms().add(escala);

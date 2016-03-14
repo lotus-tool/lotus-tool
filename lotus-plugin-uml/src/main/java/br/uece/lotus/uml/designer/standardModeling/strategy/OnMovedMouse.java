@@ -26,8 +26,8 @@ public class OnMovedMouse implements Strategy{
         Object aux = s.getComponentePelaPosicaoMouse(new Point2D(event.getSceneX(), event.getSceneY()));
         s.mComponentSobMouse = aux;
         //para a transicao
-        s.mBounds.setLayoutX(event.getSceneX());
-        s.mBounds.setLayoutY(event.getSceneY());
+        s.mBounds.setLayoutX(event.getX());
+        s.mBounds.setLayoutY(event.getY());
     }
 
     @Override

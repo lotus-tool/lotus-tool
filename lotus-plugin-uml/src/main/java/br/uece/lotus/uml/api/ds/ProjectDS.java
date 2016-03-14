@@ -25,62 +25,46 @@ public class ProjectDS {
         void onComponentLTSGeralCreated(ProjectDS project, StandardModeling buildDS, Component component);
         void onComponentLTSGeralRemove(ProjectDS project, StandardModeling buildDS, Component component);
         
-        void onComponentLTSFragmentOfBuildDSCreate(ProjectDS project, StandardModeling buildDS, Component componentGeralLTS, Component frag );
-        void onComponentLTSFragmentOfBuildDSRemove(ProjectDS project, StandardModeling buildDS, Component componentGeralLTS, Component frag );
-        
-        void onComponentDSCreated(ProjectDS project, ComponentDS componentDs);
-        void onComponentDSRemoved(ProjectDS project, ComponentDS componentDs);
+        void onComponentBMSCCreated(ProjectDS project, ComponentDS componentDs);
+        void onComponentBMSCRemoved(ProjectDS project, ComponentDS componentDs);
 
-        void onComponentLTSCreated(ProjectDS project, ComponentDS cds, Component component);
-        void onComponentLTSRemoved(ProjectDS project, ComponentDS cds, Component component);
+        void onComponentLTSCreated(ProjectDS project, Component component);
+        void onComponentLTSRemoved(ProjectDS project, Component component);
     }
     
     private String mName;
     private StandardModeling componentBuildDS = new StandardModeling();
     private Component mComponentGeralLTS = new Component();
-    private final List<Component> fragmentsBuildDS = new ArrayList<>();
+    private final List<Component> fragmentsLTS = new ArrayList<>();
     private final List<ComponentDS> mComponentsDS = new ArrayList<>();
     private final List<Listener> mListeners = new ArrayList<>();
     
-    public void addFragmentsBuildDS(Component c){
-        fragmentsBuildDS.add(c);
-        for(Listener l : mListeners){
-            l.onComponentLTSFragmentOfBuildDSCreate(this, componentBuildDS, mComponentGeralLTS, c);
-        }
-    }
     
-    public void removeFragmentsBuildDS(Component c){
-        fragmentsBuildDS.remove(c);
-        for(Listener l : mListeners){
-            l.onComponentLTSFragmentOfBuildDSRemove(this, componentBuildDS, mComponentGeralLTS, c);
-        }
-    }
-    
-    public void addComponentDS(ComponentDS c){
+    public void addComponent_bMSC(ComponentDS c){
         mComponentsDS.add(c);
         for(Listener l : mListeners){
-            l.onComponentDSCreated(this, c);
+            l.onComponentBMSCCreated(this, c);
         }
     }
     
-    public void removeComponentDS(ComponentDS c){
+    public void removeComponent_bMSC(ComponentDS c){
         mComponentsDS.remove(c);
         for(Listener l : mListeners){
-            l.onComponentDSRemoved(this, c);
+            l.onComponentBMSCRemoved(this, c);
         }
     }
     
-    public void addComponentLTS(ComponentDS cds,Component c){
-        cds.getmComponentsLTS().add(c);
+    public void addComponentFragmentLTS(Component c){
+        fragmentsLTS.add(c);
         for(Listener l : mListeners){
-            l.onComponentLTSCreated(this, cds, c);
+            l.onComponentLTSCreated(this, c);
         }
     }
     
-    public void removeComponentLTS(ComponentDS cds, Component c){
-        cds.getmComponentsLTS().remove(c);
+    public void removeComponentFragmentLTS(Component c){
+        fragmentsLTS.remove(c);
         for(Listener l : mListeners){
-            l.onComponentLTSRemoved(this, cds, c);
+            l.onComponentLTSRemoved(this, c);
         }
     }
 
@@ -92,7 +76,7 @@ public class ProjectDS {
         this.mName = mName;
     }
 
-    public StandardModeling getComponentBuildDS() {
+    public StandardModeling getStandardModeling() {
         return componentBuildDS;
     }
 
@@ -103,11 +87,11 @@ public class ProjectDS {
         }
     }
 
-    public Component getmComponentGeral() {
+    public Component getLTS_Composed() {
         return mComponentGeralLTS;
     }
 
-    public void setComponentGeralLTS(Component mComponentGeral) {
+    public void setLTS_Composed(Component mComponentGeral) {
         this.mComponentGeralLTS = mComponentGeral;
         for(Listener l : mListeners){
             l.onChange(this);
@@ -126,24 +110,12 @@ public class ProjectDS {
         return mComponentsDS.get(index);
     }
     
-    public Component getComponentLTS(ComponentDS cds,int index){
-        return cds.getmComponentsLTS().get(index);
-    }
-    
     public Iterable<ComponentDS> getComponentsDS(){
         return mComponentsDS;
     }
-    
-    public Iterable<Component> getComponentsLTS(ComponentDS cds){
-        return cds.getmComponentsLTS();
-    }
-    
+
     public int getComponentDSCount(){
         return mComponentsDS.size();
-    }
-    
-    public int getComponentLTSCount(ComponentDS cds){
-        return cds.getmComponentsLTS().size();
     }
     
     public int indexOfComponentDS(ComponentDS component) {
@@ -157,10 +129,22 @@ public class ProjectDS {
         return -1;
     }
     
-    public int indexOfComponent(ComponentDS cds,Component component) {
+    public Component getFragment(int index){
+        return fragmentsLTS.get(index);
+    }
+    
+    public Iterable<Component> getFragments(){
+        return fragmentsLTS;
+    }
+    
+    public int getFragmentsCount(){
+        return fragmentsLTS.size();
+    }
+    
+    public int indexOfFragment(Component c){
         int i = 0;
-        for (Component c : cds.getmComponentsLTS()) {
-            if (c == component) {
+        for(Component comp : fragmentsLTS){
+            if(comp == c){
                 return i;
             }
             i++;

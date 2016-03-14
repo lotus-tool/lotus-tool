@@ -24,9 +24,9 @@ public interface ProjectExplorerDS {
     }
     
     ExtensibleMenu getMenu();
-    ExtensibleMenu getProjectDSMenu();
-    ExtensibleMenu getComponentBuildDSMenu();
-    ExtensibleMenu getComponentDSMenu();
+    ExtensibleMenu getProjectMSCMenu();
+    ExtensibleMenu getStandarModelingMenu();
+    ExtensibleMenu getComponentBMSCMenu();
     ExtensibleMenu getComponentLTSMenu();
     
     void open(ProjectDS p);
@@ -34,11 +34,11 @@ public interface ProjectExplorerDS {
     
     ProjectDS getSelectedProjectDS();
     StandardModeling getSelectedComponentBuildDS();
-    ComponentDS getSelectedComponentDS();
+    ComponentDS getSelectedBMSC();
     Component getSelectedComponentLTS();
     
     List<ProjectDS> getSelectedProjectsDS();
-    List<ComponentDS> getSelectedComponentsDS();
+    List<ComponentDS> getSelectedBMSCs();
     List<Component> getSelectedComponentsLTS();
     List<ProjectDS> getAllProjectsDS();
     

@@ -43,14 +43,14 @@ public final class ProjectExplorerPluginDS extends Plugin implements ProjectExpl
     
     private final ContextMenu mMnuWorkspace;
     private final ContextMenu mMnuProjectDS;
-    private final ContextMenu mMnuComponentBuildDS;
-    private final ContextMenu mMnuComponentDS;
+    private final ContextMenu mMnuStandardModeling;
+    private final ContextMenu mMnuComponentBMSC;
     private final ContextMenu mMnuComponentLTS;
     
     private final ExtensibleMenu mExtMnuWorkspace;
     private final ExtensibleMenu mExtMnuProjectDS;
-    private final ExtensibleMenu mExtMnuComponentBuildDS;
-    private final ExtensibleMenu mExtMnuComponentDS;
+    private final ExtensibleMenu mExtMnuStandardModeling;
+    private final ExtensibleMenu mExtMnuBMSC;
     private final ExtensibleMenu mExtMnuComponentLTS;
     
     private final TreeView<WrapperDS> mProjectDSView;
@@ -68,57 +68,54 @@ public final class ProjectExplorerPluginDS extends Plugin implements ProjectExpl
         }
 
         @Override
-        public void onComponentDSCreated(ProjectDS project, ComponentDS componentDs) {
+        public void onComponentBMSCCreated(ProjectDS project, ComponentDS componentDs) {
             TreeItem<WrapperDS> raiz = findItem(mProjectDSView.getRoot(), project);
-            TreeItem<WrapperDS> listaDeDiagramas = findItem(raiz, "Sequence Diagrams");
+            TreeItem<WrapperDS> listaDeDiagramas = findItem(raiz, "bMSCs");
             if(listaDeDiagramas != null){
                 TreeItem<WrapperDS> cds = new TreeItem<>(new WrapperDS(componentDs), new ImageView(
                                 new Image(getClass().getResourceAsStream("/imagens/project/ic_component_ds.png"))));
                 listaDeDiagramas.getChildren().add(cds);
             }else{
-                TreeItem<WrapperDS> pastaDS = new TreeItem<>(new WrapperDS("Sequence Diagrams"), new ImageView(
+                TreeItem<WrapperDS> pastaDS = new TreeItem<>(new WrapperDS("bMSCs"), new ImageView(
                                 new Image(getClass().getResourceAsStream("/imagens/project/ic_folders.png"))));
                 TreeItem<WrapperDS> cds = new TreeItem<>(new WrapperDS(componentDs), new ImageView(
                                 new Image(getClass().getResourceAsStream("/imagens/project/ic_component_ds.png"))));
                 pastaDS.getChildren().add(cds);
                 raiz.getChildren().add(pastaDS);
-                findItem(raiz, "Sequence Diagrams").setExpanded(true);
+                findItem(raiz, "bMSCs").setExpanded(true);
             }
         }
 
         @Override
-        public void onComponentDSRemoved(ProjectDS project, ComponentDS componentDs) {
+        public void onComponentBMSCRemoved(ProjectDS project, ComponentDS componentDs) {
             TreeItem<WrapperDS> raiz = findItem(mProjectDSView.getRoot(), project);
-            TreeItem<WrapperDS> listaDeDiagramas = findItem(raiz, "Sequence Diagrams");
+            TreeItem<WrapperDS> listaDeDiagramas = findItem(raiz, "bMSCs");
             TreeItem<WrapperDS> cDS = findItem(listaDeDiagramas, componentDs);
             listaDeDiagramas.getChildren().remove(cDS);
         }
 
         @Override
-        public void onComponentLTSCreated(ProjectDS project, ComponentDS cds, Component component) {
+        public void onComponentLTSCreated(ProjectDS project, Component component) {
             TreeItem<WrapperDS> raiz = findItem(mProjectDSView.getRoot(), project);
-            TreeItem<WrapperDS> listaDeDiagramas = findItem(raiz, "Sequence Diagrams");
-            TreeItem<WrapperDS> compDS = findItem(listaDeDiagramas, cds);
-            TreeItem<WrapperDS> listaDeFragmentos = findItem(compDS, "Fragments LTS");
-            if(listaDeDiagramas != null){
-                listaDeFragmentos.getChildren().add(new TreeItem<>(new WrapperDS(component)));
+            TreeItem<WrapperDS> listaDeFragmentos = findItem(raiz, "Fragments LTS");
+            if(listaDeFragmentos != null){
+                listaDeFragmentos.getChildren().add(new TreeItem<>(new WrapperDS(component), new ImageView(
+                                new Image(getClass().getResourceAsStream("/imagens/project/ic_component_fragment.png")))));
             }else{
                 TreeItem<WrapperDS> fragment = new TreeItem<>(new WrapperDS("Fragments LTS"), new ImageView(
                                 new Image(getClass().getResourceAsStream("/imagens/project/ic_folders.png"))));
                 TreeItem<WrapperDS> c = new TreeItem<>(new WrapperDS(component), new ImageView(
-                                new Image(getClass().getResourceAsStream("/imagens/project/ic_component_lts.png"))));
+                                new Image(getClass().getResourceAsStream("/imagens/project/ic_component_fragment.png"))));
                 fragment.getChildren().add(c);
-                compDS.getChildren().add(fragment);
-                findItem(compDS, "Fragments LTS").setExpanded(true);
+                raiz.getChildren().add(fragment);
+                findItem(raiz, "Fragments LTS").setExpanded(true);
             }
         }
 
         @Override
-        public void onComponentLTSRemoved(ProjectDS project, ComponentDS cds, Component component) {
+        public void onComponentLTSRemoved(ProjectDS project, Component component) {
             TreeItem<WrapperDS> raiz = findItem(mProjectDSView.getRoot(), project);
-            TreeItem<WrapperDS> listaDeDiagramas = findItem(raiz, "Sequence Diagrams");
-            TreeItem<WrapperDS> compDS = findItem(listaDeDiagramas, cds);
-            TreeItem<WrapperDS> listaDeFragmentos = findItem(compDS, "Fragments LTS");
+            TreeItem<WrapperDS> listaDeFragmentos = findItem(raiz, "Fragments LTS");
             TreeItem<WrapperDS> c = findItem(listaDeFragmentos, component);
             listaDeFragmentos.getChildren().remove(c);
         }
@@ -127,6 +124,7 @@ public final class ProjectExplorerPluginDS extends Plugin implements ProjectExpl
         public void onComponentLTSGeralCreated(ProjectDS projectDS, StandardModeling buildDS, Component component) {
             TreeItem<WrapperDS> raiz = findItem(mProjectDSView.getRoot(), projectDS);
             TreeItem<WrapperDS> build = findItem(raiz, buildDS);
+            component.setName("LTS_Composed");
             build.getChildren().add(new TreeItem<>(new WrapperDS(component), new ImageView(
                                 new Image(getClass().getResourceAsStream("/imagens/project/ic_component_lts_geral.png")))));
         }
@@ -137,24 +135,6 @@ public final class ProjectExplorerPluginDS extends Plugin implements ProjectExpl
             TreeItem<WrapperDS> build = findItem(raiz, buildDS);
             TreeItem<WrapperDS> compGeralLTS = findItem(build, component);
             build.getChildren().remove(compGeralLTS);
-        }
-
-        @Override
-        public void onComponentLTSFragmentOfBuildDSCreate(ProjectDS project, StandardModeling buildDS, Component componentGeralLTS, Component frag) {
-            TreeItem<WrapperDS> raiz = findItem(mProjectDSView.getRoot(), project);
-            TreeItem<WrapperDS> build = findItem(raiz, buildDS);
-            TreeItem<WrapperDS> compGeralLTS = findItem(build, componentGeralLTS);
-            compGeralLTS.getChildren().add(new TreeItem<>(new WrapperDS(frag), new ImageView(
-                                new Image(getClass().getResourceAsStream("/imagens/project/ic_component_fragment.png")))));
-        }
-
-        @Override
-        public void onComponentLTSFragmentOfBuildDSRemove(ProjectDS project, StandardModeling buildDS, Component componentGeralLTS, Component frag) {
-            TreeItem<WrapperDS> raiz = findItem(mProjectDSView.getRoot(), project);
-            TreeItem<WrapperDS> build = findItem(raiz, buildDS);
-            TreeItem<WrapperDS> compGeralLTS = findItem(build, componentGeralLTS);
-            TreeItem<WrapperDS> fragment = findItem(compGeralLTS, frag);
-            compGeralLTS.getChildren().remove(fragment);
         }
 
     };
@@ -182,6 +162,10 @@ public final class ProjectExplorerPluginDS extends Plugin implements ProjectExpl
         public void onTransitionCreate(StandardModeling buildDS, TransitionMSC t) {}
         @Override
         public void onTransitionRemove(StandardModeling buildDS, TransitionMSC t) {}
+        @Override
+        public void onBlockCreateBMSC(StandardModeling sm, Hmsc hmsc, ComponentDS bmsc) {
+            
+        }
     };
 
     //Falta os listeners do componentDS e ComponentLTS <- (o normal)
@@ -201,14 +185,14 @@ public final class ProjectExplorerPluginDS extends Plugin implements ProjectExpl
         mListeners = new ArrayList<>();
         mMnuWorkspace = new ContextMenu();
         mMnuProjectDS = new ContextMenu();
-        mMnuComponentBuildDS = new ContextMenu();
-        mMnuComponentDS = new ContextMenu();
+        mMnuStandardModeling = new ContextMenu();
+        mMnuComponentBMSC = new ContextMenu();
         mMnuComponentLTS = new ContextMenu();
         
         mExtMnuWorkspace = new ExtensibleFXContextMenu(mMnuWorkspace);
         mExtMnuProjectDS = new ExtensibleFXContextMenu(mMnuProjectDS);
-        mExtMnuComponentBuildDS = new ExtensibleFXContextMenu(mMnuComponentBuildDS);
-        mExtMnuComponentDS = new ExtensibleFXContextMenu(mMnuComponentDS);
+        mExtMnuStandardModeling = new ExtensibleFXContextMenu(mMnuStandardModeling);
+        mExtMnuBMSC = new ExtensibleFXContextMenu(mMnuComponentBMSC);
         mExtMnuComponentLTS = new ExtensibleFXContextMenu(mMnuComponentLTS);
         
         mProjectDSView = new TreeView<>();
@@ -218,49 +202,49 @@ public final class ProjectExplorerPluginDS extends Plugin implements ProjectExpl
         mProjectDSView.setOnMouseClicked((MouseEvent e) -> {
             if (MouseButton.SECONDARY.equals(e.getButton())) {
                 if(getSelectedComponentBuildDS() != null){
-                    mMnuComponentBuildDS.show(mProjectDSView, e.getSceneX(),e.getSceneY());
-                    mMnuComponentDS.hide();
+                    mMnuStandardModeling.show(mProjectDSView, e.getSceneX(),e.getSceneY());
+                    mMnuComponentBMSC.hide();
                     mMnuComponentLTS.hide();
                     mMnuProjectDS.hide();
                     mMnuWorkspace.hide();
                 }
-                else if(getSelectedComponentDS() != null){
-                    mMnuComponentBuildDS.hide();
-                    mMnuComponentDS.show(mProjectDSView, e.getSceneX(),e.getSceneY());
+                else if(getSelectedBMSC() != null){
+                    mMnuStandardModeling.hide();
+                    mMnuComponentBMSC.show(mProjectDSView, e.getSceneX(),e.getSceneY());
                     mMnuComponentLTS.hide();
                     mMnuProjectDS.hide();
                     mMnuWorkspace.hide();
                 }
                 else if(getSelectedComponentLTS() != null){
-                    mMnuComponentBuildDS.hide();
-                    mMnuComponentDS.hide();
+                    mMnuStandardModeling.hide();
+                    mMnuComponentBMSC.hide();
                     mMnuComponentLTS.show(mProjectDSView, e.getSceneX(),e.getSceneY());
                     mMnuProjectDS.hide();
                     mMnuWorkspace.hide();
                 }
                 else if(getSelectedProjectDS() != null){
-                    mMnuComponentBuildDS.hide();
-                    mMnuComponentDS.hide();
+                    mMnuStandardModeling.hide();
+                    mMnuComponentBMSC.hide();
                     mMnuComponentLTS.hide();
                     mMnuProjectDS.show(mProjectDSView, e.getSceneX(),e.getSceneY());
                     mMnuWorkspace.hide();
                 }else{
-                    mMnuComponentBuildDS.hide();
-                    mMnuComponentDS.hide();
+                    mMnuStandardModeling.hide();
+                    mMnuComponentBMSC.hide();
                     mMnuComponentLTS.hide();
                     mMnuProjectDS.hide();
                     mMnuWorkspace.show(mProjectDSView, e.getSceneX(),e.getSceneY());
                 }
             }else if(e.getClickCount() == 2){
                 StandardModeling cbds = getSelectedComponentBuildDS();
-                ComponentDS cds = getSelectedComponentDS();
+                ComponentDS cds = getSelectedBMSC();
                 Component c = getSelectedComponentLTS();
                 if(cbds != null){
                     try {
                         StandardModelingWindowManager smwm = new StandardModelingWindowManager();
                         smwm.onStart(extension);
                         smwm.show(cbds);                        
-                        mExtMnuComponentBuildDS.triggerDefaultAction();
+                        mExtMnuStandardModeling.triggerDefaultAction();
                     } catch (Exception ex) {
                         Logger.getLogger(ProjectExplorerPluginDS.class.getName()).log(Level.SEVERE, null, ex);
                     }
@@ -269,7 +253,7 @@ public final class ProjectExplorerPluginDS extends Plugin implements ProjectExpl
                         DesingWindowImplManegerBlockDs dwimbd = new DesingWindowImplManegerBlockDs();
                         dwimbd.onStart(extension);
                         dwimbd.show(cds);
-                        mExtMnuComponentDS.triggerDefaultAction();
+                        mExtMnuBMSC.triggerDefaultAction();
                     } catch (Exception ex) {
                         Logger.getLogger(ProjectExplorerPluginDS.class.getName()).log(Level.SEVERE, null, ex);
                     }
@@ -277,8 +261,8 @@ public final class ProjectExplorerPluginDS extends Plugin implements ProjectExpl
                     mExtMnuComponentLTS.triggerDefaultAction();
                 }
             }else{
-                mMnuComponentBuildDS.hide();
-                mMnuComponentDS.hide();
+                mMnuStandardModeling.hide();
+                mMnuComponentBMSC.hide();
                 mMnuComponentLTS.hide();
                 mMnuProjectDS.hide();
                 mMnuWorkspace.hide();
@@ -292,18 +276,18 @@ public final class ProjectExplorerPluginDS extends Plugin implements ProjectExpl
     }
 
     @Override
-    public ExtensibleMenu getProjectDSMenu() {
+    public ExtensibleMenu getProjectMSCMenu() {
         return mExtMnuProjectDS;
     }
 
     @Override
-    public ExtensibleMenu getComponentBuildDSMenu() {
-        return mExtMnuComponentBuildDS;
+    public ExtensibleMenu getStandarModelingMenu() {
+        return mExtMnuStandardModeling;
     }
 
     @Override
-    public ExtensibleMenu getComponentDSMenu() {
-        return mExtMnuComponentDS;
+    public ExtensibleMenu getComponentBMSCMenu() {
+        return mExtMnuBMSC;
     }
 
     @Override
@@ -322,7 +306,7 @@ public final class ProjectExplorerPluginDS extends Plugin implements ProjectExpl
             project = new TreeItem<>(new WrapperDS(p), new ImageView(
                     new Image(getClass().getResourceAsStream("/imagens/project/ic_project.png"))));
             List<TreeItem<WrapperDS>> filhos = project.getChildren();
-            StandardModeling buildDS = p.getComponentBuildDS();
+            StandardModeling buildDS = p.getStandardModeling();
             if (buildDS != null){
                 buildDS.addListener(mComponentBuildListener);
                 TreeItem<WrapperDS> compBuildDs = new TreeItem<>(new WrapperDS(buildDS),new ImageView(
@@ -372,7 +356,7 @@ public final class ProjectExplorerPluginDS extends Plugin implements ProjectExpl
     }
 
     @Override
-    public ComponentDS getSelectedComponentDS() {
+    public ComponentDS getSelectedBMSC() {
         TreeItem<WrapperDS> ds = mProjectDSView.getSelectionModel().getSelectedItem();
         if(ds == null){
             return null;
@@ -404,7 +388,7 @@ public final class ProjectExplorerPluginDS extends Plugin implements ProjectExpl
     }
 
     @Override
-    public List<ComponentDS> getSelectedComponentsDS() {
+    public List<ComponentDS> getSelectedBMSCs() {
         List<ComponentDS> aux = new ArrayList<>();
         for(TreeItem<WrapperDS> cds : mProjectDSView.getSelectionModel().getSelectedItems()){
             Object obj = cds.getValue().getObject();

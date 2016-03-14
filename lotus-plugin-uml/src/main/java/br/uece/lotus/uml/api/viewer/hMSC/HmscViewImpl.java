@@ -5,6 +5,7 @@
  */
 package br.uece.lotus.uml.api.viewer.hMSC;
 
+import br.uece.lotus.uml.api.ds.ComponentDS;
 import br.uece.lotus.uml.api.ds.Hmsc;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
@@ -118,7 +119,5 @@ public class HmscViewImpl extends Region implements HmscView, Hmsc.Listener{
         }
         return cor;
     }
-
-    
     
 }

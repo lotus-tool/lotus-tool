@@ -25,6 +25,7 @@ public class StandardModeling {
         void onChange(StandardModeling buildDS);
         void onBlockCreate(StandardModeling buildDS, Hmsc bbds);
         void onBlockRemove(StandardModeling buildDS, Hmsc bbds);
+        void onBlockCreateBMSC(StandardModeling sm, Hmsc hmsc, ComponentDS bmsc);
         void onTransitionCreate(StandardModeling buildDS, TransitionMSC t);
         void onTransitionRemove(StandardModeling buildDS, TransitionMSC t);
     }
@@ -46,6 +47,13 @@ public class StandardModeling {
         mBlocos.add(b);
         for(Listener l : mListeners){
             l.onBlockCreate(this, b);
+        }
+    }
+    
+    public void set_bMSC_in_hMSC(Hmsc h, ComponentDS b){
+        h.setmDiagramSequence(b);
+        for(Listener l : mListeners){
+            l.onBlockCreateBMSC(this, h, b);
         }
     }
 

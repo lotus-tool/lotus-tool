@@ -46,7 +46,7 @@ public class BasicDSPlugin extends Plugin{
         
         mProjectExplorerDS.getMenu().addItem(Integer.MIN_VALUE, "New Project", mNewProject);
         
-        mProjectExplorerDS.getProjectDSMenu().addItem(Integer.MIN_VALUE, "New Sequence Diagram", mNewComponentDS);
+        mProjectExplorerDS.getProjectMSCMenu().addItem(Integer.MIN_VALUE, "New Sequence Diagram", mNewComponentDS);
     }
     
     private Runnable mNewProject = () ->{
@@ -56,7 +56,7 @@ public class BasicDSPlugin extends Plugin{
         
         TextInputDialog d = new TextInputDialog(prompt);
         d.setTitle("New Project");
-        d.setHeaderText("New Project to Sequence Diagram");
+        d.setHeaderText("New Project to MSC");
         d.setContentText("Enter the new project's name:");
         Optional<String> resul = d.showAndWait();
         if(resul.isPresent()){
@@ -72,14 +72,14 @@ public class BasicDSPlugin extends Plugin{
         }
         
         p.setName(pName);
-        StandardModeling  cbds= new StandardModeling();
+        StandardModeling  cbds = new StandardModeling();
         cbds.setName("Standard Modeling");
         p.setComponentBuildDS(cbds);
         mProjectExplorerDS.open(p);
         abrirFocoNaTab("UML Projects");
     };
     
-    private Runnable mNewComponentDS = () -> {
+    public Runnable mNewComponentDS = () -> {
         ProjectDS p = mProjectExplorerDS.getSelectedProjectDS();
         if(p == null){
             Alert alert = new Alert(Alert.AlertType.ERROR, "Please select a project!", ButtonType.OK);
@@ -87,12 +87,12 @@ public class BasicDSPlugin extends Plugin{
             return;
         }
         String mName = "";
-        String prompt = "SequenceDiagram"+ (p.getComponentDSCount()+1);
+        String prompt = "bMSC"+ (p.getComponentDSCount()+1);
         
         TextInputDialog d = new TextInputDialog(prompt);
-        d.setTitle("New Component Sequence Diagram");
-        d.setHeaderText("New Sequence Diagram");
-        d.setContentText("Enter the new diagram name:");
+        d.setTitle("New Component bMSC");
+        d.setHeaderText("New bMSC");
+        d.setContentText("Enter the new bMSC name:");
         Optional<String> resul = d.showAndWait();
         if(resul.isPresent()){
             mName = resul.get();
@@ -102,7 +102,7 @@ public class BasicDSPlugin extends Plugin{
         }
         ComponentDS cds = new ComponentDS();
         cds.setName(mName);
-        p.addComponentDS(cds);
+        p.addComponent_bMSC(cds);
 
     };
     

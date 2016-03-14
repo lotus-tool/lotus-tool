@@ -26,62 +26,79 @@ public class LineTransitionMSCViewImpl extends TransitionMSCViewImpl{
     private final Line mLine;
 
     public LineTransitionMSCViewImpl() {
-        mRotulo = new Label();
-        getChildren().add(mRotulo);
-        mSeta = new Seta();
-        getChildren().add(mSeta);
         mLine = new Line();
         getChildren().add(mLine);
+        mSeta = new Seta();
+        getChildren().add(mSeta);
+        mRotulo = new Label();
+        getChildren().add(mRotulo);
     }
     
     @Override
     protected void prepareView() {
         Region origem = null;
         Region destino = null;
+        
+        NumberBinding meioCaminhoX = mLine.endXProperty().subtract(mLine.startXProperty()).divide(2);
+        NumberBinding meioCaminhoY = mLine.endYProperty().subtract(mLine.startYProperty()).divide(2);
+        
         switch (mValueType) {
             case "hMSC":{
                 origem = (Region) hMscSource.getNode();
                 destino = (Region) hMscDestiny.getNode();
+                if(origem != null && destino != null){
+                    DoubleBinding origemX = origem.layoutXProperty().add(origem.widthProperty().divide(2));
+                    DoubleBinding origemY = origem.layoutYProperty().add(origem.heightProperty().divide(2));
+                    DoubleBinding destinoX = destino.layoutXProperty().add(destino.widthProperty().divide(2));
+                    DoubleBinding destinoY = destino.layoutYProperty().add(destino.heightProperty().divide(2));
+                    
+                    mSeta.rotateProperty().bind(Geom.angle(origem, destino));
+                    mSeta.rotateProperty().bind(new Geom.CartesianCase(origem, destino)
+                            .first(Geom.angle(origem, destino))
+                            .second(Geom.angle(origem, destino).add(180))
+                            .thirth(Geom.angle(origem, destino).add(180))
+                            .fourth(Geom.angle(origem, destino))
+                            .firstAndSecond(Geom.angle(origem, destino).add(180))
+                            .secondAndThirth(Geom.angle(origem, destino).add(180))
+                            .thirthAndFourth(Geom.angle(origem, destino))
+                    );
+
+                    mLine.startXProperty().bind(origemX);
+                    mLine.startYProperty().bind(origemY);
+                    mLine.endXProperty().bind(destinoX);
+                    mLine.endYProperty().bind(destinoY);
+
+                    mRotulo.layoutXProperty().bind(origemX.add(meioCaminhoX).subtract(mRotulo.widthProperty().divide(2)));
+                    mRotulo.layoutYProperty().bind(origemY.add(meioCaminhoY).subtract(25));
+
+                    mSeta.layoutXProperty().bind(origemX.add(meioCaminhoX));
+                    mSeta.layoutYProperty().bind(origemY.add(meioCaminhoY));
+                }
                 break;  
             }
             case "bMSC":{
                 origem = (Region) bMscSource.getNode();
                 destino = (Region) bMscDestiny.getNode();
+                if(origem != null && destino != null){
+                    DoubleBinding origemX = origem.layoutXProperty().add(origem.widthProperty().divide(2));
+                    DoubleBinding origemY = origem.layoutYProperty().add(origem.heightProperty().divide(2));
+                    DoubleBinding destinoX = destino.layoutXProperty().add(destino.widthProperty().divide(2));
+                    DoubleBinding destinoY = destino.layoutYProperty().add(destino.heightProperty().divide(2));
+                    
+                    mLine.startXProperty().bind(origemX);
+                    mLine.endXProperty().bind(destinoX);
+
+                    mRotulo.layoutXProperty().bind(origemX.add(meioCaminhoX));
+                    mRotulo.layoutYProperty().bind(origemY.add(meioCaminhoY).subtract(15));
+
+                    mSeta.layoutXProperty().bind(destinoX);
+                    mSeta.layoutYProperty().bind(destinoY);
+                }
                 break;
             } 
         }
         
-        if(origem != null && destino != null){
-            DoubleBinding origemX = origem.layoutXProperty().add(origem.widthProperty().divide(2));
-            DoubleBinding origemY = origem.layoutYProperty().add(origem.heightProperty().divide(2));
-            DoubleBinding destinoX = destino.layoutXProperty().add(destino.widthProperty().divide(2));
-            DoubleBinding destinoY = destino.layoutYProperty().add(destino.heightProperty().divide(2));
-
-            mSeta.rotateProperty().bind(Geom.angle(origem, destino));
-            mSeta.rotateProperty().bind(new Geom.CartesianCase(origem, destino)
-                    .first(Geom.angle(origem, destino))
-                    .second(Geom.angle(origem, destino).add(180))
-                    .thirth(Geom.angle(origem, destino).add(180))
-                    .fourth(Geom.angle(origem, destino))
-                    .firstAndSecond(Geom.angle(origem, destino).add(180))
-                    .secondAndThirth(Geom.angle(origem, destino).add(180))
-                    .thirthAndFourth(Geom.angle(origem, destino))
-            );
-
-            mLine.startXProperty().bind(origemX);
-            mLine.startYProperty().bind(origemY);
-            mLine.endXProperty().bind(destinoX);
-            mLine.endYProperty().bind(destinoY);
-
-            NumberBinding meioCaminhoX = mLine.endXProperty().subtract(mLine.startXProperty()).divide(2);
-            NumberBinding meioCaminhoY = mLine.endYProperty().subtract(mLine.startYProperty()).divide(2);
-
-            mRotulo.layoutXProperty().bind(origemX.add(meioCaminhoX));
-            mRotulo.layoutYProperty().bind(origemY.add(meioCaminhoY).subtract(15));
-
-            mSeta.layoutXProperty().bind(origemX.add(meioCaminhoX));
-            mSeta.layoutYProperty().bind(origemY.add(meioCaminhoY));
-        }
+        
     }
 
     @Override
@@ -100,9 +117,9 @@ public class LineTransitionMSCViewImpl extends TransitionMSCViewImpl{
         else if(circle.getBoundsInParent().intersects(mSeta.getBoundsInParent())){
             return true;
         }
-        else if(circle.getBoundsInParent().intersects(mLine.getBoundsInParent())){
+        /*else if(circle.getBoundsInParent().intersects(mLine.getBoundsInParent())){
             return true;
-        }
+        }*/
         return false;
     }
     

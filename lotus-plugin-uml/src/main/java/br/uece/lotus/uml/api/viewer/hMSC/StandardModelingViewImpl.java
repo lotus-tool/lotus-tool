@@ -5,6 +5,7 @@
  */
 package br.uece.lotus.uml.api.viewer.hMSC;
 
+import br.uece.lotus.uml.api.ds.ComponentDS;
 import br.uece.lotus.uml.api.viewer.transition.TransitionMSCView;
 import br.uece.lotus.uml.api.viewer.transition.TransitionMSCViewFactory;
 import br.uece.lotus.uml.api.ds.Hmsc;
@@ -136,6 +137,11 @@ public class StandardModelingViewImpl extends AnchorPane implements StandardMode
     public void onBlockRemove(StandardModeling buildDS, Hmsc bbds) {
         hideBlock(bbds);
     }
+    
+    @Override
+    public void onBlockCreateBMSC(StandardModeling sm, Hmsc hmsc, ComponentDS bmsc) {
+        
+    }
 
     @Override
     public void onTransitionCreate(StandardModeling buildDS, TransitionMSC t) {
@@ -237,5 +243,4 @@ public class StandardModelingViewImpl extends AnchorPane implements StandardMode
         }
         mComponentBuild = null;
     }
-    
 }

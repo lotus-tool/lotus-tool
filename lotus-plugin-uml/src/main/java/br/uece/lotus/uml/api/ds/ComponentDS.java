@@ -14,7 +14,6 @@ import java.util.*;
  */
 public class ComponentDS {
 
-    private List<Component> mComponentsLTS = new ArrayList<>();
     private final Map<String, Object> mValues = new HashMap<>();
     private boolean mAutoUpdateLabels = true;
     private String mName;
@@ -43,16 +42,6 @@ public class ComponentDS {
 //        to.setLayoutY(from.getLayoutY());
     }
 
-    public List<Component> getmComponentsLTS() {return mComponentsLTS;}
-    public void setmComponentsLTS(List<Component> mComponentsLTS) {
-        this.mComponentsLTS = mComponentsLTS;
-    }
-    public void addComponentLTS(Component c) {
-        mComponentsLTS.add(c);
-    }
-    public void removeComponentLTS(Component c) {
-        mComponentsLTS.remove(c);
-    }
 
 ///////////////////////////////////////////////////////////////////////////
     //    public void setName(String s) {

@@ -12,6 +12,7 @@ import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 
@@ -25,7 +26,7 @@ public class OnPressedMouse implements Strategy{
     @Override
     public void onPressedMouse(StandardModelingWindowImpl s, MouseEvent e) {
         
-        if(s.mModoAtual == s.MODO_NENHUM){
+        if(s.mModoAtual == s.MODO_NENHUM && MouseButton.PRIMARY.equals(e.getButton())){
             
             s.dragContextMouseAnchorX = e.getX();
             s.dragContextMouseAnchorY = e.getY();

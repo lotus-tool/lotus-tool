@@ -190,6 +190,8 @@ public abstract class DefaultWindowManagerPluginDS<E extends WindowDS> extends P
         public void onTransitionCreate(StandardModeling buildDS, TransitionMSC t) {}
         @Override
         public void onTransitionRemove(StandardModeling buildDS, TransitionMSC t) {}
+        @Override
+        public void onBlockCreateBMSC(StandardModeling sm, Hmsc hmsc, ComponentDS bmsc) {}
     };
     
     private final ComponentDS.Listener mComponentDSListener = new ComponentDS.Listener() {
