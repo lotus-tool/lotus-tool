@@ -7,7 +7,9 @@ package br.uece.lotus.uml.designer.blockDiagramModeling.strategy;
 
 
 import br.uece.lotus.uml.api.ds.BlockDS;
+import br.uece.lotus.uml.api.ds.TransitionMSC;
 import br.uece.lotus.uml.api.viewer.bMSC.BlockDSView;
+import br.uece.lotus.uml.api.viewer.transition.TransitionMSCView;
 import br.uece.lotus.uml.designer.blockDiagramModeling.DesingWindowImplBlockDs;
 import javafx.scene.Node;
 import javafx.scene.input.*;
@@ -26,6 +28,11 @@ public class OnDraggedMouse implements Strategy {
                 
                 double offsetX = e.getX() - s.dragContextMouseAnchorX;
                 double offsetY = e.getY() - s.dragContextMouseAnchorY;
+
+                if(s.mComponentSobMouse instanceof TransitionMSCView){
+                    TransitionMSC t = ((TransitionMSCView)s.mComponentSobMouse).getTransition();
+
+                }
                 if(!(s.mComponentSobMouse instanceof BlockDSView) ){//ajusta o retangulo se nao for arrastar um block
                     System.out.println("construindo retangulo");
                     if(offsetX > 0){

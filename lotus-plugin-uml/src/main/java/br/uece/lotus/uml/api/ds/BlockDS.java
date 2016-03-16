@@ -1,10 +1,8 @@
 package br.uece.lotus.uml.api.ds;
 
 import br.uece.lotus.Transition;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+
+import java.util.*;
 
 import static br.uece.lotus.State.TEXTSTYLE_BOLD;
 import static br.uece.lotus.State.TEXTSTYLE_NORMAL;
@@ -16,11 +14,11 @@ public class BlockDS {
     public final static String mTextStyleBold = TEXTSTYLE_BOLD;
     public final static String mTextStyleNormal = TEXTSTYLE_NORMAL;
 
-    private final List<Transition> mTransicoesSaida = new ArrayList<>();
-    private final List<Transition> mTransicoesEntrada = new ArrayList<>();
+    private final List<TransitionMSC> mTransicoesSaida = new ArrayList<>();
+    private final List<TransitionMSC> mTransicoesEntrada = new ArrayList<>();
     private final Map<String, Object> mValues = new HashMap<>();
     private double mLayoutX;
-   /* private double mLayoutY;*/
+    private double mLayoutY;
     private final List<Listener> mListeners = new ArrayList<>();
     private final ComponentDS componentDS;
     private int mID;
@@ -32,7 +30,7 @@ public class BlockDS {
     private String mTextStyle;
     private String mLabel;
     private int mVisitedBlockDSCount;
-    private  final  static double LAYOUT_Y =50;
+
 
     BlockDS(ComponentDS c) {
         componentDS =c;}
@@ -55,13 +53,13 @@ public class BlockDS {
         }
     }
 
-//    public void setLayoutY(double layoutY) {
-//        this.mLayoutY = layoutY;
-//        System.out.println(getLayoutY());
-//        for (Listener l : mListeners) {
-//            l.onChange(this);
-//        }
-//    }
+    public void setLayoutY(double layoutY) {
+        this.mLayoutY = layoutY;
+        System.out.println(getLayoutY());
+        for (Listener l : mListeners) {
+            l.onChange(this);
+        }
+    }
 
     public String getColor(){return mColor;}
 
@@ -96,7 +94,7 @@ public class BlockDS {
 
 
     public double getLayoutY() {
-        return LAYOUT_Y;
+        return this.mLayoutY;
     }
 
     public void setBorderColor(String mBorderColor) {
@@ -161,8 +159,8 @@ public class BlockDS {
         }
     }
 
-    public Transition getTransitionTo(BlockDS ds) {
-        for (Transition t : mTransicoesSaida) {
+    public TransitionMSC getTransitionTo(BlockDS ds) {
+        for (TransitionMSC t : mTransicoesSaida) {
             if (t.getDestiny().equals(ds)) {
                 return t;
             }
@@ -170,9 +168,9 @@ public class BlockDS {
         return null;
     }
 
-    public List<Transition> getTransitionsTo(BlockDS ds) {
-        List<Transition> r = new ArrayList<>();
-        for (Transition t : mTransicoesSaida) {
+    public List<TransitionMSC> getTransitionsTo(BlockDS ds) {
+        List<TransitionMSC> r = new ArrayList<>();
+        for (TransitionMSC t : mTransicoesSaida) {
             if (t.getDestiny().equals(ds)) {
                 r.add(t);
             }
@@ -180,8 +178,8 @@ public class BlockDS {
         return r;
     }
 
-    public Transition getTransitionByLabel(String label) {
-        for (Transition t : mTransicoesSaida) {
+    public TransitionMSC getTransitionByLabel(String label) {
+        for (TransitionMSC t : mTransicoesSaida) {
             if (t.getLabel().equals(label)) {
                 return t;
             }
@@ -267,19 +265,19 @@ public class BlockDS {
         mListeners.remove(l);
     }
 
-    void addIncomingTransition(Transition t) {
+    void addIncomingTransition(TransitionMSC t) {
         mTransicoesEntrada.add(t);
     }
 
-    void addOutgoingTransition(Transition t) {
+    void addOutgoingTransition(TransitionMSC t) {
         mTransicoesSaida.add(t);
     }
 
-    void removeIncomingTransition(Transition transition) {
+    void removeIncomingTransition(TransitionMSC transition) {
         mTransicoesEntrada.remove(transition);
     }
 
-    void removeOutgoingTransition(Transition transition) {
+    void removeOutgoingTransition(TransitionMSC transition) {
         mTransicoesSaida.remove(transition);
     }
 
@@ -289,6 +287,13 @@ public class BlockDS {
 
     public int getIncomingTransitionsCount() {
         return mTransicoesEntrada.size();
+    }
+    public List<TransitionMSC> getOutgoingTransitionsList(){
+        return Collections.unmodifiableList(mTransicoesSaida);
+    }
+
+    public List<TransitionMSC> getIncomingTransitionsList(){
+        return Collections.unmodifiableList(mTransicoesEntrada);
     }
 }
 

@@ -56,40 +56,18 @@ public class BlockDSViewImpl extends Region implements BlockDSView, BlockDS.List
     }
 
     @Override
-    public boolean isInsideBounds(Circle circle) {
-        if(circle.getBoundsInParent().intersects(mRectangle.getParent().getLayoutX(),mRectangle.getParent().getLayoutY()
-                ,0,LARGURA_RETANGULO,ALTURA_RETANGULO,0)){
-            System.out.println("true");
-            return true;
-        }
-        /*if(circle.getBoundsInParent().intersects(mLine.getBoundsInParent())){
-            return true;
-        }
-        if(circle.getBoundsInParent().intersects(mRectangle.getBoundsInParent())){
-            return true;
-        }*/
-
-        return false;
-    }
-
-    /*@Override
     public boolean isInsideBounds(Point2D point) {
         Point2D auxRec= mRectangle.localToScene(Point2D.ZERO);
         double deltaX = point.getX()-auxRec.getX();
         double deltaY= point.getY()-auxRec.getY();
-        if((deltaX>=0 && deltaX<=LARGURA_RETANGULO) && (deltaY>=0 && deltaY<=ALTURA_RETANGULO)){
+        double alturaGeral= ALTURA_RETANGULO+(mLine.endYProperty().getValue()-mLine.startYProperty().getValue());
+        if((deltaX>=0 && deltaX<=LARGURA_RETANGULO) && (deltaY>=0 && deltaY<=alturaGeral)){
+            System.out.println("True linha + retangulo");
             return true;
         }
-        double constante = 10;
-        Point2D auxLine = mLine.localToParent(Point2D.ZERO);
-        Bounds aux = mLine.getBoundsInParent();
-        double xMaisConstante=point.getX()+constante;
-        double yMaisConstante=point.getY()+constante;
-        if((aux.getWidth() == (point.getX()-auxLine.getX()) && (aux.getHeight() == (point.getY()-auxLine.getY())))){
-            return true;
-        }
+
         return false;
-    }*/
+    }
 
     @Override
     public BlockDS getBlockDS() {
@@ -117,6 +95,7 @@ public class BlockDSViewImpl extends Region implements BlockDSView, BlockDS.List
         style += "-fx-stroke: " + (mDS.getBorderColor() == null ? "black" : mDS.getBorderColor()) + ";";
         style += "-fx-stroke-width: " + (mDS.getBorderWidth() == null ? "1" : mDS.getBorderWidth()) + ";";
         mRectangle.setStyle(style);
+        mLine.setStyle(style);
         mName.setText(mDS.getLabel());
 //
 //        style = "-fx-text-fill: " + (mState.getTextColor() == null ? "black" : mState.getTextColor()) + ";";

@@ -207,6 +207,12 @@ public abstract class DefaultWindowManagerPluginDS<E extends WindowDS> extends P
         public void onBlockDSCreated(ComponentDS componentDS, BlockDS state) {}
         @Override
         public void onBlockDSRemoved(ComponentDS componentDS, BlockDS state) {}
+
+        @Override
+        public void onTransitionCreate(ComponentDS componentDSDS, TransitionMSC t) {}
+
+        @Override
+        public void onTransitionRemove(ComponentDS componentDSDS, TransitionMSC t) {}
     };
     
     private final Component.Listener mComponentLTSListener = new Component.Listener() {

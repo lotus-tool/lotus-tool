@@ -5,6 +5,8 @@
  */
 package br.uece.lotus.uml.api.ds;
 
+import br.uece.lotus.Component;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -19,13 +21,19 @@ public class TransitionMSC {
 
     
     public static class Builder {
-        private final StandardModeling mComponentBuild;
-        private final TransitionMSC mTransitionMSC;
+        private /*final*/ StandardModeling mComponentBuild;
+        private /*final*/ TransitionMSC mTransitionMSC;
+        private /*final*/ ComponentDS mComponentDS;
 
-       public Builder(StandardModeling mComponentBuild, TransitionMSC mTransitionMSC) {
+        public Builder(StandardModeling mComponentBuild, TransitionMSC mTransitionMSC) {
            this.mComponentBuild = mComponentBuild;
            this.mTransitionMSC = mTransitionMSC;
        }
+
+        public Builder(ComponentDS mComponentDS, TransitionMSC mTransitionMSC) {
+            this.mComponentDS = mComponentDS;
+            this.mTransitionMSC = mTransitionMSC;
+        }
 
        public Builder setValue(String s, Object o) {
            mTransitionMSC.setValue(s, o);
@@ -36,6 +44,11 @@ public class TransitionMSC {
            mComponentBuild.add(mTransitionMSC);
            return mTransitionMSC;
        }
+
+        public TransitionMSC createDS() {
+            mComponentDS.add(mTransitionMSC);
+            return mTransitionMSC;
+        }
        
        public Builder setIdSequence(int id){
            mTransitionMSC.setIdSequence(id);

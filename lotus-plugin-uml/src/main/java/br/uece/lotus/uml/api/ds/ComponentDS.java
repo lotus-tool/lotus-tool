@@ -4,8 +4,7 @@
  * and open the template in the editor.
  */
 package br.uece.lotus.uml.api.ds;
-
-import br.uece.lotus.Component;
+import br.uece.lotus.uml.api.viewer.bMSC.BlockDSView;
 
 import java.util.*;
 
@@ -17,78 +16,24 @@ public class ComponentDS {
     private final Map<String, Object> mValues = new HashMap<>();
     private boolean mAutoUpdateLabels = true;
     private String mName;
+    private final List<Listener> mListeners = new ArrayList<>();
+    private List<TransitionMSC> mTransitions = new ArrayList<>();
+    private final List<BlockDS> mBlockDSs = new ArrayList<>();
 
     public interface Listener {
         void onChange(ComponentDS cds);
-        void onBlockDSCreated(ComponentDS componentDS, BlockDS state);
-        void onBlockDSRemoved(ComponentDS componentDS, BlockDS state);
-        //falta adicionar os outros listener. Quando for adicionar me avisa, pq tem que implementar o restante
-        //que falta nas outras classes que dependen desses listener. se nao ja vai dar erro na compilacao ou na abertura
-        //da tela
+        void onBlockDSCreated(ComponentDS componentDS, BlockDS ds);
+        void onBlockDSRemoved(ComponentDS componentDS, BlockDS ds);
+        void onTransitionCreate(ComponentDS buildDS, TransitionMSC t);
+        void onTransitionRemove(ComponentDS buildDS, TransitionMSC t);
+
     }
-
-
-
-    public Object getValue(String key) {
-        return mValues.get(key);
-    }
-
-    public void setValue(String key, Object value) {
-        mValues.put(key, value);
-    }
-    private void copyBlockDS(BlockDS from, BlockDS to) {
-        to.setLabel(from.getLabel());
-        to.setLayoutX(from.getLayoutX());
-//        to.setLayoutY(from.getLayoutY());
-    }
-
-
-///////////////////////////////////////////////////////////////////////////
-    //    public void setName(String s) {
-//        this.mName = s;
-//    }
-//
-//    public String getName() {
-//        return this.mName;
-//    }
-//
-//    public void addListener(Listener l) {
-//        mListeners.add(l);
-//    }
-//
-//    public void removeListener(Listener l) {
-//        mListeners.remove(l);
-//    }
-///////////////////////////////////////////////////////////////////////
-
-    private final List<BlockDS> mBlockDSs = new ArrayList<>();
-    /*  private final List<Transition> mTransitions = new ArrayList<>();*/
-    private final List<Listener> mListeners = new ArrayList<>();
-
-    public String getName() {return mName;}
-
-    public Iterable<BlockDS> getBlockDS() {return mBlockDSs;}
-
-    public int getBlockDSCount() {return mBlockDSs.size();}
-
-    public int getBlockDSIndex(BlockDS s) {return mBlockDSs.indexOf(s);}
-
-    public void setName(String name) {
-        mName = name;
-        for (Listener l : mListeners) {
-            l.onChange(this);
-        }
-    }
-
-
-   /* public Iterable<Transition> getTransitions() {
-        return mTransitions;
-    }*/
-
-   /* public int getTransitionsCount() {
+    public int getCountTransition() {
         return mTransitions.size();
-    }*/
-
+    }
+    public List<TransitionMSC> getAllTransitions(){
+        return mTransitions;
+    }
 
     public BlockDS newBlockDS(int id) {
         BlockDS ds = new BlockDS(this);
@@ -104,54 +49,83 @@ public class ComponentDS {
         }
     }
 
-   /* public void add(Transition t) {
-        t.getSource().addOutgoingTransition(t);
-        t.getDestiny().addIncomingTransition(t);
+    public void add(TransitionMSC t){
+        BlockDS src = ((BlockDSView) t.getSource()).getBlockDS();
+        BlockDS dst = ((BlockDSView) t.getDestiny()).getBlockDS();
+        src.addOutgoingTransition(t);
+        dst.addIncomingTransition(t);
         mTransitions.add(t);
-        for (Listener l : mListeners) {
-            l.onTransitionCreated(this, t);
+        for(Listener l : mListeners){
+            l.onTransitionCreate(this, t);
         }
-    }*/
+    }
 
-    /*public Transition newTransition(State src, State dst) {
+    public TransitionMSC newTransition(BlockDSView src, BlockDSView dst){
         if (src == null) {
-            throw new IllegalArgumentException("src state can't be null!");
+            throw new IllegalArgumentException("src hMSC can't be null!");
         }
         if (dst == null) {
-            throw new IllegalArgumentException("dst state can't be null!");
+            throw new IllegalArgumentException("dst hMSC can't be null!");
         }
-        Transition t = new Transition(src, dst);
+        TransitionMSC t = new TransitionMSC(src, dst);
         add(t);
         return t;
     }
 
-    public Transition newTransition(int idSrc, int idDst) {
-        return newTransition(getStateByID(idSrc), getStateByID(idDst));
-    }
-
-    public Transition.Builder buildTransition(State src, State dst) {
+    public TransitionMSC.Builder buildTransition(BlockDSView src, BlockDSView dst){
         if (src == null) {
-            throw new IllegalArgumentException("src state can't be null!");
+            throw new IllegalArgumentException("src bMSC can't be null!");
         }
         if (dst == null) {
-            throw new IllegalArgumentException("dst state can't be null!");
+            throw new IllegalArgumentException("dst bMSC can't be null!");
         }
-        Transition t = new Transition(src, dst);
-        return new Transition.Builder(this, t);
+        TransitionMSC t = new TransitionMSC(src, dst);
+        return new TransitionMSC.Builder(this, t);
+    }
+    public void remove(TransitionMSC t){
+        ((BlockDSView)t.getSource()).getBlockDS().removeOutgoingTransition(t);
+        ((BlockDSView)t.getDestiny()).getBlockDS().removeIncomingTransition(t);
+        mTransitions.remove(t);
+        for(Listener l : mListeners){
+            l.onTransitionRemove(this, t);
+        }
     }
 
-    public Transition.Builder buildTransition(int idSrc, int idDst) {
-        Transition t = new Transition(getStateByID(idSrc), getStateByID(idDst));
-        return new Transition.Builder(this, t);
-    }*/
+    public Object getValue(String key) {
+        return mValues.get(key);
+    }
+
+    public void setValue(String key, Object value) {
+        mValues.put(key, value);
+    }
+
+    public Iterable<BlockDS> getBlockDS() {return mBlockDSs;}
+
+    public String getName() {return mName;}
+
+    public void setName(String name) {
+        mName = name;
+        for (Listener l : mListeners) {
+            l.onChange(this);
+        }
+    }
+
+    private void copyBlockDS(BlockDS from, BlockDS to) {
+        to.setLabel(from.getLabel());
+        to.setLayoutX(from.getLayoutX());
+//        to.setLayoutY(from.getLayoutY());
+    }
+
+    public int getBlockDSCount() {return mBlockDSs.size();}
+    public int getBlockDSIndex(BlockDS s) {return mBlockDSs.indexOf(s);}
 
     public void remove(BlockDS ds) {
-        /*List<Transition> transitions = new ArrayList<>();
-        transitions.addAll(ds.getOutgoingTransitionsList());
-        transitions.addAll(ds.getIncomingTransitionsList());
-        for (Transition t : transitions) {
+        List<TransitionMSC> transitionMSC = new ArrayList<>();
+        transitionMSC.addAll(ds.getOutgoingTransitionsList());
+        transitionMSC.addAll(ds.getIncomingTransitionsList());
+        for (TransitionMSC t : transitionMSC) {
             remove(t);
-        }*/
+        }
 
         mBlockDSs.remove(ds);
         for (Listener l : mListeners) {

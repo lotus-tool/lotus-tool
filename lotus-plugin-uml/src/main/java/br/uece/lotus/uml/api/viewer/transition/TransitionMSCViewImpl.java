@@ -12,6 +12,7 @@ import br.uece.lotus.uml.api.viewer.hMSC.HmscView;
 import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.layout.Region;
+import javafx.scene.shape.Line;
 
 /**
  *
