@@ -220,8 +220,8 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
         mBtnArrow.setToggleGroup(mToggleGroup);
         mBtnArrow.setSelected(true);
         
-        mBtnBlock = new ToggleButton("Bloco");
-        //mBtnBlock.setGraphic(new ImageView(new Image(getClass().getResourceAsStream("/imagens/"))));
+        mBtnBlock = new ToggleButton();
+        mBtnBlock.setGraphic(new ImageView(new Image(getClass().getResourceAsStream("/imagens/ic_hMSC.png"))));
         mBtnBlock.setOnAction((ActionEvent event) -> {
             setModo(MODO_BLOCO);
         });
