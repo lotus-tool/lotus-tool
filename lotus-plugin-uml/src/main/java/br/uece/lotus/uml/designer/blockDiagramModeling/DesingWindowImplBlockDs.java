@@ -4,6 +4,7 @@ import br.uece.lotus.Component;
 import br.uece.lotus.uml.api.ds.BlockDS;
 import br.uece.lotus.uml.api.ds.StandardModeling;
 import br.uece.lotus.uml.api.ds.ComponentDS;
+import br.uece.lotus.uml.api.ds.TransitionMSC;
 import br.uece.lotus.uml.api.viewer.bMSC.BlockDSView;
 import br.uece.lotus.uml.api.viewer.bMSC.ComponentDSView;
 import br.uece.lotus.uml.api.viewer.bMSC.ComponentDSViewImpl;
@@ -24,17 +25,20 @@ import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.DragEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
+import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.transform.Scale;
 import javafx.stage.FileChooser;
 
 import java.io.File;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class DesingWindowImplBlockDs extends AnchorPane implements WindowDS {
@@ -61,7 +65,7 @@ public class DesingWindowImplBlockDs extends AnchorPane implements WindowDS {
     public final int MODO_REMOVER = 3;
     public final int MODO_MOVER = 4;
     public int contID = -1;
-    private int mTransitionViewType;
+    public int mTransitionViewType;
     public int mModoAtual;
     public ContextMenu mContextMenuBlockDs;
     //Mover e Zoom
@@ -75,6 +79,12 @@ public class DesingWindowImplBlockDs extends AnchorPane implements WindowDS {
     public Object mComponentSelecionado;
     //Cores
     public HBox paleta;
+    //Transicao
+    public BlockDSView blockDsInicial;
+    public BlockDSView blockDsFinal;
+    public Line fakeLine;
+    public double xInicial;
+    public double yInicial;
     //Variaveis gerais
     public Set<Node> selecao = new HashSet<>();
     public double dragContextMouseAnchorX, dragContextMouseAnchorY;
@@ -82,6 +92,11 @@ public class DesingWindowImplBlockDs extends AnchorPane implements WindowDS {
     public boolean segundaVezAoArrastar;
     public double ultimoInstanteX, ultimoInstanteY;
     public boolean selecionadoPeloRetangulo;
+    public Circle c =new Circle(5);
+
+    /////////////////////////////////////////////////////////////////////////
+    //                   IMPLEMENTACAO DA WINDOW_DS                        //
+    /////////////////////////////////////////////////////////////////////////
 
     @Override
     public StandardModeling getComponentBuildDS() {
@@ -331,6 +346,10 @@ public class DesingWindowImplBlockDs extends AnchorPane implements WindowDS {
         mViewer.getNode().setOnMousePressed(onMousePressed);
         mViewer.getNode().setOnMouseDragged(onMouseDragged);
         mViewer.getNode().setOnMouseReleased(onMouseReleased);
+
+        mViewer.getNode().setOnDragDetected(aoDetectarDragSobreVertice);
+        mViewer.getNode().setOnDragOver(aoDetectarPossivelAlvoParaSoltarODrag);
+        mViewer.getNode().setOnDragDropped(aoSoltarMouseSobreVertice);
     }
     // Ao Mover o mouse----------------------------------------------------------------------
     private final EventHandler<? super MouseEvent> onMovedMouse = (MouseEvent event) -> {
@@ -357,6 +376,21 @@ public class DesingWindowImplBlockDs extends AnchorPane implements WindowDS {
         Context context = new Context(new OnReleasedMouse());
         context.executeStrategyOnReleasedMouse(this,event);
     };
+    //Preparar Transicao
+    private EventHandler<MouseEvent> aoDetectarDragSobreVertice = (MouseEvent event) -> {
+        Context context = new Context(new OnDragDetected());
+        context.executeStrategyOnDragDetectedMouse(this, event);
+    };
+    //Possivel alvo para Transicao
+    private EventHandler<DragEvent> aoDetectarPossivelAlvoParaSoltarODrag = (DragEvent event) -> {
+        Context context = new Context(new OnDragOver());
+        context.executeStrategyOnDragOverMouse(this, event);
+    };
+    //Criar Transicao
+    private EventHandler<DragEvent> aoSoltarMouseSobreVertice = (DragEvent event) -> {
+        Context context = new Context(new OnDragDropped());
+        context.executeStrategyOnDragDroppedMouse(this, event);
+    };
 
     ///////////////////////////////////////////////////////////////////////////////////
     //                         Metodos de Controle da View                           //
@@ -368,10 +402,10 @@ public class DesingWindowImplBlockDs extends AnchorPane implements WindowDS {
             mViewer.getNode().setCursor(Cursor.OPEN_HAND);
         }
     }
-    public Object getComponentePelaPosicaoMouse(/*Point2D point*/Circle c) {
-        Object b = mViewer.locateBlockDSView(c);
+    public Object getComponentePelaPosicaoMouse(Point2D point) {
+        Object b = mViewer.locateBlockDSView(point);
         if(b == null){
-            //b = mViewer.locateTransitionBuildView(point2D);
+            b = mViewer.locateTransitionView(c);
         }
         return b;
     }
@@ -409,7 +443,11 @@ public class DesingWindowImplBlockDs extends AnchorPane implements WindowDS {
             b.setTextStyle(BlockDS.mTextStyleBold);
         }
         else if(mComponentSelecionado instanceof TransitionMSCView){
-            ///FAZER AINDA!!!
+            TransitionMSC t = ((TransitionMSCView)mComponentSelecionado).getTransition();
+            t.setWidth(2);
+            t.setColor("blue");
+            t.setTextColor("blue");
+            t.setTextStyle(TransitionMSC.TEXTSTYLE_BOLD);
         }
     }
 
@@ -422,6 +460,11 @@ public class DesingWindowImplBlockDs extends AnchorPane implements WindowDS {
             b.setTextStyle(BlockDS.mTextStyleNormal);
         }
         else if(mComponentSelecionado instanceof TransitionMSCView){
+            TransitionMSC t = ((TransitionMSCView)mComponentSelecionado).getTransition();
+            t.setWidth(1);
+            t.setColor("black");
+            t.setTextColor("black");
+            t.setTextStyle(TransitionMSC.TEXTSTYLE_NORMAL);
 
         }
     }
@@ -447,6 +490,15 @@ public class DesingWindowImplBlockDs extends AnchorPane implements WindowDS {
             }
         }
     }
+
+    public void updateSequenceTransition(/*TransitionMSCView t*/){
+        List<TransitionMSC> allTrasition = mViewer.getmComponentDS().getAllTransitions();
+        for( int i=0; i< allTrasition.size();i++){
+            allTrasition.get(i).setIdSequence(i+1);
+        }
+
+    }
+
     ///////////////////////////////////////////////////////////////////////////////////
     //                         Metodos de Selecao                                    //
     //////////////////////////////////////////////////////////////////////////////////

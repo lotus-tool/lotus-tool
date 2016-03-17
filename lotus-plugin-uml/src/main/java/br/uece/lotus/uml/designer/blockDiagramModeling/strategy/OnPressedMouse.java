@@ -24,7 +24,6 @@ public class OnPressedMouse implements Strategy {
     public void onPressedMouse(DesingWindowImplBlockDs s, MouseEvent e) {
         
         if(s.mModoAtual == s.MODO_NENHUM){
-            System.out.println("Entro noPressed");
             s.dragContextMouseAnchorX = e.getX();
             s.dragContextMouseAnchorY = e.getY();
             s.segundaVezAoArrastar = false;

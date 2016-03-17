@@ -6,6 +6,7 @@
 package br.uece.lotus.uml.api.viewer.transition;
 
 import javafx.scene.shape.Circle;
+import javafx.scene.shape.Line;
 
 /**
  *
@@ -24,8 +25,18 @@ public class SelfTransitionMSCViewImpl extends TransitionMSCViewImpl{
     }
 
     @Override
-    public boolean isInsideBounds(Circle circle) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public boolean isInsideBounds_hMSC(Circle circle) {
+        return false;
     }
-    
+
+    @Override
+    public boolean isInsideBounds_bMSC(Circle circle) {
+        return false;
+    }
+
+    @Override
+    public Line getLineTransition() {
+        return null;
+    }
+
 }

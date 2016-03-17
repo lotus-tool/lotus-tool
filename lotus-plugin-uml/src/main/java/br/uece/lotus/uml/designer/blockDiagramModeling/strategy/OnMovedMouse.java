@@ -20,16 +20,17 @@ import javafx.scene.shape.Circle;
  */
 public class OnMovedMouse implements Strategy {
 
+
     @Override
     public void onClickedMouse(DesingWindowImplBlockDs s, MouseEvent event) {}
 
     @Override
     public void onMovedMouse(DesingWindowImplBlockDs s, MouseEvent event) {
-        Circle c = new Circle(5);
-        c.setLayoutX(event.getX());
-        c.setLayoutY(event.getY());
 
-        Object aux = s.getComponentePelaPosicaoMouse(/*new Point2D(event.getSceneX(), event.getSceneY())*/ c);
+        s.c.setLayoutX(event.getX());
+        s.c.setLayoutY(event.getY());
+
+        Object aux = s.getComponentePelaPosicaoMouse(new Point2D(event.getSceneX(), event.getSceneY()));
         s.mComponentSobMouse = aux;
     }
 

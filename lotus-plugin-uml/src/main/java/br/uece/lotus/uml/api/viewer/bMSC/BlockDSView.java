@@ -16,7 +16,7 @@ public interface BlockDSView {
         BlockDSView create();
     }
 
-    boolean isInsideBounds(/*Point2D point*/Circle c);
+    boolean isInsideBounds(Point2D point);
 
     BlockDS getBlockDS();
     void setBlockDS(BlockDS dl);

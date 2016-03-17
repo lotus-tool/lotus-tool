@@ -5,6 +5,12 @@
  */
 package br.uece.lotus.uml.api.viewer.bMSC;
 import br.uece.lotus.uml.api.ds.*;
+import br.uece.lotus.uml.api.viewer.transition.SelfTransitionMSCViewImpl;
+import br.uece.lotus.uml.api.viewer.transition.TransitionMSCView;
+import br.uece.lotus.uml.api.viewer.transition.TransitionMSCViewFactory;
+import br.uece.lotus.uml.api.viewer.transition.TransitionMSCViewImpl;
+import br.uece.lotus.uml.designer.blockDiagramModeling.DesingWindowImplBlockDs;
+import br.uece.seed.app.MenuItemBuilderFX;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.control.ContextMenu;
@@ -12,6 +18,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.geometry.Point2D;
 import javafx.scene.shape.Circle;
 
+import javax.swing.plaf.synth.Region;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,15 +30,17 @@ import java.util.List;
 public class ComponentDSViewImpl extends AnchorPane implements ComponentDSView, ComponentDS.Listener {
     private ComponentDS mComponentDS;
     private ContextMenu mDSContextMenu;
-    /* private TransitionViewFactory mTransitionViewFactory;*/
     private BlockDSViewFactory mBlockDSViewFactory;
     private List<ComponentDSView.Listener> mListeners = new ArrayList<>();
     private List<BlockDSView> mBlocksDSView = new ArrayList<>();
+    private TransitionMSCViewFactory transitionFactory;
+    private List<TransitionMSCView> mTransitionViews = new ArrayList<>();
+
 
 
     /*private List<TransitionView> mTransitionViews = new ArrayList<>();*/
     public ComponentDSViewImpl(){
-    /*    mTransitionViewFactory = new TransitionViewFactory();*/
+        transitionFactory = new TransitionMSCViewFactory();
         mBlockDSViewFactory = new BlockDSViewFactory();
     }
 
@@ -64,6 +73,8 @@ public class ComponentDSViewImpl extends AnchorPane implements ComponentDSView, 
             showTransition(tm);
         }*/
     }
+
+
 
     private void showBlockDS(BlockDS blockDS) {
         BlockDSView view;
@@ -104,12 +115,12 @@ public class ComponentDSViewImpl extends AnchorPane implements ComponentDSView, 
         if (view == null) {
             return;
         }
-        /*for (Transition t : ds.getOutgoingTransitions()) {
+        for (TransitionMSC t : ds.getOutgoingTransitionsList()) {
             hideTransition(t);
         }
-        for (Transition t : ds.getIncomingTransitions()) {
+        for (TransitionMSC t : ds.getIncomingTransitionsList()) {
             hideTransition(t);
-        }*/
+        }
         synchronized (this) {
             aux.remove(view);
             blockDS.setValue("view", null);
@@ -118,65 +129,35 @@ public class ComponentDSViewImpl extends AnchorPane implements ComponentDSView, 
         }
     }
 
-   /* private void hideTransition(Transition t) {
-        synchronized (this) {
-            TransitionViewImpl view = (TransitionViewImpl) t.getValue("view");
-            if (view != null) {
-                mTransitionViews.remove(view);
-                view.setTransition(null);
-                t.setValue("view", null);
-                getChildren().remove(view);
-            }
-        }*/
-
-    /*private void showTransition(Transition t) {
-        TransitionView view;
-        Node node;
-        synchronized (this) {
-            if (t.getValue("view") == null) {
-                view = mTransitionViewFactory.create(t);
-                mTransitionViews.add(view);
-                view.setTransition(t);
-                t.setValue("view", view);
-                node = view.getNode();
-                getChildren().add(node);
-               if (view instanceof SelfTransitionViewImpl) {
-                    ((SelfTransitionViewImpl) view).getSourceStateView().getNode().toFront();
-                } else {
-                    node.toBack();
-                }
-                for (ComponentView.Listener l: mListeners) {
-                    l.onTransitionViewCreated(this, view);
-                }
-            }
-        }
-    }
-*/
-
     @Override
     public void addListener(Listener l) {mListeners.add(l);}
 
     @Override
     public void removeListener(Listener l) {mListeners.remove(l);}
 
+//    @Override
+//    public int getCountTransition() {
+//        return mTransitionViews.size();
+//    }
+
     @Override
-    public BlockDSView locateBlockDSView(/*Point2D point*/Circle c) {
+    public BlockDSView locateBlockDSView(Point2D point) {
         for (BlockDSView v: mBlocksDSView) {
-            if (v.isInsideBounds(c)) {
-                return v;
-            }
-        }
-        return null;
-    }
-    /*@Override
-    public TransitionView locateTransitionView(Point2D point) {
-        for (TransitionView v: mTransitionViews) {
             if (v.isInsideBounds(point)) {
                 return v;
             }
         }
         return null;
-    }*/
+    }
+    @Override
+    public TransitionMSCView locateTransitionView(Circle c) {
+        for(TransitionMSCView t : mTransitionViews){
+            if(t.isInsideBounds_bMSC(c)){
+                return t;
+            }
+        }
+        return null;
+    }
 
 
     @Override
@@ -205,14 +186,45 @@ public class ComponentDSViewImpl extends AnchorPane implements ComponentDSView, 
     @Override
     public void onBlockDSRemoved(ComponentDS componentDS, BlockDS blockDS) { hideBlockDS(blockDS);}
 
-   /* @Override
-    public void onTransitionCreated(Component component, Transition transition) {
-        showTransition(transition);
-    }
+    @Override
+    public void onTransitionCreate(ComponentDS buildDS, TransitionMSC t) {showTransition(t);}
 
     @Override
-    public void onTransitionRemoved(Component component, Transition transition) {
-        hideTransition(transition);
-    }*/
+    public void onTransitionRemove(ComponentDS buildDS, TransitionMSC t) {hideTransition(t);}
+
+    private void showTransition(TransitionMSC t) {
+        TransitionMSCView view;
+        Node node;
+        synchronized(this){
+            if(t.getValue("view") == null){
+                view = transitionFactory.create(t);
+                mTransitionViews.add(view);
+                view.setTransitionMSC(t, mComponentDS);
+                t.setValue("view", view);
+                node = view.getNode();
+                getChildren().add(node);
+                if (view instanceof SelfTransitionMSCViewImpl) {
+                    ((SelfTransitionMSCViewImpl) view).gethMSCsourceView().getNode().toFront();
+                } else {
+                    node.toBack();
+                }
+                for (Listener l: mListeners) {
+                    l.onTransitionViewCreated(this, view);
+                }
+            }
+        }
+    }
+
+    private void hideTransition(TransitionMSC t) {
+        synchronized(this){
+            TransitionMSCViewImpl view = (TransitionMSCViewImpl) t.getValue("view");
+            if(view != null){
+                mTransitionViews.remove(view);
+                view.setTransitionMSC(null, null);
+                t.setValue("view", null);
+                getChildren().remove(view);
+            }
+        }
+    }
 }
 

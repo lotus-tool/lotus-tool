@@ -8,6 +8,7 @@ package br.uece.lotus.uml.api.viewer.transition;
 import br.uece.lotus.uml.api.ds.TransitionMSC;
 import javafx.scene.Node;
 import javafx.scene.shape.Circle;
+import javafx.scene.shape.Line;
 
 /**
  *
@@ -21,11 +22,12 @@ public interface TransitionMSCView {
         TransitionMSCView create(TransitionMSC t);
     }
 
-    abstract boolean isInsideBounds(Circle circle);
+    abstract boolean isInsideBounds_hMSC(Circle circle);
+    abstract boolean isInsideBounds_bMSC(Circle circle);
+    abstract Line getLineTransition();
 
     TransitionMSC getTransition();
     void setTransitionMSC(TransitionMSC t, Object component);
-
 
     public class Geometry {
         public static final int LINE = 0;

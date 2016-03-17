@@ -9,6 +9,8 @@ package br.uece.lotus.uml.api.viewer.bMSC;
 
 
 import br.uece.lotus.uml.api.ds.*;
+import br.uece.lotus.uml.api.viewer.transition.TransitionMSCView;
+import br.uece.lotus.uml.designer.blockDiagramModeling.DesingWindowImplBlockDs;
 import javafx.geometry.Point2D;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.layout.AnchorPane;
@@ -21,22 +23,19 @@ import java.io.File;
  * @author Bruno Barbosa
  */
 public interface ComponentDSView {
-    /*void tamalhoPadrao();
-    void reajuste(); */
 
     public interface Listener{
         void onBlockDsViewCreated(ComponentDSView cv , BlockDSView dsViewe);
+        void onTransitionViewCreated(ComponentDSView cbv, TransitionMSCView tb);
 
     }
-    /*public Component getComponent();*/
     public ComponentDS getmComponentDS();
     public void setComponentDS(ComponentDS ds);
-    /*public void setComponent(Component c);*/
     public void addListener(Listener l);
     public void removeListener(Listener l);
-
-    BlockDSView locateBlockDSView(/*Point2D point*/Circle c);
-    /*TransitionView locateTransitionView(Point2D point);*/
+//    public int getCountTransition();
+    BlockDSView locateBlockDSView(Point2D p);
+    TransitionMSCView locateTransitionView(Circle c);
 
     AnchorPane getNode();
     void setBlockDSContextMenu(ContextMenu menu);
