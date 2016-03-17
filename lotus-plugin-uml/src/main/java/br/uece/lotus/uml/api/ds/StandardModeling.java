@@ -57,7 +57,7 @@ public class StandardModeling {
         }
     }
 
-    public TransitionMSC newTransition(Hmsc src, Hmsc dst){
+    public TransitionMSC newTransition(HmscView src, HmscView dst){
         if (src == null) {
             throw new IllegalArgumentException("src hMSC can't be null!");
         }
@@ -105,8 +105,8 @@ public class StandardModeling {
     }
     
     public void remove(TransitionMSC t){
-        ((Hmsc)t.getSource()).removeOutgoingTransition(t);
-        ((Hmsc)t.getDestiny()).removeIncomingTransition(t);
+        ((HmscView)t.getSource()).getHMSC().removeOutgoingTransition(t);
+        ((HmscView)t.getDestiny()).getHMSC().removeIncomingTransition(t);
         mTransitions.remove(t);
         for(Listener l : mListeners){
             l.onTransitionRemove(this, t);
