@@ -46,7 +46,7 @@ public class BasicDSPlugin extends Plugin{
         
         mProjectExplorerDS.getMenu().addItem(Integer.MIN_VALUE, "New Project", mNewProject);
         
-        mProjectExplorerDS.getProjectMSCMenu().addItem(Integer.MIN_VALUE, "New Sequence Diagram", mNewComponentDS);
+        //mProjectExplorerDS.getProjectMSCMenu().addItem(Integer.MIN_VALUE, "New Sequence Diagram", mNewComponentDS);
     }
     
     private Runnable mNewProject = () ->{
@@ -79,7 +79,7 @@ public class BasicDSPlugin extends Plugin{
         abrirFocoNaTab("UML Projects");
     };
     
-    public Runnable mNewComponentDS = () -> {
+    /*public Runnable mNewComponentDS = () -> {
         ProjectDS p = mProjectExplorerDS.getSelectedProjectDS();
         if(p == null){
             Alert alert = new Alert(Alert.AlertType.ERROR, "Please select a project!", ButtonType.OK);
@@ -104,7 +104,7 @@ public class BasicDSPlugin extends Plugin{
         cds.setName(mName);
         p.addComponent_bMSC(cds);
 
-    };
+    };*/
     
     private boolean checkExistenceName(String name) {
         for(ProjectDS p : mProjectExplorerDS.getAllProjectsDS()){

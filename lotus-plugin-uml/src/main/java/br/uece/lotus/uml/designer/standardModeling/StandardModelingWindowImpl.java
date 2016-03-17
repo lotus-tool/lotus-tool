@@ -26,6 +26,7 @@ import br.uece.lotus.uml.designer.standardModeling.strategy.OnPressedMouse;
 import br.uece.lotus.uml.designer.standardModeling.strategy.OnReleasedMouse;
 import java.io.File;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
@@ -48,6 +49,7 @@ import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Slider;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.ToolBar;
@@ -339,7 +341,15 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
         
         MenuItem creat_bMSC = new MenuItem("Create bMSC");
         creat_bMSC.setOnAction((ActionEvent event) -> {
-            //implementar criacao do ds no projeto
+            Hmsc h = ((HmscView)mComponentSobMouse).getHMSC();
+            if(!h.isFull()){
+                ComponentDS bmsc = new ComponentDS();
+                bmsc.setName(h.getLabel());
+                mViewer.getComponentBuildDS().set_bMSC_in_hMSC(h, bmsc);
+            }else{
+                Alert alert = new Alert(Alert.AlertType.INFORMATION,"hMSC is Full",ButtonType.OK);
+                alert.show();
+            }
         });
         
         mContextMenuBlockBuild.getItems().addAll(creat_bMSC, mSaveAsPNG);

@@ -164,7 +164,8 @@ public final class ProjectExplorerPluginDS extends Plugin implements ProjectExpl
         public void onTransitionRemove(StandardModeling buildDS, TransitionMSC t) {}
         @Override
         public void onBlockCreateBMSC(StandardModeling sm, Hmsc hmsc, ComponentDS bmsc) {
-            
+            ProjectDS p = getSelectedProjectDS();
+            p.addComponent_bMSC(bmsc);
         }
     };
 
@@ -340,7 +341,7 @@ public final class ProjectExplorerPluginDS extends Plugin implements ProjectExpl
             projeto = projeto.getParent().getParent();
         }
         else if(obj instanceof Component){
-            projeto = projeto.getParent().getParent().getParent();
+            projeto = projeto.getParent().getParent();
         }
         return (ProjectDS) projeto.getValue().getObject();
     }

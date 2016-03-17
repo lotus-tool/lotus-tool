@@ -108,7 +108,7 @@ public class OnClickedMouse implements Strategy{
                     s.contID++;
                     b.setLayoutX(e.getX()-(LARGURA/2));
                     b.setLayoutY(e.getY()-(ALTURA/2));
-                    b.setLabel("New hMSC");
+                    b.setLabel("New hMSC"+s.contID);
                 }
         }
         else if(s.mModoAtual == s.MODO_REMOVER){
