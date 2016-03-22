@@ -5,10 +5,10 @@
  */
 package br.uece.lotus.uml.api.viewer.transition;
 
+
 import br.uece.lotus.viewer.Geom;
 import br.uece.lotus.viewer.Seta;
 import br.uece.lotus.viewer.StyleBuilder;
-import com.sun.org.apache.xpath.internal.SourceTree;
 import javafx.beans.binding.DoubleBinding;
 import javafx.beans.binding.NumberBinding;
 import javafx.scene.control.Label;
