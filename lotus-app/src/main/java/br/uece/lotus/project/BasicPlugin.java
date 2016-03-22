@@ -26,7 +26,6 @@ package br.uece.lotus.project;
 import br.uece.lotus.Component;
 import br.uece.lotus.Project;
 import br.uece.seed.app.ExtensibleMenu;
-import br.uece.seed.app.Startup;
 import br.uece.seed.app.UserInterface;
 import br.uece.seed.ext.ExtensionManager;
 import br.uece.seed.ext.Plugin;
@@ -38,7 +37,6 @@ import javafx.scene.input.KeyCombination;
 
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
-import java.awt.*;
 import java.io.File;
 import java.util.Optional;
 
@@ -307,7 +305,7 @@ public class BasicPlugin extends Plugin {
 
         ExtensibleMenu mMainMenu = mUserInterface.getMainMenu();
 
-        mMainMenu.newItem("File/New Project...")
+        mMainMenu.newItem("File/New Project.../LTS")
                 .setWeight(Integer.MIN_VALUE)
                 .setAccelerator(KeyCode.N, KeyCombination.CONTROL_DOWN, KeyCombination.SHIFT_DOWN)
                 .setAction(mNewProject)

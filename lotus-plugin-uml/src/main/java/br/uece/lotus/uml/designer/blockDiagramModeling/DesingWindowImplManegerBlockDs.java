@@ -1,0 +1,45 @@
+package br.uece.lotus.uml.designer.blockDiagramModeling;
+
+import br.uece.lotus.Component;
+import br.uece.lotus.uml.api.ds.StandardModeling;
+import br.uece.lotus.uml.api.ds.ComponentDS;
+import br.uece.lotus.uml.api.window.DefaultWindowManagerPluginDS;
+import br.uece.seed.ext.ExtensionManager;
+import javafx.fxml.FXMLLoader;
+import javafx.fxml.JavaFXBuilderFactory;
+import javafx.scene.Parent;
+
+import java.io.IOException;
+import java.net.URL;
+
+/**
+ * Created by lva on 15/01/16.
+ */
+public class DesingWindowImplManegerBlockDs extends DefaultWindowManagerPluginDS<DesingWindowImplBlockDs> {
+
+    @Override
+    public void onStart(ExtensionManager extensionManager) throws Exception {
+        super.onStart(extensionManager);
+    }
+
+    @Override
+    protected DesingWindowImplBlockDs onCreate() {
+        try{
+        return new DesingWindowImplBlockDs();}
+        catch (Exception e){
+        throw new RuntimeException(e);}
+    }
+
+    @Override
+    protected void onShow(DesingWindowImplBlockDs window, StandardModeling buildDS) {
+    }
+
+    @Override
+    protected void onShow(DesingWindowImplBlockDs window, ComponentDS cds) {window.setComponentDS(cds);}
+
+    @Override
+    protected void onShow(DesingWindowImplBlockDs window, Component c) {}
+
+    @Override
+    protected void onHide(DesingWindowImplBlockDs window) {}
+}

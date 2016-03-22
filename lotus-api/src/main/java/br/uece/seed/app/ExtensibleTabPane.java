@@ -23,7 +23,9 @@
  */
 package br.uece.seed.app;
 
+import javafx.collections.ObservableList;
 import javafx.scene.Node;
+import javafx.scene.control.Tab;
 
 /**
  *
@@ -40,4 +42,6 @@ public interface ExtensibleTabPane {
     boolean isShowing(int id);
     
     public void renameTab(Integer id, String name);
+    
+    public ObservableList<Tab> getTabs();
 }

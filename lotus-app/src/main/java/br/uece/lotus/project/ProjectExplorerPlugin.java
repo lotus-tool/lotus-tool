@@ -181,7 +181,7 @@ public final class ProjectExplorerPlugin extends Plugin implements ProjectExplor
         AnchorPane.setRightAnchor(mProjectView, 0D);
         AnchorPane.setBottomAnchor(mProjectView, 0D);
         AnchorPane.setLeftAnchor(mProjectView, 0D);
-        mUserInterface.getLeftPanel().newTab("Projects", mProjectView, false);
+        mUserInterface.getLeftPanel().newTab("LTS Projects", mProjectView, false);
     }
 
     @Override

@@ -22,6 +22,7 @@ public interface ComponentView {
 
         void onStateViewCreated(ComponentView cv, StateView v);
         void onTransitionViewCreated(ComponentView cv, TransitionView v);
+
     }
     public Component getComponent();
 

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+    <artifactId>lotus-root</artifactId>
+    <groupId>br.uece.lotus</groupId>
+    <version>3.0-alpha-SNAPSHOT</version>
+  </parent>
+
+    <groupId>br.uece.lotus</groupId>
+    <artifactId>lotus-plugin-uml</artifactId>
+    <version>3.0-alpha-SNAPSHOT</version>
+    <packaging>jar</packaging>
+
+    <name>lotus-plugin-uml</name>
+    
+    <dependencies>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>lotus-plugin-tools</artifactId>
+            <version>${project.version}</version>
+            <scope>compile</scope>
+        </dependency>
+    </dependencies>
+</project>
