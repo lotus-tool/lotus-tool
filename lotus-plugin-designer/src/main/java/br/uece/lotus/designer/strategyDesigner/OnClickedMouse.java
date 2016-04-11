@@ -105,6 +105,28 @@ public class OnClickedMouse implements Strategy {
                     }
                 }
             }else if (dwi.mModoAtual == MODO_REMOVER) {
+                
+                
+                /*if there are states that are selected and the eraser button was chosen 
+                so erase all selected transitions from the component*/
+              
+                if(!dwi.statesSelecionados.isEmpty()&& dwi.mComponentSobMouse instanceof StateView){
+                    
+                    
+                    State v = ((StateView) dwi.mComponentSobMouse).getState();
+                    if(!dwi.statesSelecionados.contains(v)){
+                        return;
+                    }
+                    
+                    for(State s : dwi.statesSelecionados){
+                        dwi.mViewer.getComponent().remove(s);
+                    }
+                    dwi.statesSelecionados.clear();
+                    
+                    return;
+                }
+              
+            
                 if (dwi.mComponentSobMouse instanceof StateView) {
                     State v = ((StateView) dwi.mComponentSobMouse).getState();
                     if(v.getValue("bigstate") instanceof BigState){
