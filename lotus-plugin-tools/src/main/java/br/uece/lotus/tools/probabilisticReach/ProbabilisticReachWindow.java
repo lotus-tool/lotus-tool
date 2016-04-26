@@ -140,6 +140,9 @@ public class ProbabilisticReachWindow extends AnchorPane{
                         mTemplateLabel1.setText("");
                         mTemplateLabel2.setText("");
 
+                        mAction1.setText("");
+                        mAction2.setText("");
+
                         mAction1.setVisible(false);
                         mTemplateLabel1.setVisible(false);
                         mAction2.setVisible(false);
@@ -151,6 +154,9 @@ public class ProbabilisticReachWindow extends AnchorPane{
                     case 1: // "P(Action1)"
                         mTemplateLabel1.setText("Probability of doing ");
                         mTemplateLabel2.setText(".");
+
+                        mAction1.setText("");
+                        mAction2.setText("");
 
                         mAction1.setVisible(true);
                         mTemplateLabel1.setVisible(true);
@@ -164,6 +170,9 @@ public class ProbabilisticReachWindow extends AnchorPane{
                         mTemplateLabel1.setText("Probability of doing ");
                         mTemplateLabel2.setText(" and not performing ");
 
+                        mAction1.setText("");
+                        mAction2.setText("");
+
                         mAction1.setVisible(true);
                         mTemplateLabel1.setVisible(true);
                         mAction2.setVisible(true);
@@ -176,6 +185,9 @@ public class ProbabilisticReachWindow extends AnchorPane{
                         mTemplateLabel1.setText("Probability of doing ");
                         mTemplateLabel2.setText(" after ");
 
+                        mAction1.setText("");
+                        mAction2.setText("");
+
                         mAction1.setVisible(true);
                         mTemplateLabel1.setVisible(true);
                         mAction2.setVisible(true);
@@ -187,6 +199,9 @@ public class ProbabilisticReachWindow extends AnchorPane{
                     case 4: // "P(Action1 in X steps)"
                         mTemplateLabel1.setText("Probability of doing ");
                         mTemplateLabel2.setText(" in up to ");
+
+                        mAction1.setText("");
+                        mAction2.setText("");
 
                         mAction1.setVisible(true);
                         mTemplateLabel1.setVisible(true);
@@ -445,40 +460,18 @@ public class ProbabilisticReachWindow extends AnchorPane{
         int targetID = -1;
         int actionTargetID = -1;
         double actionP = 1;
+        double p = 0.0;
+        double probabilityTotal = 0.0;
+        String result = "0";
         sourceStt = sourceStt.trim();
         targetStt = targetStt.trim();
 
-        //State?
+        //State or Action?
         if(sourceStt.matches("\\d+")){
             sourceID = Integer.parseInt(sourceStt);
             if(sourceID >= a.getStatesCount()) sourceID = -1;
         }else{
             sourceID = a.getTransitionByLabel(sourceStt).getSource().getID();
-        }
-
-        // Checar se o estado alvo pedido foi E (final) ou -1 (erro).
-        // Se sim, achar qual estado (ID) corresponde ao final/erro.
-        switch (targetStt){
-            case "E":
-            case "e":
-                targetID = a.getFinalState().getID();
-                break;
-
-            case "-1":
-                targetID = a.getErrorState().getID();
-                break;
-
-            default:
-                if(targetStt.matches("\\d+")){
-                    if(targetID >= a.getStatesCount()){ targetID = -1;}
-                    else{
-                        actionTargetID = targetID = Integer.parseInt(targetStt);
-                    }
-                }else{
-                    targetID = a.getTransitionByLabel(targetStt).getSource().getID();
-                    actionP = a.getTransitionByLabel(targetStt).getProbability();
-                    actionTargetID = a.getTransitionByLabel(targetStt).getDestiny().getID();;
-                }
         }
 
         if(sourceID == -1){
@@ -487,15 +480,56 @@ public class ProbabilisticReachWindow extends AnchorPane{
             return "0";
         }
 
-        if(targetID == -1){
-            JOptionPane.showMessageDialog(null, "State/Transition " + targetStt + " is not in this component.",
-                    "Probabilistic Reachability", JOptionPane.WARNING_MESSAGE);
-            return "0";
+        targetStt = targetStt.replaceAll("\\s", "");
+        targetStt = targetStt.trim();
+        String[] targetStates = targetStt.split(",");
+
+        // Checar se o estado alvo pedido foi E (final) ou -1 (erro).
+        // Se sim, achar qual estado (ID) corresponde ao final/erro.
+
+        for(String target : targetStates){
+            targetID = -1;
+            actionTargetID = -1;
+            actionP = 1;
+
+            switch (target){
+                case "E":
+                case "e":
+                    targetID = a.getFinalState().getID();
+                    break;
+
+                case "-1":
+                    targetID = a.getErrorState().getID();
+                    break;
+
+                default:
+                    //System.out.println("executei 1 vez.");
+                    if(target.matches("\\d+")){
+                        actionTargetID = targetID = Integer.parseInt(target);
+                        if(targetID >= a.getStatesCount()){ targetID = -1;}
+                        //System.out.println("Entrei no PRIMEIRO IF. TargetID: " + targetID);
+                    }else{
+                        targetID = a.getTransitionByLabel(target).getSource().getID();
+                        actionP = a.getTransitionByLabel(target).getProbability();
+                        actionTargetID = a.getTransitionByLabel(target).getDestiny().getID();
+                        //System.out.println("Entrei no SEGUNDO IF. TargetID: " + targetID);
+                    }
+            }
+
+            if(targetID == -1){
+                JOptionPane.showMessageDialog(null, "State/Transition " + targetStt + " is not in this component.",
+                        "Probabilistic Reachability", JOptionPane.WARNING_MESSAGE);
+                return "0";
+            }
+
+            p = new ProbabilisticReachAlgorithm().probabilityBetween(a, sourceID, targetID, steps, actionTargetID);
+            p = p * actionP;
+            probabilityTotal += p;
+
         }
 
-        double p = new ProbabilisticReachAlgorithm().probabilityBetween(a, sourceID, targetID, steps, actionTargetID);
-        p = p * actionP;
-        String result = String.valueOf(p);
+
+        result = String.valueOf(probabilityTotal);
         
         if(optField == null || optField.trim().isEmpty()){
             mOutputField.setText(result);
@@ -505,7 +539,7 @@ public class ProbabilisticReachWindow extends AnchorPane{
             double optional = Double.parseDouble(optField);
             switch (inequation){
                 case ">":
-                    if(p > optional){
+                    if(probabilityTotal > optional){
                         mOutputField.setText("True");
                         mOutputField.setStyle("-fx-background-color: limegreen");
                         if(fromMenu){selectedEntry.setResult("True" + " ok!");}
@@ -516,7 +550,7 @@ public class ProbabilisticReachWindow extends AnchorPane{
                     }
                     break;
                 case ">=":
-                    if(p >= optional){
+                    if(probabilityTotal >= optional){
                         mOutputField.setText("True");
                         mOutputField.setStyle("-fx-background-color: limegreen");
                         if(fromMenu){selectedEntry.setResult("True" + " ok!");}
@@ -527,7 +561,7 @@ public class ProbabilisticReachWindow extends AnchorPane{
                     }
                     break;
                 case "<":
-                    if(p < optional){
+                    if(probabilityTotal < optional){
                         mOutputField.setText("True");
                         mOutputField.setStyle("-fx-background-color: limegreen");
                         if(fromMenu){selectedEntry.setResult("True" + " ok!");}
@@ -538,7 +572,7 @@ public class ProbabilisticReachWindow extends AnchorPane{
                     }
                     break;
                 case "<=":
-                    if(p <= optional){
+                    if(probabilityTotal <= optional){
                         mOutputField.setText("True");
                         mOutputField.setStyle("-fx-background-color: limegreen");
                         if(fromMenu){selectedEntry.setResult("True" + " ok!");}
@@ -549,7 +583,7 @@ public class ProbabilisticReachWindow extends AnchorPane{
                     }
                     break;
                 case "=":
-                    if(p == optional){
+                    if(probabilityTotal == optional){
                         mOutputField.setText("True");
                         mOutputField.setStyle("-fx-background-color: limegreen");
                         if(fromMenu){selectedEntry.setResult("True" + " ok!");}
@@ -560,7 +594,7 @@ public class ProbabilisticReachWindow extends AnchorPane{
                     }
                     break;
                 case "!=":
-                    if(p != optional){
+                    if(probabilityTotal != optional){
                         mOutputField.setText("True");
                         mOutputField.setStyle("-fx-background-color: limegreen");
                         if(fromMenu){selectedEntry.setResult("True" + " ok!");}

@@ -38,19 +38,22 @@ public class ProbabilisticReachAlgorithm {
         }
         zerarDiagonal(probabilities, tam);
         probabilities[0][0] = 1;
+        probabilities[source][source] = 1;
         i = source;
         j = target;
         // montar a matriz de probabilidades já é um step.
         steps--;
 //      multiplica as matrizes um monte de vez
         double[][] mult = probabilities;
-        double difference = 1;
-        double total = 0;
+        double difference = 1.0;
+        double total = 0.0;
         int count = 0;
+
         if(steps == 0) total = probabilities[source][target];
+
         //Parar se a diferença for pequena o bastante e o count > 10.
         while((abs(difference) > 0.01 || count < 20) && (steps > 0)){
-            total += probabilities[i][j];
+            //total += probabilities[i][j];
             difference = probabilities[i][j];
             probabilities = multiply(probabilities, mult, tam);
             //mult = probabilities; <- ainda nao funciona corretamente
@@ -61,13 +64,16 @@ public class ProbabilisticReachAlgorithm {
                 count = 0;
             }
         }
+
+        total = probabilities[i][j];
+
         if(total > 1){
            total = 1;
         }
-        total = truncar(total, 5);
-        double teste = probabilities[i][actionTargetID];
+        total = truncar(total, 2);
+        /*double teste = probabilities[i][actionTargetID];
         teste = truncar(teste, 2);
-        System.out.println(teste);
+        System.out.println(teste);*/
         if(probabilities[i][actionTargetID] == 0) return 0;
         return total;
     }

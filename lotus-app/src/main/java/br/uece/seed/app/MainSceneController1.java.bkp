@@ -329,21 +329,21 @@ public class MainSceneController1 extends Plugin implements Initializable, UserI
     }
 
     @Override
-    public void addMenuHook(int menu, int weigth, String path, Runnable action) {
+    public void addMenuHook(int menu, int weigth, String structPath, Runnable action) {
         switch (menu) {
             case UserInterface.MAIN_MENU: {
-                MenuUtils.addMenuBarEntry(mMnuPrincipal, weigth, path, action);
+                MenuUtils.addMenuBarEntry(mMnuPrincipal, weigth, structPath, action);
                 break;
             }
             case UserInterface.PROJECT_MENU: {
                 break;
             }
             case UserInterface.COMPONENT_MENU: {
-                MenuUtils.addContextMenuEntry(mComponentsContextMenu, weigth, path, action);
+                MenuUtils.addContextMenuEntry(mComponentsContextMenu, weigth, structPath, action);
                 break;
             }
             case UserInterface.STATE_MENU: {
-                MenuUtils.addContextMenuEntry(mStateContextMenu, weigth, path, action);
+                MenuUtils.addContextMenuEntry(mStateContextMenu, weigth, structPath, action);
                 break;
             }
         }

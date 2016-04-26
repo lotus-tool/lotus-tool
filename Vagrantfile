@@ -34,8 +34,8 @@ Vagrant.configure(2) do |config|
   # config.vm.network "public_network"
 
   # Share an additional folder to the guest VM. The first argument is
-  # the path on the host to the actual folder. The second argument is
-  # the path on the guest to mount the folder. And the optional third
+  # the structPath on the host to the actual folder. The second argument is
+  # the structPath on the guest to mount the folder. And the optional third
   # argument is a set of non-required options.
   # config.vm.synced_folder "../data", "/vagrant_data"
 
@@ -68,5 +68,5 @@ Vagrant.configure(2) do |config|
   #   sudo apt-get update
   #   sudo apt-get install -y apache2
   # SHELL
-  config.vm.provision :shell, path: "provision.sh"
+  config.vm.provision :shell, structPath: "provision.sh"
 end
