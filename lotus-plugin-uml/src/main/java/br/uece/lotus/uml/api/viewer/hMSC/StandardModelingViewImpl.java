@@ -5,6 +5,7 @@
  */
 package br.uece.lotus.uml.api.viewer.hMSC;
 
+import br.uece.lotus.Component;
 import br.uece.lotus.uml.api.ds.ComponentDS;
 import br.uece.lotus.uml.api.viewer.transition.TransitionMSCView;
 import br.uece.lotus.uml.api.viewer.transition.TransitionMSCViewFactory;
@@ -243,4 +244,7 @@ public class StandardModelingViewImpl extends AnchorPane implements StandardMode
         }
         mComponentBuild = null;
     }
+
+    @Override
+    public void onComponentLTSCreate(Component c) {}
 }

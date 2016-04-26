@@ -305,7 +305,7 @@ public class BasicPlugin extends Plugin {
 
         ExtensibleMenu mMainMenu = mUserInterface.getMainMenu();
 
-        mMainMenu.newItem("File/New Project.../LTS")
+        mMainMenu.newItem("File/New Project...LTS")
                 .setWeight(Integer.MIN_VALUE)
                 .setAccelerator(KeyCode.N, KeyCombination.CONTROL_DOWN, KeyCombination.SHIFT_DOWN)
                 .setAction(mNewProject)

@@ -62,7 +62,7 @@ public class BlockDSViewImpl extends Region implements BlockDSView, BlockDS.List
         double deltaY= point.getY()-auxRec.getY();
         double alturaGeral= ALTURA_RETANGULO+(mLine.endYProperty().getValue()-mLine.startYProperty().getValue());
         if((deltaX>=0 && deltaX<=LARGURA_RETANGULO) && (deltaY>=0 && deltaY<=alturaGeral)){
-            System.out.println("True linha + retangulo");
+            //System.out.println("True linha + retangulo");
             return true;
         }
 

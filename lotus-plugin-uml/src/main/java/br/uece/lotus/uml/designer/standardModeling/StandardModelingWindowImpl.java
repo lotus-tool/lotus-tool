@@ -10,11 +10,13 @@ import br.uece.lotus.uml.api.ds.Hmsc;
 import br.uece.lotus.uml.api.ds.StandardModeling;
 import br.uece.lotus.uml.api.ds.ComponentDS;
 import br.uece.lotus.uml.api.ds.TransitionMSC;
+import br.uece.lotus.uml.api.viewer.bMSC.BlockDSView;
 import br.uece.lotus.uml.api.viewer.hMSC.HmscView;
 import br.uece.lotus.uml.api.viewer.hMSC.StandardModelingView;
 import br.uece.lotus.uml.api.viewer.hMSC.StandardModelingViewImpl;
 import br.uece.lotus.uml.api.viewer.transition.TransitionMSCView;
 import br.uece.lotus.uml.api.window.WindowDS;
+import br.uece.lotus.uml.app.project.ProjectExplorerPluginDS;
 import br.uece.lotus.uml.designer.standardModeling.strategy.Context;
 import br.uece.lotus.uml.designer.standardModeling.strategy.OnClickedMouse;
 import br.uece.lotus.uml.designer.standardModeling.strategy.OnDragDetected;
@@ -24,9 +26,16 @@ import br.uece.lotus.uml.designer.standardModeling.strategy.OnDraggedMouse;
 import br.uece.lotus.uml.designer.standardModeling.strategy.OnMovedMouse;
 import br.uece.lotus.uml.designer.standardModeling.strategy.OnPressedMouse;
 import br.uece.lotus.uml.designer.standardModeling.strategy.OnReleasedMouse;
+import br.uece.lotus.uml.designer.windowLTS.Layouter;
+import br.uece.lotus.uml.sequenceDiagram.Astah.LtsParser;
+import br.uece.lotus.uml.sequenceDiagram.Astah.Mensagem;
+import br.uece.lotus.uml.sequenceDiagram.Astah.TabelaReferenciaID;
+import br.uece.lotus.uml.sequenceDiagram.Astah.xmi.AtorAndClasse;
+import br.uece.lotus.uml.sequenceDiagram.Astah.xmi.InteractionFragments;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Optional;
+import java.util.List;
 import java.util.Set;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
@@ -49,7 +58,6 @@ import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Slider;
-import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.ToolBar;
@@ -74,6 +82,8 @@ import javafx.stage.FileChooser;
  */
 public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
 
+    //Area de Projeto
+    private ProjectExplorerPluginDS pep;
     //Principais da Tela
     private final ScrollPane mScrollPanel;
     private final AnchorPane mPropriedadePanel;
@@ -161,7 +171,8 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
     }
     
     
-    public StandardModelingWindowImpl() {
+    public StandardModelingWindowImpl(ProjectExplorerPluginDS pep) {
+        this.pep = pep;
         mViewer = new StandardModelingViewImpl();
         mToolBar = new ToolBar();
         mScrollPanel = new ScrollPane((Node)mViewer);
@@ -611,6 +622,37 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
             }
         }
         //gerar os lts
-        
+        List<Component> ltsGerados = new ArrayList<>();
+        List<ComponentDS> listaBMSC = pep.getAll_BMSC();
+        for(ComponentDS cds : listaBMSC){
+            List<TabelaReferenciaID> relativo = new ArrayList<>();
+            for(int i=0;i<cds.getBlockDSCount();i++){
+                TabelaReferenciaID id = new TabelaReferenciaID(i+1, ((ArrayList)cds.getBlockDS()).get(i)+"");
+                relativo.add(id);
+            }
+            List<InteractionFragments> loopsOuAlts = new ArrayList<>();
+            List<Mensagem> comunicacao = new ArrayList<>();
+            for(TransitionMSC t : cds.getAllTransitions()){
+                AtorAndClasse origem = new AtorAndClasse(((BlockDSView)t.getSource()).getBlockDS().getLabel(), 
+                                                            String.valueOf(((BlockDSView)t.getSource()).getBlockDS().getID()),
+                                                            "actor");
+                AtorAndClasse destino = new AtorAndClasse(((BlockDSView)t.getDestiny()).getBlockDS().getLabel(), 
+                                                            String.valueOf(((BlockDSView)t.getDestiny()).getBlockDS().getID()), 
+                                                            "actor");
+                Mensagem m = new Mensagem();
+                m.setEnviando(origem);
+                m.setRecebendo(destino);
+                m.setMsg(t.getLabel());
+                m.setXmiIdMsg(t.getIdSequence()+"");
+                comunicacao.add(m);
+            }
+            Component c = new Component();
+            c.setName("LTS "+cds.getName());
+            LtsParser parser = new LtsParser(comunicacao, relativo, loopsOuAlts, c);
+            c = parser.parseLTSA();
+            new Layouter().layout(c);
+            ltsGerados.add(c);
+        }
+        mViewer.getComponentBuildDS().createListLTS(ltsGerados);
     };
 }

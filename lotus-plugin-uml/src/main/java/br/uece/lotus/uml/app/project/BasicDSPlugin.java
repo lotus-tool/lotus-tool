@@ -6,8 +6,9 @@
 package br.uece.lotus.uml.app.project;
 
 import br.uece.lotus.uml.api.ds.StandardModeling;
-import br.uece.lotus.uml.api.ds.ComponentDS;
 import br.uece.lotus.uml.api.ds.ProjectDS;
+import br.uece.lotus.uml.api.project.ProjectDSSerializer;
+import br.uece.lotus.uml.api.project.ProjectDialogsDS;
 import br.uece.lotus.uml.api.project.ProjectExplorerDS;
 import br.uece.seed.app.ExtensibleMenu;
 import br.uece.seed.app.UserInterface;
@@ -28,7 +29,11 @@ public class BasicDSPlugin extends Plugin{
     
     private UserInterface mUserInterface;
     private ProjectExplorerDS mProjectExplorerDS;
+    private ProjectDialogsDS mProjectDialogsHelper;
     private ObservableList<Tab> mTabsDoPainelDeProjetos;
+    private ProjectDSSerializer mProjectSerializer = new ProjectDSxmlSerializer();
+    private static final String EXTENSION_DESCRIPTION = "LoTuS-MSC files (*.xml)";
+    private static final String EXTENSION = "*.xml";
     
     @Override
     public void onStart(ExtensionManager extensionManager) throws Exception {
@@ -38,13 +43,43 @@ public class BasicDSPlugin extends Plugin{
         
         ExtensibleMenu mMainMenu = mUserInterface.getMainMenu();
         
-        mMainMenu.newItem("File/New Project.../Sequence Diagram")
+        mMainMenu.newItem("MSC/New Project...Lotus-MSC")
                 .setWeight(Integer.MIN_VALUE)
                 //.setAccelerator(KeyCode.N, KeyCombination.CONTROL_DOWN, KeyCombination.SHIFT_DOWN)
                 .setAction(mNewProject)
                 .create();
+        mMainMenu.newItem("MSC/-")
+                .setWeight(Integer.MIN_VALUE)
+                .showSeparator(true)
+                .create();
+        mMainMenu.newItem("MSC/Open...")
+                .setWeight(Integer.MIN_VALUE)
+                .setAction(mOpenProject)
+                .create();
+        mMainMenu.newItem("MSC/-")
+                .setWeight(Integer.MIN_VALUE)
+                .showSeparator(true)
+                .create();
+        mMainMenu.newItem("MSC/Close Project...")
+                .setWeight(Integer.MIN_VALUE)
+                .setAction(mCloseProject)
+                .create();
+        mMainMenu.newItem("MSC/-")
+                .setWeight(Integer.MIN_VALUE)
+                .showSeparator(true)
+                .create();
+        mMainMenu.newItem("MSC/Save Project...")
+                .setWeight(Integer.MIN_VALUE)
+                .setAction(mSaveProject)
+                .create();
         
         mProjectExplorerDS.getMenu().addItem(Integer.MIN_VALUE, "New Project", mNewProject);
+        mProjectExplorerDS.getMenu().addItem(Integer.MIN_VALUE, "Open Project", mOpenProject);
+        mProjectExplorerDS.getProjectMSCMenu().addItem(Integer.MIN_VALUE, "Close Project", mCloseProject);
+        mProjectExplorerDS.getProjectMSCMenu().addItem(Integer.MIN_VALUE, "Save Project", mSaveProject);
+        mProjectExplorerDS.getProjectMSCMenu().addItem(Integer.MIN_VALUE, "Rename Project", mRenameProject);
+        mProjectExplorerDS.getComponentBMSCMenu().addItem(Integer.MIN_VALUE, "Rename bMSC", mRenameBMSC);
+        mProjectExplorerDS.getComponentBMSCMenu().addItem(Integer.MIN_VALUE, "Remove bMSC", mRemoveBMSC);
         
         //mProjectExplorerDS.getProjectMSCMenu().addItem(Integer.MIN_VALUE, "New Sequence Diagram", mNewComponentDS);
     }
@@ -79,39 +114,47 @@ public class BasicDSPlugin extends Plugin{
         abrirFocoNaTab("UML Projects");
     };
     
-    /*public Runnable mNewComponentDS = () -> {
+    private Runnable mRenameProject = () -> {
+        System.out.println("falta implementar  Classe: BasicDSPlugin");
+    };
+    
+    private Runnable mRenameBMSC = () -> {
+        System.out.println("falta implementar  Classe: BasicDSPlugin");
+    };
+    
+    private Runnable mRemoveBMSC = () -> {
+        System.out.println("falta implementar  Classe: BasicDSPlugin");
+    };
+    
+    private Runnable mCloseProject = () -> {
+        System.out.println("falta implementar  Classe: BasicDSPlugin");
+    };
+    
+    private Runnable mSaveProject = () -> {
         ProjectDS p = mProjectExplorerDS.getSelectedProjectDS();
-        if(p == null){
-            Alert alert = new Alert(Alert.AlertType.ERROR, "Please select a project!", ButtonType.OK);
+
+        if (p == null) {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setHeaderText("Information");
+            alert.setContentText("Please select a project!");
             alert.show();
             return;
         }
-        String mName = "";
-        String prompt = "bMSC"+ (p.getComponentDSCount()+1);
-        
-        TextInputDialog d = new TextInputDialog(prompt);
-        d.setTitle("New Component bMSC");
-        d.setHeaderText("New bMSC");
-        d.setContentText("Enter the new bMSC name:");
-        Optional<String> resul = d.showAndWait();
-        if(resul.isPresent()){
-            mName = resul.get();
+        mProjectDialogsHelper.save(p, mProjectSerializer, "Save project", EXTENSION_DESCRIPTION, EXTENSION/*,false*/);
+    };
+    
+    private Runnable mOpenProject = () -> {
+        ProjectDS p = mProjectDialogsHelper.open(mProjectSerializer, "Open project", EXTENSION_DESCRIPTION, EXTENSION);
+        if (p != null) {
+            mProjectExplorerDS.open(p);
         }
-        if(mName.equals("")){
-            mName = prompt;
-        }
-        ComponentDS cds = new ComponentDS();
-        cds.setName(mName);
-        p.addComponent_bMSC(cds);
-
-    };*/
+    };
     
     private boolean checkExistenceName(String name) {
         for(ProjectDS p : mProjectExplorerDS.getAllProjectsDS()){
             if(p.getName().equals(name)){
                 return true;
             }
-
         }
         return false;
     }

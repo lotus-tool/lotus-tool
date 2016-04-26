@@ -41,6 +41,7 @@ public interface ProjectExplorerDS {
     List<ComponentDS> getSelectedBMSCs();
     List<Component> getSelectedComponentsLTS();
     List<ProjectDS> getAllProjectsDS();
+    List<ComponentDS> getAll_BMSC();
     
     void addListener(Listener l);
     void removeListener(Listener l);

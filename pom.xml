@@ -10,11 +10,11 @@
 	<modules>
 		<module>lotus-api</module>
 		<module>lotus-app</module>
+                <module>lotus-plugin-uml</module>
 		<module>lotus-plugin-tools</module>
 		<module>lotus-plugin-designer</module>
 		<module>lotus-plugin-simulator</module>
 		<module>lotus-plugin-runtime</module>
-                <module>lotus-plugin-uml</module>
 		<module>lotus-zip</module>
         </modules>
 

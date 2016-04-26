@@ -13,6 +13,7 @@ import br.uece.lotus.uml.api.ds.BlockDS;
 import br.uece.lotus.uml.api.ds.StandardModeling;
 import br.uece.lotus.uml.api.ds.ComponentDS;
 import br.uece.lotus.uml.api.ds.TransitionMSC;
+import br.uece.lotus.uml.app.project.ProjectExplorerPluginDS;
 import br.uece.seed.app.ExtensibleTabPane;
 import br.uece.seed.app.UserInterface;
 import br.uece.seed.ext.ExtensionManager;
@@ -40,15 +41,19 @@ public abstract class DefaultWindowManagerPluginDS<E extends WindowDS> extends P
     
     private boolean mOnStartCalled;
     protected abstract E onCreate();
+    protected abstract E onCreateStandadM(ProjectExplorerPluginDS pep);
     protected abstract void onShow(E window, StandardModeling buildDS);
     protected abstract void onShow(E window, ComponentDS cds);
     protected abstract void onShow(E window, Component c);
     protected abstract void onHide(E window);
     
+    private ProjectExplorerPluginDS mProjectExplorerDS;
+    
     @Override
     public void onStart(ExtensionManager extensionManager) throws Exception {
         mCenterPanel = ((UserInterface)extensionManager.get(UserInterface.class)).getCenterPanel();
         mOnStartCalled = true;
+        mProjectExplorerDS = extensionManager.get(ProjectExplorerPluginDS.class);
     }
     
     
@@ -64,7 +69,7 @@ public abstract class DefaultWindowManagerPluginDS<E extends WindowDS> extends P
             }
         }
         if(window == null){
-            window = onCreate();
+            window = onCreateStandadM(mProjectExplorerDS);
             window.setComponentBuildDS(buildDS);
             mComponentsWindows.add(window);
             for(Listener l : mListeners){
@@ -192,6 +197,8 @@ public abstract class DefaultWindowManagerPluginDS<E extends WindowDS> extends P
         public void onTransitionRemove(StandardModeling buildDS, TransitionMSC t) {}
         @Override
         public void onBlockCreateBMSC(StandardModeling sm, Hmsc hmsc, ComponentDS bmsc) {}
+        @Override
+        public void onComponentLTSCreate(Component c) {}
     };
     
     private final ComponentDS.Listener mComponentDSListener = new ComponentDS.Listener() {

@@ -8,16 +8,9 @@ package br.uece.lotus.uml.designer.standardModeling;
 import br.uece.lotus.Component;
 import br.uece.lotus.uml.api.ds.StandardModeling;
 import br.uece.lotus.uml.api.ds.ComponentDS;
-import br.uece.lotus.uml.api.viewer.hMSC.StandardModelingViewImpl;
 import br.uece.lotus.uml.api.window.DefaultWindowManagerPluginDS;
+import br.uece.lotus.uml.app.project.ProjectExplorerPluginDS;
 import br.uece.seed.ext.ExtensionManager;
-import java.io.IOException;
-import java.net.URL;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javafx.fxml.FXMLLoader;
-import javafx.fxml.JavaFXBuilderFactory;
-import javafx.scene.Parent;
 
 /**
  *
@@ -32,12 +25,17 @@ public class StandardModelingWindowManager extends DefaultWindowManagerPluginDS<
     }
     
     @Override
-    protected StandardModelingWindowImpl onCreate() {
+    protected StandardModelingWindowImpl onCreateStandadM(ProjectExplorerPluginDS pep) {
         try{
-            return new StandardModelingWindowImpl();
+            return new StandardModelingWindowImpl(pep);
         }catch(Exception e){
             throw new RuntimeException(e);
         }
+    }
+    
+    @Override
+    protected StandardModelingWindowImpl onCreate() {
+        return null;
     }
 
     @Override
@@ -54,6 +52,8 @@ public class StandardModelingWindowManager extends DefaultWindowManagerPluginDS<
     protected void onShow(StandardModelingWindowImpl window, ComponentDS cds) {}
     @Override
     protected void onShow(StandardModelingWindowImpl window, Component c) {}
+
+    
 
     
     

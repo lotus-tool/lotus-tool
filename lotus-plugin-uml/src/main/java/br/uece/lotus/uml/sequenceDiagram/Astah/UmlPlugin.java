@@ -51,6 +51,7 @@ public class UmlPlugin extends Plugin{
     private ExtensibleMenu mMainMenu;
     private static final int MENU_WEIGHT = 123;
     private Optional<String> parser;
+    private TreeLayouter layout;
     
     void start() {
              
@@ -119,7 +120,7 @@ public class UmlPlugin extends Plugin{
                 break;
         }
         
-        new TreeLayouter().layout(c);
+        //layout.layout(c); da erro de NoClassFound em rumtime
         return c;
     }
     

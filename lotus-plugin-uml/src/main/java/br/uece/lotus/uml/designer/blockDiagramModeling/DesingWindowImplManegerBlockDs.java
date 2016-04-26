@@ -4,6 +4,7 @@ import br.uece.lotus.Component;
 import br.uece.lotus.uml.api.ds.StandardModeling;
 import br.uece.lotus.uml.api.ds.ComponentDS;
 import br.uece.lotus.uml.api.window.DefaultWindowManagerPluginDS;
+import br.uece.lotus.uml.app.project.ProjectExplorerPluginDS;
 import br.uece.seed.ext.ExtensionManager;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.JavaFXBuilderFactory;
@@ -42,4 +43,10 @@ public class DesingWindowImplManegerBlockDs extends DefaultWindowManagerPluginDS
 
     @Override
     protected void onHide(DesingWindowImplBlockDs window) {}
+
+    @Override
+    protected DesingWindowImplBlockDs onCreateStandadM(ProjectExplorerPluginDS pep) {
+        System.out.println("Metodo nao deve ser utilizado ainda");
+        return null;
+    }
 }

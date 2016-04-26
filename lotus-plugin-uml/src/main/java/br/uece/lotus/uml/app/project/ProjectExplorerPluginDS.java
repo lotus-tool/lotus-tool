@@ -6,6 +6,7 @@
 package br.uece.lotus.uml.app.project;
 
 import br.uece.lotus.Component;
+import br.uece.lotus.designer.NewDesignerWindowManager;
 import br.uece.lotus.uml.api.ds.Hmsc;
 import br.uece.lotus.uml.api.ds.StandardModeling;
 import br.uece.lotus.uml.api.ds.ComponentDS;
@@ -14,6 +15,7 @@ import br.uece.lotus.uml.api.ds.TransitionMSC;
 import br.uece.lotus.uml.api.project.ProjectExplorerDS;
 import br.uece.lotus.uml.designer.blockDiagramModeling.DesingWindowImplManegerBlockDs;
 import br.uece.lotus.uml.designer.standardModeling.StandardModelingWindowManager;
+import br.uece.lotus.uml.designer.windowLTS.LtsWindowManager;
 import br.uece.seed.app.ExtensibleFXContextMenu;
 import br.uece.seed.app.ExtensibleMenu;
 import br.uece.seed.app.UserInterface;
@@ -167,6 +169,11 @@ public final class ProjectExplorerPluginDS extends Plugin implements ProjectExpl
             ProjectDS p = getSelectedProjectDS();
             p.addComponent_bMSC(bmsc);
         }
+        @Override
+        public void onComponentLTSCreate(Component c) {
+            ProjectDS p = getSelectedProjectDS();
+            p.addComponentFragmentLTS(c);
+        }
     };
 
     //Falta os listeners do componentDS e ComponentLTS <- (o normal)
@@ -259,7 +266,14 @@ public final class ProjectExplorerPluginDS extends Plugin implements ProjectExpl
                         Logger.getLogger(ProjectExplorerPluginDS.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 }else if(c != null){
-                    mExtMnuComponentLTS.triggerDefaultAction();
+                    try {
+                        LtsWindowManager lwm = new LtsWindowManager();
+                        lwm.onStart(extension);
+                        lwm.show(c);
+                        mExtMnuComponentLTS.triggerDefaultAction();
+                    } catch (Exception ex) {
+                        Logger.getLogger(ProjectExplorerPluginDS.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                 }
             }else{
                 mMnuStandardModeling.hide();
@@ -422,6 +436,11 @@ public final class ProjectExplorerPluginDS extends Plugin implements ProjectExpl
             }
         }
         return aux;
+    }
+    
+    @Override
+    public List<ComponentDS> getAll_BMSC(){ //retorna somente os bMSC do projeto selecionado     
+        return (List<ComponentDS>) getSelectedProjectDS().getComponentsDS();
     }
 
     @Override

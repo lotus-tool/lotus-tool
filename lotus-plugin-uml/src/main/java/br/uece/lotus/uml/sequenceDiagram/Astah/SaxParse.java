@@ -137,33 +137,41 @@ public class SaxParse extends DefaultHandler{
                 acc.setTipo("class");
             }
             atoresAndClasses.add(acc);
+            System.out.println("Inicio tag: "+tagAtual+" "+acc.getNome()+" "+acc.getXmiID()+" "+acc.getTipo());
         }
         //------------------------------Collaborations--------------------------------------------------------------
         if(tagAtual.equals("UML:Collaboration") && atts.getLength()>1){
             collaborationID = atts.getValue("xmi.id");
             atributosMaisDe1collaboration = true;
             collaborationTagAberta = true;
+            System.out.println("Inicio tag: "+tagAtual+" "+collaborationID);
         }
         //-------------------------------ClassifierRole e Base-------------------------------------------------------
         if(tagAtual.equals("UML:ClassifierRole") && collaborationTagAberta && atts.getLength()>1){
             classifierRoleTagAberta = true;
             atributosMaisDe1Role = true;
             classifierRoleID = atts.getValue("xmi.id");
+            System.out.println("Inicio tag: "+tagAtual+" "+classifierRoleID);
             if(!atts.getValue("name").equals("")){
                 String atorEClasse = atts.getValue("name").replaceAll("\\+", "");
                 AtorAndClasse aac2 = new AtorAndClasse(atorEClasse, atts.getValue("xmi.id"), "class");
                 NamespaceOwnedElement noe2 = new NamespaceOwnedElement(atts.getValue("xmi.id"), atts.getValue("xmi.id"));
                 atoresAndClasses.add(aac2);
                 elementos.add(noe2);
+                System.out.println("add noe: role: "+noe2.getXmiIDClassifierRole()+ " base: "+noe2.getXmiIDREFclassifierBase());
+                System.out.println("ator: "+atorEClasse+" xmi.id: "+aac2.getXmiID());
             }
         }
         if(tagAtual.equals("UML:ClassifierRole.base") && classifierRoleTagAberta){
             classifierRoleBaseTagAberta = true;
+            System.out.println("Inicio tag: "+tagAtual);
         }
         if(tagAtual.equals("UML:Classifier") && classifierRoleBaseTagAberta){
             classifierRoleBasaID = atts.getValue("xmi.idref");
+            System.out.println("Inicio tag: "+tagAtual+ " xmi.idref: "+classifierRoleBasaID);
             NamespaceOwnedElement noe = new NamespaceOwnedElement(classifierRoleID, classifierRoleBasaID);
             elementos.add(noe);
+            System.out.println("add noe role: "+classifierRoleID+" base: "+classifierRoleBasaID);
             classifierRoleBaseTagAberta = false;
             classifierRoleTagAberta = false;
             atributosMaisDe1Role = false;
@@ -172,60 +180,76 @@ public class SaxParse extends DefaultHandler{
         }
         //-------------------------------Menssagens-------------------------------------------------------------
         if(tagAtual.equals("UML:Interaction.context") && collaborationTagAberta){
+            System.out.println("Inicio tag: "+tagAtual);
             interactionContextTagAberta = true;
         }
         if(tagAtual.equals("UML:Collaboration") && interactionContextTagAberta){
             idREFinteractionToCollaboration = atts.getValue("xmi.idref");
             interactionContextTagAberta = false;
+            System.out.println("Inicio tag: "+tagAtual +" xmi.idref: "+idREFinteractionToCollaboration);
         }
         if(tagAtual.equals("UML:Interaction.message")){
             interactionMessageTagAberta = true;
+            System.out.println("Inicio tag: "+tagAtual);
         }
         if(tagAtual.equals("UML:Message") && interactionMessageTagAberta && atts.getLength()>1){
             atributosMaisDe1Message = true;
             messageTagAberta = true;
             msg = atts.getValue("name");
             xmiIdMsg = atts.getValue("xmi.id");
+            System.out.println("Inicio tag: "+tagAtual+" name:"+msg+" xmi.id: "+xmiIdMsg);
         }
         if(tagAtual.equals("UML:Message.sender") && messageTagAberta){
+            System.out.println("Inicio tag: "+tagAtual);
             messageSenderTagAberta = true;
         }
         if(tagAtual.equals("UML:Message.receiver") && messageTagAberta){
+            System.out.println("Inicio tag: "+tagAtual);
             messageReceiverTagAberta = true;
         }
         if(tagAtual.equals("UML:ClassifierRole") && messageSenderTagAberta){
             envia = atts.getValue("xmi.idref");
             messageSenderTagAberta = false;
+            System.out.println("Inicio tag: "+tagAtual+" xmi.idref: "+envia);
         }
         if(tagAtual.equals("UML:ClassifierRole") && messageReceiverTagAberta){
             recebe = atts.getValue("xmi.idref");
             messageReceiverTagAberta = false;
+            System.out.println("Inicio tag: "+tagAtual+" xmi.idref: "+recebe);
         }
         //----------------------------------Loops e Alts----------------------------------------------
         if(tagAtual.equals("UML:Interaction.fragments")){
             controleTag++;
+            System.out.println("Inicio tag: "+tagAtual);
         }
         if(tagAtual.equals("UML:CombinedFragment") && controleTag==1){
             controleTag++;
             xmiIdCombinedFrag = atts.getValue("xmi.id");
             operator = atts.getValue("operator");
             nomeCombinedFrag = atts.getValue("name");
+            System.out.println("Inicio tag: "+tagAtual+" xmi.id: "+xmiIdCombinedFrag+" name: "+nomeCombinedFrag+" operator: "+operator);
         }
         if(tagAtual.equals("UML:InteractionOperand") && controleTag==2){
             controleTag++;
             xmiIdInteractionOperand = atts.getValue("xmi.id");
+            System.out.println("Inicio tag: "+tagAtual+" xmi.id: "+xmiIdInteractionOperand);
         }
         if(tagAtual.equals("UML:ModelElement.constraint") && controleTag==3){
             controleTag++;
+            System.out.println("Inicio tag: "+tagAtual);
         }
         if(tagAtual.equals("UML:InteractionConstraint") && controleTag==4){
             interactionConstraintName = atts.getValue("name");
+            System.out.println("Inicio tag: "+tagAtual+" name: "+interactionConstraintName);
         }
         if(tagAtual.equals("UML:Message") && controleTag==3){
             xmiIdRefMsg.add(atts.getValue("xmi.idref"));
+            System.out.println("Inicio tag: "+tagAtual+" xmi.idref: "+xmiIdRefMsg);
         }
         if(tagAtual.equals("UML:CombinedFragment") && controleTag==3){
             combinedFragIdRef.add(atts.getValue("xmi.idref"));
+            System.out.println("Inicio tag: "+tagAtual);
+            System.out.println("adiciona xmi.idref: "+atts.getValue("xmi.idref"));
         }
     }
     
@@ -247,9 +271,11 @@ public class SaxParse extends DefaultHandler{
             interactionOperands.add(io);
             xmiIdRefMsg.clear();
             combinedFragIdRef.clear();
+            System.out.println("Fim tag: "+qName);
         }
         if("UML:ModelElement.constraint".equals(qName) && controleTag==4){
             controleTag--;
+            System.out.println("Fim tag: "+qName);
         }
         if("UML:CombinedFragment".equals(qName) && controleTag==2){
             controleTag--;
@@ -259,6 +285,7 @@ public class SaxParse extends DefaultHandler{
             combFrag.setInteractionOperands(aux);
             combinedFragments.add(combFrag);
             interactionOperands.clear();
+            System.out.println("Fim tag: "+qName);
         }
         if("UML:Interaction.fragments".equals(qName) && controleTag==1){
             controleTag--;
@@ -268,6 +295,7 @@ public class SaxParse extends DefaultHandler{
             inf.setCombinedFrags(aux);
             loopsOuFluxos.add(inf);
             combinedFragments.clear();
+            System.out.println("Fim tag: "+qName);
         }
         if("UML:Message".equals(qName) && interactionMessageTagAberta && atributosMaisDe1Message){
             messageTagAberta = false;
@@ -277,10 +305,12 @@ public class SaxParse extends DefaultHandler{
             msg = "";
             envia = "";
             recebe = "";
+            System.out.println("Fim tag: "+qName);
         }
         if("UML:Interaction.message".equals(qName)){
             idREFinteractionToCollaboration = "";
             interactionMessageTagAberta = false;
+            System.out.println("Fim tag: "+qName);
         }
         if("UML:Collaboration".equals(qName) && atributosMaisDe1collaboration){
             collaborationTagAberta = false;
@@ -291,6 +321,7 @@ public class SaxParse extends DefaultHandler{
             clb.setGrupoLoopOrFluxo(loopsOuFluxos);
             collaboration.add(clb);
             collaborationID = "";
+            System.out.println("Fim tag: "+qName);
         }
     }
 }
