@@ -6,6 +6,7 @@
 package br.uece.lotus.uml.designer.standardModeling;
 
 import br.uece.lotus.Component;
+import br.uece.lotus.uml.api.ds.BlockDS;
 import br.uece.lotus.uml.api.ds.Hmsc;
 import br.uece.lotus.uml.api.ds.StandardModeling;
 import br.uece.lotus.uml.api.ds.ComponentDS;
@@ -626,22 +627,21 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
         List<ComponentDS> listaBMSC = pep.getAll_BMSC();
         for(ComponentDS cds : listaBMSC){
             List<TabelaReferenciaID> relativo = new ArrayList<>();
-            for(int i=0;i<cds.getBlockDSCount();i++){
-                TabelaReferenciaID id = new TabelaReferenciaID(i+1, ((ArrayList)cds.getBlockDS()).get(i)+"");
+            ArrayList<BlockDS> blocos = (ArrayList<BlockDS>) cds.getBlockDS();
+            for(int i=0;i<blocos.size();i++){
+                TabelaReferenciaID id = new TabelaReferenciaID(i+1, blocos.get(i).getID()+"");
                 relativo.add(id);
             }
             List<InteractionFragments> loopsOuAlts = new ArrayList<>();
             List<Mensagem> comunicacao = new ArrayList<>();
             for(TransitionMSC t : cds.getAllTransitions()){
-                AtorAndClasse origem = new AtorAndClasse(((BlockDSView)t.getSource()).getBlockDS().getLabel(), 
-                                                            String.valueOf(((BlockDSView)t.getSource()).getBlockDS().getID()),
-                                                            "actor");
-                AtorAndClasse destino = new AtorAndClasse(((BlockDSView)t.getDestiny()).getBlockDS().getLabel(), 
-                                                            String.valueOf(((BlockDSView)t.getDestiny()).getBlockDS().getID()), 
-                                                            "actor");
                 Mensagem m = new Mensagem();
-                m.setEnviando(origem);
-                m.setRecebendo(destino);
+                m.setEnviando(new AtorAndClasse(((BlockDSView)t.getSource()).getBlockDS().getLabel(), 
+                                                            String.valueOf(((BlockDSView)t.getSource()).getBlockDS().getID()),
+                                                            "actor"));
+                m.setRecebendo(new AtorAndClasse(((BlockDSView)t.getDestiny()).getBlockDS().getLabel(), 
+                                                            String.valueOf(((BlockDSView)t.getDestiny()).getBlockDS().getID()), 
+                                                            "actor"));
                 m.setMsg(t.getLabel());
                 m.setXmiIdMsg(t.getIdSequence()+"");
                 comunicacao.add(m);
