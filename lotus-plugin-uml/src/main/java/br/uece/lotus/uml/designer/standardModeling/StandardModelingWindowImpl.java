@@ -6,6 +6,7 @@
 package br.uece.lotus.uml.designer.standardModeling;
 
 import br.uece.lotus.Component;
+import br.uece.lotus.model.ParallelComposition;
 import br.uece.lotus.uml.api.ds.BlockDS;
 import br.uece.lotus.uml.api.ds.Hmsc;
 import br.uece.lotus.uml.api.ds.StandardModeling;
@@ -623,6 +624,7 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
             }
         }
         //gerar os lts
+        Layouter layout = new Layouter();
         List<Component> ltsGerados = new ArrayList<>();
         List<ComponentDS> listaBMSC = pep.getAll_BMSC();
         for(ComponentDS cds : listaBMSC){
@@ -650,9 +652,33 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
             c.setName("LTS "+cds.getName());
             LtsParser parser = new LtsParser(comunicacao, relativo, loopsOuAlts, c);
             c = parser.parseLTSA();
-            new Layouter().layout(c);
+            layout.layout(c);
             ltsGerados.add(c);
         }
         mViewer.getComponentBuildDS().createListLTS(ltsGerados);
+        try {
+            Component c;
+            if (ltsGerados.size() >= 2) {
+                c = buildGeneralLTS(ltsGerados);
+            } else {
+                c = ltsGerados.get(0).clone();
+            }
+            layout.layout(c);
+            mViewer.getComponentBuildDS().createGeneralLTS(c);
+        } catch (CloneNotSupportedException cloneNotSupportedException) {}
     };
+
+    private Component buildGeneralLTS(List<Component> ltsGerados) {
+        ParallelComposition pc = new ParallelComposition();
+        Component c = pc.composite(ltsGerados.get(0), ltsGerados.get(1));
+        
+        if(ltsGerados.size()>=2){
+            for(int i=2;i<ltsGerados.size();i++){
+                Component aux = pc.composite(c, ltsGerados.get(i));
+                c = aux;
+            }
+        }
+        
+        return c;
+    }
 }

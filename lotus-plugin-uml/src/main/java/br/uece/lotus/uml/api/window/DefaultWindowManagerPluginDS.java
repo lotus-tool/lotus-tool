@@ -199,6 +199,8 @@ public abstract class DefaultWindowManagerPluginDS<E extends WindowDS> extends P
         public void onBlockCreateBMSC(StandardModeling sm, Hmsc hmsc, ComponentDS bmsc) {}
         @Override
         public void onComponentLTSCreate(Component c) {}
+        @Override
+        public void onComponentLTSGeneralCreate(Component c) {}
     };
     
     private final ComponentDS.Listener mComponentDSListener = new ComponentDS.Listener() {

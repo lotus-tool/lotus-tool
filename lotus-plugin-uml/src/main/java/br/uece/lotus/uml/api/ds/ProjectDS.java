@@ -67,6 +67,20 @@ public class ProjectDS {
             l.onComponentLTSRemoved(this, c);
         }
     }
+    
+    public void addComponentGeneralLTS(Component c) {
+        mComponentGeralLTS = c;
+        for(Listener l : mListeners){
+            l.onComponentLTSGeralCreated(this, componentBuildDS, c);
+        }
+    }
+    
+    public void removeComponentGeneralLTS(Component c){
+        mComponentGeralLTS = null;
+        for(Listener l : mListeners){
+            l.onComponentLTSGeralRemove(this, componentBuildDS, c);
+        }
+    }
 
     public String getName() {
         return mName;

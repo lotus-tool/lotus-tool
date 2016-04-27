@@ -128,7 +128,7 @@ public final class ProjectExplorerPluginDS extends Plugin implements ProjectExpl
             TreeItem<WrapperDS> build = findItem(raiz, buildDS);
             component.setName("LTS_Composed");
             build.getChildren().add(new TreeItem<>(new WrapperDS(component), new ImageView(
-                                new Image(getClass().getResourceAsStream("/imagens/project/ic_component_lts_geral.png")))));
+                                new Image(getClass().getResourceAsStream("/imagens/project/ic_componet_lts_geral.png")))));
         }
 
         @Override
@@ -173,6 +173,11 @@ public final class ProjectExplorerPluginDS extends Plugin implements ProjectExpl
         public void onComponentLTSCreate(Component c) {
             ProjectDS p = getSelectedProjectDS();
             p.addComponentFragmentLTS(c);
+        }
+        @Override
+        public void onComponentLTSGeneralCreate(Component c) {
+            ProjectDS p = getSelectedProjectDS();
+            p.addComponentGeneralLTS(c);
         }
     };
 

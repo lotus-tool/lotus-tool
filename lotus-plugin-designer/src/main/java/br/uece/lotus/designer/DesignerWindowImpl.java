@@ -1050,22 +1050,4 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
         }
     }*/
 
-    /*public void changeIconToggleBigState(){
-        if(statesSelecionados.size()==1){
-            BigState bigState = (BigState) statesSelecionados.get(0).getValue("bigstate");
-            if (bigState != null){
-                mBtnBigState.setSelected(true);
-                mBtnBigState.setGraphic(iconBigStateDismount);
-            }
-            else {
-                mBtnBigState.setSelected(false);
-                mBtnBigState.setGraphic(iconBigState);
-            }
-        }
-        else {
-            mBtnBigState.setSelected(false);
-            mBtnBigState.setGraphic(iconBigState);
-        }
-    }*/
-
 }

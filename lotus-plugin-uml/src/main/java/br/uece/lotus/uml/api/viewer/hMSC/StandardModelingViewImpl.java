@@ -247,4 +247,7 @@ public class StandardModelingViewImpl extends AnchorPane implements StandardMode
 
     @Override
     public void onComponentLTSCreate(Component c) {}
+
+    @Override
+    public void onComponentLTSGeneralCreate(Component c) {}
 }

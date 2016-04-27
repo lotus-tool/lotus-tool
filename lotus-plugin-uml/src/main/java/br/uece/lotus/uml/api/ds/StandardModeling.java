@@ -28,6 +28,7 @@ public class StandardModeling {
         void onBlockRemove(StandardModeling buildDS, Hmsc bbds);
         void onBlockCreateBMSC(StandardModeling sm, Hmsc hmsc, ComponentDS bmsc);
         void onComponentLTSCreate(Component c);
+        void onComponentLTSGeneralCreate(Component c);
         void onTransitionCreate(StandardModeling buildDS, TransitionMSC t);
         void onTransitionRemove(StandardModeling buildDS, TransitionMSC t);
     }
@@ -64,6 +65,12 @@ public class StandardModeling {
             for(Listener l : mListeners){
                 l.onComponentLTSCreate(cp);
             }
+        }
+    }
+    
+    public void createGeneralLTS(Component c){
+        for(Listener l : mListeners){
+            l.onComponentLTSGeneralCreate(c);
         }
     }
 
