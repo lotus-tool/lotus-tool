@@ -62,7 +62,7 @@ public class ParallelCompositor {
         return null;
     }*/
     
-    public void layout(Component component) {
+    public static void layout(Component component) {
         int i = 1;
         for (State state : component.getStates()) {
             state.setLayoutX(i * 100);
