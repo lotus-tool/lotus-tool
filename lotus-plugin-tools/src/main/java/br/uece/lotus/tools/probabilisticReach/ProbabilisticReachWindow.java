@@ -373,7 +373,7 @@ public class ProbabilisticReachWindow extends AnchorPane{
         }
 
         String template = (String) mTemplatesMenu.getSelectionModel().getSelectedItem();
-        int steps = Integer.MAX_VALUE;
+        int steps = -1;
 
         switch(template){
             case "P(Action1)":

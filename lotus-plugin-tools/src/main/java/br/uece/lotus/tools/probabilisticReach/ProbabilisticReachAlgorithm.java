@@ -25,6 +25,8 @@ public class ProbabilisticReachAlgorithm {
 
         //fazer com que a posição (0,0) da matriz seja sempre 1.
 
+        if(steps == 0) return 0.0;
+
         int tam = a.getStatesCount();
         double[][] probabilities = new double[tam][tam];
         probabilities = zerar(probabilities, tam);
@@ -43,26 +45,31 @@ public class ProbabilisticReachAlgorithm {
         j = target;
         // montar a matriz de probabilidades já é um step.
         steps--;
-//      multiplica as matrizes um monte de vez
+
+        //multiplica as matrizes um monte de vez
         double[][] mult = probabilities;
         double difference = 1.0;
         double total = 0.0;
         int count = 0;
 
-        if(steps == 0) total = probabilities[source][target];
+        if(steps == 0) return probabilities[source][target];
 
-        //Parar se a diferença for pequena o bastante e o count > 10.
-        while((abs(difference) > 0.01 || count < 20) && (steps > 0)){
-            //total += probabilities[i][j];
-            difference = probabilities[i][j];
+        if(steps > 0){
+
+            count = steps;
+
+        }else{
+
+            //Acha a primeira potencia de 2 maior que o tamanho do LTS.
+
+            count = closestPowerOf2(tam);
+
+        }
+
+        while(count > 0){
             probabilities = multiply(probabilities, mult, tam);
-            //mult = probabilities; <- ainda nao funciona corretamente
-            difference = difference - probabilities[i][j];
-            count++;
-            steps--;
-            if(abs(difference) > 0.0001){
-                count = 0;
-            }
+            mult = probabilities;
+            count--;
         }
 
         total = probabilities[i][j];
@@ -77,7 +84,19 @@ public class ProbabilisticReachAlgorithm {
         if(probabilities[i][actionTargetID] == 0) return 0;
         return total;
     }
-    
+
+    public int closestPowerOf2 (int tam){
+
+        int potResult = 2;
+        int pot = 1;
+
+        for(pot = 1; potResult < tam; pot++){
+            potResult *= potResult;
+        }
+
+        return pot;
+    }
+
     public double[][] multiply(double[][] matrixA, double[][] matrixB, int tam){
         double sum = 0;
         double[][] multiply = new double[tam][tam];
