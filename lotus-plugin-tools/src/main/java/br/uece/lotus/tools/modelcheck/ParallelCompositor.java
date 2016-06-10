@@ -108,6 +108,7 @@ public class ParallelCompositor {
                         continue;
                     }
                 }
+
                 newPrlState.setCompositeState(criarEstadoParalelo(PC, newPrlState));
 
                 List<Transition> transitionsTo = aux.getCompositeState().getTransitionsTo(newPrlState.getCompositeState());
@@ -163,8 +164,19 @@ public class ParallelCompositor {
             }
             mVisitedStates.add(aux);
         }
+
+        AjustarIDs(PC);
+
         layout(PC);
         return PC;
+    }
+
+    private void AjustarIDs(Component PC){
+        int id;
+        for(State state : PC.getStates()){
+            id = Integer.parseInt(state.getLabel());
+            state.setID(id);
+        }
     }
 
     private State criarEstadoParalelo(Component p, ParallelState PrlState) {

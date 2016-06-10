@@ -78,7 +78,7 @@ public class ModelCheckPlugin extends Plugin {
                         c = new ParallelCompositor().compor(c, b);
                         name += " || " + b.getName();
                     }
-                    c.setName(name  );
+                    c.setName(name);
                     mProjectExplorer.getSelectedProject().addComponent(c);
                 })
                 .create();
