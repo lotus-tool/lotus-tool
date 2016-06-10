@@ -65,13 +65,20 @@ public class ModelCheckPlugin extends Plugin {
         mProjectExplorer.getComponentMenu().newItem("Parallel Composition")
                 .setWeight(Integer.MAX_VALUE)
                 .setAction(() -> {
-                    if (mProjectExplorer.getSelectedComponents().size() != 2) {
-                        throw new RuntimeException("Select exactly TWO components!");
+                    int tam = mProjectExplorer.getSelectedComponents().size();
+                    if (tam < 2) {
+                        throw new RuntimeException("Select at least 2(two) components!");
                     }
                     Component a = mProjectExplorer.getSelectedComponents().get(0);
                     Component b = mProjectExplorer.getSelectedComponents().get(1);
                     Component c = new ParallelCompositor().compor(a, b);
-                    c.setName(a.getName() + " || " + b.getName());
+                    String name = a.getName() + " || " + b.getName();
+                    for(int i = 2; i < tam; i++){
+                        b = mProjectExplorer.getSelectedComponents().get(i);
+                        c = new ParallelCompositor().compor(c, b);
+                        name += " || " + b.getName();
+                    }
+                    c.setName(name  );
                     mProjectExplorer.getSelectedProject().addComponent(c);
                 })
                 .create();
