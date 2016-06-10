@@ -623,7 +623,10 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
                 }
             }
         }
-        //gerar os lts
+        
+
+        //Gerando o LTS Geral ----------------------------------------------------------------------------------------
+        
         Layouter layout = new Layouter();
         List<Component> ltsGerados = new ArrayList<>();
         List<ComponentDS> listaBMSC = pep.getAll_BMSC();
@@ -668,17 +671,9 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
         } catch (CloneNotSupportedException cloneNotSupportedException) {}
     };
 
-    private Component buildGeneralLTS(List<Component> ltsGerados) {
-        ParallelComposition pc = new ParallelComposition();
-        Component c = pc.composite(ltsGerados.get(0), ltsGerados.get(1));
-        
-        if(ltsGerados.size()>=2){
-            for(int i=2;i<ltsGerados.size();i++){
-                Component aux = pc.composite(c, ltsGerados.get(i));
-                c = aux;
-            }
-        }
-        
-        return c;
+    private Component buildGeneralLTS(List<Component> ltsGerados){
+        List<Hmsc> listHmsc = mViewer.getComponentBuildDS().getBlocos();
+        MakeLTSGeneral make = new MakeLTSGeneral(listHmsc,pep.getAll_BMSC(),ltsGerados,mViewer);
+        return make.produce();
     }
 }

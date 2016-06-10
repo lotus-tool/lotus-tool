@@ -79,8 +79,12 @@ public abstract class TransitionMSCViewImpl extends Region implements Transition
         String s = "";
         ///////////////////////////////////////////////////////////////////////////
         if(mValueType.equals("hMSC")){
-            if(mTransition.getLabel() != null){
-                s += mTransition.getLabel();
+            if(mTransition.getGuard() != null){
+                if(mTransition.getGuard().equals("")){
+                    s += "";
+                }else{
+                    s += " ["+mTransition.getGuard()+"]";
+                }
             }
             if(mTransition.getProbability() != null){
                 if(mTransition.getProbability() == null){
@@ -89,12 +93,8 @@ public abstract class TransitionMSCViewImpl extends Region implements Transition
                     s += String.format(" (%.2f)", mTransition.getProbability());
                 }
             }
-            if(mTransition.getGuard() != null){
-                if(mTransition.getGuard().equals("")){
-                    s += "";
-                }else{
-                    s += " ["+mTransition.getGuard()+"]";
-                }
+            if(mTransition.getLabel() != null){
+                s += mTransition.getLabel();
             }
         }
         ///////////////////////////////////////////////////////////////////////////
@@ -102,18 +102,18 @@ public abstract class TransitionMSCViewImpl extends Region implements Transition
             if(mTransition.getIdSequence() != null){
                 s += String.valueOf(mTransition.getIdSequence())+".";
             }
-            if(mTransition.getLabel() != null){
-                if(mTransition.getLabel().equals("")){
-                    s += "";
-                }else{
-                    s += " "+mTransition.getLabel();
-                }
-            }
             if(mTransition.getGuard() != null){
                 if(mTransition.getGuard().equals("")){
                     s += "";
                 }else{
                     s += " ["+mTransition.getGuard()+"]";
+                }
+            }
+            if(mTransition.getLabel() != null){
+                if(mTransition.getLabel().equals("")){
+                    s += "";
+                }else{
+                    s += " "+mTransition.getLabel();
                 }
             }
         }
