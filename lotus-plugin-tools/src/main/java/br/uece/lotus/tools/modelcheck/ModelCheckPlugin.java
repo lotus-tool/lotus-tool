@@ -35,9 +35,12 @@ public class ModelCheckPlugin extends Plugin {
         if (tam < 2) {
             throw new RuntimeException("Select at least 2(two) components!");
         }
+        Component a = Components.get(0);
+        Component b = Components.get(1);
         Component c = new ParallelCompositor().compor(a, b);
         String name = a.getName() + " || " + b.getName();
         for(int i = 2; i < tam; i++){
+            b = Components.get(i);
             c = new ParallelCompositor().compor(c, b);
             name += " || " + b.getName();
         }
