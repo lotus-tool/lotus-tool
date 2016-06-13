@@ -8,7 +8,7 @@ package br.uece.lotus.uml.designer.standardModeling;
 import br.uece.lotus.Component;
 import br.uece.lotus.State;
 import br.uece.lotus.Transition;
-import br.uece.lotus.model.ParallelComposition;
+import br.uece.lotus.model.ParallelCompositor;
 import br.uece.lotus.uml.api.ds.BlockDS;
 import br.uece.lotus.uml.api.ds.ComponentDS;
 import br.uece.lotus.uml.api.ds.Hmsc;
@@ -73,6 +73,7 @@ public class MakeLTSGeneral {
             
             
             l.layout(linhaDeVidaAtor);
+            System.out.println("Conseguiu fazer layout do: "+linhaDeVidaAtor.getName());
             preComposicao.add(linhaDeVidaAtor);
         }
         
@@ -80,7 +81,7 @@ public class MakeLTSGeneral {
         
         
         //Faz a composicao parelela dos LTS completo
-        geral = compositionParallel(preComposicao);
+        geral = ParallelComposition(preComposicao);
         
         return geral;
     }
@@ -129,8 +130,7 @@ public class MakeLTSGeneral {
                 }
             }
         }
-        //verificar saidas
-        /// PROBLEMA EM SABER A LIGACAO (GUARDAR ELA NA RECURSIVIDADE)
+        //verificar saidas do hmsc
         Component aux = null;
         aux = linhaDeVidaAtor;
         State liga = aux.getStateByID(aux.getStatesCount()-1);
@@ -144,20 +144,21 @@ public class MakeLTSGeneral {
         }
     }
 
-    private Component compositionParallel(List<Component> preComposicao){
-        ParallelComposition pc = new ParallelComposition();
-        Component c = pc.composite(preComposicao.get(0), preComposicao.get(1));
-
-        if(preComposicao.size()>2){
-            for(int i=2;i<preComposicao.size();i++){
-                Component component = preComposicao.get(i);
-                if(component != null){
-                    Component aux = pc.composite(c, preComposicao.get(i));
-                    c = aux;
-                }
-            }
+    private Component ParallelComposition(List<Component> Components){
+        int tam = Components.size();
+        if (tam < 2) {
+            throw new RuntimeException("Select at least 2(two) components!");
         }
-
+        Component a = Components.get(0);
+        Component b = Components.get(1);
+        Component c = new ParallelCompositor().compor(a, b);
+        String name = a.getName() + " || " + b.getName();
+        for(int i = 2; i < tam; i++){
+            b = Components.get(i);
+            c = new ParallelCompositor().compor(c, b);
+            name += " || " + b.getName();
+        }
+        c.setName(name);
         return c;
     }
 
@@ -202,10 +203,13 @@ public class MakeLTSGeneral {
                 }
             }
         }
+        if (build.getStatesCount() > 0) {
+            ajustarIDs(build);
+            build.setInitialState(build.getStateByID(0));
+            l.layout(build);
+            System.out.println("Conseguiu fazer layout do: " + build.getName());
+        }
         build.setName(ator);//referencia o ator do respectivo hmsc
-        ajustarIDs(build);
-        build.setInitialState(build.getStateByID(0));
-        l.layout(build);
         return build;
     }
 

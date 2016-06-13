@@ -5,19 +5,14 @@
  */
 package br.uece.lotus.tools.modelcheck;
 
-import br.uece.lotus.tools.probabilisticReach.ProbabilisticReachAlgorithm;
-import br.uece.lotus.tools.modelcheck.UnreachableStates;
-import br.uece.lotus.tools.modelcheck.ProbabilitiesCheck;
+import br.uece.lotus.model.ParallelCompositor;
 import br.uece.lotus.Component;
 import br.uece.lotus.State;
-import br.uece.lotus.Transition;
 import br.uece.lotus.project.ProjectExplorer;
 import br.uece.seed.app.UserInterface;
 import br.uece.seed.ext.ExtensionManager;
 import br.uece.seed.ext.Plugin;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import javax.swing.JOptionPane;
 
 /**

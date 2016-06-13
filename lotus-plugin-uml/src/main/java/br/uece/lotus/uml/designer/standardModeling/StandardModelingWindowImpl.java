@@ -6,7 +6,6 @@
 package br.uece.lotus.uml.designer.standardModeling;
 
 import br.uece.lotus.Component;
-import br.uece.lotus.model.ParallelComposition;
 import br.uece.lotus.uml.api.ds.BlockDS;
 import br.uece.lotus.uml.api.ds.Hmsc;
 import br.uece.lotus.uml.api.ds.StandardModeling;

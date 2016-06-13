@@ -29,7 +29,7 @@ import br.uece.lotus.tools.probabilisticReach.ProbabilisticReachWindow;
 import br.uece.lotus.Component;
 import br.uece.lotus.State;
 import br.uece.lotus.tools.modelcheck.DeadlockDetection;
-import br.uece.lotus.tools.modelcheck.ParallelCompositor;
+import br.uece.lotus.model.ParallelCompositor;
 import br.uece.lotus.project.ProjectExplorer;
 import br.uece.lotus.properties.PropertiesEditor;
 import br.uece.seed.app.UserInterface;

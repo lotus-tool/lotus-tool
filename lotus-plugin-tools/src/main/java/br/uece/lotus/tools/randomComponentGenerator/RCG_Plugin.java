@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Random;
 import javax.swing.JOptionPane;
 import br.uece.lotus.tools.randomComponentGenerator.RCG_Algorithm;
-import br.uece.lotus.tools.modelcheck.ParallelCompositor;
+import br.uece.lotus.model.ParallelCompositor;
 
 /**
  * Created by Ranniery on 04/05/2016.
@@ -43,7 +43,7 @@ public class RCG_Plugin extends Plugin{
 
                     Component randomComponent = RCG_Algorithm.generateRandomComponent(tam);
                     randomComponent.setName("RandomComponent" + tam);
-                    br.uece.lotus.tools.modelcheck.ParallelCompositor.layout(randomComponent);
+                    br.uece.lotus.model.ParallelCompositor.layout(randomComponent);
 
                     mProjectExplorer.getSelectedProject().addComponent(randomComponent);
 

@@ -23,8 +23,8 @@ public class Layouter {
         List<State> states = new ArrayList<>();
         List<State> visitedStates = new ArrayList<>();
         State is = component.getInitialState();
-        is.setLayoutX(30);
-        is.setLayoutY(30);
+        is.setLayoutX(100);
+        is.setLayoutY(100);
         states.add(is);
 
         while (!states.isEmpty()) {
