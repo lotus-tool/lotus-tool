@@ -223,6 +223,7 @@ public class Component {
         }
         int i = 0;
         for (State v : mStates) {
+			v.setID(i);
             v.setLabel(String.valueOf(i++));
         }
     }
