@@ -7,6 +7,7 @@ package br.uece.lotus.uml.api.ds;
 
 import static br.uece.lotus.State.TEXTSTYLE_BOLD;
 import static br.uece.lotus.State.TEXTSTYLE_NORMAL;
+import br.uece.lotus.uml.api.viewer.hMSC.HmscView;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -254,17 +255,21 @@ public class Hmsc {
         return mTransicaoEntrada.size();
     }
     
-    public TransitionMSC getTransitionBuildDSTo(Hmsc bbds){
-        for(TransitionMSC t: mTransicaoSaida){
-            //falta implementar a transition
+    public TransitionMSC getTransitionTo(Hmsc hmsc){
+        for(TransitionMSC t : mTransicaoSaida){
+            if(((HmscView)t.getDestiny()).getHMSC().equals(hmsc)){
+                return t;
+            }
         }
         return null;
     }
     
-    public List<TransitionMSC> getTransitionsBuildDSTo(Hmsc bbds){
+    public List<TransitionMSC> getTransitionsTo(Hmsc hmsc){
         List<TransitionMSC> l = new ArrayList<>();
-        for(TransitionMSC t:mTransicaoSaida){
-            //falta implementar a transition
+        for(TransitionMSC t : mTransicaoSaida){
+            if(((HmscView)t.getDestiny()).getHMSC().equals(hmsc)){
+                l.add(t);
+            }
         }
         return l;
     }

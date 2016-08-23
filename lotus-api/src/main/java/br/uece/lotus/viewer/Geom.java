@@ -11,7 +11,7 @@ import javafx.scene.Node;
  */
 public class Geom {
 
-    static DoubleBinding distance(Node origem, Node destino) {
+    public static DoubleBinding distance(Node origem, Node destino) {
         return new DistanciaLinha(origem, destino);
     }
 
