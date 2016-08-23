@@ -6,6 +6,7 @@
 package br.uece.lotus.uml.designer.standardModeling.strategy;
 
 import br.uece.lotus.uml.api.viewer.hMSC.HmscView;
+import br.uece.lotus.uml.api.viewer.transition.TransitionMSCView;
 import br.uece.lotus.uml.designer.standardModeling.StandardModelingWindowImpl;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
@@ -56,6 +57,11 @@ public class OnReleasedMouse implements Strategy{
             
                 if(s.selecionadoPeloRetangulo && !s.mToolBar.getItems().contains(s.paleta)){
                     s.mToolBar.getItems().add(s.paleta);
+                }
+                
+                if(s.mComponentSobMouse == null){
+                    s.txtAction.setText("");
+                    s.txtProbability.setText("");
                 }
             }
             

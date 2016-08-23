@@ -36,6 +36,7 @@ import br.uece.lotus.uml.sequenceDiagram.Astah.xmi.InteractionFragments;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import javafx.beans.property.DoubleProperty;
@@ -59,6 +60,7 @@ import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Slider;
+import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.ToolBar;
@@ -66,6 +68,7 @@ import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.DragEvent;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
@@ -76,6 +79,7 @@ import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.transform.Scale;
 import javafx.stage.FileChooser;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -128,6 +132,11 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
     public Line fakeLine;
     public double xInicial;
     public double yInicial;
+    //Painel de Propriedades
+    public TextField txtAction;
+    public TextField txtProbability;
+    private Label lblAction;
+    private Label lblProbability;
     //Variaveis gerais
     public Set<Node> selecao = new HashSet<>();
     public double dragContextMouseAnchorX, dragContextMouseAnchorY;
@@ -197,13 +206,13 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
         getChildren().add(mScrollPanel);
         AnchorPane.setTopAnchor(mScrollPanel, 44D);
         AnchorPane.setLeftAnchor(mScrollPanel, 0D);
-        AnchorPane.setRightAnchor(mScrollPanel, /*175D*/0D);
+        AnchorPane.setRightAnchor(mScrollPanel, 180D/*0D*/);
         AnchorPane.setBottomAnchor(mScrollPanel, 30D);
         
         //propriedades
-        //getChildren().add(mPropriedadePanel);
+        getChildren().add(mPropriedadePanel);
         AnchorPane.setTopAnchor(mPropriedadePanel, 44D);
-        AnchorPane.setRightAnchor(mPropriedadePanel, 0D);
+        AnchorPane.setRightAnchor(mPropriedadePanel, 3D);
         AnchorPane.setBottomAnchor(mPropriedadePanel, 30D);
         
         //info
@@ -248,7 +257,6 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
         mBtnTransitionLine.setToggleGroup(mToggleGroup);
         
         mBtnTransitionArc = new ToggleButton();
-        mBtnTransitionArc.setDisable(true);
         mBtnTransitionArc.setGraphic(new ImageView(new Image(getClass().getResourceAsStream("/imagens/ic_transition_semicircle.png"))));
         mBtnTransitionArc.setOnAction((ActionEvent event) -> {
             setModo(MODO_TRANSICAO);
@@ -404,8 +412,84 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
         
         //Panel de Proriedades
         VBox blockPropriedade = new VBox(5);
+        txtAction = new TextField();
+        txtAction.setPromptText("Name/Action");
+        txtAction.setOnKeyReleased((KeyEvent event) -> {
+            Object obj = mComponentSelecionado;
+            if(obj instanceof TransitionMSCView){
+                ((TransitionMSCView)obj).getTransition().setLabel(txtAction.getText());
+            }
+            if(!selecao.isEmpty()){
+                Node node = selecao.iterator().next();
+                if(node instanceof HmscView){
+                    ((HmscView)node).getHMSC().setLabel(txtAction.getText());
+                }
+            }
+        });
+        txtProbability = new TextField();
+        txtProbability.setPrefWidth(50);
+        txtProbability.setAlignment(Pos.CENTER);
+        campoProbability(txtProbability);
+        txtProbability.setPromptText("%");
+        txtProbability.setOnAction(event -> {
+            Object obj = mComponentSelecionado;
+            if (obj instanceof TransitionMSCView) {
+                try {
+                    if(txtProbability.getText().equals("")){
+                        ((TransitionMSCView) obj).getTransition().setProbability(null);
+                    }else{
+                        String valorDoField = txtProbability.getText().trim();
+                        String auxValor = "";
+                        if(valorDoField.contains(",")){
+                            auxValor = valorDoField.replaceAll(",", ".");
+                            double teste = Double.parseDouble(auxValor);
+                            if(teste<0 || teste >1){
+                                JOptionPane.showMessageDialog(null, "Input probability between 0 and 1", "Erro", JOptionPane.ERROR_MESSAGE);
+                                auxValor="";
+                                txtProbability.setText("");
+                            }
+                        }
+                        else if(valorDoField.contains(".")){
+                            auxValor = valorDoField;
+                            double teste = Double.parseDouble(auxValor);
+                            if(teste<0 || teste >1){
+                                JOptionPane.showMessageDialog(null, "Imput probability need 0 to 1", "Erro", JOptionPane.ERROR_MESSAGE);
+                                auxValor="";
+                                txtProbability.setText("");
+                            }
+                        }
+                        else if(valorDoField.contains("%")){
+                            double valorEntre0e1;
+                            auxValor = valorDoField.replaceAll("%", "");
+                            valorEntre0e1 = (Double.parseDouble(auxValor))/100;
+                            auxValor = String.valueOf(valorEntre0e1);
+                            double teste = Double.parseDouble(auxValor);
+                            if(teste<0 || teste >1){
+                                JOptionPane.showMessageDialog(null, "Imput probability need 0 to 1", "Erro", JOptionPane.ERROR_MESSAGE);
+                                auxValor="";
+                                txtProbability.setText("");
+                            }
+                        }
+                        else{
+                            if(valorDoField.equals("0") || valorDoField.equals("1")){
+                                auxValor = valorDoField;
+                            }else{
+                                JOptionPane.showMessageDialog(null, "Imput probability need 0 to 1", "Erro", JOptionPane.ERROR_MESSAGE);
+                            }
+                        }
+                        ((TransitionMSCView) obj).getTransition().setProbability(Double.parseDouble(auxValor));
+                    }
+                } catch (Exception e) {
+                    //ignora
+                }
+            }
+        });
+        lblAction = new Label("Name / Action:");
+        lblProbability = new Label("Probability:");
         
-        
+        blockPropriedade.getChildren().addAll(lblAction,txtAction,lblProbability,txtProbability);
+        mPropriedadePanel.getChildren().add(blockPropriedade);
+                
         //Panel de info / utilidade
         HBox utilidade = new HBox(10); 
         utilidade.setPrefSize(mInfoPanel.getPrefWidth(), mInfoPanel.getPrefHeight());
@@ -535,9 +619,29 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
             t.setTextStyle(TransitionMSC.TEXTSTYLE_NORMAL);
         }
     }
+    
+    // Mascara para Probabilidade
+    private void campoProbability(final TextField textField) {
+        textField.lengthProperty().addListener((ObservableValue<? extends Number> observable, Number oldValue, Number newValue) -> {
+            if (newValue.intValue() > oldValue.intValue()) {
+                char ch = textField.getText().charAt(oldValue.intValue());
+                if (!(ch >= '0' && ch <= '9' || ch == '.' || ch == ',' || ch == '%')) {
+                    textField.setText(textField.getText().substring(0, textField.getText().length() - 1));
+                }
+            }
+        });
+    }
 
-    private void updatePropriedades(Object mComponentSobMouse) {
-        
+    private void updatePropriedades(Object obj) {
+        if(obj instanceof TransitionMSCView){
+            TransitionMSC t = ((TransitionMSCView)obj).getTransition();
+            txtAction.requestFocus();
+            txtAction.setText(t.getLabel());
+            txtProbability.setText(t.getProbability() == null ? null : String.valueOf(t.getProbability()));
+            lblProbability.setVisible(true);
+            txtProbability.setVisible(true);
+            
+        }
     }
     
     public void updateContID() {
@@ -587,6 +691,11 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
         applySelectedStyles((Object)node);
         selecao.add(node);
         selecionadoPeloRetangulo = true;
+        Hmsc hmsc = ((HmscView)node).getHMSC();
+        txtAction.requestFocus();
+        txtAction.setText(hmsc.getLabel());
+        lblProbability.setVisible(false);
+        txtProbability.setVisible(false);
     }
     
     public void removeNoSelecao(Node node){

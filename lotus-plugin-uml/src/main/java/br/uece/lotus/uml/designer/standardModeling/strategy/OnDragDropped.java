@@ -29,12 +29,10 @@ public class OnDragDropped implements Strategy{
             s.mViewer.getNode().getChildren().remove(s.fakeLine);
         }
         
-        if(s.hMSC_final != null){            
-            if(s.mTransitionViewType == 0){
-                TransitionMSC t = s.mViewer.getComponentBuildDS().buildTransition(s.hMSC_inicial, s.hMSC_final)
-                        .setViewType(s.mTransitionViewType)
-                        .create();
-            }
+        if(s.hMSC_final != null){    
+            TransitionMSC t = s.mViewer.getComponentBuildDS().buildTransition(s.hMSC_inicial, s.hMSC_final)
+                    .setViewType(s.mTransitionViewType)
+                    .create();
         }
         
         event.setDropCompleted(true);
