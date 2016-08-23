@@ -120,7 +120,7 @@ public class ParallelCompositor {
                 }
 
                 tt.setLabel(t.getLabel());
-                tt.setViewType(1);
+                tt.setViewType(0);
                 Transition transicao = tt.create();
                 //System.out.println("Added transition " + t.getLabel() + " .");
 
@@ -154,7 +154,7 @@ public class ParallelCompositor {
                     continue;
                 }
                 tt.setLabel(t.getLabel());
-                tt.setViewType(1);
+                tt.setViewType(0);
                 Transition transicao = tt.create();
                 //System.out.println("Added transition " + t.getLabel() + ".");
 

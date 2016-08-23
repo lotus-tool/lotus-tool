@@ -31,7 +31,7 @@ public class MakeLTSGeneral {
     private final List<Hmsc> listHmsc;
     private final List<ComponentDS> listBmsc;
     private HashMap<String,List<Component>> ltsActors;
-    private ArrayList<State> pilhaDeLigacao;
+    private ArrayList<HmscLigacao> visitados;
     StandardModelingView mview;
     Layouter l = new Layouter();
     
@@ -40,7 +40,7 @@ public class MakeLTSGeneral {
         this.listHmsc = listHmsc;
         this.listBmsc = listBmsc;
         ltsActors = new HashMap<>();
-        pilhaDeLigacao = new ArrayList<>();
+        visitados = new ArrayList<>();
         geral = new Component();
         mview = mViewer;
     }
@@ -64,117 +64,126 @@ public class MakeLTSGeneral {
         }
         
         //Monta o LTS completo de cada ator com base no conjunto de Hmsc
-        for(String ator : allActors){
-            Component linhaDeVidaAtor = new Component();
-            linhaDeVidaAtor.setName("Life "+ator);
-            
-            Hmsc inicial = listHmsc.get(0);
-            montagemRecursiva(inicial,ator,linhaDeVidaAtor, null);
-            
-            
-            l.layout(linhaDeVidaAtor);
-            System.out.println("Conseguiu fazer layout do: "+linhaDeVidaAtor.getName());
-            preComposicao.add(linhaDeVidaAtor);
+        try {
+            for (String ator : allActors) {
+                Component linhaDeVidaAtor = new Component();
+                linhaDeVidaAtor.setName("Life " + ator);
+                
+                Hmsc inicial = listHmsc.get(0);
+                montagemRecursiva(inicial, ator, linhaDeVidaAtor, null, false);
+                
+                l.layout(linhaDeVidaAtor);
+                preComposicao.add(linhaDeVidaAtor);
+                
+                visitados.clear(); //Limpa para o proximo ator criar a linha de vida.
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e.getMessage());
         }
         
-        mview.getComponentBuildDS().createListLTS(preComposicao);//teste somente para ver se esta montando
-        
-        
+        mview.getComponentBuildDS().createListLTS(preComposicao);
         //Faz a composicao parelela dos LTS completo
         geral = ParallelComposition(preComposicao);
         
         return geral;
     }
     
-    private void montagemRecursiva(Hmsc inicial, String ator, Component linhaDeVidaAtor, State ligacao){
-        List<Component> atores = ltsActors.get(inicial.getLabel());
+    private void montagemRecursiva(Hmsc hmsc, String ator, Component linhaDeVidaAtor, State ligacao,boolean foiVisitado){
+        List<Component> atores = ltsActors.get(hmsc.getLabel());
+        State inicialDoHmsc = null;
         
         for(Component c : atores){
             if(c.getName().equals(ator)){
                 State src = null;
                 State dst = null;
+                //Inicio do LTS 
                 if(linhaDeVidaAtor.getStatesCount() == 0){
-                    System.out.println("chegou no primeiro hmsc");
+                    System.out.println("Chegou no primeiro hmsc do ator. hMSC: "+hmsc.getLabel()+" Ator: "+ator);
                     for(Transition t : c.getTransitions()){
                         if(src == null){
                             src = linhaDeVidaAtor.newState(t.getSource().getID());
+                            inicialDoHmsc = src;
                             linhaDeVidaAtor.setInitialState(src);
                         }
                         if(dst == null){
                             dst = linhaDeVidaAtor.newState(t.getDestiny().getID());
                             linhaDeVidaAtor.buildTransition(src, dst)
-                                //.setGuard(t.getGuard())
-                                //.setProbability(t.getProbability())
+                                .setGuard(t.getGuard())
+                                .setProbability(t.getProbability())
                                 .setLabel(t.getLabel())
                                 .create();
                             src = dst;
                             dst = null;
                         }
                     }
+                //Reconhece uma continuacao em outro hMSC
                 }else{
-                    System.out.println("reconhece uma continuacao");
+                    System.out.println("Reconhece uma continuacao em: "+hmsc.getLabel());
                     if(ligacao == null){
                         ligacao = linhaDeVidaAtor.getStateByID(linhaDeVidaAtor.getStatesCount()-1);
-                        System.out.println("ligacao nula recebe: "+ligacao.getLabel());
+                        inicialDoHmsc = ligacao;
                     }
-                    src = ligacao;
-                    System.out.println("ligacao eh: "+src.getLabel());
-                    for(Transition t : c.getTransitions()){
-                        dst = linhaDeVidaAtor.newState(linhaDeVidaAtor.getStatesCount());
-                        linhaDeVidaAtor.buildTransition(src, dst)
-                                .setLabel(t.getLabel())
-                                .create();
-                        src = dst;
-                        System.out.println("ultima ligacao: "+ligacao.getLabel()+ " do ator :"+ator);
+                    if(!foiVisitado){
+                        src = ligacao;
+                        inicialDoHmsc = src;
+                        System.out.println("Hmsc: "+hmsc.getLabel()+" Ainda nao Visitado!!!");
+                        System.out.println("ligacao eh: "+src.getLabel());
+                        for(Transition t : c.getTransitions()){
+                            dst = linhaDeVidaAtor.newState(linhaDeVidaAtor.getStatesCount());
+                            linhaDeVidaAtor.buildTransition(src, dst)
+                                    .setGuard(t.getGuard())
+                                    .setProbability(t.getProbability())
+                                    .setLabel(t.getLabel())
+                                    .create();
+                            src = dst;
+                        }
+                        System.out.println("ultima ligacao: "+src.getLabel()+ " do ator :"+ator);
+                    //Continuacao em um hMSC ja visitado
+                    }else{
+                        System.out.println("Hmsc: "+hmsc.getLabel()+" Ja Visitado");
+                        inicialDoHmsc = ligacao;
+                        src = linhaDeVidaAtor.getStateByID(linhaDeVidaAtor.getStatesCount()-2);//penultimo
+                        dst = resgateStateInicial(hmsc);
+                        
+                        State sUltimo = linhaDeVidaAtor.getStateByID(linhaDeVidaAtor.getStatesCount()-1);
+                        Transition tUltima = src.getTransitionTo(sUltimo);
+                        
+                        if(dst != null && tUltima != null){
+                            linhaDeVidaAtor.buildTransition(src, dst)
+                                    .setLabel(tUltima.getLabel())
+                                    .setGuard(tUltima.getGuard())
+                                    .setProbability(tUltima.getProbability())
+                                    .setViewType(1)
+                                    .create();
+                            
+                            linhaDeVidaAtor.remove(sUltimo);
+                            setNewStateFinal(hmsc, dst);
+                            ajustarIDs(linhaDeVidaAtor);
+                        }      
+                        System.out.println("ultima ligacao: "+src.getLabel()+ " do ator :"+ator);
                     }
                 }
             }
         }
         //verificar saidas do hmsc
-        Component aux = null;
-        aux = linhaDeVidaAtor;
+        Component aux = linhaDeVidaAtor;
         State liga = aux.getStateByID(aux.getStatesCount()-1);
         
-        for(TransitionMSC t :inicial.getOutgoingTransitionsList()){
-            pilhaDeLigacao.add(liga);
-            Hmsc dst = ((HmscView) t.getDestiny()).getHMSC();
-            System.out.println("tem uma saida para o hmsc: "+dst.getLabel());
-            montagemRecursiva(dst, ator, linhaDeVidaAtor, pilhaDeLigacao.get(pilhaDeLigacao.size()-1));
-            pilhaDeLigacao.remove(liga);
+        if(!visitado(hmsc)){
+            visitados.add(new HmscLigacao(hmsc, inicialDoHmsc, liga));
         }
-    }
-
-    private Component ParallelComposition(List<Component> Components){
-        int tam = Components.size();
-        if (tam < 2) {
-            throw new RuntimeException("Select at least 2(two) components!");
-        }
-        Component a = Components.get(0);
-        Component b = Components.get(1);
-        Component c = new ParallelCompositor().compor(a, b);
-        String name = a.getName() + " || " + b.getName();
-        for(int i = 2; i < tam; i++){
-            b = Components.get(i);
-            c = new ParallelCompositor().compor(c, b);
-            name += " || " + b.getName();
-        }
-        c.setName(name);
-        return c;
-    }
-
-    private ArrayList<String> verificarPossiveisAtores() {
-        ArrayList<String> nomes = new ArrayList<>();
         
-        for(ComponentDS bmsc : listBmsc){
-            for(BlockDS ator : bmsc.getBlockDS()){
-                if(!nomes.contains(ator.getLabel())){
-                    nomes.add(ator.getLabel());
-                    System.out.println("ator: "+ator.getLabel());
+        if(!foiVisitado){
+            for(TransitionMSC t :hmsc.getOutgoingTransitionsList()){
+                Hmsc dst = ((HmscView) t.getDestiny()).getHMSC();
+                System.out.println("tem uma saida para o hmsc: "+dst.getLabel());
+                if(!visitado(dst)){
+                    montagemRecursiva(dst, ator, linhaDeVidaAtor, resgateStateFinal(hmsc),false);
+                }else{
+                    montagemRecursiva(dst, ator, linhaDeVidaAtor, resgateStateFinal(hmsc),true);
                 }
             }
         }
-        
-        return nomes;
     }
 
     private Component createLTS_By_Actor_In_Hmsc(String ator, Component lts) {
@@ -207,16 +216,123 @@ public class MakeLTSGeneral {
             ajustarIDs(build);
             build.setInitialState(build.getStateByID(0));
             l.layout(build);
-            System.out.println("Conseguiu fazer layout do: " + build.getName());
         }
         build.setName(ator);//referencia o ator do respectivo hmsc
         return build;
     }
 
+    private Component ParallelComposition(List<Component> Components){
+        int tam = Components.size();
+        if (tam < 2) {
+            throw new RuntimeException("Select at least 2(two) components!");
+        }
+        Component a = Components.get(0);
+        Component b = Components.get(1);
+        Component c = new ParallelCompositor().compor(a, b);
+        String name = a.getName() + " || " + b.getName();
+        for(int i = 2; i < tam; i++){
+            b = Components.get(i);
+            c = new ParallelCompositor().compor(c, b);
+            name += " || " + b.getName();
+        }
+        c.setName(name);
+        return c;
+    }
+    
+    private ArrayList<String> verificarPossiveisAtores() {
+        ArrayList<String> nomes = new ArrayList<>();
+        
+        for(ComponentDS bmsc : listBmsc){
+            for(BlockDS ator : bmsc.getBlockDS()){
+                if(!nomes.contains(ator.getLabel())){
+                    nomes.add(ator.getLabel());
+                    System.out.println("ator: "+ator.getLabel());
+                }
+            }
+        }
+        
+        return nomes;
+    }
+    
     private void ajustarIDs(Component build) {
         int id = 0;
         for(State s : build.getStates()){
             s.setID(id++);
         }
+    }
+    
+    private boolean visitado(Hmsc hmsc){
+        boolean viu = false;
+        for(HmscLigacao visto : visitados){
+            if(visto.getHmsc() == hmsc){
+                viu = true;
+            }
+        }
+        return viu;
+    }
+    
+    private State resgateStateFinal(Hmsc hmsc){
+        State state = null;
+        for(HmscLigacao h : visitados){
+            if(h.getHmsc() == hmsc){
+                state = h.getUltimo();
+            }
+        }
+        return state;
+    }
+    
+    private State resgateStateInicial(Hmsc hmsc){
+        State state = null;
+        for(HmscLigacao h : visitados){
+            if(h.getHmsc() == hmsc){
+                state = h.getInicial();
+            }
+        }
+        return state;
+    }
+    
+    private void setNewStateFinal(Hmsc hmsc, State s){
+        for(HmscLigacao h : visitados){
+            if(h.getHmsc() == hmsc){
+                h.setUltimo(s);
+            }
+        }
+    }
+    
+    private class HmscLigacao{
+        Hmsc hmsc;
+        State inicial;
+        State ultimo;
+
+        public HmscLigacao(Hmsc hmsc, State inicial, State ultimo) {
+            this.hmsc = hmsc;
+            this.inicial = inicial;
+            this.ultimo = ultimo;
+        }
+
+        public Hmsc getHmsc() {
+            return hmsc;
+        }
+
+        public void setHmsc(Hmsc hmsc) {
+            this.hmsc = hmsc;
+        }
+
+        public State getInicial() {
+            return inicial;
+        }
+
+        public void setInicial(State inicial) {
+            this.inicial = inicial;
+        }
+
+        public State getUltimo() {
+            return ultimo;
+        }
+
+        public void setUltimo(State ultimo) {
+            this.ultimo = ultimo;
+        }
+        
     }
 }
