@@ -49,31 +49,29 @@ public class OnDraggedMouse implements Strategy {
                     }
                 }else{//arrastando um block
                     if(!s.segundaVezAoArrastar){
-
                         s.segundaVezAoArrastar = true;
                         s.ultimoInstanteX = e.getX();
                         s.ultimoInstanteY = e.getY();
                     }else{
                         offsetX = e.getX() - s.ultimoInstanteX;
-                        offsetY = e.getY() - s.ultimoInstanteY;
+                        //offsetY = e.getY() - s.ultimoInstanteY;
                         s.ultimoInstanteX = e.getX();
                         s.ultimoInstanteY = e.getY();
                     }
-                    /*Node node = ((BlockDSView) s.mComponentSobMouse).getNode();*/
-                    if(s.selecionadoPeloRetangulo /*&& s.selecao.contains(node)*/){
-                        System.out.println("entra aqui ?");
+                    Node node = ((BlockDSView) s.mComponentSobMouse).getNode();
+                    if(s.selecionadoPeloRetangulo && s.selecao.contains(node)){
                         for(Node n : s.selecao){
                             BlockDSView view = (BlockDSView)n;
                             BlockDS b = view.getBlockDS();
                             b.setLayoutX(b.getLayoutX()+offsetX);
-//                            b.setLayoutY(b.getLayoutY()+offsetY);
+                            //b.setLayoutY(b.getLayoutY()+offsetY);
                         }
                     }else{
-//                        s.clearSelecao();
-//                        s.addNoSelecao(node);
+                       s.clearSelecao();
+                       s.addNoSelecao(node);
                         BlockDS b = ((BlockDSView)s.mComponentSobMouse).getBlockDS();
                         b.setLayoutX(b.getLayoutX()+offsetX);
-//                        b.setLayoutY(b.getLayoutY()+offsetY);
+                        //b.setLayoutY(b.getLayoutY()+offsetY);
                     }
                 }
             }
