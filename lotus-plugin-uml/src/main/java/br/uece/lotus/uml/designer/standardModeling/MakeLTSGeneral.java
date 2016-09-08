@@ -175,7 +175,12 @@ public class MakeLTSGeneral {
         
         if(!foiVisitado){
             for(TransitionMSC t :hmsc.getOutgoingTransitionsList()){
-                Hmsc dst = ((HmscView) t.getDestiny()).getHMSC();
+                Hmsc dst;
+                try {
+                    dst = ((HmscView) t.getDestiny()).getHMSC();
+                } catch (Exception e) {
+                    dst = (Hmsc) t.getDestiny();
+                }
                 System.out.println("tem uma saida para o hmsc: "+dst.getLabel());
                 if(!visitado(dst)){
                     montagemRecursiva(dst, ator, linhaDeVidaAtor, resgateStateFinal(hmsc),false);

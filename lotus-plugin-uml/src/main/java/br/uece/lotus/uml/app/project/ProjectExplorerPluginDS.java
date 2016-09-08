@@ -6,13 +6,17 @@
 package br.uece.lotus.uml.app.project;
 
 import br.uece.lotus.Component;
+import br.uece.lotus.State;
+import br.uece.lotus.Transition;
 import br.uece.lotus.designer.NewDesignerWindowManager;
+import br.uece.lotus.uml.api.ds.BlockDS;
 import br.uece.lotus.uml.api.ds.Hmsc;
 import br.uece.lotus.uml.api.ds.StandardModeling;
 import br.uece.lotus.uml.api.ds.ComponentDS;
 import br.uece.lotus.uml.api.ds.ProjectDS;
 import br.uece.lotus.uml.api.ds.TransitionMSC;
 import br.uece.lotus.uml.api.project.ProjectExplorerDS;
+import br.uece.lotus.uml.api.viewer.bMSC.ComponentDSViewImpl;
 import br.uece.lotus.uml.designer.blockDiagramModeling.DesingWindowImplManegerBlockDs;
 import br.uece.lotus.uml.designer.standardModeling.StandardModelingWindowManager;
 import br.uece.lotus.uml.designer.windowLTS.LtsWindowManager;
@@ -181,7 +185,60 @@ public final class ProjectExplorerPluginDS extends Plugin implements ProjectExpl
         }
     };
 
-    //Falta os listeners do componentDS e ComponentLTS <- (o normal)
+    private final ComponentDS.Listener mComponentBMSC = new ComponentDS.Listener() {
+
+        @Override
+        public void onChange(ComponentDS cds) {
+            for(TreeItem<WrapperDS> p : mProjectDSView.getRoot().getChildren()){
+                for(TreeItem<WrapperDS> itm : p.getChildren()){
+                    if(itm.getValue().getObject() == cds){
+                        WrapperDS w = itm.getValue();
+                        itm.setValue(null);
+                        itm.setValue(w);
+                        return;
+                    }
+                }
+            }
+        }
+
+        @Override
+        public void onBlockDSCreated(ComponentDS componentDS, BlockDS ds) {}
+        @Override
+        public void onBlockDSRemoved(ComponentDS componentDS, BlockDS ds) {}
+        @Override
+        public void onTransitionCreate(ComponentDS buildDS, TransitionMSC t) {}
+        @Override
+        public void onTransitionRemove(ComponentDS buildDS, TransitionMSC t) {}
+
+    };
+    
+    private final Component.Listener mComponentLTS = new Component.Listener() {
+
+        @Override
+        public void onChange(Component component) {
+            for(TreeItem<WrapperDS> p : mProjectDSView.getRoot().getChildren()){
+                for(TreeItem<WrapperDS> itm : p.getChildren()){
+                    if(itm.getValue().getObject() == component){
+                        WrapperDS w = itm.getValue();
+                        itm.setValue(null);
+                        itm.setValue(w);
+                        return;
+                    }
+                }
+            }
+        }
+
+        @Override
+        public void onStateCreated(Component component, State state) {}
+        @Override
+        public void onStateRemoved(Component component, State state) {}
+        @Override
+        public void onTransitionCreated(Component component, Transition state) {}
+        @Override
+        public void onTransitionRemoved(Component component, Transition state) {}
+
+    };
+            
     
     @Override
     public void onStart(ExtensionManager extensionManager) throws Exception{

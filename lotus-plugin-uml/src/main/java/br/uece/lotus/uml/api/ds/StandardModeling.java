@@ -21,7 +21,7 @@ public class StandardModeling {
     
     private final Map<String, Object> mValues = new HashMap<>();
     private String mName;
-    
+
     public interface Listener{
         void onChange(StandardModeling buildDS);
         void onBlockCreate(StandardModeling buildDS, Hmsc bbds);
@@ -73,6 +73,18 @@ public class StandardModeling {
             l.onComponentLTSGeneralCreate(c);
         }
     }
+    
+    /*public void removeListLTS(){
+    for () {
+    for (Listener l : mListeners) {
+    
+    }
+    }
+    }
+    
+    public void removeGeneralLTS(){
+    mProjectDSListener.onComponentLTSGeralRemove(getSelectedProjectDS(), getSelectedComponentBuildDS(), null);
+    }*/
 
     public TransitionMSC newTransition(HmscView src, HmscView dst){
         if (src == null) {
@@ -88,6 +100,17 @@ public class StandardModeling {
     
     public TransitionMSC.Builder buildTransition(HmscView src, HmscView dst){
         if (src == null) {
+            throw new IllegalArgumentException("src hMSCView can't be null!");
+        }
+        if (dst == null) {
+            throw new IllegalArgumentException("dst hMSCView can't be null!");
+        }
+        TransitionMSC t = new TransitionMSC(src, dst);
+        return new TransitionMSC.Builder(this, t);
+    }
+    
+    public TransitionMSC.Builder buildTransition(Hmsc src, Hmsc dst){
+        if (src == null) {
             throw new IllegalArgumentException("src hMSC can't be null!");
         }
         if (dst == null) {
@@ -100,6 +123,17 @@ public class StandardModeling {
     public void add(TransitionMSC t){
         Hmsc src = ((HmscView) t.getSource()).getHMSC();
         Hmsc dst = ((HmscView) t.getDestiny()).getHMSC();
+        src.addOutgoingTransition(t);
+        dst.addIncomingTransition(t);
+        mTransitions.add(t);
+        for(Listener l : mListeners){
+            l.onTransitionCreate(this, t);
+        }
+    }
+    
+    public void add2(TransitionMSC t){
+        Hmsc src = ((Hmsc) t.getSource());
+        Hmsc dst = ((Hmsc) t.getDestiny());
         src.addOutgoingTransition(t);
         dst.addIncomingTransition(t);
         mTransitions.add(t);
@@ -128,6 +162,15 @@ public class StandardModeling {
         for(Listener l : mListeners){
             l.onTransitionRemove(this, t);
         }
+    }
+    
+    public Hmsc getBlocoByID(int id) {
+        for(Hmsc h : mBlocos){
+            if(id == h.getID()){
+                return h;
+            }
+        }
+        return null;
     }
     
     public Object getValue(String key) {

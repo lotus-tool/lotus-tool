@@ -732,6 +732,9 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
             }
         }
         
+        //Limpar arvore do projeto
+        //pep.removeFragmentsLTS();
+       // pep.removeLtsComposed();
 
         //Gerando o LTS Geral ----------------------------------------------------------------------------------------
         

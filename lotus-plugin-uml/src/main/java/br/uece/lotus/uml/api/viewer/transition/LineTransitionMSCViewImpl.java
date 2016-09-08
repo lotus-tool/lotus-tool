@@ -6,6 +6,7 @@
 package br.uece.lotus.uml.api.viewer.transition;
 
 
+import br.uece.lotus.uml.api.viewer.hMSC.HmscView;
 import br.uece.lotus.viewer.Geom;
 import br.uece.lotus.viewer.Seta;
 import br.uece.lotus.viewer.StyleBuilder;
@@ -45,8 +46,15 @@ public class LineTransitionMSCViewImpl extends TransitionMSCViewImpl{
 
         switch (mValueType) {
             case "hMSC":{
-                origem = (Region) hMscSource.getNode();
-                destino = (Region) hMscDestiny.getNode();
+                try {
+                    origem = (Region) hMscSource.getNode();
+                    destino = (Region) hMscDestiny.getNode();
+                } catch (NullPointerException e) {
+                    HmscView src = (HmscView) srcHMSC.getValue("view");
+                    HmscView dst = (HmscView) dstHMSC.getValue("view");
+                    origem = (Region) src.getNode();
+                    destino = (Region) dst.getNode();
+                }
                 if(origem != null && destino != null){
                     DoubleBinding origemX = origem.layoutXProperty().add(origem.widthProperty().divide(2));
                     DoubleBinding origemY = origem.layoutYProperty().add(origem.heightProperty().divide(2));

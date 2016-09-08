@@ -39,6 +39,7 @@ public class BasicDSPlugin extends Plugin{
     public void onStart(ExtensionManager extensionManager) throws Exception {
         mUserInterface = extensionManager.get(UserInterface.class);
         mProjectExplorerDS = extensionManager.get(ProjectExplorerDS.class);
+        mProjectDialogsHelper = extensionManager.get(ProjectDialogsDS.class);
         mTabsDoPainelDeProjetos = mUserInterface.getLeftPanel().getTabs();
         
         ExtensibleMenu mMainMenu = mUserInterface.getMainMenu();
@@ -132,7 +133,6 @@ public class BasicDSPlugin extends Plugin{
     
     private Runnable mSaveProject = () -> {
         ProjectDS p = mProjectExplorerDS.getSelectedProjectDS();
-
         if (p == null) {
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setHeaderText("Information");
