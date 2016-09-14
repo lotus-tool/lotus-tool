@@ -8,6 +8,8 @@ package br.uece.lotus.tools.implicitScenario;
 import br.uece.lotus.Component;
 import br.uece.lotus.viewer.ComponentViewImpl;
 import java.net.URL;
+import java.util.Comparator;
+import java.util.List;
 import java.util.ResourceBundle;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -49,15 +51,20 @@ public class ImplicitScenarioWindowController implements Initializable{
         
         Component component = (Component) resources.getObject("component");
         mViewer.setComponent(component);
-        data.addAll(new ScenarioTableView("a,b,c,d"),new ScenarioTableView("a,c,b,e"));
+        
+        List<String> paths = (List<String>) resources.getObject("paths");
+        for(String s : paths){
+            data.add(new ScenarioTableView(s));
+        }
+        
         iniciarTable();
     }    
 
     private void iniciarTable() {
         
-        TableColumn scenario = new TableColumn("Implicit Scenario");
+        TableColumn scenario = new TableColumn("Implied Scenarios");
         scenario.setCellValueFactory(new PropertyValueFactory<>("implicitScenario"));
-        scenario.setPrefWidth(500);
+        scenario.prefWidthProperty().bind(mTableView.widthProperty().subtract(105));
         
         TableColumn operation = new TableColumn("Operation");
         operation.setCellValueFactory(new PropertyValueFactory<>("Operation"));
@@ -67,9 +74,6 @@ public class ImplicitScenarioWindowController implements Initializable{
             @Override
             public TableCell call(TableColumn<ScenarioTableView, String> param) {
                 final TableCell<ScenarioTableView,String> cell = new TableCell<ScenarioTableView,String>(){
-                    final HBox box = new HBox(5);
-                    final Button btnOk = new Button();
-                    final Button btnCancel = new Button();
                     
                     @Override
                     public void updateItem( String item, boolean empty ){
@@ -78,6 +82,10 @@ public class ImplicitScenarioWindowController implements Initializable{
                             setGraphic(null);
                             setText(null);
                         }else{
+                            HBox box = new HBox(5);
+                            Button btnOk = new Button();
+                            Button btnCancel = new Button();
+                            
                             String selecionado = getTableView().getItems().get(getIndex()).implicitScenarioProperty().get();
                             btnOk.setOnAction((ActionEvent event) -> {
                                 acaoOK(selecionado);
@@ -101,6 +109,7 @@ public class ImplicitScenarioWindowController implements Initializable{
         
         mTableView.setItems(data);
         mTableView.getColumns().addAll(scenario,operation);
+        ordenarTabela(mTableView, scenario);
     }
     
     private void acaoOK(String cenarioSelecionado){
@@ -111,4 +120,17 @@ public class ImplicitScenarioWindowController implements Initializable{
         System.out.println("ativou o botao cancel, cenario: "+cenarioSelecionado);
     }
     
+    
+    private void ordenarTabela(TableView tv, TableColumn tc){
+        TableColumn.SortType st = null;
+        if (tv.getSortOrder().size()>0) {
+            tc = (TableColumn) tv.getSortOrder().get(0);
+            st = tc.getSortType().ASCENDING;
+        }
+        if (tc!=null) {
+            tv.getSortOrder().add(tc);
+            tc.setSortType(st);
+            tc.setSortable(true); // This performs a sort
+        }
+    }
 }

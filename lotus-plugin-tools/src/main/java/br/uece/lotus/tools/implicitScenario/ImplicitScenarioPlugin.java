@@ -31,6 +31,7 @@ public class ImplicitScenarioPlugin extends Plugin {
     private ProjectExplorer mProjectExplorer;
     private UserInterface mUserInterface;
     private Component c;
+    private List<String> paths;
 
     private final Runnable implicitScenario = () -> {
 
@@ -41,75 +42,22 @@ public class ImplicitScenarioPlugin extends Plugin {
                 alert.show();
                 return;
             }
-            show(c.clone(), true);
 
-            ArrayList<String> paths = createrPaths();
-            paths = removeElementsrepeated(paths);
+            OneLoopPath oneLoopPath = new OneLoopPath();
 
+            paths = oneLoopPath.createOneLoopPath(c);
+            paths = removeElementsrepeated((ArrayList<String>) paths);
+            
             for (String s : paths) {
                 System.out.println("StructPath Value: " + s);
             }
+            
+            
+            show(c.clone(), true);
 
         } catch (CloneNotSupportedException e) {
         }
     };
-
-    private State currentState;
-    private String currentTrace;
-    private String label;
-    private State dst;
-
-    private ArrayList createrPaths() {
-        ArrayList<String> out = new ArrayList<>();
-        StructPath structPath = new StructPath();
-        Path path = new Path();
-        structPath.setLastStateOnPath(c.getInitialState());
-
-        //initializing StructPath
-        for (Transition t : structPath.getLastState().getOutgoingTransitionsList()) {
-            State dst = t.getDestiny();
-            path.addWay(dst, t.getLabel() + ", ");
-        }
-        //run StructPath
-        for (int i = 0; i < path.getStates().size(); i++) {
-            currentState = path.getStates().get(i);
-            currentTrace = path.getTraces().get(i);
-
-            //element on StructPath doesn't have TransitionsOut
-            if (currentState.getOutgoingTransitionsCount() == 0) {
-                out.add(currentTrace);
-                continue;
-
-             //case haves
-            } else {
-                //run TransitionsOut of state of StructPath
-                for (Transition t : currentState.getOutgoingTransitionsList()) {
-                    label = t.getLabel();
-                    dst = t.getDestiny();
-
-                    //if this Transition already visited
-                    if (contains(currentTrace, label)) {
-                        continue;
-                    }
-                    //else add this Transition on StructPath
-                    path.addWay(dst, currentTrace + label + ", ");
-                }
-            }
-        }
-        //add all StructPath for add on arrow table
-        out.add(currentTrace);
-        return out;
-
-    }
-
-
-    private boolean contains(String currentTrace, String label) {
-        if (currentTrace.contains(label)) {
-            return true;
-        } else {
-            return false;
-        }
-    }
 
     private ArrayList<String> removeElementsrepeated(ArrayList<String> arrayList) {
         Set<String> hs = new HashSet<>();
@@ -133,6 +81,9 @@ public class ImplicitScenarioPlugin extends Plugin {
                 Component mComponent = c;
                 if ("component".equals(key)) {
                     return mComponent;
+                }
+                if("paths".equals(key)){
+                    return paths;
                 }
                 return null;
             }
@@ -160,7 +111,7 @@ public class ImplicitScenarioPlugin extends Plugin {
     public void onStart(ExtensionManager extensionManager) throws Exception {
         mUserInterface = extensionManager.get(UserInterface.class);
         mProjectExplorer = extensionManager.get(ProjectExplorer.class);
-        mUserInterface.getMainMenu().newItem("Verification/Implicit Scenario")
+        mUserInterface.getMainMenu().newItem("Verification/Implied Scenario")
                 .setWeight(1)
                 .setAction(implicitScenario)
                 .create();
