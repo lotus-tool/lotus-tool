@@ -99,7 +99,7 @@ public class ComponentTest {
         }
         
     }
-    
+/*  
     @Test
     public void removeStateTest() {    	    	  
     	assertTrue(COMPONENT.getStateByID(0).getOutgoingTransitionsCount() == 1);
@@ -136,7 +136,7 @@ public class ComponentTest {
     	assertTrue(COMPONENT.getStateByID(5).getIncomingTransitionsCount() == 0);
     	assertTrue(COMPONENT.getStateByID(6).getIncomingTransitionsCount() == 0);    	
     }
-    
+*/
 }
 
 
