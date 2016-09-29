@@ -6,14 +6,18 @@
 package br.uece.lotus.tools.implicitScenario;
 
 import br.uece.lotus.Component;
+import br.uece.lotus.State;
+import br.uece.lotus.Transition;
 import br.uece.lotus.viewer.ComponentViewImpl;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.ResourceBundle;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -24,6 +28,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.util.Callback;
 
@@ -42,6 +47,7 @@ public class ImplicitScenarioWindowController implements Initializable{
     
     private ComponentViewImpl mViewer;
     private ObservableList<ScenarioTableView> data = FXCollections.observableArrayList();
+    private Component mComponent;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -49,8 +55,8 @@ public class ImplicitScenarioWindowController implements Initializable{
         mViewer = new ComponentViewImpl();
         mScrollPane.setContent(mViewer);
         
-        Component component = (Component) resources.getObject("component");
-        mViewer.setComponent(component);
+        mComponent = (Component) resources.getObject("component");
+        mViewer.setComponent(mComponent);
         
         List<String> paths = (List<String>) resources.getObject("paths");
         for(String s : paths){
@@ -107,6 +113,7 @@ public class ImplicitScenarioWindowController implements Initializable{
         
         operation.setCellFactory(cellFactory);
         
+        mTableView.setOnMouseClicked(selecionarPath);
         mTableView.setItems(data);
         mTableView.getColumns().addAll(scenario,operation);
         ordenarTabela(mTableView, scenario);
@@ -130,7 +137,92 @@ public class ImplicitScenarioWindowController implements Initializable{
         if (tc!=null) {
             tv.getSortOrder().add(tc);
             tc.setSortType(st);
-            tc.setSortable(true); // This performs a sort
+            tc.setSortable(true);
+        }
+    }
+    
+    private EventHandler<? super MouseEvent> selecionarPath = (MouseEvent event) -> {
+        ScenarioTableView pathView = mTableView.getSelectionModel().getSelectedItem();
+        String caminho = pathView.implicitScenarioProperty().get();
+        
+        applyDisableAll();
+        
+        String[] ordem = caminho.split(",");
+        State state = mComponent.getInitialState();
+        
+        for(int i=0;i<ordem.length;i++){
+            applyEnableStyle(state);
+            String labelTransition = ordem[i];
+            Transition prox = null;
+            List<Transition> transitions = state.getOutgoingTransitionsList();
+            for(Transition t : transitions){
+                if(t.getLabel().equals(labelTransition)){
+                    prox = t;
+                }
+            }
+            if(prox != null){
+                applyEnableStyle(prox);
+                state = prox.getDestiny();
+            }
+            applyEnableStyle(state);
+        }
+    };
+    
+    protected void applyEnableStyle(State s){
+        s.setColor(null);
+        s.setTextColor("black");
+        s.setTextSyle(State.TEXTSTYLE_NORMAL);
+        s.setBorderColor("black");
+        s.setBorderWidth(1);
+    }
+
+    protected void applyEnableStyle(Transition t){
+        t.setColor("black");
+        t.setTextSyle(Transition.TEXTSTYLE_NORMAL);
+        t.setTextColor("black");
+        t.setWidth(1);
+    }
+
+    protected void applyDisabledStyle(State s){
+        s.setColor("#d0d0d0");
+        s.setTextColor("#c0c0c0");
+        s.setTextSyle(State.TEXTSTYLE_NORMAL);
+        s.setBorderColor("gray");
+        s.setBorderWidth(1);
+    }
+
+    protected void applyDisabledStyle(Transition t){
+        t.setColor("#d0d0d0");
+        t.setTextColor("#c0c0c0");
+        t.setTextSyle(Transition.TEXTSTYLE_NORMAL);
+        t.setWidth(1);
+    }
+    
+    protected void applyDisableAll(){
+        
+        State s = mComponent.getInitialState();
+        ArrayList<State> stateList = new ArrayList<>();
+        ArrayList<Transition> visitedTransitions = new ArrayList<>();
+        int i = 0;
+        stateList.add(s);
+
+        while (i < stateList.size()){
+            
+            s = stateList.get(i);
+            applyDisabledStyle(s);
+            
+            for (Transition t : s.getOutgoingTransitions()){
+                
+                if (!stateList.contains(t.getDestiny())){
+                    stateList.add(t.getDestiny());
+                }
+                
+                if (!visitedTransitions.contains(t)){
+                    applyDisabledStyle(t);
+                    visitedTransitions.add(t);
+                }
+            }
+            ++i;
         }
     }
 }

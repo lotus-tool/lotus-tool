@@ -48,8 +48,12 @@ public class ImplicitScenarioPlugin extends Plugin {
             paths = oneLoopPath.createOneLoopPath(c);
             paths = removeElementsrepeated((ArrayList<String>) paths);
             
+            paths.sort(Comparator.<String>naturalOrder());
+            paths = arrumarVirgulaInicial(paths);
+            
+            System.out.println("---------------Caminhos----------------------");
             for (String s : paths) {
-                System.out.println("StructPath Value: " + s);
+                System.out.println(s);
             }
             
             
@@ -105,6 +109,16 @@ public class ImplicitScenarioPlugin extends Plugin {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+    
+    //Tira as virgulas no inicio do Path
+    private ArrayList<String> arrumarVirgulaInicial(List<String> paths) {
+        ArrayList<String> arrumado = new ArrayList<>();
+        for(String s : paths){
+            String nova = s.substring(1, s.length());
+            arrumado.add(nova);
+        }
+        return arrumado;
     }
 
     @Override
