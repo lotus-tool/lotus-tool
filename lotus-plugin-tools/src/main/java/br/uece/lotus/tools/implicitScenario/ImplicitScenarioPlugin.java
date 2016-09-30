@@ -29,7 +29,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 
 /**
- * @author Bruno Barbosa
+ * @author Bruno Barbosa && Lucas Vieira
  */
 public class ImplicitScenarioPlugin extends Plugin {
 
@@ -83,16 +83,21 @@ public class ImplicitScenarioPlugin extends Plugin {
         }
 
         //This segment is doing the removal Implicit Scenary
-        refiner = new Refiner(mListTraceFromRealModel, mListOneLoopPathFromBehavioralModel);
+        refiner = new Refiner();
+        refiner.refine(mListTraceFromRealModel, mListOneLoopPathFromBehavioralModel);
         mListCenariosImplicitos = refiner.getListCenariosImplicitos();
 
-        /*aquiiiiiiiiiiiiiiiiiiiiiiiii*/
+        String linhaTabelaSelecionada="";
+        if(linhaTabelaSelecionada.equals("")){// quer dizer que vou remover tudo
+            refiner.removeAllImplicitedScenary();
+        }else if (!(linhaTabelaSelecionada.equals(""))) { // quer dizer que vai remover só a linha seleciona (não testei ainda)
+            refiner.removeImplicitedScenary(linhaTabelaSelecionada);
+        }
+
 
         ArrayList<String> mListClearOneLoopPath = refiner.getListCleanOneLoopPath();
         makePrintFromList(mListCenariosImplicitos,"Scenary:","S.I");
-        System.out.println("Scenary");
         makePrintFromList(mListClearOneLoopPath,"CLEAN ONE LOOP PATH:","Clear-O-L-P");
-        System.out.println("CLEAN ONE-LOOP-PATH");
 
         //This segment is doing the builder the Component
         Trie trie = new Trie();

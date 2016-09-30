@@ -14,11 +14,14 @@ public class Refiner {
     private ArrayList<String> listCleanOneLoopPath = new ArrayList<>();
     private ArrayList<String> listTrace, fileOneLoopPath;
 
-    public Refiner (ArrayList<String> listTrace, ArrayList<String> listOneLoopPath){
+    public Refiner (){
+    }
+
+    public void refine (ArrayList<String> listTrace, ArrayList<String> listOneLoopPath){
         this.listTrace = listTrace;
         this.listOneLoopPath= listOneLoopPath;
         buildCenariosImplicitos();
-        removeCenariosImplicitos();
+       /* removeAllImplicitedScenary();*/
     }
 
     public void buildCenariosImplicitos() {
@@ -58,11 +61,26 @@ public class Refiner {
         return aux;
 
     }
-    public void removeCenariosImplicitos(){
+    public void removeAllImplicitedScenary(){
         for(String s : listOneLoopPath){
             if(!listCenariosImplicitos.contains(s)){
                listCleanOneLoopPath.add(s);
             }
+        }
+
+    }
+    public void removeImplicitedScenary(ArrayList<String> listScenary){
+        for(String s : listScenary){
+            if(!listCenariosImplicitos.contains(s)){
+                listCleanOneLoopPath.add(s);
+            }
+        }
+
+    }
+    public void removeImplicitedScenary(String scenary){
+            if(!listCenariosImplicitos.contains(scenary)){
+                listCleanOneLoopPath.add(scenary);
+
         }
 
     }
