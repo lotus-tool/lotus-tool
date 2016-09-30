@@ -48,6 +48,12 @@ public class ProjectDialogsHelper extends Plugin {
 
     private FileChooser mFileChooser;
     private DialogsHelper mDialogsHelper;
+    private File traceFile;
+
+    public File getTraceFile() {
+        return traceFile;
+    }
+
 
     @Override
     public void onStart(ExtensionManager extensionManager) throws Exception {
@@ -69,6 +75,7 @@ public class ProjectDialogsHelper extends Plugin {
 
     public Project open(ProjectSerializer serializer, String title, String extensionDescription, String extension) {
         File file = getFileChooser(title, extensionDescription, extension, null).showOpenDialog(null);
+        traceFile = file;
         if (file == null) {
             return null;
         }

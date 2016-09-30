@@ -6,14 +6,19 @@
 package br.uece.lotus.tools.implicitScenario;
 
 import br.uece.lotus.Component;
-import br.uece.lotus.State;
-import br.uece.lotus.Transition;
+import br.uece.lotus.Project;
+import br.uece.lotus.project.ProjectDialogsHelper;
 import br.uece.lotus.project.ProjectExplorer;
+import br.uece.lotus.tools.TraceParser;
+import br.uece.lotus.tools.implicitScenario.StructsRefine.Aggregator;
+import br.uece.lotus.tools.implicitScenario.StructsRefine.OneLoopPath;
+import br.uece.lotus.tools.implicitScenario.StructsRefine.Refiner;
+import br.uece.lotus.tools.implicitScenario.StructsRefine.Trie;
 import br.uece.seed.app.UserInterface;
 import br.uece.seed.ext.ExtensionManager;
 import br.uece.seed.ext.Plugin;
 
-import java.io.IOException;
+import java.io.*;
 import java.net.URL;
 import java.util.*;
 
@@ -30,13 +35,25 @@ public class ImplicitScenarioPlugin extends Plugin {
 
     private ProjectExplorer mProjectExplorer;
     private UserInterface mUserInterface;
-    private Component c;
-    private List<String> paths;
+    private ProjectDialogsHelper mProjectDialogsHelper;
 
+    // Component that contains the behavioral model created from Plugin Model From Trace
+    private Component c;
+    private File mTraceFile;
+
+    //This list contains the one-loop-path relative the behavioral model ( model gerareter by file trace from Plugin Model From Trace)
+    private ArrayList<String> mListOneLoopPathFromBehavioralModel;
+
+    //This list contains the Traces from Real Model and they are create from Plugin Trace Generations
+    private ArrayList<String> mListTraceFromRealModel;
+
+    private ArrayList<String> mListCenariosImplicitos;
+    private Refiner refiner;
+    // this methed start when it is clicked in button Verificar
     private final Runnable implicitScenario = () -> {
 
         c = mProjectExplorer.getSelectedComponent();
-        try {
+
             if (c == null) {
                 Alert alert = new Alert(Alert.AlertType.INFORMATION, "Select a componet!", ButtonType.OK);
                 alert.show();
@@ -45,25 +62,88 @@ public class ImplicitScenarioPlugin extends Plugin {
 
             OneLoopPath oneLoopPath = new OneLoopPath();
 
-            paths = oneLoopPath.createOneLoopPath(c);
-            paths = removeElementsrepeated((ArrayList<String>) paths);
-            
-            paths.sort(Comparator.<String>naturalOrder());
-            paths = arrumarVirgulaInicial(paths);
-            
-            System.out.println("---------------Caminhos----------------------");
-            for (String s : paths) {
-                System.out.println(s);
-            }
-            
-            
-            show(c.clone(), true);
+            mListOneLoopPathFromBehavioralModel = oneLoopPath.createOneLoopPath(c);
+            mListOneLoopPathFromBehavioralModel = removeElementsRepeated(mListOneLoopPathFromBehavioralModel);
+            makePrintFromList(mListOneLoopPathFromBehavioralModel, "One Loop Path From Behavioral Model...", "O-L-P");
 
-        } catch (CloneNotSupportedException e) {
+            /*mListOneLoopPathFromBehavioralModel.sort(Comparator.<String>naturalOrder());
+            mListOneLoopPathFromBehavioralModel = arrumarVirgulaInicial(mListOneLoopPathFromBehavioralModel);*/
+
+
+        //START ALGORITHM REFINER
+                mTraceFile = getTraceFile();
+        if (mTraceFile == null) {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION, "Problem in Trace file", ButtonType.OK);
+            alert.show();
+            return;
         }
+        mListTraceFromRealModel = createArrayList(mTraceFile);
+        if (mListTraceFromRealModel == null) {
+            return;
+        }
+
+        //This segment is doing the removal Implicit Scenary
+        refiner = new Refiner(mListTraceFromRealModel, mListOneLoopPathFromBehavioralModel);
+        mListCenariosImplicitos = refiner.getListCenariosImplicitos();
+
+        /*aquiiiiiiiiiiiiiiiiiiiiiiiii*/
+
+        ArrayList<String> mListClearOneLoopPath = refiner.getListCleanOneLoopPath();
+        makePrintFromList(mListCenariosImplicitos,"Scenary:","S.I");
+        System.out.println("Scenary");
+        makePrintFromList(mListClearOneLoopPath,"CLEAN ONE LOOP PATH:","Clear-O-L-P");
+        System.out.println("CLEAN ONE-LOOP-PATH");
+
+        //This segment is doing the builder the Component
+        Trie trie = new Trie();
+        Component modificadComponet = trie.createComponet(mListClearOneLoopPath); // return a component witiout scenarys, but it is all open
+
+        //try join Transitons the same label without generate scenarys
+        Aggregator aggregator = new Aggregator(modificadComponet,mListTraceFromRealModel);
+        modificadComponet=aggregator.aggregate();
+
+        Project p = new Project();
+        TraceParser parser = new TraceParser();
+        p.addComponent(modificadComponet);
+        p.setName("Project");
+        mProjectExplorer.open(p);
+
+
+        try {
+            show(c.clone(), true);
+        } catch (CloneNotSupportedException e) {
+            e.printStackTrace();
+        }
+
     };
 
-    private ArrayList<String> removeElementsrepeated(ArrayList<String> arrayList) {
+    private ArrayList<String> createArrayList(File file) {
+        BufferedReader bufferedReader = null;
+        String line;
+        ArrayList<String> arrayList = new ArrayList<>();
+        try {
+            bufferedReader = new BufferedReader(new FileReader(file));
+        } catch (FileNotFoundException e) {
+            System.out.println("Problem in read File");
+        }
+        if (bufferedReader == null) {
+            return null;
+        } else {
+            try {
+                while ((line = bufferedReader.readLine()) != null) {
+                    if (!arrayList.contains(line) && (!line.equals(""))) {
+                        arrayList.add(line);
+                    }
+
+                }
+            } catch (IOException e) {
+                System.out.println("Problem in read bufferedReader");
+            }
+        }
+        return arrayList;
+    }
+
+    private ArrayList<String> removeElementsRepeated(ArrayList<String> arrayList) {
         Set<String> hs = new HashSet<>();
         hs.addAll(arrayList);
         arrayList.clear();
@@ -86,8 +166,11 @@ public class ImplicitScenarioPlugin extends Plugin {
                 if ("component".equals(key)) {
                     return mComponent;
                 }
-                if("paths".equals(key)){
-                    return paths;
+                if("ListRefined".equals(key)){
+                    return mListCenariosImplicitos;
+                }
+                if("Refiner".equals(key)){
+                    return refiner;
                 }
                 return null;
             }
@@ -110,21 +193,29 @@ public class ImplicitScenarioPlugin extends Plugin {
             e.printStackTrace();
         }
     }
-    
-    //Tira as virgulas no inicio do Path
-    private ArrayList<String> arrumarVirgulaInicial(List<String> paths) {
-        ArrayList<String> arrumado = new ArrayList<>();
-        for(String s : paths){
-            String nova = s.substring(1, s.length());
-            arrumado.add(nova);
+
+    private void makePrintFromList(ArrayList<String> list, String title, String tag) {
+        System.out.println("\n\n");
+        System.out.println(title);
+        for (String s : list) {
+            System.out.println(tag + " " + s);
         }
-        return arrumado;
+
+
+    }
+    public File getTraceFile() {
+        try {
+            return mProjectDialogsHelper.getTraceFile();// find the file
+        } catch (NullPointerException e) {
+            return null;                    //not find the file
+        }
     }
 
     @Override
     public void onStart(ExtensionManager extensionManager) throws Exception {
         mUserInterface = extensionManager.get(UserInterface.class);
         mProjectExplorer = extensionManager.get(ProjectExplorer.class);
+        mProjectDialogsHelper = extensionManager.get(ProjectDialogsHelper.class);
         mUserInterface.getMainMenu().newItem("Verification/Implied Scenario")
                 .setWeight(1)
                 .setAction(implicitScenario)

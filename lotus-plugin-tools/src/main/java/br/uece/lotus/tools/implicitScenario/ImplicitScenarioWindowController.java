@@ -8,6 +8,7 @@ package br.uece.lotus.tools.implicitScenario;
 import br.uece.lotus.Component;
 import br.uece.lotus.State;
 import br.uece.lotus.Transition;
+import br.uece.lotus.tools.implicitScenario.StructsRefine.Refiner;
 import br.uece.lotus.viewer.ComponentViewImpl;
 import java.net.URL;
 import java.util.ArrayList;
@@ -48,6 +49,7 @@ public class ImplicitScenarioWindowController implements Initializable{
     private ComponentViewImpl mViewer;
     private ObservableList<ScenarioTableView> data = FXCollections.observableArrayList();
     private Component mComponent;
+    private Refiner refiner;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -57,8 +59,10 @@ public class ImplicitScenarioWindowController implements Initializable{
         
         mComponent = (Component) resources.getObject("component");
         mViewer.setComponent(mComponent);
+
+        refiner = (Refiner) resources.getObject("Refiner");
         
-        List<String> paths = (List<String>) resources.getObject("paths");
+        List<String> paths = (List<String>) resources.getObject("ListRefined");
         for(String s : paths){
             data.add(new ScenarioTableView(s));
         }
@@ -121,6 +125,7 @@ public class ImplicitScenarioWindowController implements Initializable{
     
     private void acaoOK(String cenarioSelecionado){
         System.out.println("ativou o botao ok, cenario: "+cenarioSelecionado);
+       /* refiner.*/
     }
     
     private void acaoCancel(String cenarioSelecionado){
