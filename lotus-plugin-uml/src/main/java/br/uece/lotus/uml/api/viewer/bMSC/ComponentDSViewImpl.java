@@ -9,8 +9,6 @@ import br.uece.lotus.uml.api.viewer.transition.SelfTransitionMSCViewImpl;
 import br.uece.lotus.uml.api.viewer.transition.TransitionMSCView;
 import br.uece.lotus.uml.api.viewer.transition.TransitionMSCViewFactory;
 import br.uece.lotus.uml.api.viewer.transition.TransitionMSCViewImpl;
-import br.uece.lotus.uml.designer.blockDiagramModeling.DesingWindowImplBlockDs;
-import br.uece.seed.app.MenuItemBuilderFX;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.control.ContextMenu;
@@ -18,10 +16,10 @@ import javafx.scene.layout.AnchorPane;
 import javafx.geometry.Point2D;
 import javafx.scene.shape.Circle;
 
-import javax.swing.plaf.synth.Region;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import javafx.scene.shape.Line;
 
 /**
  *
@@ -69,9 +67,10 @@ public class ComponentDSViewImpl extends AnchorPane implements ComponentDSView, 
         for (BlockDS blockDS : mComponentDS.getBlockDS()) {
             showBlockDS(blockDS);
         }
-        /*for (Transition tm : mComponentBlockDS.getTransitions()) {
+        for (TransitionMSC tm : mComponentDS.getAllTransitions()) {
             showTransition(tm);
-        }*/
+        }
+        setYTransitions();
     }
 
 
@@ -224,6 +223,17 @@ public class ComponentDSViewImpl extends AnchorPane implements ComponentDSView, 
                 t.setValue("view", null);
                 getChildren().remove(view);
             }
+        }
+    }
+
+    private void setYTransitions() {
+        double y = 145;
+        for(TransitionMSC t : mComponentDS.getAllTransitions()){
+            TransitionMSCViewImpl view = (TransitionMSCViewImpl) t.getValue("view");
+            Line line = view.getLineTransition();
+            line.setStartY(y);
+            line.setEndY(y);
+            y += 50;
         }
     }
 }

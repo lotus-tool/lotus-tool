@@ -47,7 +47,6 @@ public class BlockDS {
 
     public void setLayoutX(double layoutX) {
         this.mLayoutX = layoutX;
-        System.out.println(getLayoutX());
         for (Listener l : mListeners) {
             l.onChange(this);
         }
@@ -55,7 +54,6 @@ public class BlockDS {
 
     public void setLayoutY(double layoutY) {
         this.mLayoutY = layoutY;
-        System.out.println(getLayoutY());
         for (Listener l : mListeners) {
             l.onChange(this);
         }

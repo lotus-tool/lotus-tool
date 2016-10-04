@@ -59,6 +59,17 @@ public class ComponentDS {
             l.onTransitionCreate(this, t);
         }
     }
+    
+    public void add2(TransitionMSC t){
+        BlockDS src = ((BlockDS) t.getSource());
+        BlockDS dst = ((BlockDS) t.getDestiny());
+        src.addOutgoingTransition(t);
+        dst.addIncomingTransition(t);
+        mTransitions.add(t);
+        for(Listener l : mListeners){
+            l.onTransitionCreate(this, t);
+        }
+    }
 
     public TransitionMSC newTransition(BlockDSView src, BlockDSView dst){
         if (src == null) {
@@ -82,6 +93,18 @@ public class ComponentDS {
         TransitionMSC t = new TransitionMSC(src, dst);
         return new TransitionMSC.Builder(this, t);
     }
+    
+    public TransitionMSC.Builder buildTransition(BlockDS src, BlockDS dst){
+        if (src == null) {
+            throw new IllegalArgumentException("src bMSC can't be null!");
+        }
+        if (dst == null) {
+            throw new IllegalArgumentException("dst bMSC can't be null!");
+        }
+        TransitionMSC t = new TransitionMSC(src, dst);
+        return new TransitionMSC.Builder(this, t);
+    }
+    
     public void remove(TransitionMSC t){
         ((BlockDSView)t.getSource()).getBlockDS().removeOutgoingTransition(t);
         ((BlockDSView)t.getDestiny()).getBlockDS().removeIncomingTransition(t);
@@ -115,9 +138,22 @@ public class ComponentDS {
         to.setLayoutX(from.getLayoutX());
 //        to.setLayoutY(from.getLayoutY());
     }
+    
+    private void copyTransition(TransitionMSC oldTransition, TransitionMSC newTransition) {
+        System.out.println("Falta implementar classe: ComponentDS");
+    }
 
     public int getBlockDSCount() {return mBlockDSs.size();}
     public int getBlockDSIndex(BlockDS s) {return mBlockDSs.indexOf(s);}
+    
+    public BlockDS getBMSC_ByID(int id){
+        for(BlockDS b : mBlockDSs){
+            if(b.getID() == id){
+                return b;
+            }
+        }
+        return null;
+    }
 
     public void remove(BlockDS ds) {
         List<TransitionMSC> transitionMSC = new ArrayList<>();
@@ -131,41 +167,7 @@ public class ComponentDS {
         for (Listener l : mListeners) {
             l.onBlockDSRemoved(this, ds);
         }
-        /*if (ds.isInitial()) {
-            if (mStates.size() > 0) {
-                setInitialState(mStates.get(0));
-            }
-        }*/
-//        updateStateLabels();
     }
-
-//    private void updateStateLabels() {
-//        if (!mAutoUpdateLabels) {
-//            return;
-//        }
-//        int i = 0;
-//        for (BlockDS v : mBlockDSs) {
-//            v.setLabel(String.valueOf(i++));
-//        }
-//    }
-
-   /* public Transition getTransitionByLabel(String label){
-        for(Transition transition : mTransitions){
-            if(label.equals(transition.getLabel())){
-                return transition;
-            }
-        }
-        return null;
-    }*/
-
-   /* public void remove(Transition transition) {
-        transition.getSource().removeOutgoingTransition(transition);
-        transition.getDestiny().removeIncomingTransition(transition);
-        mTransitions.remove(transition);
-        for (Listener l : mListeners) {
-            l.onTransitionRemoved(this, transition);
-        }
-    }*/
 
     public void addListener(Listener l) {
         mListeners.add(l);
@@ -190,12 +192,12 @@ public class ComponentDS {
             BlockDS newState = c.newBlockDS(oldState.getID());
             copyBlockDS(oldState, newState);
         }
-       /* for (Transition oldTransition : mTransitions) {
-            int src = oldTransition.getSource().getID();
-            int dst = oldTransition.getDestiny().getID();
-            Transition newTransition = c.newTransition(src, dst);
+       for (TransitionMSC oldTransition : mTransitions) {
+            BlockDSView src = (BlockDSView) oldTransition.getSource();
+            BlockDSView dst = (BlockDSView) oldTransition.getDestiny();
+            TransitionMSC newTransition = c.newTransition(src, dst);
             copyTransition(oldTransition, newTransition);
-        }*/
+        }
 
         return c;
     }
@@ -225,21 +227,6 @@ public class ComponentDS {
         if (!Objects.equals(this.mName, other.mName)) {
             return false;
         }
-        /*if (!Objects.equals(this.mInitialState, other.mInitialState)) {
-            return false;
-        }
-        if (!Objects.equals(this.mFinalState, other.mFinalState)) {
-            return false;
-        }
-        if (!Objects.equals(this.mErrorState, other.mErrorState)) {
-            return false;
-        }
-        if (!Objects.equals(this.mStates, other.mStates)) {
-            return false;
-        }
-        if (!Objects.equals(this.mTransitions, other.mTransitions)) {
-            return false;
-        }*/
         return true;
     }
 }

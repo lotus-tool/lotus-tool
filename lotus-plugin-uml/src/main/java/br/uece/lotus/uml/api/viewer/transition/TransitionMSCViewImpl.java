@@ -5,6 +5,7 @@
  */
 package br.uece.lotus.uml.api.viewer.transition;
 
+import br.uece.lotus.uml.api.ds.BlockDS;
 import br.uece.lotus.uml.api.ds.Hmsc;
 import br.uece.lotus.uml.api.ds.StandardModeling;
 import br.uece.lotus.uml.api.ds.TransitionMSC;
@@ -13,7 +14,6 @@ import br.uece.lotus.uml.api.viewer.hMSC.HmscView;
 import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.layout.Region;
-import javafx.scene.shape.Line;
 
 /**
  *
@@ -28,6 +28,8 @@ public abstract class TransitionMSCViewImpl extends Region implements Transition
     protected Hmsc dstHMSC;
     protected BlockDSView bMscSource;
     protected BlockDSView bMscDestiny;
+    protected BlockDS srcBMSC;
+    protected BlockDS dstBMSC;
     protected String mValueType;
     
     
@@ -65,8 +67,13 @@ public abstract class TransitionMSCViewImpl extends Region implements Transition
                 prepareView();
                 updateView();
             }else{
-                bMscSource = (BlockDSView) t.getSource();
-                bMscDestiny = (BlockDSView) t.getDestiny();
+                try{
+                    bMscSource = (BlockDSView) t.getSource();
+                    bMscDestiny = (BlockDSView) t.getDestiny();
+                }catch(ClassCastException e){
+                    srcBMSC = (BlockDS) t.getSource();
+                    dstBMSC = (BlockDS) t.getDestiny();
+                }
                 mValueType = "bMSC";
                 mTransition.addListener(this);
                 prepareView();

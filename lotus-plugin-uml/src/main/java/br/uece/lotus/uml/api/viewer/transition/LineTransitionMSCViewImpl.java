@@ -6,6 +6,8 @@
 package br.uece.lotus.uml.api.viewer.transition;
 
 
+import br.uece.lotus.uml.api.ds.BlockDS;
+import br.uece.lotus.uml.api.viewer.bMSC.BlockDSView;
 import br.uece.lotus.uml.api.viewer.hMSC.HmscView;
 import br.uece.lotus.viewer.Geom;
 import br.uece.lotus.viewer.Seta;
@@ -86,9 +88,15 @@ public class LineTransitionMSCViewImpl extends TransitionMSCViewImpl{
                 break;  
             }
             case "bMSC":{
-                System.out.println("Chegou no bMSC da line");
-                origem = (Region) bMscSource.getNode();
-                destino = (Region) bMscDestiny.getNode();
+                try{
+                    origem = (Region) bMscSource.getNode();
+                    destino = (Region) bMscDestiny.getNode();
+                }catch(NullPointerException e){
+                    BlockDSView src = (BlockDSView) srcBMSC.getValue("view");
+                    BlockDSView dst = (BlockDSView) dstBMSC.getValue("view");
+                    origem = (Region) src.getNode();
+                    destino = (Region) dst.getNode();
+                }
                 if(origem != null && destino != null){
                     DoubleBinding origemX = origem.layoutXProperty().add(origem.widthProperty().divide(2));
                     DoubleBinding origemY = origem.layoutYProperty().add(origem.heightProperty().divide(2));

@@ -19,11 +19,10 @@ import br.uece.lotus.uml.api.ds.TransitionMSC;
 import br.uece.lotus.uml.api.project.ProjectDSSerializer;
 import br.uece.lotus.uml.api.viewer.bMSC.BlockDSView;
 import br.uece.lotus.uml.api.viewer.hMSC.HmscView;
+import br.uece.lotus.uml.api.viewer.transition.TransitionMSCView;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import javafx.scene.shape.Line;
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -39,9 +38,8 @@ public class ProjectDSxmlSerializer implements ProjectDSSerializer{
     
     private static ProjectDS mProject;
     private static StandardModeling standardModeling;
-    private static Component ltsComposed;
+    private static Component lts;
     private static ComponentDS bMSC;
-    private static Component ltsFragment;
     
     @Override
     public ProjectDS parseStream(InputStream stream) throws Exception {
@@ -192,7 +190,7 @@ public class ProjectDSxmlSerializer implements ProjectDSSerializer{
                         xml.begin("LTS");
                         xml.attr("name", c.getName());
                             xml.begin("States");
-                            for(State v : composed.getStates()){
+                            for(State v : c.getStates()){
                                 xml.begin("state");
                                 xml.attr("id", v.getID());
                                 xml.attr("x", v.getLayoutX());
@@ -215,7 +213,7 @@ public class ProjectDSxmlSerializer implements ProjectDSSerializer{
                             }
                             xml.end();
                             xml.begin("Transitions");
-                                for (Transition t : composed.getTransitions()) {
+                                for (Transition t : c.getTransitions()) {
                                     xml.begin("transition");
                                     xml.attr("from", t.getSource().getID());
                                     xml.attr("to", t.getDestiny().getID());
@@ -266,9 +264,6 @@ public class ProjectDSxmlSerializer implements ProjectDSSerializer{
                     parseTransitionHMSC_Tag(attributes);
                     break;
                 }
-                case "LTS-Composed":{
-                    ltsComposed = new Component();
-                }
                 case "state":{
                     parseState_Tag(attributes);
                     break;
@@ -277,14 +272,22 @@ public class ProjectDSxmlSerializer implements ProjectDSSerializer{
                     parseTransition_Tag(attributes);
                     break;
                 }
-                case "LTS":{
-                    ltsFragment = new Component();
-                    ltsFragment.setName(attributes.getValue("name"));
-                    break;
-                }
                 case "bMSC":{
                     bMSC = new ComponentDS();
                     bMSC.setName(attributes.getValue("name"));
+                    break;
+                }
+                case "Object":{
+                    parseObject_Tag(attributes);
+                    break;
+                }
+                case "TransitionBMSC":{
+                    parseTransitionBMSC_Tag(attributes);
+                    break;
+                }
+                case "LTS":{
+                    lts = new Component();
+                    lts.setName(attributes.getValue("name"));
                     break;
                 }
             }
@@ -294,20 +297,21 @@ public class ProjectDSxmlSerializer implements ProjectDSSerializer{
         public void endElement(String uri, String localName, String qName) throws SAXException {
             switch(qName){
                 case "LTS":{
-                    Component lts = ltsFragment;
-                    mProject.addComponentFragmentLTS(lts);
-                    ltsFragment = null;
+                    Component c = lts;
+                    mProject.addComponentFragmentLTS(c);
+                    lts = null;
                     break;
                 }
                 case "LTS-Composed":{
-                    Component lts = ltsComposed;
-                    mProject.setLTS_Composed(lts);
-                    ltsComposed = null;
+                    Component c = lts;
+                    mProject.setLTS_Composed(c);
+                    lts = null;
                     break;
                 }
                 case "bMSC":{
                     ComponentDS bmsc = bMSC;
                     mProject.addComponent_bMSC(bmsc);
+                    bindHMSC(bmsc);
                     bMSC = null;
                     break;
                 }
@@ -316,9 +320,9 @@ public class ProjectDSxmlSerializer implements ProjectDSSerializer{
 
         @Override
         public void endDocument() throws SAXException {
-            printHmsc();
-            printLTSComposed();
-            printFragments();
+            //printHmsc();
+            //printLTSComposed();
+            //printFragments();
         }
 
         private void parseProjectTag(Attributes attributes) {
@@ -350,43 +354,30 @@ public class ProjectDSxmlSerializer implements ProjectDSSerializer{
                                     .setLabel(label)
                                     .setProbability(prob == null? null : Double.parseDouble(prob))
                                     .setValue("view.type", viewType == null? null : Integer.parseInt(viewType))
-                                    .createForXml();
+                                    .createForXmlHMSC();
             
         }
 
         private void parseState_Tag(Attributes attributes) {
             try {
-                if (ltsComposed != null) {
-                    String id = attributes.getValue("id");
-                    System.out.println("id = " + id);
-                    String label = attributes.getValue("label");
-                    double x = Double.parseDouble(attributes.getValue("x"));
-                    double y = Double.parseDouble(attributes.getValue("y"));
-                    State s = ltsComposed.newState(Integer.parseInt(id));
-                    s.setLabel(label);
-                    s.setLayoutX(x);
-                    s.setLayoutY(y);
-                    if (Boolean.parseBoolean(attributes.getValue("initial"))) {
-                        s.setAsInitial();
-                        ltsComposed.setInitialState(s);
-                    }
+                if(lts == null){
+                    lts =  new Component();
                 }
-                if (ltsFragment != null) {
-                    String id = attributes.getValue("id");
-                    String label = attributes.getValue("label");
-                    double x = Double.parseDouble(attributes.getValue("x"));
-                    double y = Double.parseDouble(attributes.getValue("y"));
-                    State s = ltsFragment.newState(Integer.parseInt(id));
-                    s.setLabel(label);
-                    s.setLayoutX(x);
-                    s.setLayoutY(y);
-                    if (Boolean.parseBoolean(attributes.getValue("initial"))) {
-                        s.setAsInitial();
-                        ltsFragment.setInitialState(s);
-                    }
+                String id = attributes.getValue("id");
+                String label = attributes.getValue("label");
+                double x = Double.parseDouble(attributes.getValue("x"));
+                double y = Double.parseDouble(attributes.getValue("y"));
+                State s = lts.newState(Integer.parseInt(id));
+                s.setLabel(label);
+                s.setLayoutX(x);
+                s.setLayoutY(y);
+                if (Boolean.parseBoolean(attributes.getValue("initial"))) {
+                    s.setAsInitial();
+                    lts.setInitialState(s);
                 }
+                
             } catch (NumberFormatException | NullPointerException e) {
-                System.out.println("erro: "+e.getMessage());
+                //System.out.println("erro: "+e.getMessage());
             }
         }
 
@@ -398,26 +389,51 @@ public class ProjectDSxmlSerializer implements ProjectDSSerializer{
             String guard = attributes.getValue("guard");
             String viewType = attributes.getValue("view-type");
             
-            if(ltsComposed != null){
-                ltsComposed.buildTransition(srcId, dstId)
-                    .setLabel(label)
-                    .setProbability(prob == null ? null : Double.parseDouble(prob))
-                    .setGuard(guard)
-                    .setValue("view.type", viewType == null ? null : Integer.parseInt(viewType))
-                    .create();
-            }
-            if(ltsFragment != null){
-                ltsFragment.buildTransition(srcId, dstId)
-                    .setLabel(label)
-                    .setProbability(prob == null ? null : Double.parseDouble(prob))
-                    .setGuard(guard)
-                    .setValue("view.type", viewType == null ? null : Integer.parseInt(viewType))
-                    .create();
-            }
+            lts.buildTransition(srcId, dstId)
+                .setLabel(label)
+                .setProbability(prob == null ? null : Double.parseDouble(prob))
+                .setGuard(guard)
+                .setValue("view.type", viewType == null ? null : Integer.parseInt(viewType))
+                .create();
+           
         }   
+        
+        private void parseObject_Tag(Attributes attributes) {
+            Integer id = Integer.parseInt(attributes.getValue("id"));
+            BlockDS object = bMSC.newBlockDS(id);
+            object.setLabel(attributes.getValue("name"));
+            object.setLayoutX(Double.parseDouble(attributes.getValue("x")));
+            object.setLayoutY(Double.parseDouble(attributes.getValue("y")));
+        }
+
+        private void parseTransitionBMSC_Tag(Attributes attributes) {
+            String label = attributes.getValue("label");
+            String sequence =  attributes.getValue("sequence");
+            String guard = attributes.getValue("guard");
+            String viewType = attributes.getValue("view-type");
+            
+            BlockDS src = bMSC.getBMSC_ByID(Integer.parseInt(attributes.getValue("from")));
+            BlockDS dst = bMSC.getBMSC_ByID(Integer.parseInt(attributes.getValue("to")));
+            
+            bMSC.buildTransition(src, dst)
+                    .setLabel(label)
+                    .setIdSequence(Integer.parseInt(sequence))
+                    .setGuard(guard)
+                    .setValue("view.type", viewType == null? null : Integer.parseInt(viewType))
+                    .createForXmlBMSC();
+        }
+        
+        private void bindHMSC(ComponentDS bmsc) {
+            StandardModeling sm = mProject.getStandardModeling();
+            for(Hmsc h : sm.getBlocos()){
+                if(h.getLabel().equals(bmsc.getName())){
+                    h.setmDiagramSequence(bmsc);
+                }
+            }
+        }
 
         //DEBUG-----------------------------------------
-        private void printHmsc() {
+        /*private void printHmsc() {
             System.out.println("--------------------StandardModeling-----------------");
             for(Hmsc h : mProject.getStandardModeling().getBlocos()){
                 System.out.println("Hmsc: "+h.getLabel()+" id:"+h.getID());
@@ -451,6 +467,6 @@ public class ProjectDSxmlSerializer implements ProjectDSSerializer{
                 }
             }
             System.out.println("-------------------------------------------------");
-        }
+        }*/
     };
 }

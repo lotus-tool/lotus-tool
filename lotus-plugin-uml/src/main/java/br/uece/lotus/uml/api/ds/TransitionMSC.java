@@ -45,8 +45,13 @@ public class TransitionMSC {
            return mTransitionMSC;
        }
        
-       public TransitionMSC createForXml() {
+       public TransitionMSC createForXmlHMSC() {
            mComponentBuild.add2(mTransitionMSC);
+           return mTransitionMSC;
+       }
+       
+       public TransitionMSC createForXmlBMSC() {
+           mComponentDS.add2(mTransitionMSC);
            return mTransitionMSC;
        }
 

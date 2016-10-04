@@ -8,7 +8,6 @@ package br.uece.lotus.uml.app.project;
 import br.uece.lotus.Component;
 import br.uece.lotus.State;
 import br.uece.lotus.Transition;
-import br.uece.lotus.designer.NewDesignerWindowManager;
 import br.uece.lotus.uml.api.ds.BlockDS;
 import br.uece.lotus.uml.api.ds.Hmsc;
 import br.uece.lotus.uml.api.ds.StandardModeling;
@@ -16,7 +15,6 @@ import br.uece.lotus.uml.api.ds.ComponentDS;
 import br.uece.lotus.uml.api.ds.ProjectDS;
 import br.uece.lotus.uml.api.ds.TransitionMSC;
 import br.uece.lotus.uml.api.project.ProjectExplorerDS;
-import br.uece.lotus.uml.api.viewer.bMSC.ComponentDSViewImpl;
 import br.uece.lotus.uml.designer.blockDiagramModeling.DesingWindowImplManegerBlockDs;
 import br.uece.lotus.uml.designer.standardModeling.StandardModelingWindowManager;
 import br.uece.lotus.uml.designer.windowLTS.LtsWindowManager;
@@ -133,6 +131,7 @@ public final class ProjectExplorerPluginDS extends Plugin implements ProjectExpl
             component.setName("LTS_Composed");
             build.getChildren().add(new TreeItem<>(new WrapperDS(component), new ImageView(
                                 new Image(getClass().getResourceAsStream("/imagens/project/ic_componet_lts_geral.png")))));
+            build.setExpanded(true);
         }
 
         @Override
@@ -379,18 +378,56 @@ public final class ProjectExplorerPluginDS extends Plugin implements ProjectExpl
         }
         TreeItem<WrapperDS> project = findItem(mProjectDSView.getRoot(), p);
         if(project == null){
+            //----------------------------------Raiz-------------------------------------------
             p.addListener(mProjectDSListener);
             project = new TreeItem<>(new WrapperDS(p), new ImageView(
                     new Image(getClass().getResourceAsStream("/imagens/project/ic_project.png"))));
-            List<TreeItem<WrapperDS>> filhos = project.getChildren();
+            //---------------------------------StandardModeling-------------------------------------------
+            TreeItem<WrapperDS> compBuildDs = null;
             StandardModeling buildDS = p.getStandardModeling();
             if (buildDS != null){
                 buildDS.addListener(mComponentBuildListener);
-                TreeItem<WrapperDS> compBuildDs = new TreeItem<>(new WrapperDS(buildDS),new ImageView(
+                compBuildDs = new TreeItem<>(new WrapperDS(buildDS),new ImageView(
                                     new Image(getClass().getResourceAsStream("/imagens/project/ic_standardModeling.png"))));
-                filhos.add(compBuildDs);
+                project.getChildren().add(compBuildDs);
             }
-            // continuar para toda a hierarquia...
+            //-------------------------------Component Composed-------------------------------------------------------
+            Component composed = p.getLTS_Composed();
+            if(composed != null){
+                composed.addListener(mComponentLTS);
+                composed.setName("LTS_Composed");
+                compBuildDs.getChildren().add(new TreeItem<>(new WrapperDS(composed), new ImageView(
+                                new Image(getClass().getResourceAsStream("/imagens/project/ic_componet_lts_geral.png")))));
+                compBuildDs.setExpanded(true);
+            }
+            //-------------------------------------BMSC's---------------------------------------------------
+            if(p.getComponentsDS() != null){
+                TreeItem<WrapperDS> pastaDS = new TreeItem<>(new WrapperDS("bMSCs"), new ImageView(
+                                new Image(getClass().getResourceAsStream("/imagens/project/ic_folders.png"))));
+                
+                for(ComponentDS componentDs : p.getComponentsDS()){
+                    componentDs.addListener(mComponentBMSC);
+                    TreeItem<WrapperDS> cds = new TreeItem<>(new WrapperDS(componentDs), new ImageView(
+                                    new Image(getClass().getResourceAsStream("/imagens/project/ic_component_ds.png"))));
+                    pastaDS.getChildren().add(cds);
+                }
+                project.getChildren().add(pastaDS);
+                pastaDS.setExpanded(true);
+            }
+            //---------------------------------Fragmentos LTS------------------------------------------------
+            if(p.getFragments() != null){
+                TreeItem<WrapperDS> fragment = new TreeItem<>(new WrapperDS("Fragments LTS"), new ImageView(
+                                new Image(getClass().getResourceAsStream("/imagens/project/ic_folders.png"))));
+                
+                for(Component component : p.getFragments()){
+                    component.addListener(mComponentLTS);
+                    TreeItem<WrapperDS> c = new TreeItem<>(new WrapperDS(component), new ImageView(
+                                    new Image(getClass().getResourceAsStream("/imagens/project/ic_component_fragment.png"))));
+                    fragment.getChildren().add(c);
+                }
+                project.getChildren().add(fragment);
+                fragment.setExpanded(true);
+            }
             mProjectDSView.getRoot().getChildren().add(project);
         }
     }
