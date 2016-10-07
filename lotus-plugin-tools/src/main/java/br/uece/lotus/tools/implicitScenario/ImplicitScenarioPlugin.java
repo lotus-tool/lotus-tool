@@ -31,11 +31,12 @@ import javafx.scene.control.ButtonType;
 /**
  * @author Bruno Barbosa && Lucas Vieira
  */
-public class ImplicitScenarioPlugin extends Plugin {
+public class ImplicitScenarioPlugin extends Plugin  {
 
     private ProjectExplorer mProjectExplorer;
     private UserInterface mUserInterface;
     private ProjectDialogsHelper mProjectDialogsHelper;
+    private ImplicitScenarioWindowController implicitScenarioWindowController;
 
     // Component that contains the behavioral model created from Plugin Model From Trace
     private Component c;
@@ -87,15 +88,15 @@ public class ImplicitScenarioPlugin extends Plugin {
         refiner.refine(mListTraceFromRealModel, mListOneLoopPathFromBehavioralModel);
         mListCenariosImplicitos = refiner.getListCenariosImplicitos();
 
-        String linhaTabelaSelecionada="";
+       /* String linhaTabelaSelecionada="";
         if(linhaTabelaSelecionada.equals("")){// quer dizer que vou remover tudo
             refiner.removeAllImplicitedScenary();
         }else if (!(linhaTabelaSelecionada.equals(""))) { // quer dizer que vai remover só a linha seleciona (não testei ainda)
             refiner.removeImplicitedScenary(linhaTabelaSelecionada);
         }
+*/
 
-
-        ArrayList<String> mListClearOneLoopPath = refiner.getListCleanOneLoopPath();
+       /* ArrayList<String> mListClearOneLoopPath = refiner.getListCleanOneLoopPath();
         makePrintFromList(mListCenariosImplicitos,"Scenary:","S.I");
         makePrintFromList(mListClearOneLoopPath,"CLEAN ONE LOOP PATH:","Clear-O-L-P");
 
@@ -105,13 +106,14 @@ public class ImplicitScenarioPlugin extends Plugin {
 
         //try join Transitons the same label without generate scenarys
         Aggregator aggregator = new Aggregator(modificadComponet,mListTraceFromRealModel);
-        modificadComponet=aggregator.aggregate();
+        modificadComponet=aggregator.aggregate();*/
 
-        Project p = new Project();
+        /*Project p = new Project();
         TraceParser parser = new TraceParser();
+         Component modificadComponet =implicitScenarioWindowController.modificadComponet;
         p.addComponent(modificadComponet);
         p.setName("Project");
-        mProjectExplorer.open(p);
+        mProjectExplorer.open(p);*/
 
 
         try {
@@ -176,6 +178,13 @@ public class ImplicitScenarioPlugin extends Plugin {
                 }
                 if("Refiner".equals(key)){
                     return refiner;
+                }
+
+                if("mProjectDialogsHelper".equals(key)){
+                    return mProjectDialogsHelper;
+                }
+                if("mProjectExplorer".equals(key)){
+                    return mProjectExplorer;
                 }
                 return null;
             }
