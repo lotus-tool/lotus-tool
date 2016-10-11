@@ -78,9 +78,9 @@ public class Refiner {
 
     }
     public void removeImplicitedScenary(String scenary){
-            if(!listCenariosImplicitos.contains(scenary)){
-                listCleanOneLoopPath.add(scenary);
-
+            if(listCenariosImplicitos.contains(scenary)){
+                listCleanOneLoopPath = (ArrayList<String>) listOneLoopPath.clone();
+                listCleanOneLoopPath.remove(scenary);
         }
 
     }

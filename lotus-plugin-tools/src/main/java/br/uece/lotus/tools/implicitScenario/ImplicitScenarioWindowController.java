@@ -6,9 +6,15 @@
 package br.uece.lotus.tools.implicitScenario;
 
 import br.uece.lotus.Component;
+import br.uece.lotus.Project;
 import br.uece.lotus.State;
 import br.uece.lotus.Transition;
+import br.uece.lotus.project.ProjectDialogsHelper;
+import br.uece.lotus.project.ProjectExplorer;
+import br.uece.lotus.tools.TraceParser;
+import br.uece.lotus.tools.implicitScenario.StructsRefine.Aggregator;
 import br.uece.lotus.tools.implicitScenario.StructsRefine.Refiner;
+import br.uece.lotus.tools.implicitScenario.StructsRefine.Trie;
 import br.uece.lotus.viewer.ComponentViewImpl;
 import java.net.URL;
 import java.util.ArrayList;
@@ -50,18 +56,20 @@ public class ImplicitScenarioWindowController implements Initializable{
     private ObservableList<ScenarioTableView> data = FXCollections.observableArrayList();
     private Component mComponent;
     private Refiner refiner;
-
+    public Component modificadComponet;
+    private ProjectDialogsHelper mProjectDialogsHelper;
+    private ProjectExplorer mProjectExplorer;
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-     
+
         mViewer = new ComponentViewImpl();
         mScrollPane.setContent(mViewer);
-        
+
         mComponent = (Component) resources.getObject("component");
         mViewer.setComponent(mComponent);
-
         refiner = (Refiner) resources.getObject("Refiner");
-        
+        mProjectDialogsHelper = (ProjectDialogsHelper) resources.getObject("mProjectDialogsHelper");
+        mProjectExplorer = (ProjectExplorer) resources.getObject("mProjectExplorer");
         List<String> paths = (List<String>) resources.getObject("ListRefined");
         for(String s : paths){
             data.add(new ScenarioTableView(s));
@@ -125,13 +133,51 @@ public class ImplicitScenarioWindowController implements Initializable{
     
     private void acaoOK(String cenarioSelecionado){
         System.out.println("ativou o botao ok, cenario: "+cenarioSelecionado);
-       /* refiner.*/
+        if(cenarioSelecionado.equals("")){
+            refiner.removeAllImplicitedScenary();
+        }else {
+        removeScenary(cenarioSelecionado);
+        }
+
     }
-    
+
+    private void removeScenary( String cenarioSelecionado) {
+        ArrayList<String> mListCenariosImplicitos = refiner.getListCenariosImplicitos();
+        refiner.removeImplicitedScenary(cenarioSelecionado);
+
+        ArrayList<String> mListClearOneLoopPath = refiner.getListCleanOneLoopPath();
+        makePrintFromList(mListCenariosImplicitos,"Scenary:","S.I");
+        makePrintFromList(mListClearOneLoopPath,"CLEAN ONE LOOP PATH:","Clear-O-L-P");
+
+        //This segment is doing the builder the Component
+        Trie trie = new Trie();
+         modificadComponet = trie.createComponet(mListClearOneLoopPath); // return a component witiout scenarys, but it is all open
+
+        //try join Transitons the same label without generate scenarys
+        ArrayList<String> mListTraceFromRealModel = refiner.getListTrace();
+        Aggregator aggregator = new Aggregator(modificadComponet, mListTraceFromRealModel);
+        modificadComponet=aggregator.aggregate();
+
+        Project p = new Project();
+        TraceParser parser = new TraceParser();
+        p.addComponent(modificadComponet);
+        p.setName("Project");
+        mProjectExplorer.open(p);
+    }
+
     private void acaoCancel(String cenarioSelecionado){
         System.out.println("ativou o botao cancel, cenario: "+cenarioSelecionado);
     }
-    
+
+    private void makePrintFromList(ArrayList<String> list, String title, String tag) {
+        System.out.println("\n\n");
+        System.out.println(title);
+        for (String s : list) {
+            System.out.println(tag + " " + s);
+        }
+
+
+    }
     
     private void ordenarTabela(TableView tv, TableColumn tc){
         TableColumn.SortType st = null;
