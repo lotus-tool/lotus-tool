@@ -11,14 +11,12 @@ import br.uece.lotus.State;
 import br.uece.lotus.Transition;
 import br.uece.lotus.project.ProjectDialogsHelper;
 import br.uece.lotus.project.ProjectExplorer;
-import br.uece.lotus.tools.TraceParser;
 import br.uece.lotus.tools.implicitScenario.StructsRefine.Aggregator;
 import br.uece.lotus.tools.implicitScenario.StructsRefine.Refiner;
 import br.uece.lotus.tools.implicitScenario.StructsRefine.Trie;
 import br.uece.lotus.viewer.ComponentViewImpl;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.ResourceBundle;
 import javafx.collections.FXCollections;
@@ -27,6 +25,7 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TableCell;
@@ -100,22 +99,22 @@ public class ImplicitScenarioWindowController implements Initializable{
                             setGraphic(null);
                             setText(null);
                         }else{
-                            HBox box = new HBox(5);
-                            Button btnOk = new Button();
-                            Button btnCancel = new Button();
+                            Button btnDelete = new Button();
                             
                             String selecionado = getTableView().getItems().get(getIndex()).implicitScenarioProperty().get();
-                            btnOk.setOnAction((ActionEvent event) -> {
-                                acaoOK(selecionado);
+                            
+                            btnDelete.setOnAction((ActionEvent event) -> {
+                                actionDelete(selecionado);
                             });
-                            btnOk.setGraphic(new ImageView(new Image(getClass().getResourceAsStream("/image/Ok_Scenario.png"))));
-                            btnCancel.setOnAction((ActionEvent event) -> {
-                                acaoCancel(selecionado);
-                            });
-                            btnCancel.setGraphic(new ImageView(new Image(getClass().getResourceAsStream("/image/Cancel_Scenario.png"))));
-                            box.getChildren().addAll(btnOk,btnCancel);
-                            setGraphic(box);
+                            ImageView viewImage = new ImageView(new Image(getClass().getResourceAsStream("/image/remove-icon.png")));
+                            viewImage.setFitWidth(28);
+                            viewImage.setFitHeight(22);
+                            
+                            btnDelete.setGraphic(viewImage);
+                            
+                            setGraphic(btnDelete);
                             setText(null);
+                            setAlignment(Pos.CENTER);
                         }
                     }
                 };
@@ -131,7 +130,7 @@ public class ImplicitScenarioWindowController implements Initializable{
         ordenarTabela(mTableView, scenario);
     }
     
-    private void acaoOK(String cenarioSelecionado){
+    private void actionDelete(String cenarioSelecionado){
         System.out.println("ativou o botao ok, cenario: "+cenarioSelecionado);
         if(cenarioSelecionado.equals("")){
             refiner.removeAllImplicitedScenary();
@@ -158,15 +157,22 @@ public class ImplicitScenarioWindowController implements Initializable{
         Aggregator aggregator = new Aggregator(modificadComponet, mListTraceFromRealModel);
         modificadComponet=aggregator.aggregate();
 
-        Project p = new Project();
-        TraceParser parser = new TraceParser();
+       
+        Project p =  mProjectExplorer.getSelectedProject();
+        modificadComponet.setName("ImpliedScenario "+countScenarios());
         p.addComponent(modificadComponet);
-        p.setName("Project");
-        mProjectExplorer.open(p);
     }
-
-    private void acaoCancel(String cenarioSelecionado){
-        System.out.println("ativou o botao cancel, cenario: "+cenarioSelecionado);
+    
+    private int countScenarios() {
+        int count = 1;
+        Project p = mProjectExplorer.getSelectedProject();
+        List<Component> lista = (List<Component>) p.getComponents();
+        for(Component c : lista){
+            if(c.getName().contains("ImpliedScenario")){
+                count++;
+            }
+        }
+        return count;
     }
 
     private void makePrintFromList(ArrayList<String> list, String title, String tag) {
@@ -175,8 +181,6 @@ public class ImplicitScenarioWindowController implements Initializable{
         for (String s : list) {
             System.out.println(tag + " " + s);
         }
-
-
     }
     
     private void ordenarTabela(TableView tv, TableColumn tc){
@@ -201,14 +205,20 @@ public class ImplicitScenarioWindowController implements Initializable{
         String[] ordem = caminho.split(",");
         State state = mComponent.getInitialState();
         
-        for(int i=0;i<ordem.length;i++){
+        for(int i=0;i<ordem.length-1;i++){
             applyEnableStyle(state);
             String labelTransition = ordem[i];
             Transition prox = null;
             List<Transition> transitions = state.getOutgoingTransitionsList();
             for(Transition t : transitions){
-                if(t.getLabel().equals(labelTransition)){
-                    prox = t;
+                if(state.isInitial()){
+                    if(t.getLabel().equals(labelTransition)){
+                        prox = t;
+                    }
+                }else{
+                    if(t.getLabel().equals(labelTransition.substring(1, labelTransition.length()))){
+                        prox = t;
+                    }
                 }
             }
             if(prox != null){

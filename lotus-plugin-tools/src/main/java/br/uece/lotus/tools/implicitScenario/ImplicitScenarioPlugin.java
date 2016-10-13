@@ -201,7 +201,7 @@ public class ImplicitScenarioPlugin extends Plugin  {
             loader.setBuilderFactory(new JavaFXBuilderFactory());
             loader.setResources(bundle);
             Parent root = (Parent) loader.load(location.openStream());
-            int id = mUserInterface.getCenterPanel().newTab(c.getName() + " - [ImplicitScenario]", root, true);
+            int id = mUserInterface.getCenterPanel().newTab(c.getName() + " - [ImpliedScenario]", root, true);
             mUserInterface.getCenterPanel().showTab(id);
         } catch (IOException e) {
             e.printStackTrace();
@@ -230,7 +230,7 @@ public class ImplicitScenarioPlugin extends Plugin  {
         mUserInterface = extensionManager.get(UserInterface.class);
         mProjectExplorer = extensionManager.get(ProjectExplorer.class);
         mProjectDialogsHelper = extensionManager.get(ProjectDialogsHelper.class);
-        mUserInterface.getMainMenu().newItem("Verification/Implied Scenario")
+        mUserInterface.getMainMenu().newItem("Verification/Implied Scenarios Detection")
                 .setWeight(1)
                 .setAction(implicitScenario)
                 .create();

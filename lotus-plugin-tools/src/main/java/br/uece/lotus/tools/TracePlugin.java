@@ -40,8 +40,11 @@ public class TracePlugin  extends Plugin {
             @Override
             public void run() {
                 Project p = mProjectDialogsHelper.open(mTraceSerializer, "Import Trace", "Trace Files (*.csv)", "*.csv");
+                String nameFile = mProjectDialogsHelper.getTraceFile().getName();
+                String nameView = nameFile.substring(0, nameFile.length()-4);  // remove a extensao do nome do projeto no Substring
                 if (p != null) {
-                    p.setName("Untitled");
+                    p.setName("Model "+ nameView);
+                    p.getComponent(0).setName(nameView);
                     mProjectExplorer.open(p);
 
                 }
