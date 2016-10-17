@@ -24,7 +24,6 @@ public class OnDraggedMouse implements Strategy {
     public void onDraggedMouse(DesingWindowImplBlockDs s, MouseEvent e) {
         if(s.mModoAtual == s.MODO_NENHUM){
             if(e.getButton() == MouseButton.PRIMARY){
-                System.out.println("entrou no drag");
                 
                 double offsetX = e.getX() - s.dragContextMouseAnchorX;
                 double offsetY = e.getY() - s.dragContextMouseAnchorY;
@@ -34,7 +33,6 @@ public class OnDraggedMouse implements Strategy {
 
                 }
                 if(!(s.mComponentSobMouse instanceof BlockDSView) ){//ajusta o retangulo se nao for arrastar um block
-                    System.out.println("construindo retangulo");
                     if(offsetX > 0){
                         s.rectSelecao.setWidth(offsetX);
                     }else{
