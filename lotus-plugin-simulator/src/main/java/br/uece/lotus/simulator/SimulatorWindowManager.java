@@ -55,7 +55,9 @@ public class SimulatorWindowManager extends DefaultWindowManagerPlugin<Simulator
             JOptionPane.showMessageDialog(null, "Select a component!");
             return;
         }
-        show(c);
+        try{
+            show(c.clone());
+        }catch(CloneNotSupportedException e){}
     };
 
     @Override

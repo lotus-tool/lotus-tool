@@ -30,6 +30,7 @@ import br.uece.lotus.helpers.window.Window;
 import br.uece.lotus.viewer.ComponentView;
 import br.uece.lotus.viewer.ComponentViewImpl;
 import br.uece.lotus.viewer.StateView;
+import br.uece.lotus.viewer.TransitionView;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -43,11 +44,12 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
-
 import javax.script.ScriptEngine;
 import javax.swing.*;
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
+
 
 /**
  * @author emerson
@@ -82,34 +84,7 @@ public class SimulatorWindow extends AnchorPane implements Window, Initializable
     private ComponentView mViewer;
     private ExecutorSimulatorCommands mExecutorCommands;
 
-    private final EventHandler<? super MouseEvent> onMouseClick = new EventHandler<MouseEvent>() {
-        @Override
-        public void handle(MouseEvent e) {
-            StateView v = mViewer.locateStateView(new Point2D(e.getSceneX(), e.getSceneY()));
-            if (v == null) {
-                return;
-            }
-
-            State mCurrentState = mSimulatorContext.getmCurrentState();
-            State s = v.getState();
-            Transition t = mSimulatorContext.getmCurrentState().getTransitionTo(s);
-
-            if (t == null) {
-                System.out.println(mSimulatorContext.getmCurrentState().getLabel());
-                JOptionPane.showMessageDialog(null, "Select a valid state!", "Invalid Operation", JOptionPane.ERROR_MESSAGE);
-                return;
-            } else if (mCurrentState.isFinal() || mCurrentState.isError() || mCurrentState.getOutgoingTransitionsCount() == 0) {
-                mBtnStart.setText("Start");
-                JOptionPane.showMessageDialog(null, "Error state or final reached!", "Invalid Operation", JOptionPane.ERROR_MESSAGE);
-            } else if (mCurrentState.onlySelfTransition() && mCurrentState.getmVisitedStatesCount() > 1) {
-                JOptionPane.showMessageDialog(null, "Only self transition available!", "Invalid Operation", JOptionPane.ERROR_MESSAGE);
-            } else {
-                MakeStepCommand madeStep = new MakeStepCommand(mSimulatorContext, s, MOUSE_STEP);
-                mExecutorCommands.executeCommand(madeStep);
-                mSteps.add(new Step(madeStep.getmTransistionLabel(), madeStep.getmPreviousStateLabel(), madeStep.getmStateLabel()));
-            }
-        }
-    };
+    private final EventHandler<? super MouseEvent> onMouseClick;
 
     private final ObservableList<Step> mSteps = FXCollections.observableArrayList();
     private Node mNode;
@@ -125,8 +100,13 @@ public class SimulatorWindow extends AnchorPane implements Window, Initializable
         mViewer.getNode().minWidthProperty().bind(mScrollPanel.widthProperty());
 
         mSimulatorContext.setmPathLabel(new Label(""));
-
+        
+        //Restart da simulação limpando todos os trace
         mBtnStart.setOnAction((ActionEvent e) -> {
+            while (!mSimulatorContext.getmCurrentState().isInitial()) {
+                mExecutorCommands.unmakeOperation();
+                mSteps.remove(mSteps.size() - 1);
+            }
             start();
         });
 
@@ -162,6 +142,87 @@ public class SimulatorWindow extends AnchorPane implements Window, Initializable
     }
 
     public SimulatorWindow() {
+        this.onMouseClick = new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent e) {
+                
+                Transition t = null;
+                State mCurrentState = null;
+                State s = null;
+                
+                /*CLIQUE NO ESTADO*/
+               StateView v = mViewer.locateStateView(new Point2D(e.getSceneX(), e.getSceneY()));
+              
+               /*CLIQUE NA TRANSICAO*/
+               TransitionView transitionView = mViewer.locateTransitionView(new Point2D(e.getSceneX(), e.getSceneY()));
+               
+             
+               
+               //SimulatorUtils.applyEnableStyle(t);
+                
+                /*EXECUCAO DO CLIQUE NO ESTADO*/
+                
+                if (v != null) {
+                    mCurrentState = mSimulatorContext.getmCurrentState();
+                    s = v.getState();
+                    t = mSimulatorContext.getmCurrentState().getTransitionTo(s);
+                }
+                
+               
+                /*EXECUCAO DO CLIQUE NA TRANSICAO*/
+                if(transitionView != null){
+                    /*pegando index da transicao*/
+                    int index = -1;
+                    List<Transition> listaTransitions = (List<Transition>) mViewer.getComponent().getTransitions();
+                    for(int i=0;i<listaTransitions.size();i++){
+                        Transition tran = listaTransitions.get(i);
+                        if(tran.equals(transitionView.getTransition())){
+                            index = i;
+                        }
+                    }
+                    if(index!=-1){                 
+                        mCurrentState = transitionView.getTransition().getSource();
+                        t = listaTransitions.get(index);
+                    }
+                    mostrarDebug(mCurrentState,t);
+                }
+                
+                
+                if (t == null) {
+                    System.out.println(mSimulatorContext.getmCurrentState().getLabel());
+                    JOptionPane.showMessageDialog(null, "Select a valid transition!", "Invalid Operation", JOptionPane.ERROR_MESSAGE);
+                    return;
+                } else if (mCurrentState.isFinal() || mCurrentState.isError() || mCurrentState.getOutgoingTransitionsCount() == 0) {
+                    mBtnStart.setText("Start");
+                    JOptionPane.showMessageDialog(null, "Error state or final reached!", "Invalid Operation", JOptionPane.ERROR_MESSAGE);
+                } else if (mCurrentState.onlySelfTransition() && mCurrentState.getmVisitedStatesCount() > 1) {
+                    JOptionPane.showMessageDialog(null, "Only self transition available!", "Invalid Operation", JOptionPane.ERROR_MESSAGE);
+                } else {
+                    MakeStepCommand madeStep = new MakeStepCommand(mSimulatorContext, t, MOUSE_STEP);
+                    mExecutorCommands.executeCommand(madeStep);
+                    mSteps.add(new Step(madeStep.getmTransistionLabel(), madeStep.getmPreviousStateLabel(), madeStep.getmStateLabel()));
+                }
+            }
+
+            private void mostrarDebug(State mCurrentState, Transition t) {
+                System.out.println("State src da T : "+t.getSource().getLabel());
+                System.out.println("State dst da T : "+t.getDestiny().getLabel());
+                System.out.println("mCurrentState: "+mCurrentState.getLabel());
+                System.out.println("----------Saidas do state "+mCurrentState.getLabel()+"-------");
+                for(Transition tt : mCurrentState.getOutgoingTransitionsList()){
+                    System.out.println("Transitio: "+tt);
+                }
+                System.out.println("---------------------------");
+                int view = (int) t.getValue("view.type");
+                System.out.print("Transition escolhida: "+t);
+                if(view == 0){
+                    System.out.print(" do tipo Line");
+                }else if(view == 1){
+                    System.out.print(" do tipo Curve");
+                }
+                System.out.println("\n");
+            }
+        };
         mSimulatorContext = new SimulatorContext();
         mExecutorCommands = new ExecutorSimulatorCommands();
     }
@@ -170,6 +231,7 @@ public class SimulatorWindow extends AnchorPane implements Window, Initializable
         mBtnStart.setText("Restart");
         mExecutorCommands.cleanMadeOperations();
         mExecutorCommands.cleanUnmadeOperations();
+        
 //        mStepCount = 0;
         mSteps.clear();
 //        mPathLabel.setText("");
@@ -180,7 +242,8 @@ public class SimulatorWindow extends AnchorPane implements Window, Initializable
         mSimulatorContext.setmStepCount(0);
         mSimulatorContext.getmPathLabel().setText("");
         mSimulatorContext.setmCurrentState(mViewer.getComponent().getInitialState());
-
+        mSimulatorContext.setmCurrentTransition(null);
+        //se o componente nao tiver estado inicial
         if (mSimulatorContext.getmCurrentState() == null) {
             JOptionPane.showMessageDialog(null, "O componente não possui um estado inicial!");
             return;
