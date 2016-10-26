@@ -1,6 +1,7 @@
 package br.uece.lotus.simulator;
 
 import br.uece.lotus.State;
+import br.uece.lotus.Transition;
 import javafx.scene.control.Label;
 
 import javax.script.ScriptEngine;
@@ -15,6 +16,7 @@ public class SimulatorContext {
 	private State mCurrentState;
 	private Label mPathLabel;
 	private int mStepCount;
+        private Transition mCurrentTransition;
 
 	public ScriptEngine getmEngine() {
 		return mEngine;
@@ -48,6 +50,16 @@ public class SimulatorContext {
 	public void setmStepCount(int mStepCount) {
 		this.mStepCount = mStepCount;
 	}
+
+    public Transition getmCurrentTransition() {
+        return mCurrentTransition;
+    }
+
+    public void setmCurrentTransition(Transition mCurrentTransition) {
+        this.mCurrentTransition = mCurrentTransition;
+    }
+        
+        
 
 	public static class Step {
 		private String mAction;

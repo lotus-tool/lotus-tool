@@ -22,6 +22,7 @@ public class MakeStepCommand implements SimulatorCommand {
 	private Transition mTransition;
 	private String mPreviousPathLabel;
 	private State mStateSelectedByMouse;
+        private Transition mTransitionSelectedByMouse;
 
 	private SimulatorContext mSimulatorContext;
 	private State mSimulatorCurrentState;
@@ -43,6 +44,15 @@ public class MakeStepCommand implements SimulatorCommand {
 		mStateSelectedByMouse = stateSelectedByMouse;
 		TYPE_STEP = typeStep;
 	}
+        
+        public MakeStepCommand(SimulatorContext simulatorContext, Transition transitionSelectedByMouse, int typeStep) {
+		mSimulatorContext = simulatorContext;
+		mSimulatorCurrentState = simulatorContext.getmCurrentState();
+		mSimulatorPathLabel = simulatorContext.getmPathLabel();
+		mPreviousPathLabel = mSimulatorPathLabel.getText();
+		mTransitionSelectedByMouse = transitionSelectedByMouse;
+		TYPE_STEP = typeStep;
+	}
 
 	@Override
 	public void doOperation() {
@@ -50,8 +60,12 @@ public class MakeStepCommand implements SimulatorCommand {
 
 		switch (TYPE_STEP) {
 			case MOUSE_STEP:
-				t = mSimulatorCurrentState.getTransitionTo(mStateSelectedByMouse);
-				break;
+                                if(mStateSelectedByMouse != null){
+                                    t = mSimulatorCurrentState.getTransitionTo(mStateSelectedByMouse);
+                                }else{
+                                    t = mTransitionSelectedByMouse;
+                                }
+                                break;
 			case RANDOM_PROBABILISTIC_STEP:
 				t = selectRandomTransitionByProbability();
 				break;
