@@ -58,6 +58,10 @@ public class ImplicitScenarioWindowController implements Initializable{
     public Component modificadComponet;
     private ProjectDialogsHelper mProjectDialogsHelper;
     private ProjectExplorer mProjectExplorer;
+    private List<String> traceRealModel;
+    
+    private Boolean sinalizar = false;
+    
     @Override
     public void initialize(URL location, ResourceBundle resources) {
 
@@ -69,6 +73,7 @@ public class ImplicitScenarioWindowController implements Initializable{
         refiner = (Refiner) resources.getObject("Refiner");
         mProjectDialogsHelper = (ProjectDialogsHelper) resources.getObject("mProjectDialogsHelper");
         mProjectExplorer = (ProjectExplorer) resources.getObject("mProjectExplorer");
+        traceRealModel = (List<String>) resources.getObject("RealModelTrace");
         List<String> paths = (List<String>) resources.getObject("ListRefined");
         for(String s : paths){
             data.add(new ScenarioTableView(s));
@@ -131,11 +136,10 @@ public class ImplicitScenarioWindowController implements Initializable{
     }
     
     private void actionDelete(String cenarioSelecionado){
-        System.out.println("ativou o botao ok, cenario: "+cenarioSelecionado);
         if(cenarioSelecionado.equals("")){
             refiner.removeAllImplicitedScenary();
         }else {
-        removeScenary(cenarioSelecionado);
+            removeScenary(cenarioSelecionado);
         }
 
     }
@@ -159,7 +163,7 @@ public class ImplicitScenarioWindowController implements Initializable{
 
        
         Project p =  mProjectExplorer.getSelectedProject();
-        modificadComponet.setName("ImpliedScenario "+countScenarios());
+        modificadComponet.setName(p.getName().substring(6, p.getName().length())+countScenarios());
         p.addComponent(modificadComponet);
     }
     
@@ -168,7 +172,7 @@ public class ImplicitScenarioWindowController implements Initializable{
         Project p = mProjectExplorer.getSelectedProject();
         List<Component> lista = (List<Component>) p.getComponents();
         for(Component c : lista){
-            if(c.getName().contains("ImpliedScenario")){
+            if(c.getName().contains(p.getName().substring(6, p.getName().length()))){
                 count++;
             }
         }
@@ -200,14 +204,20 @@ public class ImplicitScenarioWindowController implements Initializable{
         ScenarioTableView pathView = mTableView.getSelectionModel().getSelectedItem();
         String caminho = pathView.implicitScenarioProperty().get();
         
+        String caminhoBom = verificarPontoRuim(caminho);
+        String[] partesCaminhoBom = caminhoBom.split(",");
+        
         applyDisableAll();
         
         String[] ordem = caminho.split(",");
         State state = mComponent.getInitialState();
         
         for(int i=0;i<ordem.length-1;i++){
-            applyEnableStyle(state);
             String labelTransition = ordem[i];
+            sinalizar = !(i <= partesCaminhoBom.length-1 && labelTransition.contains(partesCaminhoBom[i]));
+            
+            applyEnableStyle(state);
+            
             Transition prox = null;
             List<Transition> transitions = state.getOutgoingTransitionsList();
             for(Transition t : transitions){
@@ -230,17 +240,29 @@ public class ImplicitScenarioWindowController implements Initializable{
     };
     
     protected void applyEnableStyle(State s){
+        String cor;
+        if(!sinalizar){
+            cor = "black";
+        }else{
+            cor = "red";
+        }
         s.setColor(null);
-        s.setTextColor("black");
+        s.setTextColor(cor);
         s.setTextSyle(State.TEXTSTYLE_NORMAL);
-        s.setBorderColor("black");
+        s.setBorderColor(cor);
         s.setBorderWidth(1);
     }
 
     protected void applyEnableStyle(Transition t){
-        t.setColor("black");
+        String cor;
+        if(!sinalizar){
+            cor = "black";
+        }else{
+            cor = "red";
+        }
+        t.setColor(cor);
         t.setTextSyle(Transition.TEXTSTYLE_NORMAL);
-        t.setTextColor("black");
+        t.setTextColor(cor);
         t.setWidth(1);
     }
 
@@ -285,5 +307,39 @@ public class ImplicitScenarioWindowController implements Initializable{
             }
             ++i;
         }
+    }
+
+    private String verificarPontoRuim(String caminho) {
+        List<String> selecionados = new ArrayList<>();
+        String parteBoa = "";
+        
+        String[] partesCaminho = caminho.split(",");
+        
+        for(String model : traceRealModel){
+            String pedacoCompativel = "";
+            String[] partesModel = model.split(",");
+            for(int i=0;i<partesModel.length;i++){
+                for(int j=0;j<partesCaminho.length-1;j++){
+                    if(i==j){
+                        if(partesModel[i].contains(partesCaminho[j])){
+                            pedacoCompativel += partesCaminho[j]+",";
+                        }
+                    }
+                }
+            }
+            selecionados.add(pedacoCompativel);
+        }
+        
+        if(!selecionados.isEmpty()){
+            parteBoa = selecionados.get(0);
+        }
+        
+        for(String selecionado : selecionados){
+            if(caminho.startsWith(selecionado)){
+                parteBoa = selecionado;
+            }
+        }
+        
+        return parteBoa;
     }
 }

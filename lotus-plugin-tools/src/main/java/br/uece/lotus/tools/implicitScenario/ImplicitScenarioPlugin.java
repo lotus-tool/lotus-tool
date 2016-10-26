@@ -72,7 +72,7 @@ public class ImplicitScenarioPlugin extends Plugin  {
 
 
         //START ALGORITHM REFINER
-                mTraceFile = getTraceFile();
+        mTraceFile = getTraceFile();
         if (mTraceFile == null) {
             Alert alert = new Alert(Alert.AlertType.INFORMATION, "Problem in Trace file", ButtonType.OK);
             alert.show();
@@ -185,6 +185,10 @@ public class ImplicitScenarioPlugin extends Plugin  {
                 }
                 if("mProjectExplorer".equals(key)){
                     return mProjectExplorer;
+                }
+                
+                if("RealModelTrace".equals(key)){
+                    return mListTraceFromRealModel;
                 }
                 return null;
             }
