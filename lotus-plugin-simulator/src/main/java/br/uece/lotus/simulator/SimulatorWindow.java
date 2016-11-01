@@ -157,8 +157,6 @@ public class SimulatorWindow extends AnchorPane implements Window, Initializable
                TransitionView transitionView = mViewer.locateTransitionView(new Point2D(e.getSceneX(), e.getSceneY()));
                
              
-               
-               //SimulatorUtils.applyEnableStyle(t);
                 
                 /*EXECUCAO DO CLIQUE NO ESTADO*/
                 
