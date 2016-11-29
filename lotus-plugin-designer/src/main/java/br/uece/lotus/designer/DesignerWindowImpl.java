@@ -1043,5 +1043,11 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
             mUndoRedo[contPosHistoricoCheia] = viewer;
             contPosHistoricoCheia+=1;
         }
+
     }*/
 }
+
+    
+
+
+

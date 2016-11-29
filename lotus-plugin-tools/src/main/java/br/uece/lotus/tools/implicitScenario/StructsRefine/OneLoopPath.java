@@ -40,7 +40,6 @@ public class OneLoopPath {
         tempLoop.add(initialState.getID());
         findPaths(initialState.getID());
         tempLoop.clear();
-        printPaths();
         return paths;
 
     }
@@ -48,7 +47,7 @@ public class OneLoopPath {
     private void findPaths(int v) {
         if(listStatesEnds.contains(v)){
             String path = tempPath;
-            paths.add(path);
+            paths.add(path.substring(0, path.length()-2));
            /* System.out.println("adicionou caminho");*/
             return;
         }
@@ -203,7 +202,7 @@ public class OneLoopPath {
     }
 
     private void printPaths() {
-        System.out.println("-------------Caminhos-----------------------");
+        System.out.println("-------------Caminhos-OLP-------------------");
         for(String s : paths){
             System.out.println(s);
         }
