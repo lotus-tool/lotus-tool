@@ -33,7 +33,7 @@ import javafx.scene.control.ButtonType;
  *
  * @author Bruno Barbosa && Lucas Vieira
  */
-public class ImplicitScenarioTeste extends Plugin {
+public class ImplicitScenarioPlugin extends Plugin {
 
     private ProjectExplorer mProjectExplorer;
     private UserInterface mUserInterface;
