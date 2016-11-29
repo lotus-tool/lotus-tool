@@ -475,13 +475,13 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
         mBtnUndo = new Button();
         mBtnUndo.setGraphic(new ImageView(new Image(getClass().getResourceAsStream("/images/ic_undo.png"))));
         mBtnUndo.setOnAction((ActionEvent event) -> {
-            //historicoViewer("Desfazer");
+            historicoViewer("Desfazer");
         });
 
         mBtnRedo = new Button();
         mBtnRedo.setGraphic(new ImageView(new Image(getClass().getResourceAsStream("/images/ic_redo.png"))));
         mBtnRedo.setOnAction((ActionEvent event) -> {
-            //historicoViewer("Refazer");
+            historicoViewer("Refazer");
         });
 
         //Set Colors-----------------------------------------------------------------------------------
@@ -615,7 +615,7 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
         Tooltip.install(mBtnRedo, redoInfo);
 
         mToolbar.getItems().addAll(mBtnArrow, mBtnState, mBtnTransitionLine, mBtnTransitionArc, mBtnEraser, mBtnHand, mBtnZoom, mBtnBigState,
-                new Separator(Orientation.VERTICAL),paleta);//mBtnUndo, mBtnRedo); //, new Separator(), txtGuard, txtProbability, txtLabel);
+                new Separator(Orientation.VERTICAL),paleta, mBtnUndo, mBtnRedo); //, new Separator(), txtGuard, txtProbability, txtLabel);
 
         mStateToolbar = new ToolBar();
         mStateToolbar.setVisible(false);
@@ -1021,7 +1021,7 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
     }
 
     //Historico para Desfazer e Refazer
-    /*private void historicoViewer(String opcao) {
+    private void historicoViewer(String opcao) {
         switch(opcao){
             case "Desfazer":{
                 if(contPosHistoricoCheia>0){
@@ -1048,6 +1048,6 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
             mUndoRedo[contPosHistoricoCheia] = viewer;
             contPosHistoricoCheia+=1;
         }
-    }*/
+    }
 
 }
