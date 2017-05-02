@@ -12,17 +12,18 @@ import br.uece.lotus.Transition;
 import br.uece.lotus.project.ProjectExplorer;
 import br.uece.lotus.tools.layout.TreeLayouter;
 import br.uece.lotus.viewer.ComponentViewImpl;
+import br.uece.lotus.viewer.TransitionView;
 import java.net.URL;
 import java.rmi.server.Operation;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -58,8 +59,9 @@ public class ImplicitScenarioWindowController implements Initializable {
     private Component mComponent;
     public Component mComponentAlterado;
     private ProjectExplorer mProjectExplorer;
-    private ArrayList<String> pathsFromTraceModel;
-    private ArrayList<String> pathsScenarioImplied;
+    private List<String> pathsFromTraceModel;
+    private List<String> pathsScenarioImplied;
+    private List<String> pathsOLP = new CopyOnWriteArrayList<>();
 
     private Boolean sinalizar = false;
 
@@ -71,11 +73,12 @@ public class ImplicitScenarioWindowController implements Initializable {
             mScrollPane.setContent(mViewer);
 
             mComponent = (Component) resources.getObject("component");
-            mComponentAlterado = mComponent.clone();
+            mComponentAlterado = new Component();
             mViewer.setComponent(mComponent);
             mProjectExplorer = (ProjectExplorer) resources.getObject("mProjectExplorer");
             pathsFromTraceModel = (ArrayList<String>) resources.getObject("TraceModelo");
             pathsScenarioImplied = (ArrayList<String>) resources.getObject("CenariosImplicitos");
+            pathsOLP.addAll((Collection<? extends String>) resources.getObject("OLP"));
 
             System.out.println("Trace entrada: " + pathsFromTraceModel.size());
             System.out.println("Implieds: " + pathsScenarioImplied.size());
@@ -86,9 +89,178 @@ public class ImplicitScenarioWindowController implements Initializable {
 
             iniciarTable();
 
-        } catch (CloneNotSupportedException ex) {
+        } catch (Exception ex) {
             Logger.getLogger(ImplicitScenarioWindowController.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+
+    private void actionDelete(String cenarioSelecionado) throws CloneNotSupportedException {
+        actionWindow(cenarioSelecionado, "RemoveScenario");
+        Project p = mProjectExplorer.getSelectedProject();
+        mComponentAlterado.setName(p.getName().substring(6, p.getName().length()) + countScenarios());
+        new TreeLayouter().layout(mComponentAlterado);
+        p.addComponent(mComponentAlterado.clone());
+    }
+
+    private int countScenarios() {
+        int count = 1;
+        Project p = mProjectExplorer.getSelectedProject();
+        List<Component> lista = (List<Component>) p.getComponents();
+        for (Component c : lista) {
+            if (c.getName().contains(p.getName().substring(6, p.getName().length()))) {
+                count++;
+            }
+        }
+        return count;
+    }
+
+    private final EventHandler<? super MouseEvent> selecionarPath = (MouseEvent event) -> {
+        ScenarioTableView pathView = mTableView.getSelectionModel().getSelectedItem();
+        String caminho = pathView.implicitScenarioProperty().get();
+        actionWindow(caminho, "viewTrace");
+    };
+
+    private HashMap<Integer, Transition> transitionsPathSelected;
+
+    private void actionWindow(String pathSelected, String type) {
+        switch (type) {
+//------------------------------------------------------PINTURA------------------------------------------------------------------------------------------
+            case "viewTrace": {
+                if (transitionsPathSelected == null) {
+                    transitionsPathSelected = new HashMap<>();
+                } else {
+                    transitionsPathSelected.clear();
+                }
+                State currentState = mComponent.getInitialState();
+                Transition currentTransition = null;
+                String[] partesCaminho = pathSelected.split(", ");
+                int tamPedacoCaminho = partesCaminho.length;
+                int ponteiroPosicao = 0;
+                boolean caminhoOK = false;
+                applyDisableAll();
+//                System.out.println("Caminho selecionado : " + pathSelected);
+//                System.out.println("Tamanho do caminho selecionado: " + tamPedacoCaminho);
+//                System.out.println("Ponteiro posicao: " + ponteiroPosicao);
+                while (transitionsPathSelected.size() < tamPedacoCaminho) {
+                    //System.out.println("Dentro do while hashMap menor que tamanho do caminho");
+                    CopyOnWriteArrayList<Transition> currentStateSaidas = new CopyOnWriteArrayList<>();
+                    currentStateSaidas.addAll(currentState.getOutgoingTransitionsList());
+                    boolean encontrou = false;
+                    for (Transition t : currentStateSaidas) {
+//                        System.out.println("t currentstatesaidas: ----------> "+t.getLabel());
+//                        System.out.println("parte do caminho na posicao: "+ponteiroPosicao+" com label: "+partesCaminho[ponteiroPosicao]);
+//                        System.out.println(t.getLabel()+" eh igual a "+partesCaminho[ponteiroPosicao]+" ?: "+(t.getLabel().equals(partesCaminho[ponteiroPosicao])));
+                        if (t.getLabel().equals(partesCaminho[ponteiroPosicao]) && (t != currentTransition || currentTransition == null)) {
+                            //System.out.println("Encontrou a Transicao: " + t.getLabel());
+                            transitionsPathSelected.put(ponteiroPosicao, t);
+                            //System.out.println("Inserio no hashmap");
+                            currentTransition = t;
+                            //System.out.println("Transicao corrente: " + t.getLabel());
+                            currentState = t.getDestiny();
+                            //System.out.println("Proximo state: " + currentState.getLabel());
+                            ponteiroPosicao++;
+                            //System.out.println("Proxima posicao do ponteiro: " + ponteiroPosicao);
+                            encontrou = true;
+                            break;
+                        }
+                    }
+                    if (!encontrou && currentTransition != null) {
+                        //System.out.println("Nao encontrou a transicao");
+                        currentState = currentTransition.getSource();
+                        //System.out.println("Voltou ao state: " + currentState.getLabel());
+                        ponteiroPosicao--;
+                        //System.out.println("Ponteiro volto para: " + ponteiroPosicao);
+                        transitionsPathSelected.remove(ponteiroPosicao);
+                        //System.out.println("Removi a transicao do hashmap: " + currentTransition);
+                    }
+                }
+                //System.out.println("-------------------------------------------------");
+                ponteiroPosicao = 0;
+                //System.out.println("Ponteiro posicao resetado: " + ponteiroPosicao);
+                Transition implicita = null;
+                while (!caminhoOK) {
+//                    System.out.println("Dentro do while do caminhoOK");
+//                    System.out.println("Transicao Implicita: " + implicita);
+                    String pathTemp = "";
+                    for (int i = 0; i <= ponteiroPosicao; i++) {
+                        pathTemp += partesCaminho[i].trim() + ", ";
+                    }
+                    //System.out.println("PathTemp: " + pathTemp);
+                    if (verificarTraceEntrada(pathTemp)) {
+                        //System.out.println("PathTempo permitido nos traces de entrada");
+                        if (ponteiroPosicao < tamPedacoCaminho) {
+                            ponteiroPosicao++;
+                            //System.out.println("Proxima posicao do ponteiro: " + ponteiroPosicao);
+                        }
+                    } else {
+                        if (implicita == null) {
+                            implicita = transitionsPathSelected.get(ponteiroPosicao);
+                            //System.out.println("Achou a implicita: " + implicita.getLabel());
+                            ponteiroPosicao = tamPedacoCaminho;
+                        }
+                    }
+                    if (ponteiroPosicao == tamPedacoCaminho) {
+                        //System.out.println("Ponteiro igual ao tamanho do caminho");
+                        caminhoOK = true;
+
+                    }
+                }
+                for (Transition t : transitionsPathSelected.values()) {
+                    for (Transition tComponent : mComponent.getTransitions()) {
+                        if (t.equals(tComponent)) {
+                            sinalizar = t == implicita && implicita != null;
+                            applyEnableStyle(tComponent.getSource());
+                            applyEnableStyle(tComponent.getDestiny());
+                            applyEnableStyle(tComponent);
+                            //System.out.println("Sinalizar = " + sinalizar + " pintou os states e transition: " + tComponent.getLabel());
+                        }
+                    }
+                }
+                //System.out.println("terminou a pintura");
+            }
+            break;
+//-------------------------------------------------------REMOCAO-----------------------------------------------------------------------------------------------
+            case "RemoveScenario": {
+            //----------------------Step 1 Remover o caminho do OneLoopPath e abrir o modelo -----------------------------    
+                pathsOLP = pathsOLP.stream().filter(p-> !p.equals(pathSelected)).collect(Collectors.toList());
+
+                mComponentAlterado.newState(0);
+                mComponentAlterado.setInitialState(mComponentAlterado.getStateByID(0));
+                
+                pathsOLP.stream().forEach(olpSemCenarioImplicitoSelecionado -> {
+                    
+                    String[] parteCaminho = olpSemCenarioImplicitoSelecionado.split(",");
+                    Transition currentTransition = null;
+                    for (String parte : parteCaminho) {
+                        State state = currentTransition != null ? currentTransition.getDestiny() : mComponentAlterado.getInitialState();
+                        boolean noMatch = verificarTransition(state, parte.trim());
+                        if (noMatch) {
+                            currentTransition = mComponentAlterado.buildTransition(state, mComponentAlterado.newState((mComponentAlterado.getStatesCount() - 1))).setLabel(parte.trim()).setViewType(TransitionView.Geometry.LINE).create();
+                        } else {
+                            currentTransition = recuperarTransition(state, parte.trim());
+                        }
+                    }
+                });
+                
+            //--------------------Step 2 Reduzir Modelo (Aglutinar) ---------------------------------------------------------
+                
+            }
+            break;
+        }
+    }
+
+    private boolean verificarTransition(State state, String label) {
+        return state.getOutgoingTransitionsList().stream().noneMatch(t -> t.getLabel().equals(label));
+    }
+
+    private Transition recuperarTransition(State state, String label) {
+        Transition transition = null;
+        for (Transition t : state.getOutgoingTransitionsList()) {
+            if (t.getLabel().equals(label)) {
+                transition = t;
+            }
+        }
+        return transition;
     }
 
     private void iniciarTable() {
@@ -148,25 +320,13 @@ public class ImplicitScenarioWindowController implements Initializable {
         ordenarTabela(mTableView, scenario);
     }
 
-    private void actionDelete(String cenarioSelecionado) throws CloneNotSupportedException {
-        actionWindow(cenarioSelecionado, "RemoveScenario");
-        Project p = mProjectExplorer.getSelectedProject();
-        mComponentAlterado.setName(p.getName().substring(6, p.getName().length()) + countScenarios());
-        resetarPosicoes();
-        new TreeLayouter().layout(mComponentAlterado);
-        p.addComponent(mComponentAlterado.clone());
-    }
-
-    private int countScenarios() {
-        int count = 1;
-        Project p = mProjectExplorer.getSelectedProject();
-        List<Component> lista = (List<Component>) p.getComponents();
-        for (Component c : lista) {
-            if (c.getName().contains(p.getName().substring(6, p.getName().length()))) {
-                count++;
+    private boolean verificarTraceEntrada(String pathTemp) {
+        for (String s : pathsFromTraceModel) {
+            if (s.startsWith(pathTemp.substring(0, pathTemp.length() - 2))) {
+                return true;
             }
         }
-        return count;
+        return false;
     }
 
     private void ordenarTabela(TableView tv, TableColumn tc) {
@@ -181,12 +341,6 @@ public class ImplicitScenarioWindowController implements Initializable {
             tc.setSortable(true);
         }
     }
-
-    private final EventHandler<? super MouseEvent> selecionarPath = (MouseEvent event) -> {
-        ScenarioTableView pathView = mTableView.getSelectionModel().getSelectedItem();
-        String caminho = pathView.implicitScenarioProperty().get();
-        actionWindow(caminho, "viewTrace");
-    };
 
     protected void applyEnableStyle(State s) {
         String cor;
@@ -262,273 +416,4 @@ public class ImplicitScenarioWindowController implements Initializable {
         }
     }
 
-    private HashMap<Integer, Transition> transitionsPathSelected;
-
-    private void actionWindow(String pathSelected, String type) {
-        switch (type) {
-
-            case "viewTrace": {
-                if (transitionsPathSelected == null) {
-                    transitionsPathSelected = new HashMap<>();
-                } else {
-                    transitionsPathSelected.clear();
-                }
-                State currentState = mComponent.getInitialState();
-                Transition currentTransition = null;
-                String[] partesCaminho = pathSelected.split(",");
-                int tamPedacoCaminho = partesCaminho.length;
-                int ponteiroPosicao = 0;
-                boolean caminhoOK = false;
-                applyDisableAll();
-                System.out.println("Caminho selecionado : " + pathSelected);
-                System.out.println("Tamanho do caminho selecionado: " + tamPedacoCaminho);
-                System.out.println("Ponteiro posicao: " + ponteiroPosicao);
-                while (transitionsPathSelected.size() < tamPedacoCaminho) {
-                    System.out.println("Dentro do while hashMap menor que tamanho do caminho");
-                    CopyOnWriteArrayList<Transition> currentStateSaidas = new CopyOnWriteArrayList<>();
-                    currentStateSaidas.addAll(currentState.getOutgoingTransitionsList());
-                    boolean encontrou = false;
-                    for (Transition t : currentStateSaidas) {
-                        if (t.getLabel().equals(partesCaminho[ponteiroPosicao].trim()) && t != currentTransition || currentTransition == null) {
-                            System.out.println("Encontrou a Transicao: " + t.getLabel());
-                            transitionsPathSelected.put(ponteiroPosicao, t);
-                            System.out.println("Inserio no hashmap");
-                            currentTransition = t;
-                            System.out.println("Transicao corrente: " + t.getLabel());
-                            currentState = t.getDestiny();
-                            System.out.println("Proximo state: " + currentState.getLabel());
-                            ponteiroPosicao++;
-                            System.out.println("Proxima posicao do ponteiro: " + ponteiroPosicao);
-                            encontrou = true;
-                            break;
-                        }
-                    }
-                    if (!encontrou && currentTransition != null) {
-                        System.out.println("Nao encontrou a transicao");
-                        currentState = currentTransition.getSource();
-                        System.out.println("Voltou ao state: " + currentState.getLabel());
-                        ponteiroPosicao--;
-                        System.out.println("Ponteiro volto para: " + ponteiroPosicao);
-                        transitionsPathSelected.remove(ponteiroPosicao);
-                        System.out.println("Removi a transicao do hashmap: " + currentTransition);
-                    }
-                }
-                System.out.println("-------------------------------------------------");
-                ponteiroPosicao = 0;
-                System.out.println("Ponteiro posicao resetado: " + ponteiroPosicao);
-                Transition implicita = null;
-                while (!caminhoOK) {
-                    System.out.println("Dentro do while do caminhoOK");
-                    System.out.println("Transicao Implicita: " + implicita);
-                    String pathTemp = "";
-                    for (int i = 0; i <= ponteiroPosicao; i++) {
-                        pathTemp += partesCaminho[i].trim() + ", ";
-                    }
-                    System.out.println("PathTemp: " + pathTemp);
-                    if (verificarTraceEntrada(pathTemp)) {
-                        System.out.println("PathTempo permitido nos traces de entrada");
-                        if (ponteiroPosicao < tamPedacoCaminho) {
-                            ponteiroPosicao++;
-                            System.out.println("Proxima posicao do ponteiro: " + ponteiroPosicao);
-                        }
-                    } else {
-                        if (implicita == null) {
-                            implicita = transitionsPathSelected.get(ponteiroPosicao);
-                            System.out.println("Achou a implicita: " + implicita.getLabel());
-                            ponteiroPosicao = tamPedacoCaminho;
-                        }
-                    }
-                    if (ponteiroPosicao == tamPedacoCaminho) {
-                        System.out.println("Ponteiro igual ao tamanho do caminho");
-                        caminhoOK = true;
-                        
-                    }
-                }
-                for (Transition t : transitionsPathSelected.values()) {
-                    for (Transition tComponent : mComponent.getTransitions()) {
-                        if (t == tComponent) {
-                            sinalizar = t == implicita && implicita != null;
-                            applyEnableStyle(tComponent.getSource());
-                            applyEnableStyle(tComponent.getDestiny());
-                            applyEnableStyle(tComponent);
-                            System.out.println("Sinalizar = " + sinalizar + " pintou os states e transition: " + tComponent.getLabel());
-                        }
-                    }
-                }
-                System.out.println("terminou a pintura");
-            }
-            break;
-
-            case "RemoveScenario": {
-                try {
-                    String[] partesCaminho = pathSelected.split(",");
-                    String currentCaminho = partesCaminho[0].trim();
-                    State currentState = mComponentAlterado.getInitialState();
-                    String pathTemp = currentCaminho + ", ";
-                    ramoPorPronfundidade(currentState, currentCaminho, pathTemp);
-                } catch (ConcurrentModificationException e) {
-                    //Cai nessa exception quando volta pro state inicial, pois ja modifiquei ele criando o novo ramo a partir dele
-                    System.out.println("Caiu na exception Concurrent");
-                }
-
-                stateVisitados.clear();
-                ligacaoRamoComOriginal.clear();
-
-                if (transitionInicialSelecionada != null) {
-                    State destino = transitionInicialSelecionada.getDestiny();
-                    mComponentAlterado.remove(transitionInicialSelecionada);
-                    List<Transition> caminhosIniciais = mComponentAlterado.getInitialState().getTransitionsTo(destino);
-                    if (caminhosIniciais == null || caminhosIniciais.isEmpty()) {
-                        mComponentAlterado = recuperarRamosCriados();
-                        statesInicialEntrada.clear();
-                    }
-                }
-            }
-            break;
-        }
-    }
-
-    private final HashMap<State, Integer> stateVisitados = new HashMap<>();
-    private final HashMap<State, State> ligacaoRamoComOriginal = new HashMap<>();
-    private final List<State> statesInicialEntrada = new CopyOnWriteArrayList<>();
-    private Transition transitionInicialSelecionada = null;
-
-    private void ramoPorPronfundidade(State currentState, String currentCaminho, String pathTemp) {
-        boolean caminhoInicial = false;
-        //verifica se ja foi visitado
-        if (stateVisitados.containsKey(currentState)) {
-            int oldValue = stateVisitados.get(currentState);
-            stateVisitados.replace(currentState, oldValue, oldValue++);
-        } else {
-            stateVisitados.put(currentState, 1);
-        }
-        //preenche a ligacao com o state inicial
-        if (currentState.isInitial()) {
-            ligacaoRamoComOriginal.put(currentState, currentState);
-            caminhoInicial = true;
-        }
-        //percorre as saidas
-        for (Transition tOut : currentState.getOutgoingTransitions()) {
-            if (caminhoInicial) {
-                System.out.println("Eh inicial");
-                if (tOut.getLabel().equals(currentCaminho.trim())) {
-                    transitionInicialSelecionada = tOut;
-                    if (verificarTraceEntrada(pathTemp)) {
-                        //criar ramo
-                        State dstRamo = mComponentAlterado.newState(mComponentAlterado.getStatesCount() + 1);
-                        ligacaoRamoComOriginal.put(tOut.getDestiny(), dstRamo);
-                        mComponentAlterado.buildTransition(ligacaoRamoComOriginal.get(tOut.getSource()), dstRamo)
-                                .setLabel(tOut.getLabel())
-                                .setViewType(0)
-                                .create();
-                        ramoPorPronfundidade(tOut.getDestiny(), null, pathTemp); // falta fazer as verificacoes de visitados
-                    } else {
-                        return;
-                    }
-                }
-            } else {
-                String pathTemp2 = pathTemp + tOut.getLabel() + ", ";
-                if (verificarTraceEntrada(pathTemp2)) {
-                    //criar ramo
-                    if (stateVisitados.containsKey(tOut.getDestiny())) {
-                        if (stateVisitados.containsKey(tOut.getSource())) {
-                            State srcLig = ligacaoRamoComOriginal.get(tOut.getSource());
-                            State dstLig = ligacaoRamoComOriginal.get(tOut.getDestiny());
-                            Transition tEntreVisitados = srcLig.getTransitionTo(dstLig);
-                            if (tEntreVisitados != null) {
-                                String labelEntreVisitados = tEntreVisitados.getLabel();
-                                if (labelEntreVisitados.equals(tOut.getLabel())) {
-                                    ramoPorPronfundidade(tOut.getDestiny(), null, pathTemp2);
-                                }
-                            } else {
-                                mComponentAlterado.buildTransition(srcLig, dstLig)
-                                        .setLabel(tOut.getLabel())
-                                        .setViewType(1)
-                                        .create();
-                                ramoPorPronfundidade(tOut.getDestiny(), null, pathTemp2);
-                            }
-
-                        } else {
-                            State dstRamo = ligacaoRamoComOriginal.get(tOut.getDestiny());
-                            mComponentAlterado.buildTransition(ligacaoRamoComOriginal.get(tOut.getSource()), dstRamo)
-                                    .setLabel(tOut.getLabel())
-                                    .setViewType(1)
-                                    .create();
-                            ramoPorPronfundidade(tOut.getDestiny(), null, pathTemp2);
-                        }
-                    } else {
-                        State dstRamo = mComponentAlterado.newState(mComponentAlterado.getStatesCount() + 1);
-                        ligacaoRamoComOriginal.put(tOut.getDestiny(), dstRamo);
-                        mComponentAlterado.buildTransition(ligacaoRamoComOriginal.get(tOut.getSource()), dstRamo)
-                                .setLabel(tOut.getLabel())
-                                .setViewType(0)
-                                .create();
-                        ramoPorPronfundidade(tOut.getDestiny(), null, pathTemp2);
-                    }
-                }
-            }
-        }
-    }
-
-    private boolean verificarTraceEntrada(String pathTemp) {
-        for (String s : pathsFromTraceModel) {
-            if (s.startsWith(pathTemp.substring(0, pathTemp.length() - 2))) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private Component recuperarRamosCriados() {
-
-        Component ramos = new Component();
-
-        Component cIni = null;
-        Project p = mProjectExplorer.getSelectedProject();
-        for (Component c : p.getComponents()) {
-            if (c.getName().equals(p.getName().substring(6, p.getName().length()))) {
-                cIni = c;
-            }
-        }
-        if (cIni.getStates() != null) {
-            statesInicialEntrada.addAll((Collection<? extends State>) cIni.getStates());
-            for (State s : statesInicialEntrada) {
-                if (s.isInitial()) {
-                    statesInicialEntrada.remove(s);
-                }
-            }
-            System.out.println("----------------States iniciais recuperados-----------------");
-            statesInicialEntrada.stream().forEach((s) -> {
-                System.out.println("State label: " + s.getLabel() + "  ID: " + s.getID());
-            });
-            System.out.println("----------------States do component todo-----------------");
-            for (State s : mComponentAlterado.getStates()) {
-                System.out.println("State label: " + s.getLabel() + "  ID: " + s.getID());
-            }
-        }
-
-        //Guardando a diferenca
-        for (State s : mComponentAlterado.getStates()) {
-            if (!statesInicialEntrada.contains(s)) {
-                ramos.add(s);
-                if (s.isInitial()) {
-                    ramos.setInitialState(s);
-                }
-                List<Transition> t = new CopyOnWriteArrayList<>();
-                t.addAll(s.getOutgoingTransitionsList());
-                t.stream().forEach((tr) -> {
-                    ramos.add(tr);
-                });
-            }
-        }
-
-        return ramos;
-    }
-
-    private void resetarPosicoes() {
-        for (State s : mComponentAlterado.getStates()) {
-            s.setLayoutX(0);
-            s.setLayoutY(0);
-        }
-    }
 }

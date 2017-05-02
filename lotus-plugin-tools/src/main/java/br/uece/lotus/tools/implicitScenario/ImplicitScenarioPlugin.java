@@ -8,7 +8,6 @@ package br.uece.lotus.tools.implicitScenario;
 import br.uece.lotus.Component;
 import br.uece.lotus.project.ProjectDialogsHelper;
 import br.uece.lotus.project.ProjectExplorer;
-import br.uece.lotus.tools.implicitScenario.StructsRefine.OneLoopPath;
 import br.uece.seed.app.UserInterface;
 import br.uece.seed.ext.ExtensionManager;
 import br.uece.seed.ext.Plugin;
@@ -21,8 +20,10 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashSet;
+import java.util.List;
 import java.util.ResourceBundle;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArrayList;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.JavaFXBuilderFactory;
 import javafx.scene.Parent;
@@ -42,15 +43,15 @@ public class ImplicitScenarioPlugin extends Plugin {
     private Component c;
     private File mTraceFileModel;
     private OneLoopPath oneLoopPath;
-    private ArrayList<String> pathsFromOLP;
-    private ArrayList<String> pathsFromTraceModel;
-    private ArrayList<String> pathsScenarioImplied;
+    private List<String> pathsFromOLP;
+    private List<String> pathsFromTraceSystem;
+    private List<String> pathsScenarioImplied;
 
     private final Runnable implicitScenario = () -> {
 
         oneLoopPath = new OneLoopPath();
-        pathsFromOLP = new ArrayList<>();
-        pathsFromTraceModel = new ArrayList<>();
+        pathsFromOLP = new CopyOnWriteArrayList<>();
+        pathsFromTraceSystem = new ArrayList<>();
         pathsScenarioImplied = new ArrayList<>();
 
         c = mProjectExplorer.getSelectedComponent();
@@ -68,10 +69,10 @@ public class ImplicitScenarioPlugin extends Plugin {
         }
 
         pathsFromOLP = oneLoopPath.createOneLoopPath(c);
-        pathsFromTraceModel = createArrayList(mTraceFileModel);
+        pathsFromTraceSystem = createArrayList(mTraceFileModel);
         getScenarioImpliedies();
         makePrintFromList(pathsFromOLP, "Caminhos do OneLoopPath", "OLP: ");
-        makePrintFromList(pathsFromTraceModel, "Caminhos do TraceModel", "Trace: ");
+        makePrintFromList(pathsFromTraceSystem, "Caminhos do Sistema", "Trace: ");
         makePrintFromList(pathsScenarioImplied, "Caminhos do ImpliedScenario", "IS: ");
         System.out.println("OLP : "+pathsFromOLP.size());
         
@@ -98,9 +99,11 @@ public class ImplicitScenarioPlugin extends Plugin {
                 if ("mProjectExplorer".equals(key)) {
                     return mProjectExplorer;
                 }
-
                 if ("TraceModelo".equals(key)) {
-                    return pathsFromTraceModel;
+                    return pathsFromTraceSystem;
+                }
+                if("OLP".equals(key)){
+                    return pathsFromOLP;
                 }
                 return null;
             }
@@ -163,13 +166,13 @@ public class ImplicitScenarioPlugin extends Plugin {
 
     private void getScenarioImpliedies() {
         for (String olp : pathsFromOLP) {
-            if (!pathsFromTraceModel.contains(olp)) {
+            if (!pathsFromTraceSystem.contains(olp)) {
                 pathsScenarioImplied.add(olp);
             }
         }
     }
 
-    private void makePrintFromList(ArrayList<String> list, String title, String tag) {
+    private void makePrintFromList(List<String> list, String title, String tag) {
         System.out.println("\n");
         System.out.println(title);
         for (String s : list) {
@@ -182,7 +185,7 @@ public class ImplicitScenarioPlugin extends Plugin {
         mUserInterface = extensionManager.get(UserInterface.class);
         mProjectExplorer = extensionManager.get(ProjectExplorer.class);
         mProjectDialogsHelper = extensionManager.get(ProjectDialogsHelper.class);
-        mUserInterface.getMainMenu().newItem("Verification/Implied Scenarios Detection NEW")
+        mUserInterface.getMainMenu().newItem("Verification/Implied Scenarios Detection")
                 .setWeight(1)
                 .setAction(implicitScenario)
                 .create();

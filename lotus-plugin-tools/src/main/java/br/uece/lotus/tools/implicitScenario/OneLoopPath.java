@@ -1,4 +1,4 @@
-package br.uece.lotus.tools.implicitScenario.StructsRefine;
+package br.uece.lotus.tools.implicitScenario;
 
 import br.uece.lotus.Component;
 
