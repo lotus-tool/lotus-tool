@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.text.*?>
+<?import java.lang.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox fx:id="mVBox" prefHeight="337.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="br.uece.lotus.compiler.CompilerWindow">
+   <children>
+      <ToolBar fx:id="mToolbar" prefHeight="0.0" prefWidth="2166.0">
+        <items>
+            <AnchorPane minWidth="590.0" prefHeight="30.0">
+               <children>
+                <Button fx:id="mBtnCompile" mnemonicParsing="false" text="Compile" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="0.0">
+                     <font>
+                        <Font size="13.0" />
+                     </font>
+                  </Button>
+                  <Label fx:id="mNameProject" alignment="CENTER" contentDisplay="CENTER" textAlignment="CENTER" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="240.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                     <font>
+                        <Font size="15.0" />
+                     </font>
+                  </Label>
+                  <Button fx:id="mBtnSave" layoutX="100.0" mnemonicParsing="false" text="Save">
+                     <font>
+                        <Font size="13.0" />
+                     </font>
+                  </Button>
+                  <Button fx:id="mBtnLoad" layoutX="170.0" mnemonicParsing="false" text="Load">
+                     <font>
+                        <Font size="13.0" />
+                     </font>
+                  </Button>
+               </children>
+            </AnchorPane>
+        </items>
+      </ToolBar>
+      <SplitPane fx:id="mSplitPane" dividerPositions="0.6587837837837838" maxWidth="1.7976931348623157E308" orientation="VERTICAL" prefHeight="2500.0" prefWidth="2528.0">
+        <items>
+          <AnchorPane fx:id="AnchorPane1" minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
+               <children>
+                  <TextArea fx:id="mTextArea" layoutX="6.0" prefHeight="196.0" prefWidth="160.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                     <font>
+                        <Font size="18.0" />
+                     </font>
+                  </TextArea>
+               </children>
+            </AnchorPane>
+          <AnchorPane fx:id="AnchorPane2" minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
+               <children>
+                  <TabPane fx:id="mTabPane" layoutX="14.0" layoutY="53.0" prefHeight="143.0" prefWidth="598.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                    <tabs>
+                      <Tab fx:id="mTab" text="Console">
+                        <content>
+                          <AnchorPane fx:id="AnchorPane3" minHeight="0.0" minWidth="0.0" prefHeight="259.0" prefWidth="530.0">
+                                 <children>
+                                    <Label fx:id="mLabel" layoutX="56.0" layoutY="6.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                       <font>
+                                          <Font size="18.0" />
+                                       </font>
+                                    </Label>
+                                    <TextArea fx:id="consoleTextArea" editable="false" layoutX="128.0" layoutY="29.0" prefHeight="50.0" prefWidth="530.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="29.0">
+                                       <font>
+                                          <Font size="18.0" />
+                                       </font>
+                                    </TextArea>
+                                 </children>
+                              </AnchorPane>
+                        </content>
+                      </Tab>
+                    </tabs>
+                  </TabPane>
+               </children>
+            </AnchorPane>
+        </items>
+      </SplitPane>
+   </children>
+</VBox>

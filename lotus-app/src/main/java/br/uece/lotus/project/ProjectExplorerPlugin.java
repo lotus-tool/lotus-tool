@@ -125,7 +125,7 @@ public final class ProjectExplorerPlugin extends Plugin implements ProjectExplor
     //private PropertiesEditor mPropertyEditor;
     private final List<Listener> mListeners;
     //private final ChangeListener<TreeItem<Wrapper>> mEditarSelecaoNoPainelDePropriedades = (ObservableValue<? extends TreeItem<Wrapper>> observable, TreeItem<Wrapper> oldValue, TreeItem<Wrapper> newValue) -> {
-         //mPropertyEditor.edit(newValue.getValue().getObject());
+    //mPropertyEditor.edit(newValue.getValue().getObject());
     //};
 
     public ProjectExplorerPlugin() {

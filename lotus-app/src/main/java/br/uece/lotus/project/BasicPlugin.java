@@ -408,7 +408,7 @@ public class BasicPlugin extends Plugin {
         mProjectExplorer.getProjectMenu().addItem(Integer.MIN_VALUE, "New Component", mNewComponent);
         mProjectExplorer.getProjectMenu().addItem(Integer.MIN_VALUE, "Rename...", mRenameProject);
         mProjectExplorer.getProjectMenu().addItem(Integer.MIN_VALUE, "-", null);
-        mProjectExplorer.getProjectMenu().addItem(Integer.MIN_VALUE, "Close project...", mCloseProject);
+        mProjectExplorer.getProjectMenu().addItem(Integer.MAX_VALUE, "Close project...", mCloseProject);
 
         mProjectExplorer.getComponentMenu().addItem(Integer.MIN_VALUE, "Rename...", mRenameComponent);
         mProjectExplorer.getComponentMenu().addItem(Integer.MIN_VALUE, "Remove...", mRemoveComponent);

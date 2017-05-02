@@ -54,12 +54,12 @@ public class Component {
         } else if (from.isInitial()) {
             to.setAsInitial();
         }
-        if (from.isBig()){
+        if (from.isBig()) {
             to.setBig(true);
         }
     }
 
-    private void copyTransition(Transition from, Transition to) {        
+    private void copyTransition(Transition from, Transition to) {
         to.setLabel(from.getLabel());
         to.setProbability(from.getProbability());
         to.setGuard(from.getGuard());
@@ -107,12 +107,13 @@ public class Component {
     public int getStatesCount() {
         return mStates.size();
     }
-    
-    public int getBigStatesCount(){
+
+    public int getBigStatesCount() {
         int count = 0;
-        for(State s : mStates){
-            if(s.getValue("bigstate")!=null)
+        for (State s : mStates) {
+            if (s.getValue("bigstate") != null) {
                 count++;
+            }
         }
         return count;
     }
@@ -198,13 +199,13 @@ public class Component {
     }
 
     public void remove(State state) {
-    	List<Transition> transitions = new ArrayList<>();
-    	transitions.addAll(state.getOutgoingTransitionsList());
-    	transitions.addAll(state.getIncomingTransitionsList());
+        List<Transition> transitions = new ArrayList<>();
+        transitions.addAll(state.getOutgoingTransitionsList());
+        transitions.addAll(state.getIncomingTransitionsList());
         for (Transition t : transitions) {
             remove(t);
         }
-        
+
         mStates.remove(state);
         for (Listener l : mListeners) {
             l.onStateRemoved(this, state);
@@ -223,14 +224,14 @@ public class Component {
         }
         int i = 0;
         for (State v : mStates) {
-			v.setID(i);
+            v.setID(i);
             v.setLabel(String.valueOf(i++));
         }
     }
 
-    public Transition getTransitionByLabel(String label){
-        for(Transition transition : mTransitions){
-            if(label.equals(transition.getLabel())){
+    public Transition getTransitionByLabel(String label) {
+        for (Transition transition : mTransitions) {
+            if (label.equals(transition.getLabel())) {
                 return transition;
             }
         }
@@ -316,7 +317,7 @@ public class Component {
             int dst = oldTransition.getDestiny().getID();
             Transition newTransition = c.newTransition(src, dst);
             copyTransition(oldTransition, newTransition);
-        }        
+        }
 
         if (mInitialState != null) {
             c.setInitialState(c.getStateByID(mInitialState.getID()));
