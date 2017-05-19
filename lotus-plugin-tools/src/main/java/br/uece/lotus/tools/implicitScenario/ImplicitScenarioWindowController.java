@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
@@ -59,7 +60,7 @@ public class ImplicitScenarioWindowController implements Initializable {
     public Component mComponentAlterado;
     private ProjectExplorer mProjectExplorer;
     private List<String> pathsFromTraceModel;
-    private List<String> pathsScenarioImplied;
+    private List<String> pathsScenarioImplied = new CopyOnWriteArrayList<>();
     private List<String> pathsOLP = new CopyOnWriteArrayList<>();
 
     private Boolean sinalizar = false;
@@ -76,7 +77,7 @@ public class ImplicitScenarioWindowController implements Initializable {
             mViewer.setComponent(mComponent);
             mProjectExplorer = (ProjectExplorer) resources.getObject("mProjectExplorer");
             pathsFromTraceModel = (ArrayList<String>) resources.getObject("TraceModelo");
-            pathsScenarioImplied = (ArrayList<String>) resources.getObject("CenariosImplicitos");
+            pathsScenarioImplied.addAll((Collection<? extends String>) resources.getObject("CenariosImplicitos"));
             pathsOLP.addAll((Collection<? extends String>) resources.getObject("OLP"));
 
             System.out.println("Trace entrada: " + pathsFromTraceModel.size());
@@ -220,46 +221,290 @@ public class ImplicitScenarioWindowController implements Initializable {
             break;
 //-------------------------------------------------------REMOCAO-----------------------------------------------------------------------------------------------
             case "RemoveScenario": {
-            //----------------------Step 1 Remover o caminho do OneLoopPath e abrir o modelo -----------------------------    
                 pathsOLP = pathsOLP.stream().filter(p-> !p.equals(pathSelected)).collect(Collectors.toList());
-
-                mComponentAlterado.newState(0);
-                mComponentAlterado.setInitialState(mComponentAlterado.getStateByID(0));
-                
-                pathsOLP.stream().forEach(olpSemCenarioImplicitoSelecionado -> {
-                    
-                    String[] parteCaminho = olpSemCenarioImplicitoSelecionado.split(",");
-                    Transition currentTransition = null;
-                    for (String parte : parteCaminho) {
-                        State state = currentTransition != null ? currentTransition.getDestiny() : mComponentAlterado.getInitialState();
-                        boolean noMatch = verificarTransition(state, parte.trim());
-                        if (noMatch) {
-                            currentTransition = mComponentAlterado.buildTransition(state, mComponentAlterado.newState((mComponentAlterado.getStatesCount() - 1))).setLabel(parte.trim()).setViewType(TransitionView.Geometry.LINE).create();
-                        } else {
-                            currentTransition = recuperarTransition(state, parte.trim());
-                        }
+                pathsScenarioImplied = pathsScenarioImplied.stream().filter(p-> !p.equals(pathSelected)).collect(Collectors.toList());
+            //----------------------Step 1 Separar em listas de caminhos com loop e sem loop -----------------------------    
+                List<String> pathsSemLoop = new CopyOnWriteArrayList<>();
+                List<String> pathsComLoop = new CopyOnWriteArrayList<>();
+                pathsOLP.stream().forEach(path -> {
+                    boolean contemLoop = verificarLoopInPath(path);
+                    if(contemLoop){
+                        pathsComLoop.add(path);
+                    }else{
+                        pathsSemLoop.add(path);
                     }
-                });
-                
-            //--------------------Step 2 Reduzir Modelo (Aglutinar) ---------------------------------------------------------
-                
+                }); 
+                mostrarCaminhos("SemLoops", pathsSemLoop);
+                mostrarCaminhos("ComLoops", pathsComLoop);
+            //--------------------Step 2 Analizar Loops em Ciclos e Montar Linha do tempo Transformando em LTS-------------
+                boolean processo = false;
+                while(!processo){
+                    Map<Integer,CicloOuNao> linhaDoTempo = new HashMap<>();
+                    int indexMax = 0;
+                    //primeiro os com loop
+                    if(!pathsComLoop.isEmpty()){
+                        String pathMenor = verificarPathMenor(pathsComLoop);
+                        preencherLinhaDoTempo(pathMenor, linhaDoTempo, indexMax);
+                        //remover path do pathComLoop
+                        pathsComLoop.remove(pathMenor);
+                    }
+                    //Depois de finalizar o pathsComLoop pode verificar os semLoop
+                    if(pathsComLoop.isEmpty()){
+                        String pathMenor = verificarPathMenor(pathsSemLoop);
+                        preencherLinhaDoTempo(pathMenor, linhaDoTempo, indexMax);
+                        //remover path do pathSemLoop
+                        pathsSemLoop.remove(pathMenor);
+                    }
+                    //montar LTS
+                    montarLTS(linhaDoTempo);
+                    
+                    linhaDoTempo.clear();
+                    //finalizar
+                    if(pathsComLoop.isEmpty() && pathsSemLoop.isEmpty()){
+                        processo = true;
+                    }
+                }
             }
             break;
         }
     }
+    
+    private void montarLTS(Map<Integer, CicloOuNao> linhaDoTempo){
+        //Verifica se existe state inicial
+        if(mComponentAlterado.getInitialState() == null){
+            State inicial = mComponentAlterado.newState(0);
+            mComponentAlterado.setInitialState(inicial);
+        }
+        State currentState = mComponentAlterado.getInitialState();
+        int tamanhoLindaDoTempo = linhaDoTempo.size();
+        int posicao = 1;
+        while(posicao <= tamanhoLindaDoTempo){
+            CicloOuNao cicloOuNao = linhaDoTempo.get(posicao);
+            //Nao Ciclo
+            if(!cicloOuNao.isCiclo()){
+                State destinoExisteProximo = procurarNoComponente(currentState, cicloOuNao.getTransition());
+                if(destinoExisteProximo == null){
+                    List<State> destinoLonge = procurarDestinoLonge(linhaDoTempo,tamanhoLindaDoTempo,posicao);
+                    if(destinoLonge.isEmpty()){
+                        if(!verificarAutoLoop(currentState,cicloOuNao.getTransition())){
+                            int labelState = mComponentAlterado.getStatesCount();
+                            State prox = mComponentAlterado.newState(labelState);
+                            mComponentAlterado.buildTransition(currentState, prox)
+                                    .setLabel(cicloOuNao.getTransition().trim())
+                                    .setViewType(TransitionView.Geometry.LINE)
+                                    .create();
+                            currentState = prox;
+                        }else{
+                            mComponentAlterado.buildTransition(currentState, currentState)
+                                    .setLabel(cicloOuNao.getTransition().trim())
+                                    .create();
+                        }
+                    }else{
+                        boolean transicaoCriada = false;
+                        for(State candidato : destinoLonge){
+                            if(!geraCenario(currentState,candidato,cicloOuNao.getTransition())){
+                                mComponentAlterado.buildTransition(currentState, candidato)
+                                        .setLabel(cicloOuNao.getTransition().trim())
+                                        .setViewType(TransitionView.Geometry.CURVE)
+                                        .create();
+                                transicaoCriada = true;
+                                currentState = candidato;
+                                break;
+                            }
+                        }
+                        if(!transicaoCriada){
+                            int labelState = mComponentAlterado.getStatesCount();
+                            State prox = mComponentAlterado.newState(labelState);
+                            mComponentAlterado.buildTransition(currentState, prox)
+                                    .setLabel(cicloOuNao.getTransition().trim())
+                                    .setViewType(TransitionView.Geometry.LINE)
+                                    .create();
+                            currentState = prox;
+                        }
+                    }
+                }else{
+                    currentState = destinoExisteProximo;
+                }
+            }
+            //Ciclo
+            else{
+                State inicioLoop = currentState;
+                State finalLoop = verificarLoopExistente(inicioLoop,cicloOuNao.getTransitionsCiclo());
+                if(finalLoop == null){
+                    for(int iLoop=0;iLoop<(cicloOuNao.getTransitionsCiclo().size()-1);iLoop++){
+                        String labelTransiton = cicloOuNao.getTransitionsCiclo().get(iLoop);
 
-    private boolean verificarTransition(State state, String label) {
-        return state.getOutgoingTransitionsList().stream().noneMatch(t -> t.getLabel().equals(label));
+                        if(iLoop != cicloOuNao.getTransitionsCiclo().size()-2){
+                            if(!verificarAutoLoop(currentState, labelTransiton)){
+                                int labelState = mComponentAlterado.getStatesCount();
+                                State prox = mComponentAlterado.newState(labelState);
+                                mComponentAlterado.buildTransition(currentState, prox)
+                                        .setLabel(labelTransiton.trim())
+                                        .setViewType(TransitionView.Geometry.LINE)
+                                        .create();
+                                currentState = prox;
+                            }
+                            else{
+                                mComponentAlterado.buildTransition(currentState, currentState)
+                                        .setLabel(labelTransiton.trim())
+                                        .create();
+                            }
+                        }
+                        else{
+                            if(!verificarAutoLoop(currentState, labelTransiton)){
+                                mComponentAlterado.buildTransition(currentState, inicioLoop)
+                                        .setLabel(labelTransiton.trim())
+                                        .setViewType(TransitionView.Geometry.CURVE)
+                                        .create();
+                            }
+                            else{
+                                mComponentAlterado.buildTransition(currentState, currentState)
+                                        .setLabel(labelTransiton.trim())
+                                        .create();
+                            }
+                        }
+                    }
+                }else{
+                    currentState = finalLoop;
+                }
+            }
+            posicao++;
+        }
     }
-
-    private Transition recuperarTransition(State state, String label) {
-        Transition transition = null;
-        for (Transition t : state.getOutgoingTransitionsList()) {
-            if (t.getLabel().equals(label)) {
-                transition = t;
+    
+    private boolean geraCenario(State currentState, State candidato, String transition) {
+        boolean gera = false;
+        try {
+            //FIXME falta consertar essa parte!!!!!!!!!!!
+            Component aux = mComponentAlterado.clone();
+            State srcAux = aux.getStateByID(currentState.getID());
+            State dstAux = aux.getStateByID(candidato.getID());
+            aux.buildTransition(srcAux, dstAux).setLabel(transition.trim()).create();
+            OneLoopPath oneLoopPath = new OneLoopPath();
+            List<String> olpAux = oneLoopPath.createOneLoopPath(aux);
+            List<String> implicitosAux = olpAux.stream().filter(olp-> !pathsFromTraceModel.contains(olp)).collect(Collectors.toList());
+            gera = !implicitosAux.stream().allMatch(p -> pathsScenarioImplied.contains(p));
+            
+        } catch (CloneNotSupportedException ex) {
+            Logger.getLogger(ImplicitScenarioWindowController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        return gera;
+    }
+    
+    private State procurarNoComponente(State currentState, String transition) {
+        State destino = null;
+        for(Transition t : currentState.getOutgoingTransitionsList()){
+            if(t.getLabel().trim().equals(transition.trim())){
+                destino = t.getDestiny();
+            }
+        }        
+        return destino;
+    }
+    
+    private List<State> procurarDestinoLonge(Map<Integer, CicloOuNao> linhaDoTempo, int tamanhoLindaDoTempo, int posicao) {
+        List<State> destino = new CopyOnWriteArrayList<>();
+        if(posicao<tamanhoLindaDoTempo){
+           CicloOuNao cicloOuNaoProximo = linhaDoTempo.get(posicao+1);
+           String label = cicloOuNaoProximo.isCiclo() ? cicloOuNaoProximo.getTransitionsCiclo().get(0) : cicloOuNaoProximo.getTransition();
+           List<Transition> transitionsComponent = (List<Transition>) mComponentAlterado.getTransitions();
+           destino.addAll(transitionsComponent.stream().filter(t -> t.getLabel().trim().equals(label.trim())).map(Transition::getSource).collect(Collectors.toList()));
+        }
+        return destino;
+    }
+    
+    private State verificarLoopExistente(State inicioLoopState, List<String> transitions){
+        State destino = null;
+        State auxiliar = inicioLoopState;
+        for(int i = 0; i<transitions.size();i++){
+            String labelTransition = transitions.get(i);
+            if(auxiliar.getOutgoingTransitionsList().stream().map(Transition::getLabel).anyMatch(label -> label.trim().equals(labelTransition.trim()))){
+                auxiliar = procurarNoComponente(auxiliar, labelTransition);
+                if(i == transitions.size()-1){
+                    destino = auxiliar;
+                }
+            }
+            else{
+                break;
             }
         }
-        return transition;
+        
+        return destino;
+    }
+    
+    private boolean verificarAutoLoop(State state, String labelTransition){
+        return state.getIncomingTransitionsList().stream().map(Transition::getLabel).anyMatch(label-> label.trim().equals(labelTransition.trim()));
+    }
+    
+    private void preencherLinhaDoTempo(String pathMenor, Map<Integer, CicloOuNao> linhaDoTempo, int maxIndex) {
+        System.out.println("preenchendo linha do tempo com o path: "+pathMenor);
+        String[] partes = pathMenor.split(",");
+        for(int i = 0; i < partes.length; i++){
+            System.out.println("O i eh igual a: "+i);
+            CicloOuNao cicloOuNao = new CicloOuNao();
+            String label = partes[i].trim().toLowerCase();
+            int fimLoop = -1;
+            if(i < partes.length-1){
+                for(int j = (i+1); j < partes.length; j++){
+                    String labelAfter = partes[j].trim().toLowerCase();
+                    if(label.equals(labelAfter) && j > (i+1)){ //ciclo tem que ser n>2
+                        fimLoop = j;
+                        break;
+                    }
+                }
+            }
+            System.out.println("Label: "+label);
+            if(fimLoop == -1){
+                System.out.println("Nao tem ciclo");
+                cicloOuNao.setCiclo(false);
+                cicloOuNao.setTransition(partes[i]);
+            }else{
+                System.out.println("Tem ciclo");
+                List<String> caminhosCiclo = new ArrayList<>();
+                for(int k = i; k <= fimLoop; k++){
+                    caminhosCiclo.add(partes[k]);
+                    System.out.println("Caminho ciclo: "+partes[k]);
+                }
+                cicloOuNao.setCiclo(true);
+                cicloOuNao.setTransitionsCiclo(caminhosCiclo);
+                System.out.println("Atribui ao i o fim do loop");
+                i = fimLoop;
+            }
+           
+            linhaDoTempo.put(++maxIndex, cicloOuNao);
+            System.out.println("Adiciona parte do caminho com index: "+maxIndex);
+        }
+    }
+    
+    private String verificarPathMenor(List<String> pathsComLoop) {
+        String menor = pathsComLoop.get(0);
+        for(String caminho : pathsComLoop){
+            if(caminho.length() < menor.length()){
+                menor = caminho;
+            }
+        }
+        return menor;
+    }
+
+    private boolean verificarLoopInPath(String path) {
+        boolean contem = false;
+        String[] partesDoCaminho = path.split(",");
+        for(int i = 0; i < partesDoCaminho.length; i++){
+            String transition = partesDoCaminho[i].trim().toLowerCase();
+            if(i < partesDoCaminho.length-1){
+                for(int j = (i+1); j < partesDoCaminho.length; j++){
+                    String transitionAfter = partesDoCaminho[j].trim().toLowerCase();
+                    if(transition.equals(transitionAfter)){
+                        contem = true;
+                        break;
+                    }
+                }
+            }
+            if(contem){
+                break;
+            }
+        }
+        return contem;
     }
 
     private void iniciarTable() {
@@ -415,4 +660,27 @@ public class ImplicitScenarioWindowController implements Initializable {
         }
     }
 
+    private void mostrarLinhaDoTempo(Map<Integer, CicloOuNao> linhaDoTempo, int indexMax) {
+        System.out.println("------------Linha do Tempo---------------");
+        for(int i = 1; i <= indexMax;i++){
+            CicloOuNao cicloOuNao = linhaDoTempo.get(i);
+            if(!cicloOuNao.isCiclo()){
+                System.out.println("Index: "+i+" Caminho: "+cicloOuNao.getTransition());
+            }else{
+                System.out.print("\nIndex: "+i+" Caminho: ");
+                for(String s : cicloOuNao.getTransitionsCiclo()){
+                    System.out.print(s+", ");
+                }
+                System.out.println("\n");
+            }
+        }
+    }
+    
+    private void mostrarCaminhos(String titulo, List<String> lista){
+        System.out.println("------------"+titulo+"---------------");
+        for(String s : lista){
+            System.out.println(s);
+        }
+        System.out.println("-------------------------------");
+    }
 }
