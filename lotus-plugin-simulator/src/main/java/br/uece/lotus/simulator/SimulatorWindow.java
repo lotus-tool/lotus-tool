@@ -50,7 +50,6 @@ import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
 
-
 /**
  * @author emerson
  */
@@ -100,7 +99,7 @@ public class SimulatorWindow extends AnchorPane implements Window, Initializable
         mViewer.getNode().minWidthProperty().bind(mScrollPanel.widthProperty());
 
         mSimulatorContext.setmPathLabel(new Label(""));
-        
+
         //Restart da simulação limpando todos os trace
         mBtnStart.setOnAction((ActionEvent e) -> {
             while (!mSimulatorContext.getmCurrentState().isInitial()) {
@@ -145,47 +144,42 @@ public class SimulatorWindow extends AnchorPane implements Window, Initializable
         this.onMouseClick = new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent e) {
-                
+
                 Transition t = null;
                 State mCurrentState = null;
                 State s = null;
-                
+
                 /*CLIQUE NO ESTADO*/
-               StateView v = mViewer.locateStateView(new Point2D(e.getSceneX(), e.getSceneY()));
-              
-               /*CLIQUE NA TRANSICAO*/
-               TransitionView transitionView = mViewer.locateTransitionView(new Point2D(e.getSceneX(), e.getSceneY()));
-               
-             
-                
+                StateView v = mViewer.locateStateView(new Point2D(e.getSceneX(), e.getSceneY()));
+
+                /*CLIQUE NA TRANSICAO*/
+                TransitionView transitionView = mViewer.locateTransitionView(new Point2D(e.getSceneX(), e.getSceneY()));
+
                 /*EXECUCAO DO CLIQUE NO ESTADO*/
-                
                 if (v != null) {
                     mCurrentState = mSimulatorContext.getmCurrentState();
                     s = v.getState();
                     t = mSimulatorContext.getmCurrentState().getTransitionTo(s);
                 }
-                
-               
+
                 /*EXECUCAO DO CLIQUE NA TRANSICAO*/
-                if(transitionView != null){
+                if (transitionView != null) {
                     /*pegando index da transicao*/
                     int index = -1;
                     List<Transition> listaTransitions = (List<Transition>) mViewer.getComponent().getTransitions();
-                    for(int i=0;i<listaTransitions.size();i++){
+                    for (int i = 0; i < listaTransitions.size(); i++) {
                         Transition tran = listaTransitions.get(i);
-                        if(tran.equals(transitionView.getTransition())){
+                        if (tran.equals(transitionView.getTransition())) {
                             index = i;
                         }
                     }
-                    if(index!=-1){                 
+                    if (index != -1) {
                         mCurrentState = transitionView.getTransition().getSource();
                         t = listaTransitions.get(index);
                     }
-                    mostrarDebug(mCurrentState,t);
+                    mostrarDebug(mCurrentState, t);
                 }
-                
-                
+
                 if (t == null) {
                     System.out.println(mSimulatorContext.getmCurrentState().getLabel());
                     JOptionPane.showMessageDialog(null, "Select a valid transition!", "Invalid Operation", JOptionPane.ERROR_MESSAGE);
@@ -203,19 +197,19 @@ public class SimulatorWindow extends AnchorPane implements Window, Initializable
             }
 
             private void mostrarDebug(State mCurrentState, Transition t) {
-                System.out.println("State src da T : "+t.getSource().getLabel());
-                System.out.println("State dst da T : "+t.getDestiny().getLabel());
-                System.out.println("mCurrentState: "+mCurrentState.getLabel());
-                System.out.println("----------Saidas do state "+mCurrentState.getLabel()+"-------");
-                for(Transition tt : mCurrentState.getOutgoingTransitionsList()){
-                    System.out.println("Transitio: "+tt);
+                System.out.println("State src da T : " + t.getSource().getLabel());
+                System.out.println("State dst da T : " + t.getDestiny().getLabel());
+                System.out.println("mCurrentState: " + mCurrentState.getLabel());
+                System.out.println("----------Saidas do state " + mCurrentState.getLabel() + "-------");
+                for (Transition tt : mCurrentState.getOutgoingTransitionsList()) {
+                    System.out.println("Transitio: " + tt);
                 }
                 System.out.println("---------------------------");
                 int view = (int) t.getValue("view.type");
-                System.out.print("Transition escolhida: "+t);
-                if(view == 0){
+                System.out.print("Transition escolhida: " + t);
+                if (view == 0) {
                     System.out.print(" do tipo Line");
-                }else if(view == 1){
+                } else if (view == 1) {
                     System.out.print(" do tipo Curve");
                 }
                 System.out.println("\n");
@@ -229,7 +223,7 @@ public class SimulatorWindow extends AnchorPane implements Window, Initializable
         mBtnStart.setText("Restart");
         mExecutorCommands.cleanMadeOperations();
         mExecutorCommands.cleanUnmadeOperations();
-        
+
 //        mStepCount = 0;
         mSteps.clear();
 //        mPathLabel.setText("");
@@ -287,7 +281,6 @@ public class SimulatorWindow extends AnchorPane implements Window, Initializable
     public void setNode(Parent node) {
         this.mNode = node;
     }
-
 
     public static class Step {
 

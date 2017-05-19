@@ -77,6 +77,16 @@ public class State {
     private int mVisitedStatesCount;
     //Used in BigState
     private boolean mBig = false;
+    private String nameState;
+
+    public String getNameState() {
+        return nameState;
+    }
+
+    public void setNameState(String nameState) {
+        this.nameState = nameState;
+    }
+    
 
     State(Component c) {
         mComponent = c;

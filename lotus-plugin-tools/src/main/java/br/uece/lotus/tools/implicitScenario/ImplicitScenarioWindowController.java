@@ -14,6 +14,7 @@ import br.uece.lotus.tools.layout.TreeLayouter;
 import br.uece.lotus.viewer.ComponentViewImpl;
 import br.uece.lotus.viewer.TransitionView;
 import java.net.URL;
+import java.rmi.server.Operation;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -509,7 +510,7 @@ public class ImplicitScenarioWindowController implements Initializable {
 
     private void iniciarTable() {
 
-        TableColumn scenario = new TableColumn("Implied Scenarios");
+        TableColumn scenario = new TableColumn("Implied Scenarios " +pathsScenarioImplied.size());
         scenario.setCellValueFactory(new PropertyValueFactory<>("implicitScenario"));
         scenario.prefWidthProperty().bind(mTableView.widthProperty().subtract(105));
 
