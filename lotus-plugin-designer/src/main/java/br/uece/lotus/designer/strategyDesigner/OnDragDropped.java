@@ -17,21 +17,23 @@ import javafx.scene.input.DragEvent;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
+import javafx.scene.shape.Ellipse;
 import javax.swing.JOptionPane;
 
 /**
  *
  * @author Bruno Barbosa
  */
-public class OnDragDropped implements Strategy{
+public class OnDragDropped implements Strategy {
 
     @Override
     public void onDragDroppedMouse(DesignerWindowImpl dwi, DragEvent event) {
+
         if (dwi.mModoAtual != MODO_TRANSICAO) {
             return;
         }
-        
-        if(dwi.ultimaLinha!=null){
+
+        if (dwi.ultimaLinha != null) {
             dwi.mViewer.getNode().getChildren().removeAll(dwi.ultimaLinha, dwi.ultimoCircle);
         }
 
@@ -51,93 +53,110 @@ public class OnDragDropped implements Strategy{
             List<Transition> transitionsDO = d.getTransitionsTo(o);
             boolean temLineOD = verificarSeExisteTransitionLine(transitionsOD);
             boolean temLineDO = verificarSeExisteTransitionLine(transitionsDO);
+            //SE O BOTAO ATIVADO NO LOTUS É O DE CRIAR TRANSITION CURVA
+            if (dwi.mTransitionViewType == 1) { // curve
+                //SE ESTADO ORIGEM  IGUAL ESTADO DESTINO
+                if (o.equals(d)) {
+                    //System.out.println("ESTADO ORIGEM E DESTINO IGUAIS");
+                    //SE O ESTADO ORIGEM NAO POSSUE NENHUM AUTO LOOP
+                    if (qtdeTransitionOD == 0) {
+                        //System.out.println("AUTO LOOP 0");
+                        Transition t = dwi.mViewer.getComponent().buildTransition(o, d)
+                                .setViewType(dwi.mTransitionViewType)
+                                .create();
+                        applyDefaults(t, dwi);
+                    } //SE NAO SE O ESTADO ORIGEM JA POSSUI PELO MENOS UM AUTO LOOP
+                    else {
+                       // System.out.println("JA EXISTE AUTO LOOP: " + qtdeTransitionOD);
 
-            if(dwi.mTransitionViewType == 1){ // curve
+                        Transition t = dwi.mViewer.getComponent().buildTransition(o, d)
+                                .setViewType(TransitionView.Geometry.CURVE)
+                                .create();
+                        applyDefaults(t, dwi);
+                                          
+                    }
+
+                } //SE NAO SE O ESTADO ORIGEM É DIFERENTE DO ESTADO DESTINO
+                else {
+                    Transition t = dwi.mViewer.getComponent().buildTransition(o, d)
+                            .setViewType(dwi.mTransitionViewType)
+                            .create();
+                    applyDefaults(t, dwi);
+
+                }
+            } //line  com auto ajuste
+            else if (qtdeTransitionOD == 0 && qtdeTransitionDO == 0) {
                 Transition t = dwi.mViewer.getComponent().buildTransition(o, d)
                         .setViewType(dwi.mTransitionViewType)
                         .create();
-                applyDefaults(t,dwi);
-            }
-            //line  com auto ajuste
-            else if(qtdeTransitionOD == 0 && qtdeTransitionDO == 0){
-                Transition t = dwi.mViewer.getComponent().buildTransition(o, d)
-                        .setViewType(dwi.mTransitionViewType)
-                        .create();
-                applyDefaults(t,dwi);
-            }
-            else if(qtdeTransitionOD == 0 && qtdeTransitionDO > 0 && !temLineDO){
+                applyDefaults(t, dwi);
+            } else if (qtdeTransitionOD == 0 && qtdeTransitionDO > 0 && !temLineDO) {
                 Transition t = dwi.mViewer.getComponent().buildTransition(o, d)
                         .setViewType(TransitionView.Geometry.LINE)
                         .create();
-                applyDefaults(t,dwi);
-            }
-            else if(qtdeTransitionOD == 0 && qtdeTransitionDO > 0 && temLineDO){
+                applyDefaults(t, dwi);
+            } else if (qtdeTransitionOD == 0 && qtdeTransitionDO > 0 && temLineDO) {
                 Transition t = dwi.mViewer.getComponent().buildTransition(o, d)
                         .setViewType(TransitionView.Geometry.CURVE)
                         .create();
-                applyDefaults(t,dwi);
-            }
-            else if(qtdeTransitionOD > 0 && !temLineOD && qtdeTransitionDO == 0){
+                applyDefaults(t, dwi);
+            } else if (qtdeTransitionOD > 0 && !temLineOD && qtdeTransitionDO == 0) {
                 Transition t = dwi.mViewer.getComponent().buildTransition(o, d)
                         .setViewType(TransitionView.Geometry.LINE)
                         .create();
-                applyDefaults(t,dwi);
-            }
-            else if(qtdeTransitionOD > 0 && temLineOD && qtdeTransitionDO == 0){
+                applyDefaults(t, dwi);
+            } else if (qtdeTransitionOD > 0 && temLineOD && qtdeTransitionDO == 0) {
                 Transition t = dwi.mViewer.getComponent().buildTransition(o, d)
                         .setViewType(TransitionView.Geometry.CURVE)
                         .create();
-                applyDefaults(t,dwi);
-            }
-            else if(qtdeTransitionOD > 0 && !temLineOD && qtdeTransitionDO > 0 && !temLineDO){
+                applyDefaults(t, dwi);
+            } else if (qtdeTransitionOD > 0 && !temLineOD && qtdeTransitionDO > 0 && !temLineDO) {
                 Transition t = dwi.mViewer.getComponent().buildTransition(o, d)
                         .setViewType(TransitionView.Geometry.LINE)
                         .create();
-                applyDefaults(t,dwi);
-            }
-            else if(qtdeTransitionOD > 0 && temLineOD && qtdeTransitionDO > 0 && !temLineDO){
+                applyDefaults(t, dwi);
+            } else if (qtdeTransitionOD > 0 && temLineOD && qtdeTransitionDO > 0 && !temLineDO) {
                 Transition t = dwi.mViewer.getComponent().buildTransition(o, d)
                         .setViewType(TransitionView.Geometry.CURVE)
                         .create();
-                applyDefaults(t,dwi);
-            }
-            else if(qtdeTransitionOD > 0 && !temLineOD &&qtdeTransitionDO > 0 && temLineDO){
+                applyDefaults(t, dwi);
+            } else if (qtdeTransitionOD > 0 && !temLineOD && qtdeTransitionDO > 0 && temLineDO) {
                 Transition t = dwi.mViewer.getComponent().buildTransition(o, d)
                         .setViewType(TransitionView.Geometry.CURVE)
                         .create();
-                applyDefaults(t,dwi);
+                applyDefaults(t, dwi);
             }
-        }else{
+        } else {
             int id = dwi.mViewer.getComponent().getStatesCount();
             State d = dwi.mViewer.getComponent().newState(id);
             d.setID(dwi.contID);
             dwi.contID++;
-            d.setLayoutX(event.getX()-(StateViewImpl.RAIO_CIRCULO));
-            d.setLayoutY(event.getY()-(StateViewImpl.RAIO_CIRCULO));
+            d.setLayoutX(event.getX() - (StateViewImpl.RAIO_CIRCULO));
+            d.setLayoutY(event.getY() - (StateViewImpl.RAIO_CIRCULO));
             d.setLabel(String.valueOf(id));
-            
+
             dwi.mExibirPropriedadesTransicao = true;
             State o = dwi.mVerticeOrigemParaAdicionarTransicao.getState();
             Transition t = dwi.mViewer.getComponent().buildTransition(o, d)
-                        .setViewType(dwi.mTransitionViewType)
-                        .create();
+                    .setViewType(dwi.mTransitionViewType)
+                    .create();
             applyDefaults(t, dwi);
         }
 
         event.setDropCompleted(true);
         event.consume();
     }
-    
-    private boolean verificarSeExisteTransitionLine(List<Transition> transitions){
+
+    private boolean verificarSeExisteTransitionLine(List<Transition> transitions) {
         boolean line = false;
-        for(Transition t : transitions){
-            if((int)t.getValue("view.type") == 0){
+        for (Transition t : transitions) {
+            if ((int) t.getValue("view.type") == 0) {
                 line = true;
             }
         }
         return line;
     }
-    
+
     private void applyDefaults(Transition t, DesignerWindowImpl dwi) {
         if (dwi.mDefaultTransitionLabel != null) {
             t.setLabel(dwi.mDefaultTransitionLabel);
@@ -152,35 +171,45 @@ public class OnDragDropped implements Strategy{
             t.setWidth(dwi.mDefaultTransitionWidth);
         }
     }
-    
-    @Override
-    public void onClickedMouse(DesignerWindowImpl dwi, MouseEvent event) {}
 
     @Override
-    public void onMovedMouse(DesignerWindowImpl dwi, MouseEvent event) {}
+    public void onClickedMouse(DesignerWindowImpl dwi, MouseEvent event) {
+    }
 
     @Override
-    public void onDragDetectedMouse(DesignerWindowImpl dwi, MouseEvent event) {}
+    public void onMovedMouse(DesignerWindowImpl dwi, MouseEvent event) {
+    }
 
     @Override
-    public void onDragOverMouse(DesignerWindowImpl dwi, DragEvent event) {}
+    public void onDragDetectedMouse(DesignerWindowImpl dwi, MouseEvent event) {
+    }
 
     @Override
-    public void onDraggedMouse(DesignerWindowImpl dwi, MouseEvent event) {}
+    public void onDragOverMouse(DesignerWindowImpl dwi, DragEvent event) {
+    }
 
     @Override
-    public void onPressedMouse(DesignerWindowImpl dwi, MouseEvent event) {}
+    public void onDraggedMouse(DesignerWindowImpl dwi, MouseEvent event) {
+    }
 
     @Override
-    public void onReleasedMouse(DesignerWindowImpl dwi, MouseEvent event) {}
+    public void onPressedMouse(DesignerWindowImpl dwi, MouseEvent event) {
+    }
 
     @Override
-    public void onScrollMouse(DesignerWindowImpl dwi, ScrollEvent event) {}
+    public void onReleasedMouse(DesignerWindowImpl dwi, MouseEvent event) {
+    }
 
     @Override
-    public void onKeyPressed(DesignerWindowImpl dwi, KeyEvent event) {}
+    public void onScrollMouse(DesignerWindowImpl dwi, ScrollEvent event) {
+    }
 
     @Override
-    public void onKeyReleased(DesignerWindowImpl dwi, KeyEvent event) {}
-    
+    public void onKeyPressed(DesignerWindowImpl dwi, KeyEvent event) {
+    }
+
+    @Override
+    public void onKeyReleased(DesignerWindowImpl dwi, KeyEvent event) {
+    }
+
 }

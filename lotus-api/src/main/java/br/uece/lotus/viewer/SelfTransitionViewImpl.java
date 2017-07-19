@@ -23,8 +23,12 @@
  */
 package br.uece.lotus.viewer;
 
+import java.util.List;
+
+import br.uece.lotus.State;
 import br.uece.lotus.Transition;
 import javafx.geometry.Point2D;
+import javafx.geometry.Point3D;
 import javafx.scene.control.Label;
 import javafx.scene.layout.Region;
 import javafx.scene.shape.Ellipse;
@@ -45,7 +49,7 @@ public class SelfTransitionViewImpl extends TransitionViewImpl {
     @Override
     protected void prepareView() {
         StateViewImpl origem = (StateViewImpl) getTransition().getSource().getValue("view");
-        mTransicaoEmCirculo = new TransicaoCirculo();
+        mTransicaoEmCirculo = new TransicaoCirculo(mTransition);
         getChildren().add(mTransicaoEmCirculo);
         mTransicaoEmCirculo.layoutXProperty().bind(origem.layoutXProperty().add(origem.widthProperty().divide(2)));
         mTransicaoEmCirculo.layoutYProperty().bind(origem.layoutYProperty().subtract(origem.widthProperty().divide(4)));
@@ -62,32 +66,61 @@ public class SelfTransitionViewImpl extends TransitionViewImpl {
 
     static class TransicaoCirculo extends Region {
 
-        static final double RAIO_ELIPSE_X = 25;
+        static double RAIO_ELIPSE_X = 25;
         static final double RAIO_ELIPSE_Y = 20;
-        static final double POSICAO_SETA_X = 2 * RAIO_ELIPSE_X;
+        static double POSICAO_SETA_X = 2 * RAIO_ELIPSE_X;
         static final double POSICAO_SETA_Y = RAIO_ELIPSE_Y;
+        Transition mTransition;
 
         final Label rotulo;
         final Seta seta;
         final Ellipse loop;
 
-        public TransicaoCirculo() {
+        public TransicaoCirculo(Transition transition) {
+        	mTransition = transition;
             rotulo = new Label();
             seta = new Seta();
-            seta.setRotate(90);
+            seta.setRotate(180);
 
             loop = new Ellipse();
             loop.setFill(null);
-            loop.setRadiusX(25);
-            loop.setRadiusY(20);
+            loop.setRadiusX(20);//Espessura X da elipse
+            loop.setRadiusY(fatorX(mTransition)+3); // Espessura Y da Elipse
+//            loop.setCenterX(value);
+            
 
-            loop.setLayoutX(RAIO_ELIPSE_X);
-            loop.setLayoutY(RAIO_ELIPSE_Y);
-            seta.setLayoutX(POSICAO_SETA_X);
-            seta.setLayoutY(POSICAO_SETA_Y);
-            rotulo.setLayoutX(2 * RAIO_ELIPSE_X);
-            rotulo.setLayoutY(RAIO_ELIPSE_Y - 6);
+//            loop.setLayoutX(RAIO_ELIPSE_X);
+            loop.setLayoutX(RAIO_ELIPSE_X - 25);// Posição X da Elipse
+            loop.setLayoutY(RAIO_ELIPSE_Y + fatorX(mTransition)+2);// Posição Y da Elipse
+            
+            
+            seta.setLayoutX(RAIO_ELIPSE_X - 25);
+            seta.setLayoutY(RAIO_ELIPSE_Y + (fatorX(mTransition)*2)-1+5 );
+            
+            rotulo.setLayoutX(RAIO_ELIPSE_X - 22);
+            rotulo.setLayoutY((RAIO_ELIPSE_Y + (fatorX(mTransition)*2)-1+5) - 6);
+            
             getChildren().addAll(rotulo, seta, loop);
+        }
+        
+        private int fatorX(Transition mTransition) {
+        	return (quantidadeFilhos(mTransition)* 25 +25);
+        }
+        
+        private int quantidadeFilhos(Transition mTransition) {
+            int index = 0;
+//            boolean temLine = false;
+            List<Transition> listaT = mTransition.getSource().getTransitionsTo(mTransition.getDestiny());
+            for(int i=0;i<listaT.size();i++){
+                if(listaT.get(i) == mTransition){
+                    index = i;
+                }
+            }
+            /*temLine = verificarSeExisteTransitionLine(listaT);
+            if(temLine){
+                index = index-1;
+            }*/
+            return index;
         }
     }
 
