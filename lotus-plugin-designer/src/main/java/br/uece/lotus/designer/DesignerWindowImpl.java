@@ -118,6 +118,7 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
     boolean caso2;
     boolean caso3;
     boolean caso4;
+    boolean caso5;
     boolean retorno;
     boolean aux;
     public boolean modoCriacaoDoRetangulo = false;
@@ -128,6 +129,7 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
     public static final int MODO_TRANSICAO = 2;
     public static final int MODO_REMOVER = 3;
     public static final int MODO_MOVER = 4;
+    public static final int MODO_ALTERAR = 5;
     public int contID = -1;
     public ComponentView mViewer;
     private final ToolBar mToolbar;
@@ -137,6 +139,7 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
     private final ToggleButton mBtnState;
     private final ToggleButton mBtnTransitionLine;
     private final ToggleButton mBtnTransitionArc;
+    private final ToggleButton mBtnTypeTrace;
     private final ToggleButton mBtnEraser;
     private final ToggleButton mBtnHand;
     private final MenuButton mBtnZoom;
@@ -433,6 +436,15 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
         });
         mBtnTransitionArc.setToggleGroup(mToggleGroup);
 
+        mBtnTypeTrace = new ToggleButton();
+        mBtnTypeTrace.setGraphic(new ImageView(new Image(getClass().getResourceAsStream("/images/ic_alterar.png"))));
+        mBtnTypeTrace.setOnAction((ActionEvent e) -> {
+            setModo(MODO_ALTERAR);
+            Context context = new Context(new OnClickedMouse());
+            context.executeStrategyOnClikedMouse((DesignerWindowImpl) getNode(), null);
+        });
+        mBtnTypeTrace.setToggleGroup(mToggleGroup);
+
         mBtnEraser = new ToggleButton();
         mBtnEraser.setGraphic(new ImageView(new Image(getClass().getResourceAsStream("/images/ic_eraser.png"))));
         mBtnEraser.setOnAction((ActionEvent e) -> {
@@ -597,6 +609,7 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
         Tooltip stateInfo = new Tooltip("State");
         Tooltip lineTransitionInfo = new Tooltip("Straight Transition");
         Tooltip arcTransitionInfo = new Tooltip("Curved Transition");
+        Tooltip transitionTypeInfo = new Tooltip("Transition Type");
         Tooltip eraserInfo = new Tooltip("Eraser");
         Tooltip handInfo = new Tooltip("Move");
         Tooltip zoomInfo = new Tooltip("Ctrl + MouseScroll ↑\nCtrl + MouseScroll ↓\nCtrl + Mouse Button Middle");
@@ -607,6 +620,7 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
         Tooltip.install(mBtnState, stateInfo);
         Tooltip.install(mBtnTransitionLine, lineTransitionInfo);
         Tooltip.install(mBtnTransitionArc, arcTransitionInfo);
+        Tooltip.install(mBtnTypeTrace, transitionTypeInfo);
         Tooltip.install(mBtnEraser, eraserInfo);
         Tooltip.install(mBtnHand, handInfo);
         Tooltip.install(mBtnZoom, zoomInfo);
@@ -614,7 +628,7 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
         Tooltip.install(mBtnUndo, undoInfo);
         Tooltip.install(mBtnRedo, redoInfo);
 
-        mToolbar.getItems().addAll(mBtnArrow, mBtnState, mBtnTransitionLine, mBtnTransitionArc, mBtnEraser, mBtnHand, mBtnZoom, mBtnBigState,
+        mToolbar.getItems().addAll(mBtnArrow, mBtnState, mBtnTransitionLine, mBtnTransitionArc, mBtnTypeTrace,mBtnEraser, mBtnHand, mBtnZoom, mBtnBigState,
                 new Separator(Orientation.VERTICAL), paleta);//mBtnUndo, mBtnRedo); //, new Separator(), txtGuard, txtProbability, txtLabel);
 
         mStateToolbar = new ToolBar();

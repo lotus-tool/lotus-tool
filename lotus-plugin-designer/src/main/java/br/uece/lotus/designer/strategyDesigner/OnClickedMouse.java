@@ -1,12 +1,15 @@
 package br.uece.lotus.designer.strategyDesigner;
 
 import br.uece.lotus.BigState;
+import br.uece.lotus.Component;
 import br.uece.lotus.State;
 import br.uece.lotus.Transition;
 import br.uece.lotus.designer.DesignerWindowImpl;
 import static br.uece.lotus.designer.DesignerWindowImpl.MODO_NENHUM;
 import static br.uece.lotus.designer.DesignerWindowImpl.MODO_REMOVER;
 import static br.uece.lotus.designer.DesignerWindowImpl.MODO_VERTICE;
+import static br.uece.lotus.designer.DesignerWindowImpl.MODO_ALTERAR;
+import br.uece.lotus.viewer.TransitionView;
 import br.uece.lotus.viewer.StateView;
 import br.uece.lotus.viewer.StateViewImpl;
 import br.uece.lotus.viewer.TransitionView;
@@ -107,7 +110,39 @@ public class OnClickedMouse implements Strategy {
                         dwi.mViewer.getComponent().setInitialState(s);
                     }
                 }
-            } else if (dwi.mModoAtual == MODO_REMOVER) {
+            }else if (dwi.mModoAtual == MODO_ALTERAR) {
+                if (dwi.mComponentSelecionado != null && dwi.getSelectedView() instanceof TransitionView) {
+                    System.out.println("transição selecionada");
+
+                    Transition t = ((TransitionView) dwi.getSelectedView()).getTransition();
+                    State origem = t.getSource();
+                    State destino = t.getDestiny();
+                    String label = t.getLabel();
+                    Double probabilidade = t.getProbability();
+                    
+                    //t.setValue("view.type", t.getValue("view.type"));
+                    System.out.println("view type " + t.getValue("view.type"));
+
+                    Component c = dwi.mViewer.getComponent();
+
+                    if (t.getValue("view.type").equals(1)) {
+                        c.buildTransition(origem, destino)
+                                .setLabel(label)
+                                .setProbability(probabilidade)
+                                .setViewType(TransitionView.Geometry.LINE)
+                                .create();
+                    } else {
+                        c.buildTransition(origem, destino)
+                                .setLabel(label)
+                                .setProbability(probabilidade)
+                                .setViewType(TransitionView.Geometry.CURVE)
+                                .create();
+                    }
+                    dwi.mViewer.getComponent().remove(t);
+                    
+                    dwi.mModoAtual = MODO_NENHUM;
+                }
+            }  else if (dwi.mModoAtual == MODO_REMOVER) {
                 /*
                 *Verifica se existe algum estado selecionado após clicar na borracha se sim ele(s)
                 *são apagados
