@@ -76,7 +76,7 @@ public class ProjectDialogsDS extends Plugin{
         File f = (File) project.getValue("file");
         if (forceShowDialog || f == null) {
             
-            f = getFileChooser(title, extensionDescription, extension, project.getName()).showSaveDialog(null);
+            f = getFileChooser(title, extensionDescription, extension, project.getName()+".xml").showSaveDialog(null);
             if (f == null) {
                 return false;
             }
