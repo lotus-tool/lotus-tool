@@ -78,9 +78,15 @@ public class ProjectDSxmlSerializer implements ProjectDSSerializer{
                     xml.begin("TransitionMSC");
                     for(TransitionMSC t : p.getStandardModeling().getTransitions()){
                         xml.begin("TransitionHMSC");
-                        xml.attr("from", ((HmscView)t.getSource()).getHMSC().getID());
-                        xml.attr("to", ((HmscView)t.getDestiny()).getHMSC().getID());
-
+                        if(t.getSource() instanceof Hmsc){
+                            xml.attr("from", ((Hmsc) t.getSource()).getID() );
+                        }else {
+                            xml.attr("from", ((HmscView) t.getSource()).getHMSC().getID());
+                        }if(t.getDestiny() instanceof  Hmsc){
+                            xml.attr("to", ((Hmsc) t.getDestiny()).getID() );
+                        }else {
+                            xml.attr("to", ((HmscView) t.getDestiny()).getHMSC().getID());
+                        }
                         String label = t.getLabel();
                         xml.attr("label", label == null ? "" : label);
                         Double prob = t.getProbability();
@@ -165,8 +171,18 @@ public class ProjectDSxmlSerializer implements ProjectDSSerializer{
                             xml.begin("TransitionMSC");
                             for(TransitionMSC t : bmsc.getAllTransitions()){
                                 xml.begin("TransitionBMSC");
-                                xml.attr("from", ((BlockDSView)t.getSource()).getBlockDS().getID());
-                                xml.attr("to", ((BlockDSView)t.getDestiny()).getBlockDS().getID());
+
+                                if(t.getSource() instanceof BlockDS){
+                                    xml.attr("from", ((BlockDS) t.getSource()).getID());
+                                }else {
+                                    xml.attr("from", ((BlockDSView) t.getSource()).getBlockDS().getID());
+                                }
+                                if(t.getDestiny() instanceof BlockDS){
+                                    xml.attr("to", ((BlockDS) t.getDestiny()).getID());
+                                }else {
+                                    xml.attr("to", ((BlockDSView) t.getDestiny()).getBlockDS().getID());
+                                }
+
                                 xml.attr("sequence", String.valueOf(t.getIdSequence()));
                                 
                                 String label = t.getLabel();
@@ -433,7 +449,7 @@ public class ProjectDSxmlSerializer implements ProjectDSSerializer{
         }
 
         //DEBUG-----------------------------------------
-        /*private void printHmsc() {
+    /*  private void printHmsc() {
             System.out.println("--------------------StandardModeling-----------------");
             for(Hmsc h : mProject.getStandardModeling().getBlocos()){
                 System.out.println("Hmsc: "+h.getLabel()+" id:"+h.getID());
@@ -443,7 +459,7 @@ public class ProjectDSxmlSerializer implements ProjectDSSerializer{
             }
             System.out.println("-------------------------------------------------");
         }
-
+/*
         private void printLTSComposed() {
             System.out.println("--------------------LTS Composed-----------------");
             for(State s : mProject.getLTS_Composed().getStates()){

@@ -156,8 +156,16 @@ public class StandardModeling {
     }
     
     public void remove(TransitionMSC t){
-        ((HmscView)t.getSource()).getHMSC().removeOutgoingTransition(t);
-        ((HmscView)t.getDestiny()).getHMSC().removeIncomingTransition(t);
+        if(t.getSource() instanceof Hmsc){
+            ((Hmsc) t.getSource()).removeOutgoingTransition(t);
+        }else {
+            ((HmscView) t.getSource()).getHMSC().removeOutgoingTransition(t);
+        }
+        if(t.getDestiny() instanceof Hmsc){
+            ((Hmsc) t.getDestiny()).removeIncomingTransition(t);
+        }else {
+            ((HmscView) t.getDestiny()).getHMSC().removeIncomingTransition(t);
+        }
         mTransitions.remove(t);
         for(Listener l : mListeners){
             l.onTransitionRemove(this, t);
