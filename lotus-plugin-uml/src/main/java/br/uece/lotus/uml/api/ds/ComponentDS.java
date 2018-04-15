@@ -106,8 +106,16 @@ public class ComponentDS {
     }
     
     public void remove(TransitionMSC t){
-        ((BlockDSView)t.getSource()).getBlockDS().removeOutgoingTransition(t);
-        ((BlockDSView)t.getDestiny()).getBlockDS().removeIncomingTransition(t);
+        if(t.getSource() instanceof BlockDS){
+            ((BlockDS)t.getSource()).removeOutgoingTransition(t);
+        }else {
+            ((BlockDSView) t.getSource()).getBlockDS().removeOutgoingTransition(t);
+        }
+        if(t.getDestiny() instanceof BlockDS){
+            ((BlockDS)t.getDestiny()).removeIncomingTransition(t);
+        }else {
+            ((BlockDSView) t.getDestiny()).getBlockDS().removeIncomingTransition(t);
+        }
         mTransitions.remove(t);
         for(Listener l : mListeners){
             l.onTransitionRemove(this, t);

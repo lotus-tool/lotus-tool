@@ -240,7 +240,14 @@ public class BasicPlugin extends Plugin {
     private Runnable mOpenProject = () -> {
         Project p = mProjectDialogsHelper.open(mProjectSerializer, "Open project", EXTENSION_DESCRIPTION, EXTENSION);
         if (p != null) {
-            mProjectExplorer.open(p);
+            if(!checkExistenceName(p.getName())) {
+                mProjectExplorer.open(p);
+            }else{
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setHeaderText("Information");
+                alert.setContentText("This Project already exists!");
+                alert.show();
+            }
         }
     };
     private final Runnable mSaveAllProject = () -> {
