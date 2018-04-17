@@ -263,7 +263,12 @@ public final class ProjectExplorerPluginDS extends Plugin implements ProjectExpl
         mExtMnuStandardModeling = new ExtensibleFXContextMenu(mMnuStandardModeling);
         mExtMnuBMSC = new ExtensibleFXContextMenu(mMnuComponentBMSC);
         mExtMnuComponentLTS = new ExtensibleFXContextMenu(mMnuComponentLTS);
-        
+
+
+        DesingWindowImplManegerBlockDs dwimbd = new DesingWindowImplManegerBlockDs();
+        StandardModelingWindowManager smwm = new StandardModelingWindowManager();
+        LtsWindowManager lwm = new LtsWindowManager();
+
         mProjectDSView = new TreeView<>();
         mProjectDSView.setRoot(new TreeItem<>());
         mProjectDSView.setShowRoot(false);
@@ -310,7 +315,7 @@ public final class ProjectExplorerPluginDS extends Plugin implements ProjectExpl
                 Component c = getSelectedComponentLTS();
                 if(cbds != null){
                     try {
-                        StandardModelingWindowManager smwm = new StandardModelingWindowManager();
+                        //StandardModelingWindowManager smwm = new StandardModelingWindowManager();
                         smwm.onStart(extension);
                         smwm.show(cbds);                        
                         mExtMnuStandardModeling.triggerDefaultAction();
@@ -319,7 +324,7 @@ public final class ProjectExplorerPluginDS extends Plugin implements ProjectExpl
                     }
                 }else if(cds != null){
                     try {
-                        DesingWindowImplManegerBlockDs dwimbd = new DesingWindowImplManegerBlockDs();
+                        //DesingWindowImplManegerBlockDs dwimbd = new DesingWindowImplManegerBlockDs();
                         dwimbd.onStart(extension);
                         dwimbd.show(cds);
                         mExtMnuBMSC.triggerDefaultAction();
@@ -328,7 +333,7 @@ public final class ProjectExplorerPluginDS extends Plugin implements ProjectExpl
                     }
                 }else if(c != null){
                     try {
-                        LtsWindowManager lwm = new LtsWindowManager();
+                        //LtsWindowManager lwm = new LtsWindowManager();
                         lwm.onStart(extension);
                         lwm.show(c);
                         mExtMnuComponentLTS.triggerDefaultAction();
