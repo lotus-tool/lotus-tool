@@ -257,8 +257,14 @@ public class Hmsc {
     
     public TransitionMSC getTransitionTo(Hmsc hmsc){
         for(TransitionMSC t : mTransicaoSaida){
-            if(((HmscView)t.getDestiny()).getHMSC().equals(hmsc)){
-                return t;
+            try {
+                if (((HmscView) t.getDestiny()).getHMSC().equals(hmsc)) {
+                    return t;
+                }
+            }catch (ClassCastException e){
+                if((t.getDestiny()).equals(hmsc)){
+                    return t;
+                }
             }
         }
         return null;
@@ -267,8 +273,14 @@ public class Hmsc {
     public List<TransitionMSC> getTransitionsTo(Hmsc hmsc){
         List<TransitionMSC> l = new ArrayList<>();
         for(TransitionMSC t : mTransicaoSaida){
-            if(((HmscView)t.getDestiny()).getHMSC().equals(hmsc)){
-                l.add(t);
+            try {
+                if (((HmscView) t.getDestiny()).getHMSC().equals(hmsc)) {
+                    l.add(t);
+                }
+            }catch (ClassCastException e){
+                if((t.getDestiny()).equals(hmsc)){
+                    l.add(t);
+                }
             }
         }
         return l;

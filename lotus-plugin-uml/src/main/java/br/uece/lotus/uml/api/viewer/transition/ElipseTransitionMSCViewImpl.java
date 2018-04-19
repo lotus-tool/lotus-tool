@@ -5,16 +5,13 @@
  */
 package br.uece.lotus.uml.api.viewer.transition;
 
+import br.uece.lotus.uml.api.ds.Hmsc;
 import br.uece.lotus.uml.api.ds.TransitionMSC;
 import br.uece.lotus.uml.api.viewer.hMSC.HmscView;
-import br.uece.lotus.uml.api.viewer.hMSC.HmscViewImpl;
-import br.uece.lotus.viewer.ElipseTransitionViewImpl;
 import br.uece.lotus.viewer.Geom;
 import br.uece.lotus.viewer.Seta;
 import br.uece.lotus.viewer.StyleBuilder;
-import java.util.List;
 import javafx.beans.binding.DoubleBinding;
-import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.layout.Region;
@@ -25,6 +22,8 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.transform.Rotate;
 
+import java.util.List;
+
 /**
  *
  * @author Bruno Barbosa
@@ -32,41 +31,50 @@ import javafx.scene.transform.Rotate;
 public class ElipseTransitionMSCViewImpl extends TransitionMSCViewImpl{
 
     private TransicaoEmArcoMSC mCurva;
-    
+
     @Override
     protected void prepareView() {
-        HmscViewImpl origemView =  null;
-        HmscViewImpl destinoView = null;
+        Region origem = null;
+        Region destino = null;
 
         switch (mValueType) {
             case "hMSC":{
-                origemView = (HmscViewImpl) hMscSource.getHMSC().getValue("view");
-                destinoView = (HmscViewImpl) hMscDestiny.getHMSC().getValue("view");
-                
-                mCurva = new TransicaoEmArcoMSC(origemView, destinoView, mTransition);
-                mCurva.setStyle(StyleBuilder.stroke("#f00", 1));
-                mCurva.layoutXProperty().bind(origemView.layoutXProperty().add(origemView.heightProperty().divide(2)));
-                mCurva.layoutYProperty().bind(origemView.layoutYProperty().subtract(mCurva.heightProperty()).add(origemView.heightProperty().divide(2)));
+                try{
+                    origem = (Region) hMscSource.getNode();
+                    destino = (Region) hMscDestiny.getNode();
+                } catch(NullPointerException e){
+                    HmscView src = (HmscView) srcHMSC.getValue("view");
+                    HmscView dst = (HmscView) dstHMSC.getValue("view");
+                    origem = (Region) src.getNode();
+                    destino = (Region) dst.getNode();
+                }
+                if(origem != null && destino != null) {
+                    mCurva = new TransicaoEmArcoMSC(origem, destino, mTransition);
+                    mCurva.setStyle(StyleBuilder.stroke("#f00", 1));
+                    mCurva.layoutXProperty().bind(origem.layoutXProperty().add(origem.heightProperty().divide(2)));
+                    mCurva.layoutYProperty().bind(origem.layoutYProperty().subtract(mCurva.heightProperty()).add(origem.heightProperty().divide(2)));
 
-                Rotate r = new Rotate();
-                DoubleBinding angle = Geom.angle(origemView, destinoView);
-                r.angleProperty().bind(new Geom.CartesianCase(origemView, destinoView)
-                        .firstAndSecond(-90)
-                        .thirthAndFourth(90)
-                        .secondAndThirth(angle.add(180))
-                        .first(angle)
-                        .second(angle.add(180))
-                        .thirth(angle.add(180))
-                        .fourth(angle)                
-                );
-                r.setAxis(Rotate.Z_AXIS);
-                r.pivotYProperty().bind(mCurva.heightProperty());
-                mCurva.getTransforms().add(r);
-                mCurva.rotulo.rotateProperty().bind(new Geom.CartesianCase(origemView, destinoView)
-                                .second(180)
-                                .thirth(180)
-                );
-                getChildren().add(mCurva);
+                    Rotate r = new Rotate();
+                    DoubleBinding angle = Geom.angle(origem, destino);
+                    r.angleProperty().bind(new Geom.CartesianCase(origem, destino)
+                            .firstAndSecond(-90)
+                            .thirthAndFourth(90)
+                            .secondAndThirth(angle.add(180))
+                            .first(angle)
+                            .second(angle.add(180))
+                            .thirth(angle.add(180))
+                            .fourth(angle)
+                    );
+                    r.setAxis(Rotate.Z_AXIS);
+                    r.pivotYProperty().bind(mCurva.heightProperty());
+                    mCurva.getTransforms().add(r);
+                    mCurva.rotulo.rotateProperty().bind(new Geom.CartesianCase(origem, destino)
+                            .second(180)
+                            .thirth(180)
+                    );
+                    getChildren().add(mCurva);
+                }
+                break;
             }
         }
         
@@ -82,8 +90,18 @@ public class ElipseTransitionMSCViewImpl extends TransitionMSCViewImpl{
 
     @Override
     public boolean isInsideBounds_hMSC(Circle circle) {
-        return circle.getBoundsInParent().intersects(mCurva.seta.getLayoutBounds());
+        if (circle.getBoundsInParent().intersects(mCurva.seta.getBoundsInParent())) {
+            return true;
+        } else if (circle.getBoundsInParent().intersects(mCurva.arco.getBoundsInParent())) {
+            return true;
+        } else if (circle.getBoundsInParent().intersects(mCurva.rotulo.getBoundsInParent())) {
+            return true;
+        }
+        return false;
+
+
     }
+
 
     @Override
     public boolean isInsideBounds_bMSC(Circle circle) {
@@ -126,7 +144,14 @@ public class ElipseTransitionMSCViewImpl extends TransitionMSCViewImpl{
         private int quantidadeFilhosHmsc(TransitionMSC mTransition) {
             int index = 0;
             boolean temLine = false;
-            List<TransitionMSC> listaT = ((HmscView)mTransition.getSource()).getHMSC().getTransitionsTo(((HmscView)mTransition.getDestiny()).getHMSC());
+            List<TransitionMSC> listaT;
+            try{
+                 listaT = ((Hmsc)mTransition.getSource()).getTransitionsTo(((Hmsc)mTransition.getDestiny()));
+            } catch(ClassCastException e){
+                listaT = ((HmscView)mTransition.getSource()).getHMSC().getTransitionsTo(((HmscView)mTransition.getDestiny()).getHMSC());
+            }
+
+            System.out.println("All transitions between hMSCs "+listaT.size());
             for(int i=0;i<listaT.size();i++){
                 if(listaT.get(i) == mTransition){
                     index = i;
