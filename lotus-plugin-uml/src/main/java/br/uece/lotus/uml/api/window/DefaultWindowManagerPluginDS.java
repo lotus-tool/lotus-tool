@@ -60,6 +60,8 @@ public abstract class DefaultWindowManagerPluginDS<E extends WindowDS> extends P
     @Override
     public void show(StandardModeling buildDS) {
         checkIfStartedProperly();
+        Integer id = mComponentBuildDSids.get(buildDS);
+
         E window = null;
         for(E w : mComponentsWindows){
             if(w.getComponentBuildDS() != null){
@@ -68,6 +70,15 @@ public abstract class DefaultWindowManagerPluginDS<E extends WindowDS> extends P
                 }
             }
         }
+
+        if( id != null && !mCenterPanel.isShowing(mComponentBuildDSids.get(buildDS)) ){
+            mComponentBuildDSids.remove(buildDS);
+            mComponentsWindows.remove(window);
+            buildDS.removeListener(mComponentBuildDSListener);
+            window = null;
+        }
+
+
         if(window == null){
             window = onCreateStandadM(mProjectExplorerDS);
             window.setComponentBuildDS(buildDS);
@@ -77,8 +88,8 @@ public abstract class DefaultWindowManagerPluginDS<E extends WindowDS> extends P
             }
             buildDS.addListener(mComponentBuildDSListener);
             onShow(window, buildDS);
-            Integer id = mComponentBuildDSids.get(buildDS);
             boolean visivel = id != null && mCenterPanel.isShowing(id);
+
             if(!visivel || id == null){
                 id = mCenterPanel.newTab(window.getTitle(), window.getNode(), true);
                 mComponentBuildDSids.put(buildDS, id);
@@ -149,7 +160,6 @@ public abstract class DefaultWindowManagerPluginDS<E extends WindowDS> extends P
 
     @Override
     public void hide(StandardModeling buildDS) {
-        
     }
 
     @Override

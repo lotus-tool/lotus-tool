@@ -105,7 +105,6 @@ public class ProjectDialogsHelper extends Plugin {
         if (project == null) {
             JOptionPane.showMessageDialog(null, "Please select a project!");
             return false;
-
         }
 
         File f = (File) project.getValue("file");
@@ -133,7 +132,8 @@ public class ProjectDialogsHelper extends Plugin {
             }*/
 
 
-            f = getFileChooser(title, extensionDescription, extension, project.getName()).showSaveDialog(null);
+            f = getFileChooser(title, extensionDescription, extension, project.getName()+".xml").showSaveDialog(null);
+
             if (f == null) {
                 return false;
 

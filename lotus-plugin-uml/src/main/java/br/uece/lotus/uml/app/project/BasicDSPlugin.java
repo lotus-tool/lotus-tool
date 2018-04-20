@@ -146,7 +146,14 @@ public class BasicDSPlugin extends Plugin{
     private Runnable mOpenProject = () -> {
         ProjectDS p = mProjectDialogsHelper.open(mProjectSerializer, "Open project", EXTENSION_DESCRIPTION, EXTENSION);
         if (p != null) {
-            mProjectExplorerDS.open(p);
+            if(!checkExistenceName(p.getName())){
+                mProjectExplorerDS.open(p);
+            }else{
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setHeaderText("Information");
+                alert.setContentText("This Project already exists!");
+                alert.show();
+            }
         }
     };
     

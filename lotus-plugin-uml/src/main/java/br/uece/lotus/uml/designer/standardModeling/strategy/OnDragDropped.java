@@ -29,10 +29,15 @@ public class OnDragDropped implements Strategy{
             s.mViewer.getNode().getChildren().remove(s.fakeLine);
         }
         
-        if(s.hMSC_final != null){    
+        if(s.hMSC_final != null){
+            if(existTransition(s)){
+                s.mTransitionViewType = 1;
+            }
+
             TransitionMSC t = s.mViewer.getComponentBuildDS().buildTransition(s.hMSC_inicial, s.hMSC_final)
                     .setViewType(s.mTransitionViewType)
                     .create();
+
         }
         
         event.setDropCompleted(true);
@@ -68,5 +73,14 @@ public class OnDragDropped implements Strategy{
 
     @Override
     public void onKeyReleased(StandardModelingWindowImpl s, KeyEvent event) {}
+
+    private boolean existTransition(StandardModelingWindowImpl s){
+        if( (s.hMSC_inicial.getHMSC().getTransitionTo(s.hMSC_final.getHMSC())) != null){
+            return true;
+        }else if( (s.hMSC_final.getHMSC().getTransitionTo(s.hMSC_inicial.getHMSC())) != null){
+            return true;
+        }
+            return false;
+    }
     
 }
