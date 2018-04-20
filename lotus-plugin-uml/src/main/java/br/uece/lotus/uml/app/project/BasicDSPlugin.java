@@ -109,7 +109,7 @@ public class BasicDSPlugin extends Plugin{
         
         p.setName(pName);
         StandardModeling  cbds = new StandardModeling();
-        cbds.setName("Standard Modeling");
+        cbds.setName("Standard Modeling" + "(" + p.getName() + ")");
         p.setComponentBuildDS(cbds);
         mProjectExplorerDS.open(p);
         abrirFocoNaTab("UML Projects");
