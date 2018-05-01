@@ -65,7 +65,7 @@ public class LtsParser {
                 }else{
                     if(!stateExiste(c, idrelativoClassifier(m.getRecebendo().getXmiID()))){
                         org = dst;
-                        dst = c.newState(idrelativoClassifier(m.getRecebendo().getXmiID()));
+                        dst  sta= c.newState(idrelativoClassifier(m.getRecebendo().getXmiID()));
                         c.buildTransition(org, dst)
                                 .setLabel(m.getEnviando().getNome()+"."+m.getRecebendo().getNome()+"."+m.getMsg().replaceAll("\\+", ""))
                                 .create();
