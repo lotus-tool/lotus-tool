@@ -5,8 +5,8 @@
  */
 package br.uece.lotus.uml.app.project;
 
-import br.uece.lotus.uml.api.ds.StandardModeling;
 import br.uece.lotus.uml.api.ds.ProjectDS;
+import br.uece.lotus.uml.api.ds.StandardModeling;
 import br.uece.lotus.uml.api.project.ProjectDSSerializer;
 import br.uece.lotus.uml.api.project.ProjectDialogsDS;
 import br.uece.lotus.uml.api.project.ProjectExplorerDS;
@@ -14,19 +14,21 @@ import br.uece.seed.app.ExtensibleMenu;
 import br.uece.seed.app.UserInterface;
 import br.uece.seed.ext.ExtensionManager;
 import br.uece.seed.ext.Plugin;
-import java.util.Optional;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TextInputDialog;
 
+import javax.swing.*;
+import java.io.File;
+import java.util.Optional;
+
 /**
- *
  * @author Bruno Barbosa
  */
-public class BasicDSPlugin extends Plugin{
-    
+public class BasicDSPlugin extends Plugin {
+
     private UserInterface mUserInterface;
     private ProjectExplorerDS mProjectExplorerDS;
     private ProjectDialogsDS mProjectDialogsHelper;
@@ -34,16 +36,16 @@ public class BasicDSPlugin extends Plugin{
     private ProjectDSSerializer mProjectSerializer = new ProjectDSxmlSerializer();
     private static final String EXTENSION_DESCRIPTION = "LoTuS-MSC files (*.xml)";
     private static final String EXTENSION = "*.xml";
-    
+
     @Override
     public void onStart(ExtensionManager extensionManager) throws Exception {
         mUserInterface = extensionManager.get(UserInterface.class);
         mProjectExplorerDS = extensionManager.get(ProjectExplorerDS.class);
         mProjectDialogsHelper = extensionManager.get(ProjectDialogsDS.class);
         mTabsDoPainelDeProjetos = mUserInterface.getLeftPanel().getTabs();
-        
+
         ExtensibleMenu mMainMenu = mUserInterface.getMainMenu();
-        
+
         mMainMenu.newItem("MSC/New Project...Lotus-MSC")
                 .setWeight(Integer.MIN_VALUE)
                 //.setAccelerator(KeyCode.N, KeyCombination.CONTROL_DOWN, KeyCombination.SHIFT_DOWN)
@@ -73,7 +75,7 @@ public class BasicDSPlugin extends Plugin{
                 .setWeight(Integer.MIN_VALUE)
                 .setAction(mSaveProject)
                 .create();
-        
+
         mProjectExplorerDS.getMenu().addItem(Integer.MIN_VALUE, "New Project", mNewProject);
         mProjectExplorerDS.getMenu().addItem(Integer.MIN_VALUE, "Open Project", mOpenProject);
         mProjectExplorerDS.getProjectMSCMenu().addItem(Integer.MIN_VALUE, "Close Project", mCloseProject);
@@ -81,56 +83,92 @@ public class BasicDSPlugin extends Plugin{
         mProjectExplorerDS.getProjectMSCMenu().addItem(Integer.MIN_VALUE, "Rename Project", mRenameProject);
         mProjectExplorerDS.getComponentBMSCMenu().addItem(Integer.MIN_VALUE, "Rename bMSC", mRenameBMSC);
         mProjectExplorerDS.getComponentBMSCMenu().addItem(Integer.MIN_VALUE, "Remove bMSC", mRemoveBMSC);
-        
+
         //mProjectExplorerDS.getProjectMSCMenu().addItem(Integer.MIN_VALUE, "New Sequence Diagram", mNewComponentDS);
     }
-    
-    private Runnable mNewProject = () ->{
+
+    private Runnable mNewProject = () -> {
         ProjectDS p = new ProjectDS();
         String pName = "";
-        String prompt = "Untitled"+ (mProjectExplorerDS.getAllProjectsDS().size()+1);
-        
+        String prompt = "Untitled" + (mProjectExplorerDS.getAllProjectsDS().size() + 1);
+
         TextInputDialog d = new TextInputDialog(prompt);
         d.setTitle("New Project");
         d.setHeaderText("New Project to MSC");
         d.setContentText("Enter the new project's name:");
         Optional<String> resul = d.showAndWait();
-        if(resul.isPresent()){
+        if (resul.isPresent()) {
             pName = resul.get();
+        } else {
+            return;
         }
-        
-        if(pName.equals("")){
+
+        if (pName.equals("")) {
             pName = prompt;
         }
-        if(checkExistenceName(pName)){
+        if (checkExistenceName(pName)) {
             Alert alert = new Alert(Alert.AlertType.INFORMATION, "Existing Project", ButtonType.OK);
             alert.show();
+            return;
+        } else {
+            p.setName(pName);
+            StandardModeling cbds = new StandardModeling();
+            cbds.setName("Standard Modeling" + "(" + p.getName() + ")");
+            p.setComponentBuildDS(cbds);
+            mProjectExplorerDS.open(p);
+            abrirFocoNaTab("UML Projects");
         }
-        
-        p.setName(pName);
-        StandardModeling  cbds = new StandardModeling();
-        cbds.setName("Standard Modeling");
-        p.setComponentBuildDS(cbds);
-        mProjectExplorerDS.open(p);
-        abrirFocoNaTab("UML Projects");
+
     };
-    
+
     private Runnable mRenameProject = () -> {
-        System.out.println("falta implementar  Classe: BasicDSPlugin");
+        ProjectDS p = mProjectExplorerDS.getSelectedProjectDS();
+        String pName = "";
+        String prompt = p.getName();
+
+        TextInputDialog d = new TextInputDialog(prompt);
+        d.setTitle("Rename Project");
+        d.setHeaderText("New Name to Project");
+        d.setContentText("Enter the new project's name:");
+        Optional<String> resul = d.showAndWait();
+        if (resul.isPresent()) {
+            pName = resul.get();
+        } else {
+            return;
+        }
+
+        if (pName.equals("")) {
+            pName = prompt;
+        }
+        if (checkExistenceName(pName)) {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION, "Existing Project", ButtonType.OK);
+            alert.show();
+            return;
+        } else {
+            p.setName(pName);
+            StandardModeling cbds = p.getStandardModeling();
+            cbds.setName("Standard Modeling" + "(" + p.getName() + ")");
+            p.setComponentBuildDS(cbds);
+            mProjectExplorerDS.open(p);
+            abrirFocoNaTab("UML Projects");
+        }
     };
-    
+
     private Runnable mRenameBMSC = () -> {
         System.out.println("falta implementar  Classe: BasicDSPlugin");
     };
-    
+
     private Runnable mRemoveBMSC = () -> {
         System.out.println("falta implementar  Classe: BasicDSPlugin");
     };
-    
+
     private Runnable mCloseProject = () -> {
-        System.out.println("falta implementar  Classe: BasicDSPlugin");
+        System.out.println("----------------------------------------");
+        ProjectDS p = mProjectExplorerDS.getSelectedProjectDS();
+        System.out.println("FECHAR: " + p.getName());
+        mProjectExplorerDS.close(p);
     };
-    
+
     private Runnable mSaveProject = () -> {
         ProjectDS p = mProjectExplorerDS.getSelectedProjectDS();
         if (p == null) {
@@ -142,26 +180,33 @@ public class BasicDSPlugin extends Plugin{
         }
         mProjectDialogsHelper.save(p, mProjectSerializer, "Save project", EXTENSION_DESCRIPTION, EXTENSION/*,false*/);
     };
-    
+
     private Runnable mOpenProject = () -> {
         ProjectDS p = mProjectDialogsHelper.open(mProjectSerializer, "Open project", EXTENSION_DESCRIPTION, EXTENSION);
         if (p != null) {
-            mProjectExplorerDS.open(p);
+            if (!checkExistenceName(p.getName())) {
+                mProjectExplorerDS.open(p);
+            } else {
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setHeaderText("Information");
+                alert.setContentText("This Project already exists!");
+                alert.show();
+            }
         }
     };
-    
+
     private boolean checkExistenceName(String name) {
-        for(ProjectDS p : mProjectExplorerDS.getAllProjectsDS()){
-            if(p.getName().equals(name)){
+        for (ProjectDS p : mProjectExplorerDS.getAllProjectsDS()) {
+            if (p.getName().equals(name)) {
                 return true;
             }
         }
         return false;
     }
-    
-    private void abrirFocoNaTab(String name){
-        for(Tab tab : mTabsDoPainelDeProjetos){
-            if(tab.getText().equals(name)){
+
+    private void abrirFocoNaTab(String name) {
+        for (Tab tab : mTabsDoPainelDeProjetos) {
+            if (tab.getText().equals(name)) {
                 tab.getTabPane().getSelectionModel().select(tab);
             }
         }
