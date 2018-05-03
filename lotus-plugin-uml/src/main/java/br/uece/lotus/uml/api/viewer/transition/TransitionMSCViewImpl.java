@@ -139,7 +139,9 @@ public abstract class TransitionMSCViewImpl extends Region implements Transition
     public HmscView gethMSCsourceView(){
         return hMscSource;
     }
-    
+    public HmscView getSrcHMSC(){
+        return (HmscView)srcHMSC.getValue("view");
+    }
     public HmscView gethMSCdestinyView(){
         return hMscDestiny;
     }

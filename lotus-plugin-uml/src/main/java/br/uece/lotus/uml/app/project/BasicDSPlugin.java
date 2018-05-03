@@ -159,7 +159,7 @@ public class BasicDSPlugin extends Plugin {
     };
 
     private Runnable mRemoveBMSC = () -> {
-        System.out.println("falta implementar  Classe: BasicDSPlugin");
+        System.out.println("falta implementar  Classe: BasicD");
     };
 
     private Runnable mCloseProject = () -> {

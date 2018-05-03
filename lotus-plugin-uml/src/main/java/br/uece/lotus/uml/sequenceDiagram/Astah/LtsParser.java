@@ -37,7 +37,8 @@ public class LtsParser {
     }
     
     public Component parseLTSA(){
-        State org = null, dst = null;
+        State org = null;
+        State dst = null;
         
         //=================================Montar linha de vida=================================================
         
@@ -52,6 +53,12 @@ public class LtsParser {
                 }else{
                     org = c.newState(idrelativoClassifier(m.getEnviando().getXmiID()));
                     dst = c.newState(idrelativoClassifier(m.getRecebendo().getXmiID()));
+                    System.out.println("Enviando: "+m.getEnviando()+
+                            "\t nome: "+m.getEnviando().getNome());
+                    System.out.println("Recebendo: "+m.getRecebendo()+
+                            "\t nome: "+m.getRecebendo().getNome());
+                    System.out.println("MSG: "+m.getMsg()+
+                            "\t replace: "+m.getMsg().replaceAll("\\+",""));
                     c.buildTransition(org, dst)
                             .setLabel(m.getEnviando().getNome()+"."+m.getRecebendo().getNome()+"."+m.getMsg().replaceAll("\\+", ""))
                             .create();
@@ -65,7 +72,7 @@ public class LtsParser {
                 }else{
                     if(!stateExiste(c, idrelativoClassifier(m.getRecebendo().getXmiID()))){
                         org = dst;
-                        dst  sta= c.newState(idrelativoClassifier(m.getRecebendo().getXmiID()));
+                        dst= c.newState(idrelativoClassifier(m.getRecebendo().getXmiID()));
                         c.buildTransition(org, dst)
                                 .setLabel(m.getEnviando().getNome()+"."+m.getRecebendo().getNome()+"."+m.getMsg().replaceAll("\\+", ""))
                                 .create();
