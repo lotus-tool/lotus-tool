@@ -53,7 +53,6 @@ public class ElipseTransitionMSCViewImpl extends TransitionMSCViewImpl{
                     mCurva.setStyle(StyleBuilder.stroke("#f00", 1));
                     mCurva.layoutXProperty().bind(origem.layoutXProperty().add(origem.heightProperty().divide(2)));
                     mCurva.layoutYProperty().bind(origem.layoutYProperty().subtract(mCurva.heightProperty()).add(origem.heightProperty().divide(2)));
-
                     Rotate r = new Rotate();
                     DoubleBinding angle = Geom.angle(origem, destino);
                     r.angleProperty().bind(new Geom.CartesianCase(origem, destino)

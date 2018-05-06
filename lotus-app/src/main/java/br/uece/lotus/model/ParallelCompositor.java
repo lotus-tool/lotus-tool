@@ -120,7 +120,11 @@ public class ParallelCompositor {
                 }
 
                 tt.setLabel(t.getLabel());
-                tt.setViewType(0);
+                if(aux.getCompositeState().getID() > newPrlState.getCompositeState().getID()){
+                 tt.setViewType(1);
+                }else {
+                    tt.setViewType(0);
+                }
                 Transition transicao = tt.create();
                 //System.out.println("Added transition " + t.getLabel() + " .");
 
@@ -154,7 +158,12 @@ public class ParallelCompositor {
                     continue;
                 }
                 tt.setLabel(t.getLabel());
-                tt.setViewType(0);
+                if(aux.getCompositeState().getID() > newPrlState.getCompositeState().getID()){
+                    tt.setViewType(1);
+
+                }else {
+                    tt.setViewType(0);
+                }
                 Transition transicao = tt.create();
                 //System.out.println("Added transition " + t.getLabel() + ".");
 
