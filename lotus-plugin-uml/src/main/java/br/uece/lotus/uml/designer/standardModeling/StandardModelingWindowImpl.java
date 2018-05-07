@@ -752,12 +752,24 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
             List<Mensagem> comunicacao = new ArrayList<>();
             for(TransitionMSC t : cds.getAllTransitions()){
                 Mensagem m = new Mensagem();
-                m.setEnviando(new AtorAndClasse(((BlockDSView)t.getSource()).getBlockDS().getLabel(), 
-                                                            String.valueOf(((BlockDSView)t.getSource()).getBlockDS().getID()),
-                                                            "actor"));
-                m.setRecebendo(new AtorAndClasse(((BlockDSView)t.getDestiny()).getBlockDS().getLabel(), 
-                                                            String.valueOf(((BlockDSView)t.getDestiny()).getBlockDS().getID()), 
-                                                            "actor"));
+                if(t.getSource() instanceof BlockDSView) {
+                    m.setEnviando(new AtorAndClasse(((BlockDSView) t.getSource()).getBlockDS().getLabel(),
+                            String.valueOf(((BlockDSView) t.getSource()).getBlockDS().getID()),
+                            "actor"));
+                }else if(t.getSource() instanceof BlockDS){
+                    m.setEnviando(new AtorAndClasse(((BlockDS) t.getSource()).getLabel(),
+                            String.valueOf(((BlockDS)t.getSource()).getID()),
+                            "actor"));
+                }
+                if(t.getDestiny() instanceof BlockDSView) {
+                    m.setRecebendo(new AtorAndClasse(((BlockDSView) t.getDestiny()).getBlockDS().getLabel(),
+                            String.valueOf(((BlockDSView) t.getDestiny()).getBlockDS().getID()),
+                            "actor"));
+                }else if(t.getDestiny() instanceof BlockDS){
+                    m.setRecebendo(new AtorAndClasse(((BlockDS)t.getDestiny()).getLabel(),
+                            String.valueOf(((BlockDS)t.getDestiny()).getID()),
+                            "actor"));
+                }
                 m.setMsg(t.getLabel());
                 m.setXmiIdMsg(t.getIdSequence()+"");
                 comunicacao.add(m);

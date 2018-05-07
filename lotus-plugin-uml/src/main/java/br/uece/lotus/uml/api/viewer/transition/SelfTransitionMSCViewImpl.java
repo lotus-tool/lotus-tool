@@ -8,6 +8,7 @@ package br.uece.lotus.uml.api.viewer.transition;
 import br.uece.lotus.uml.api.ds.TransitionMSC;
 import br.uece.lotus.uml.api.viewer.hMSC.HmscView;
 import br.uece.lotus.uml.api.viewer.hMSC.HmscViewImpl;
+import br.uece.lotus.uml.api.ds.Hmsc;
 import br.uece.lotus.viewer.Geom;
 import br.uece.lotus.viewer.SelfTransitionViewImpl;
 import br.uece.lotus.viewer.Seta;
@@ -34,9 +35,19 @@ public class SelfTransitionMSCViewImpl extends TransitionMSCViewImpl{
     
     @Override
     protected void prepareView() {
+        HmscViewImpl origemView = null;
+        HmscViewImpl destinoView = null;
         //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        HmscViewImpl origemView = (HmscViewImpl) hMscSource.getHMSC().getValue("view");
-        HmscViewImpl destinoView = (HmscViewImpl) hMscDestiny.getHMSC().getValue("view");
+        if(hMscSource instanceof HmscViewImpl) {
+            origemView = (HmscViewImpl) hMscSource.getHMSC().getValue("view");
+        }else{
+            origemView = (HmscViewImpl) ((HmscView) srcHMSC.getValue("view")).getNode();
+        }
+        if(hMscSource instanceof HmscViewImpl){
+            destinoView = (HmscViewImpl) hMscDestiny.getHMSC().getValue("view");
+        }else{
+            destinoView = (HmscViewImpl) ((HmscView)dstHMSC.getValue("view")).getNode();
+        }
          mCurva = new TransicaoEmArcoMSC(origemView, destinoView, mTransition);
                 mCurva.setStyle(StyleBuilder.stroke("#f00", 1));
                 mCurva.layoutXProperty().bind(origemView.layoutXProperty().add(origemView.heightProperty().divide(4)));
@@ -126,7 +137,12 @@ public class SelfTransitionMSCViewImpl extends TransitionMSCViewImpl{
         private int quantidadeFilhosHmsc(TransitionMSC mTransition) {
             int index = 0;
             boolean temLine = false;
-            List<TransitionMSC> listaT = ((HmscView)mTransition.getSource()).getHMSC().getTransitionsTo(((HmscView)mTransition.getDestiny()).getHMSC());
+            List<TransitionMSC> listaT = null;
+            if(mTransition.getSource() instanceof HmscView) {
+                listaT = ((HmscView) mTransition.getSource()).getHMSC().getTransitionsTo(((HmscView) mTransition.getDestiny()).getHMSC());
+            }else{
+                listaT = ((Hmsc) mTransition.getSource()).getTransitionsTo((Hmsc) mTransition.getDestiny());
+            }
             for(int i=0;i<listaT.size();i++){
                 if(listaT.get(i) == mTransition){
                     index = i;

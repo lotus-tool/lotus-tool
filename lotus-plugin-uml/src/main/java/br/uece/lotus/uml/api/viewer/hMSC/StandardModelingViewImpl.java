@@ -212,7 +212,11 @@ public class StandardModelingViewImpl extends AnchorPane implements StandardMode
                 node = view.getNode();
                 getChildren().add(node);
                 if (view instanceof SelfTransitionMSCViewImpl) {
-                    ((SelfTransitionMSCViewImpl) view).gethMSCsourceView().getNode().toFront();
+                    try {
+                        ((SelfTransitionMSCViewImpl) view).gethMSCsourceView().getNode().toFront();
+                    }catch(NullPointerException e){
+                        ((SelfTransitionMSCViewImpl) view).getSrcHMSC().getNode().toFront();
+                    }
                 } else {
                     node.toBack();
                 }
