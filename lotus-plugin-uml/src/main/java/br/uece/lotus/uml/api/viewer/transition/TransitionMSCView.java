@@ -6,6 +6,7 @@
 package br.uece.lotus.uml.api.viewer.transition;
 
 import br.uece.lotus.uml.api.ds.TransitionMSC;
+import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
@@ -22,7 +23,7 @@ public interface TransitionMSCView {
         TransitionMSCView create(TransitionMSC t);
     }
 
-    abstract boolean isInsideBounds_hMSC(Circle circle);
+    abstract boolean isInsideBounds_hMSC(Point2D point);
     abstract boolean isInsideBounds_bMSC(Circle circle);
     abstract Line getLineTransition();
 
