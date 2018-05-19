@@ -83,7 +83,8 @@ public class MakeLTSGeneral {
         
         mview.getComponentBuildDS().createListLTS(preComposicao);
         //Faz a composicao parelela dos LTS completo
-        geral = ParallelComposition(preComposicao);
+//        geral = ParallelComposition(preComposicao);
+        geral = ParallelComposition(this.ltsGerados);
         
         return geral;
     }

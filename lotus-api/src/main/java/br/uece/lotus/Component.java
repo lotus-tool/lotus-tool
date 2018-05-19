@@ -238,6 +238,16 @@ public class Component {
         return null;
     }
 
+    public Transition getTransitionByAction(String action){
+        for (Transition t : mTransitions){
+            String [] t_action = t.getLabel().split("[.]");
+            if(action.equals(t_action[2])){
+                return t;
+            }
+        }
+        return null;
+    }
+
     public void remove(Transition transition) {
         transition.getSource().removeOutgoingTransition(transition);
         transition.getDestiny().removeIncomingTransition(transition);

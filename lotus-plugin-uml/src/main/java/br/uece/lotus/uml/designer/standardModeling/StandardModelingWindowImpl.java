@@ -789,7 +789,8 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
             } else {
                 c = ltsGerados.get(0).clone();
             }
-            layout.layout(c);
+            System.out.println("Nome da Composição é: "+ c.getName());
+           // layout.layout(c);
             mViewer.getComponentBuildDS().createGeneralLTS(c);
         } catch (CloneNotSupportedException cloneNotSupportedException) {}
     };

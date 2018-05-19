@@ -73,9 +73,10 @@ public class LtsParser {
                     }
                     else if(stateExiste(c, idrelativoClassifier(m.getRecebendo().getXmiID()))){
                         org = dst;
-                        dst = c.newState(ultimoIDdisponivel());
+                        dst = c.getStateByID(Integer.parseInt(m.getRecebendo().getXmiID()));
                         c.buildTransition(org, dst)
                                 .setLabel(m.getEnviando().getNome()+"."+m.getRecebendo().getNome()+"."+m.getMsg().replaceAll("\\+", ""))
+                                .setViewType(1)
                                 .create();
                     }
                 }
