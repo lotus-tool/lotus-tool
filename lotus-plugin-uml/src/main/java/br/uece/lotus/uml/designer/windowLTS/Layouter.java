@@ -32,8 +32,6 @@ public class Layouter {
             int i = 0;
             double currentX = s.getLayoutX();
             double currentY = s.getLayoutY();
-            System.out.println("O X agora é: "+currentX);
-            System.out.println("O Y agora é: "+currentY);
             for (Transition t : s.getOutgoingTransitions()) {
                 State destiny = t.getDestiny();
                 if (!visitedStates.contains(destiny)) {

@@ -87,7 +87,6 @@ public class TransitionMSC {
     }
     
     public interface Listener {
-
         void onChange(TransitionMSC transitionMSC);
     }
     
