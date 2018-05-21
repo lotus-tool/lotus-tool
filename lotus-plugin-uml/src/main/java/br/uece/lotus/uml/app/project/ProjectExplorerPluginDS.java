@@ -442,7 +442,10 @@ public final class ProjectExplorerPluginDS extends Plugin implements ProjectExpl
         if(p == null){
             throw new IllegalArgumentException("project can not be null!");
         }
-        //Continua para fechar toda a hierarquia, que ainda nao foi implementada
+        TreeItem<WrapperDS> project = findItem(mProjectDSView.getRoot(), p);
+        if(project != null){
+            mProjectDSView.getRoot().getChildren().removeAll(project);
+        }
     }
 
     @Override
