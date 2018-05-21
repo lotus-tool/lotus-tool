@@ -378,7 +378,9 @@ public class ProjectDSxmlSerializer implements ProjectDSSerializer{
             try {
                 if(lts == null){
                     lts =  new Component();
+                    lts.setAutoUpdateLabels(false);
                 }
+
                 String id = attributes.getValue("id");
                 String label = attributes.getValue("label");
                 double x = Double.parseDouble(attributes.getValue("x"));
