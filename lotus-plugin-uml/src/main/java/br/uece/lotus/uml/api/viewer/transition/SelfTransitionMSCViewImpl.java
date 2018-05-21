@@ -15,6 +15,7 @@ import br.uece.lotus.viewer.Seta;
 import br.uece.lotus.viewer.StyleBuilder;
 import java.util.List;
 import javafx.beans.binding.DoubleBinding;
+import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.layout.Region;
@@ -88,8 +89,8 @@ public class SelfTransitionMSCViewImpl extends TransitionMSCViewImpl{
     }
 
     @Override
-    public boolean isInsideBounds_hMSC(Circle circle) {
-        return circle.getBoundsInParent().intersects(mCurva.seta.getLayoutBounds());
+    public boolean isInsideBounds_hMSC(Point2D point) {
+        return (mCurva.seta.localToScene(Point2D.ZERO).distance(point) < 8);
     }
 
     @Override

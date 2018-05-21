@@ -95,7 +95,7 @@ public class StandardModelingViewImpl extends AnchorPane implements StandardMode
     }
 
     @Override
-    public TransitionMSCView locateTransitionBuildView(Circle c) {
+    public TransitionMSCView locateTransitionBuildView(Point2D c) {
         for(TransitionMSCView t : mTransitionViews){
             if(t.isInsideBounds_hMSC(c)){
                 return t;

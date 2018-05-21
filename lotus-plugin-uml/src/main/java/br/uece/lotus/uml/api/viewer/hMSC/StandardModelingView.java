@@ -31,7 +31,7 @@ public interface StandardModelingView {
     public void removeListener(Listener l);
     
     HmscView locateBlockBuildView(Point2D point);
-    TransitionMSCView locateTransitionBuildView(Circle c);
+    TransitionMSCView locateTransitionBuildView(Point2D c);
     
     AnchorPane getNode();
     void setBlockBuildContextMenu(ContextMenu menu);

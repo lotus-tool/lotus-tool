@@ -36,10 +36,19 @@ public class ParallelCompositor {
     public boolean contemTransicao(Component c, Transition t){
         Iterable<Transition> transicoes = c.getTransitions();
         String [] t_action = t.getLabel().split("[.]");
-        for(Transition aux : transicoes){
-            String [] aux_action = aux.getLabel().split("[.]");
-            if(aux_action[2].equals( t_action[2] ) ){
-                return true;
+        try{
+            for(Transition aux : transicoes){
+                String [] aux_action = aux.getLabel().split("[.]");
+                if(aux_action[2].equals( t_action[2] ) ){
+                    return true;
+                }
+            }
+        } catch (IndexOutOfBoundsException e){
+            //System.out.println("");
+            for(Transition aux : transicoes){
+                if(aux.getLabel().equals( t.getLabel() ) ){
+                    return true;
+                }
             }
         }
         return false;
@@ -47,10 +56,18 @@ public class ParallelCompositor {
     
     public boolean contem(List<Transition> l, Transition t){
         String [] t_action = t.getLabel().split("[.]");
-        for(Transition aux : l){
-            String [] aux_action = aux.getLabel().split("[.]");
-            if(aux_action[2].equals( t_action[2] )){
-                return true;
+        try{
+            for(Transition aux : l){
+                String [] aux_action = aux.getLabel().split("[.]");
+                if(aux_action[2].equals( t_action[2] )){
+                    return true;
+                }
+            }
+        } catch (IndexOutOfBoundsException e){
+            for(Transition aux : l){
+                if(aux.getLabel().equals( t.getLabel() )){
+                    return true;
+                }
             }
         }
         return false;
@@ -205,10 +222,18 @@ public class ParallelCompositor {
     private Transition getTransitionByLabel(List<Transition> l, String label){
 //        List<Transition> list = s.getOutgoingTransitionsList();
         String [] t_action = label.split("[.]");
-        for(Transition aux : l){
-            String [] aux_action = aux.getLabel().split("[.]");
-            if(aux_action[2].equals( t_action[2] )){
-                return aux;
+        try{
+            for(Transition aux : l){
+                String [] aux_action = aux.getLabel().split("[.]");
+                if(aux_action[2].equals( t_action[2] )){
+                    return aux;
+                }
+            }
+        } catch (IndexOutOfBoundsException e){
+            for(Transition aux : l){
+                if(aux.getLabel().equals(label)){
+                    return aux;
+                }
             }
         }
         return null;
