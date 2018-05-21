@@ -437,7 +437,7 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
         mBtnTransitionArc.setToggleGroup(mToggleGroup);
 
         mBtnTypeTrace = new ToggleButton();
-        mBtnTypeTrace.setGraphic(new ImageView(new Image(getClass().getResourceAsStream("/images/ic_alterar.png"))));
+        mBtnTypeTrace.setGraphic(new ImageView(new Image(getClass().getResourceAsStream("/images/ic_toggle_transition.png"))));
         mBtnTypeTrace.setOnAction((ActionEvent e) -> {
             setModo(MODO_ALTERAR);
             Context context = new Context(new OnClickedMouse());
