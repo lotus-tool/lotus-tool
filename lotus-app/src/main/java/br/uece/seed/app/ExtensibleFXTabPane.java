@@ -40,7 +40,7 @@ public class ExtensibleFXTabPane implements ExtensibleTabPane {
 
     private final TabPane mTabPane;
     private final boolean mCanHide;
-    private int counter;
+    private int counter = 0;
     private final EventHandler<Event> mOnClose;
 
     public ExtensibleFXTabPane(TabPane tabPane, boolean canHide) {
@@ -63,6 +63,7 @@ public class ExtensibleFXTabPane implements ExtensibleTabPane {
             t.setContent(content);
             t.setClosable(closable);
             t.setUserData(id);
+            t.setId(""+id);
             t.setOnClosed(mOnClose);
             mTabPane.getTabs().add(t);
             if (mCanHide && mTabPane.getTabs().size() > 0) {
