@@ -27,10 +27,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javafx.scene.control.ContextMenu;
-import javafx.scene.control.SelectionMode;
-import javafx.scene.control.TreeItem;
-import javafx.scene.control.TreeView;
+
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
@@ -128,7 +126,7 @@ public final class ProjectExplorerPluginDS extends Plugin implements ProjectExpl
         public void onComponentLTSGeralCreated(ProjectDS projectDS, StandardModeling buildDS, Component component) {
             TreeItem<WrapperDS> raiz = findItem(mProjectDSView.getRoot(), projectDS);
             TreeItem<WrapperDS> build = findItem(raiz, buildDS);
-            component.setName("LTS_Composed");
+        component.setName("LTS_Composed("+projectDS.getName()+")");
             build.getChildren().add(new TreeItem<>(new WrapperDS(component), new ImageView(
                                 new Image(getClass().getResourceAsStream("/imagens/project/ic_componet_lts_geral.png")))));
             build.setExpanded(true);
@@ -400,7 +398,7 @@ public final class ProjectExplorerPluginDS extends Plugin implements ProjectExpl
             Component composed = p.getLTS_Composed();
             if(composed != null){
                 composed.addListener(mComponentLTS);
-                composed.setName("LTS_Composed");
+                composed.setName("LTS_Composed("+p.getName()+")");
                 compBuildDs.getChildren().add(new TreeItem<>(new WrapperDS(composed), new ImageView(
                                 new Image(getClass().getResourceAsStream("/imagens/project/ic_componet_lts_geral.png")))));
                 compBuildDs.setExpanded(true);
@@ -443,9 +441,45 @@ public final class ProjectExplorerPluginDS extends Plugin implements ProjectExpl
             throw new IllegalArgumentException("project can not be null!");
         }
         TreeItem<WrapperDS> project = findItem(mProjectDSView.getRoot(), p);
+        StandardModeling stmo = null;
+        List<ComponentDS> lcomds = new ArrayList<>();
+        List<Component> lcom = new ArrayList<>();
+
         if(project != null){
+            for(Tab tab : mUserInterface.getCenterPanel().getTabs()){
+                if(tab.getText().contains("("+ p.getName() +")")) {
+                    mUserInterface.getCenterPanel().closeTab(Integer.parseInt(tab.getId()));
+                }
+            }
+            if( mProjectDSView.getSelectionModel().getSelectedItem() != null){
+                mProjectDSView.getSelectionModel().clearSelection();
+            }
             mProjectDSView.getRoot().getChildren().removeAll(project);
         }
+    }
+
+    public void rename(ProjectDS p){
+        if(p == null){
+            Alert alert = new Alert(Alert.AlertType.INFORMATION,"Select a project", ButtonType.OK);
+            alert.show();
+        }
+        TreeItem<WrapperDS> project = findItem(mProjectDSView.getRoot(), p);
+        for(TreeItem<WrapperDS> wds : project.getChildren()){
+            String [] nome = wds.getValue().toString().split("[(]");
+            wds.getValue().set(nome[0]+"("+p.getName()+")");
+
+            if(wds.getValue().getObject() instanceof StandardModeling){
+                for(TreeItem<WrapperDS> wds2 : wds.getChildren()){
+                    String[]nome2 = wds2.getValue().toString().split("[(]");
+                    wds2.getValue().set(nome2[0]+"("+p.getName()+")");
+                }
+            }
+        }
+    }
+
+    public void removeBMSC( ComponentDS bMSC){
+//        TreeItem<WrapperDS> project = findItem(mProjectDSView.getRoot(), bMSC);
+        mProjectDSView.getRoot().getChildren().remove(bMSC);
     }
 
     @Override
@@ -583,7 +617,7 @@ class WrapperDS {
         return mObj;
     }
     
-    void set(String s) {
+    public void set(String s) {
         if (mObj instanceof ProjectDS) {
             ((ProjectDS) mObj).setName(s);
         } 

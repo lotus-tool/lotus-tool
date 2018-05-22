@@ -5,6 +5,7 @@
  */
 package br.uece.lotus.uml.app.project;
 
+import br.uece.lotus.uml.api.ds.ComponentDS;
 import br.uece.lotus.uml.api.ds.ProjectDS;
 import br.uece.lotus.uml.api.ds.StandardModeling;
 import br.uece.lotus.uml.api.project.ProjectDSSerializer;
@@ -15,10 +16,7 @@ import br.uece.seed.app.UserInterface;
 import br.uece.seed.ext.ExtensionManager;
 import br.uece.seed.ext.Plugin;
 import javafx.collections.ObservableList;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.Tab;
-import javafx.scene.control.TextInputDialog;
+import javafx.scene.control.*;
 
 import javax.swing.*;
 import java.io.File;
@@ -146,20 +144,48 @@ public class BasicDSPlugin extends Plugin {
             return;
         } else {
             p.setName(pName);
-            StandardModeling cbds = p.getStandardModeling();
-            cbds.setName("Standard Modeling" + "(" + p.getName() + ")");
-            p.setComponentBuildDS(cbds);
-            mProjectExplorerDS.open(p);
+            mProjectExplorerDS.rename(p);
             abrirFocoNaTab("UML Projects");
         }
     };
 
     private Runnable mRenameBMSC = () -> {
-        System.out.println("falta implementar  Classe: BasicDSPlugin");
+       ComponentDS componentDS = mProjectExplorerDS.getSelectedBMSC();
+        String pName = "";
+        String prompt = componentDS.getName();
+
+        TextInputDialog d = new TextInputDialog(prompt);
+        d.setTitle("Rename bMSC");
+        d.setHeaderText("New Name to bMSC");
+        d.setContentText("Enter the new bMSC's name:");
+        Optional<String> resul = d.showAndWait();
+        if (resul.isPresent()) {
+            pName = resul.get();
+        } else {
+            return;
+        }
+
+        if (pName.equals("")) {
+            pName = prompt;
+        }
+        if (checkExistenceName(pName)) {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION, "Existing Project", ButtonType.OK);
+            alert.show();
+            return;
+        } else {
+            mProjectExplorerDS.getSelectedBMSC().setName(pName);
+        }
+
     };
 
     private Runnable mRemoveBMSC = () -> {
-        System.out.println("falta implementar  Classe: BasicD");
+        ComponentDS bMSC = mProjectExplorerDS.getSelectedBMSC();
+        if(bMSC == null){
+            Alert alert = new Alert(Alert.AlertType.INFORMATION, "Select a bMSC", ButtonType.OK);
+            alert.show();
+            return;
+        }
+        mProjectExplorerDS.removeBMSC(bMSC);
     };
 
     private Runnable mCloseProject = () -> {

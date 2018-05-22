@@ -290,7 +290,7 @@ public class ProjectDSxmlSerializer implements ProjectDSSerializer{
                 }
                 case "bMSC":{
                     bMSC = new ComponentDS();
-                    bMSC.setName(attributes.getValue("name"));
+                    bMSC.setName(attributes.getValue("name")+"("+mProject.getName()+")");
                     break;
                 }
                 case "Object":{
@@ -303,7 +303,7 @@ public class ProjectDSxmlSerializer implements ProjectDSSerializer{
                 }
                 case "LTS":{
                     lts = new Component();
-                    lts.setName(attributes.getValue("name"));
+                    lts.setName(attributes.getValue("name")+"("+mProject.getName()+")");
                     break;
                 }
             }
@@ -345,7 +345,7 @@ public class ProjectDSxmlSerializer implements ProjectDSSerializer{
             mProject = new ProjectDS();
             mProject.setName(attributes.getValue("name"));
             standardModeling = new StandardModeling();
-            standardModeling.setName("Standard Modeling");
+            standardModeling.setName("Standard Modeling("+mProject.getName()+")");
             mProject.setComponentBuildDS(standardModeling);
         }
 
