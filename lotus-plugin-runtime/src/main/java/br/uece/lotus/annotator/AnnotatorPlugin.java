@@ -41,7 +41,7 @@ public class AnnotatorPlugin extends Plugin {
                         Parent root = (Parent) loader.load(location.openStream());
                         AnnotatorManagerWindowController c = loader.getController();
                         c.setProjectExplorer(mProjectExplorer);
-                        mUserInterface.getBottomPanel().newTab("Probabilistic Annotator", root, true);
+                        mUserInterface.getBottomPanel().newTab("Probabilistic Annotator", root,2, true);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }

@@ -84,6 +84,7 @@ public class Component {
     //This attributes should be lists os states.
     private State mFinalState;
     private State mErrorState;
+    public int id;
 
     private final List<State> mStates = new ArrayList<>();
     private final List<Transition> mTransitions = new ArrayList<>();

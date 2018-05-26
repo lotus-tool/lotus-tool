@@ -37,7 +37,7 @@ public class StandardModeling {
     private List<Hmsc> mBlocos = new ArrayList<>();
     private List<TransitionMSC> mTransitions = new ArrayList<>();
     private final List<Listener> mListeners = new ArrayList<>();
-     
+    public int id;
     
     public Hmsc newBlock(int id){
         Hmsc bbds = new Hmsc(this);

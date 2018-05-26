@@ -120,7 +120,7 @@ public class ImplicitScenarioPlugin extends Plugin {
             loader.setBuilderFactory(new JavaFXBuilderFactory());
             loader.setResources(bundle);
             Parent root = (Parent) loader.load(location.openStream());
-            int id = mUserInterface.getCenterPanel().newTab(c.getName() + " - [ImpliedScenario]", root, true);
+            int id = mUserInterface.getCenterPanel().newTab(c.getName() + " - [ImpliedScenario]", root,4, true);
             mUserInterface.getCenterPanel().showTab(id);
         } catch (IOException e) {}
     }

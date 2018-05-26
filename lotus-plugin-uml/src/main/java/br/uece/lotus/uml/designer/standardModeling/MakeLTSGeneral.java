@@ -15,6 +15,7 @@ import br.uece.lotus.uml.api.ds.Hmsc;
 import br.uece.lotus.uml.api.ds.TransitionMSC;
 import br.uece.lotus.uml.api.viewer.hMSC.HmscView;
 import br.uece.lotus.uml.api.viewer.hMSC.StandardModelingView;
+import br.uece.lotus.uml.app.project.ProjectExplorerPluginDS;
 import br.uece.lotus.uml.designer.windowLTS.Layouter;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -32,13 +33,15 @@ public class MakeLTSGeneral {
     private final List<ComponentDS> listBmsc;
     private HashMap<String,List<Component>> ltsActors;
     private ArrayList<HmscLigacao> visitados;
+    private ProjectExplorerPluginDS pep;
     StandardModelingView mview;
     Layouter l = new Layouter();
     
-    public MakeLTSGeneral(List<Hmsc> listHmsc, List<ComponentDS> listBmsc, List<Component> ltsGerados,StandardModelingView mViewer){
+    public MakeLTSGeneral(List<Hmsc> listHmsc, List<ComponentDS> listBmsc, List<Component> ltsGerados,StandardModelingView mViewer, ProjectExplorerPluginDS projectExplorerPluginDS){
         this.ltsGerados = ltsGerados;
         this.listHmsc = listHmsc;
         this.listBmsc = listBmsc;
+        this.pep = projectExplorerPluginDS;
         ltsActors = new HashMap<>();
         visitados = new ArrayList<>();
         geral = new Component();
@@ -65,10 +68,12 @@ public class MakeLTSGeneral {
         
         //Monta o LTS completo de cada ator com base no conjunto de Hmsc
         try {
+            int id_lifes = 0;
             for (String ator : allActors) {
+                id_lifes++;
                 Component linhaDeVidaAtor = new Component();
                 linhaDeVidaAtor.setName("Life " + ator);
-                
+                linhaDeVidaAtor.id = (pep.getSelectedProjectDS().id * 1000) + 400 + id_lifes;
                 Hmsc inicial = listHmsc.get(0);
                 montagemRecursiva(inicial, ator, linhaDeVidaAtor, null, false);
                 

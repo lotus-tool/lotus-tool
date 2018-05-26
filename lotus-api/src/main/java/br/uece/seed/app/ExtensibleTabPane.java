@@ -33,7 +33,7 @@ import javafx.scene.control.Tab;
  */
 public interface ExtensibleTabPane {
 
-    int newTab(String name, Node content, boolean closable);
+    int newTab(String name, Node content, int id, boolean closable);
 
     void showTab(int id);
 

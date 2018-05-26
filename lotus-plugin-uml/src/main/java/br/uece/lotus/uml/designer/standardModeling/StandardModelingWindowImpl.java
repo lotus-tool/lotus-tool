@@ -364,6 +364,11 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
             Hmsc h = ((HmscView)mComponentSobMouse).getHMSC();
             if(!h.isFull()){
                 ComponentDS bmsc = new ComponentDS();
+                if(!pep.getAll_BMSC().isEmpty()) {
+                    bmsc.setID((pep.getAll_BMSC().get(pep.getAll_BMSC().size() - 1).id) + 1);
+                }else {
+                    bmsc.setID(( pep.getSelectedProjectDS().id * 1000 ) + 201);
+                }
                 bmsc.setName(h.getLabel());
                 mViewer.getComponentBuildDS().set_bMSC_in_hMSC(h, bmsc);
             }else{
@@ -741,7 +746,9 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
         Layouter layout = new Layouter();
         List<Component> ltsGerados = new ArrayList<>();
         List<ComponentDS> listaBMSC = pep.getAll_BMSC();
+        int id_ltsfrag = 0;
         for(ComponentDS cds : listaBMSC){
+            id_ltsfrag++;
             List<TabelaReferenciaID> relativo = new ArrayList<>();
             ArrayList<BlockDS> blocos = (ArrayList<BlockDS>) cds.getBlockDS();
             for(int i=0;i<blocos.size();i++){
@@ -776,9 +783,10 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
             }
             Component c = new Component();
             c.setName("LTS "+cds.getName());
+            c.id = (pep.getSelectedProjectDS().id * 1000)+ 300 + id_ltsfrag;
             LtsParser parser = new LtsParser(comunicacao, relativo, loopsOuAlts, c);
             c = parser.parseLTSA();
-            layout.layout(c);
+//            layout.layout(c);
             ltsGerados.add(c);
         }
         mViewer.getComponentBuildDS().createListLTS(ltsGerados);
@@ -797,7 +805,7 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
 
     private Component buildGeneralLTS(List<Component> ltsGerados){
         List<Hmsc> listHmsc = mViewer.getComponentBuildDS().getBlocos();
-        MakeLTSGeneral make = new MakeLTSGeneral(listHmsc,pep.getAll_BMSC(),ltsGerados,mViewer);
+        MakeLTSGeneral make = new MakeLTSGeneral(listHmsc,pep.getAll_BMSC(),ltsGerados,mViewer, pep);
         return make.produce();
     }
 }
