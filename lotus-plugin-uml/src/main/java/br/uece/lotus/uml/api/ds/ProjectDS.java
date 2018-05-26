@@ -18,7 +18,7 @@ import java.util.Map;
 public class ProjectDS {
     
     private final Map<String, Object> mValues = new HashMap<>();
-    
+    public int id;
     public interface Listener{
         void onChange(ProjectDS project);
         
@@ -38,7 +38,6 @@ public class ProjectDS {
     private final List<Component> fragmentsLTS = new ArrayList<>();
     private final List<ComponentDS> mComponentsDS = new ArrayList<>();
     private final List<Listener> mListeners = new ArrayList<>();
-    
     
     public void addComponent_bMSC(ComponentDS c){
         mComponentsDS.add(c);

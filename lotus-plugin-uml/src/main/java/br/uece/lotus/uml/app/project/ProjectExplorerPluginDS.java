@@ -235,8 +235,15 @@ public final class ProjectExplorerPluginDS extends Plugin implements ProjectExpl
         public void onTransitionRemoved(Component component, Transition state) {}
 
     };
-            
-    
+
+    private int id_projeto = 1;
+
+    DesingWindowImplManegerBlockDs dwimbd = new DesingWindowImplManegerBlockDs();
+    StandardModelingWindowManager smwm = new StandardModelingWindowManager();
+    LtsWindowManager lwm = new LtsWindowManager();
+
+
+
     @Override
     public void onStart(ExtensionManager extensionManager) throws Exception{
         mUserInterface = extensionManager.get(UserInterface.class);
@@ -245,7 +252,7 @@ public final class ProjectExplorerPluginDS extends Plugin implements ProjectExpl
         AnchorPane.setRightAnchor(mProjectDSView, 0D);
         AnchorPane.setBottomAnchor(mProjectDSView, 0D);
         AnchorPane.setLeftAnchor(mProjectDSView, 0D);
-        mUserInterface.getLeftPanel().newTab("UML Projects", mProjectDSView, false);
+        mUserInterface.getLeftPanel().newTab("UML Projects", mProjectDSView,1, false);
     }
     ExtensionManager extension;
     public ProjectExplorerPluginDS(){
@@ -263,9 +270,6 @@ public final class ProjectExplorerPluginDS extends Plugin implements ProjectExpl
         mExtMnuComponentLTS = new ExtensibleFXContextMenu(mMnuComponentLTS);
 
 
-        DesingWindowImplManegerBlockDs dwimbd = new DesingWindowImplManegerBlockDs();
-        StandardModelingWindowManager smwm = new StandardModelingWindowManager();
-        LtsWindowManager lwm = new LtsWindowManager();
 
         mProjectDSView = new TreeView<>();
         mProjectDSView.setRoot(new TreeItem<>());
@@ -383,6 +387,7 @@ public final class ProjectExplorerPluginDS extends Plugin implements ProjectExpl
         if(project == null){
             //----------------------------------Raiz-------------------------------------------
             p.addListener(mProjectDSListener);
+            p.id = id_projeto;
             project = new TreeItem<>(new WrapperDS(p), new ImageView(
                     new Image(getClass().getResourceAsStream("/imagens/project/ic_project.png"))));
             //---------------------------------StandardModeling-------------------------------------------
@@ -390,6 +395,7 @@ public final class ProjectExplorerPluginDS extends Plugin implements ProjectExpl
             StandardModeling buildDS = p.getStandardModeling();
             if (buildDS != null){
                 buildDS.addListener(mComponentBuildListener);
+                buildDS.id = (id_projeto*1000) + 100; // Seta o ID na abertura
                 compBuildDs = new TreeItem<>(new WrapperDS(buildDS),new ImageView(
                                     new Image(getClass().getResourceAsStream("/imagens/project/ic_standardModeling.png"))));
                 project.getChildren().add(compBuildDs);
@@ -398,6 +404,7 @@ public final class ProjectExplorerPluginDS extends Plugin implements ProjectExpl
             Component composed = p.getLTS_Composed();
             if(composed != null){
                 composed.addListener(mComponentLTS);
+                composed.id = (id_projeto*1000) + 100 + 1; // Seta ID
                 composed.setName("LTS_Composed("+p.getName()+")");
                 compBuildDs.getChildren().add(new TreeItem<>(new WrapperDS(composed), new ImageView(
                                 new Image(getClass().getResourceAsStream("/imagens/project/ic_componet_lts_geral.png")))));
@@ -407,9 +414,11 @@ public final class ProjectExplorerPluginDS extends Plugin implements ProjectExpl
             if(p.getComponentsDS() != null){
                 TreeItem<WrapperDS> pastaDS = new TreeItem<>(new WrapperDS("bMSCs"), new ImageView(
                                 new Image(getClass().getResourceAsStream("/imagens/project/ic_folders.png"))));
-                
+                int id_compds = 0;
                 for(ComponentDS componentDs : p.getComponentsDS()){
+                    id_compds++;
                     componentDs.addListener(mComponentBMSC);
+                    componentDs.setID((id_projeto * 1000) +(200) + id_compds); // Seta id
                     TreeItem<WrapperDS> cds = new TreeItem<>(new WrapperDS(componentDs), new ImageView(
                                     new Image(getClass().getResourceAsStream("/imagens/project/ic_component_ds.png"))));
                     pastaDS.getChildren().add(cds);
@@ -421,9 +430,11 @@ public final class ProjectExplorerPluginDS extends Plugin implements ProjectExpl
             if(p.getFragments() != null){
                 TreeItem<WrapperDS> fragment = new TreeItem<>(new WrapperDS("Fragments LTS"), new ImageView(
                                 new Image(getClass().getResourceAsStream("/imagens/project/ic_folders.png"))));
-                
+                int id_lts = 0;
                 for(Component component : p.getFragments()){
+                    id_lts++;
                     component.addListener(mComponentLTS);
+                    component.id = (id_projeto * 1000) + 300 + id_lts;
                     TreeItem<WrapperDS> c = new TreeItem<>(new WrapperDS(component), new ImageView(
                                     new Image(getClass().getResourceAsStream("/imagens/project/ic_component_fragment.png"))));
                     fragment.getChildren().add(c);
@@ -432,6 +443,7 @@ public final class ProjectExplorerPluginDS extends Plugin implements ProjectExpl
                 fragment.setExpanded(true);
             }
             mProjectDSView.getRoot().getChildren().add(project);
+            id_projeto++;
         }
     }
 
@@ -441,18 +453,33 @@ public final class ProjectExplorerPluginDS extends Plugin implements ProjectExpl
             throw new IllegalArgumentException("project can not be null!");
         }
         TreeItem<WrapperDS> project = findItem(mProjectDSView.getRoot(), p);
-        StandardModeling stmo = null;
-        List<ComponentDS> lcomds = new ArrayList<>();
-        List<Component> lcom = new ArrayList<>();
+/*
+        StandardModelingWindowManager smwm = new StandardModelingWindowManager();
+        DesingWindowImplManegerBlockDs dwimbd = new DesingWindowImplManegerBlockDs();
+        LtsWindowManager lwm = new LtsWindowManager();
 
+        try {
+            smwm.onStart(extension);
+            dwimbd.onStart(extension);
+            lwm.onStart(extension);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+*/
         if(project != null){
-            for(Tab tab : mUserInterface.getCenterPanel().getTabs()){
-                if(tab.getText().contains("("+ p.getName() +")")) {
-                    mUserInterface.getCenterPanel().closeTab(Integer.parseInt(tab.getId()));
+            for(TreeItem<WrapperDS> wds : project.getChildren()) {
+                if (wds.getValue().getObject() instanceof StandardModeling) {
+                    smwm.close((StandardModeling) wds.getValue().getObject());
+                }else if(wds.getValue().getObject() instanceof Component){
+                    lwm.close((Component)wds.getValue().getObject());
+                }else if (wds.getValue().getObject() instanceof ComponentDS){
+                    dwimbd.close((ComponentDS)wds.getValue().getObject());
                 }
+
             }
             if( mProjectDSView.getSelectionModel().getSelectedItem() != null){
-                mProjectDSView.getSelectionModel().clearSelection();
+                clearSelecao();
             }
             mProjectDSView.getRoot().getChildren().removeAll(project);
         }
@@ -475,12 +502,31 @@ public final class ProjectExplorerPluginDS extends Plugin implements ProjectExpl
                 }
             }
         }
+        clearSelecao();
     }
 
     public void removeBMSC( ComponentDS bMSC){
-//        TreeItem<WrapperDS> project = findItem(mProjectDSView.getRoot(), bMSC);
-        mProjectDSView.getRoot().getChildren().remove(bMSC);
+        int id_p = (bMSC.id/1000) -1;
+        int id_pas = (2) -1;
+        int id_bmsc = bMSC.id - 200 - (id_p * 1000);
+        TreeItem<WrapperDS> item = mProjectDSView.getRoot().getChildren().get(id_p).getChildren().get(id_pas);
+        for( TreeItem<WrapperDS> it : item.getChildren()){
+            ComponentDS cds = (ComponentDS)it.getValue().getObject();
+            if(cds.id == bMSC.id){
+                System.out.println("ID cd: "+cds.id+"\tID mbsc: "+bMSC.id);
+                mProjectDSView.getRoot().getChildren().get(id_p).getChildren().get(id_pas).getChildren().remove(it);
+                dwimbd.close(bMSC);
+                clearSelecao();
+                return;
+            }
+        }
     }
+
+    @Override
+    public void clearSelecao() {
+
+    }
+
 
     @Override
     public ProjectDS getSelectedProjectDS() {
@@ -497,6 +543,8 @@ public final class ProjectExplorerPluginDS extends Plugin implements ProjectExpl
         }
         else if(obj instanceof Component){
             projeto = projeto.getParent().getParent();
+        }else if( obj instanceof String){
+            projeto = projeto.getParent();
         }
         return (ProjectDS) projeto.getValue().getObject();
     }

@@ -22,6 +22,10 @@ public interface WindowManagerDS {
     public void show(StandardModeling buildDS);
     public void show(ComponentDS cds);
     public void show(Component c);
+
+    public void close(StandardModeling buildDS);
+    public void close(ComponentDS cds);
+    public void close(Component c);
     
     public void hide(StandardModeling buildDS);
     public void hide(ComponentDS cds);

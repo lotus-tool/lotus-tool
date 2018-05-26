@@ -174,6 +174,8 @@ public class BasicDSPlugin extends Plugin {
             return;
         } else {
             mProjectExplorerDS.getSelectedBMSC().setName(pName);
+            mProjectExplorerDS.clearSelecao();
+
         }
 
     };
@@ -189,9 +191,7 @@ public class BasicDSPlugin extends Plugin {
     };
 
     private Runnable mCloseProject = () -> {
-        System.out.println("----------------------------------------");
         ProjectDS p = mProjectExplorerDS.getSelectedProjectDS();
-        System.out.println("FECHAR: " + p.getName());
         mProjectExplorerDS.close(p);
     };
 

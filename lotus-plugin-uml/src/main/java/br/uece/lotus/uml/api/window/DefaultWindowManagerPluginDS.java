@@ -60,7 +60,7 @@ public abstract class DefaultWindowManagerPluginDS<E extends WindowDS> extends P
     @Override
     public void show(StandardModeling buildDS) {
         checkIfStartedProperly();
-        Integer id = mComponentBuildDSids.get(buildDS);
+        Integer id = buildDS.id;
 
         E window = null;
         for(E w : mComponentsWindows){
@@ -72,13 +72,6 @@ public abstract class DefaultWindowManagerPluginDS<E extends WindowDS> extends P
         }
 
 
-        if( id != null && !mCenterPanel.isShowing(mComponentBuildDSids.get(buildDS)) ){
-            mComponentBuildDSids.remove(buildDS);
-            mComponentsWindows.remove(window);
-            buildDS.removeListener(mComponentBuildDSListener);
-            window = null;
-        }
-
 
         if(window == null){
             window = onCreateStandadM(mProjectExplorerDS);
@@ -89,13 +82,12 @@ public abstract class DefaultWindowManagerPluginDS<E extends WindowDS> extends P
             }
             buildDS.addListener(mComponentBuildDSListener);
             onShow(window, buildDS);
-            boolean visivel = id != null && mCenterPanel.isShowing(id);
+            boolean visivel = mCenterPanel.isShowing(id);
 
-            if(!visivel || id == null){
-                id = mCenterPanel.newTab(window.getTitle(), window.getNode(), true);
+            if(!visivel){
+                id = mCenterPanel.newTab(window.getTitle(), window.getNode(),buildDS.id ,true);
                 mComponentBuildDSids.put(buildDS, id);
             }
-            System.out.println("ID: "+id);
             mCenterPanel.showTab(id);
         }
     }
@@ -103,7 +95,7 @@ public abstract class DefaultWindowManagerPluginDS<E extends WindowDS> extends P
     @Override
     public void show(ComponentDS cds) {
         checkIfStartedProperly();
-        Integer id = mComponentDSids.get(cds);
+        Integer id = cds.id;
         E window = null;
         for(E w : mComponentsWindows){
             if(w.getComponentDS() != null){
@@ -123,9 +115,9 @@ public abstract class DefaultWindowManagerPluginDS<E extends WindowDS> extends P
             }
             cds.addListener(mComponentDSListener);
             onShow(window, cds);
-            boolean visivel = id != null && mCenterPanel.isShowing(id);
-            if(!visivel || id == null){
-                id = mCenterPanel.newTab(window.getTitle(), window.getNode(), true);
+            boolean visivel =  mCenterPanel.isShowing(id);
+            if(!visivel){
+                id = mCenterPanel.newTab(window.getTitle(), window.getNode(),cds.id, true);
                 mComponentDSids.put(cds, id);
             }
             mCenterPanel.showTab(id);
@@ -152,15 +144,36 @@ public abstract class DefaultWindowManagerPluginDS<E extends WindowDS> extends P
             }
             c.addListener(mComponentLTSListener);
             onShow(window, c);
-            Integer id = mComponentLTSids.get(c);
-            boolean visivel = id != null && mCenterPanel.isShowing(id);
-            if(!visivel || id == null){
-                id = mCenterPanel.newTab(window.getTitle(), window.getNode(), true);
+            Integer id = c.id;
+            boolean visivel = mCenterPanel.isShowing(id);
+            if(!visivel){
+                id = mCenterPanel.newTab(window.getTitle(), window.getNode(),c.id, true);
                 mComponentLTSids.put(c, id);
             }
             mCenterPanel.showTab(id);
         }
     }
+
+    public void close(StandardModeling buildDS){
+        if(mComponentBuildDSids.containsKey(buildDS)) {
+            mCenterPanel.closeTab(buildDS.id);
+        }
+    }
+
+    public void close(ComponentDS cds){
+        if(mComponentDSids.containsKey(cds)){
+            mCenterPanel.closeTab(cds.id);
+        }
+
+    }
+
+    public void close(Component c){
+        if(mComponentLTSids.containsKey(c)){
+            mCenterPanel.closeTab(c.id);
+        }
+
+    }
+
 
     @Override
     public void hide(StandardModeling buildDS) {

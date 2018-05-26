@@ -77,7 +77,7 @@ public class ProbabilisticReachPlugin extends Plugin implements ProbabilisticRea
     public void show(Component c, boolean editable) {
         ProbabilisticReachWindow w = new ProbabilisticReachWindow();
         w.setComponent(c);
-        int id = mUserInterface.getCenterPanel().newTab(c.getName() + " - [Probabilistic Reachability]", w, true);
+        int id = mUserInterface.getCenterPanel().newTab(c.getName() + " - [Probabilistic Reachability]", w,3, true);
         mUserInterface.getCenterPanel().showTab(id);
     }
 }

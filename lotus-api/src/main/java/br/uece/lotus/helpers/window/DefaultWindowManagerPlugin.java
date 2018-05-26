@@ -141,7 +141,7 @@ public abstract class DefaultWindowManagerPlugin<T extends Window> extends Plugi
         boolean visivel = id != null && mCenterPanel.isShowing(id);        
         if (!visivel || id == null) {
             System.out.println("id ==null");
-            id = mCenterPanel.newTab(window.getTitle(), window.getNode(), true);
+            id = mCenterPanel.newTab(window.getTitle(), window.getNode(),100000 ,true);
             System.out.println("id :" +id);
             mComponentWindowsIds.put(component, id);
         }        

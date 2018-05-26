@@ -40,7 +40,6 @@ public class ExtensibleFXTabPane implements ExtensibleTabPane {
 
     private final TabPane mTabPane;
     private final boolean mCanHide;
-    private int counter = 0;
     private final EventHandler<Event> mOnClose;
 
     public ExtensibleFXTabPane(TabPane tabPane, boolean canHide) {
@@ -56,8 +55,7 @@ public class ExtensibleFXTabPane implements ExtensibleTabPane {
     }
 
     @Override
-    public int newTab(String name, Node content, boolean closable) {
-        int id = counter++;
+    public int newTab(String name, Node content, int id, boolean closable) {
         Platform.runLater(() -> {
             Tab t = new Tab(name);
             t.setContent(content);
@@ -78,6 +76,7 @@ public class ExtensibleFXTabPane implements ExtensibleTabPane {
         Platform.runLater(() -> {
             Tab t = getTabById(id);
             if (t != null) {
+                System.out.println("ID da TAB É: "+t.getId());
                 mTabPane.getSelectionModel().select(t);
             }
         });
@@ -87,6 +86,7 @@ public class ExtensibleFXTabPane implements ExtensibleTabPane {
     public void closeTab(int id) {
         Platform.runLater(() -> {
             Tab t = getTabById(id);
+            System.out.println("T existe? "+t.getId() + "e o id qual é: "+id);
             if (t != null) {
                 mTabPane.getTabs().remove(t);
             }
