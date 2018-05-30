@@ -174,7 +174,7 @@ public class BasicDSPlugin extends Plugin {
             return;
         } else {
             mProjectExplorerDS.getSelectedBMSC().setName(pName);
-            mProjectExplorerDS.clearSelecao();
+            mProjectExplorerDS.clear2();
 
         }
 

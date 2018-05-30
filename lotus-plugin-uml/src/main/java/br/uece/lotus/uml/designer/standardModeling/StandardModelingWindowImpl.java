@@ -365,9 +365,9 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
             if(!h.isFull()){
                 ComponentDS bmsc = new ComponentDS();
                 if(!pep.getAll_BMSC().isEmpty()) {
-                    bmsc.setID((pep.getAll_BMSC().get(pep.getAll_BMSC().size() - 1).id) + 1);
+                    bmsc.setID((pep.getAll_BMSC().get(pep.getAll_BMSC().size() - 1).getID()) + 1);
                 }else {
-                    bmsc.setID(( pep.getSelectedProjectDS().id * 1000 ) + 201);
+                    bmsc.setID(( pep.getSelectedProjectDS().getID() * 1000 ) + 201);
                 }
                 bmsc.setName(h.getLabel());
                 mViewer.getComponentBuildDS().set_bMSC_in_hMSC(h, bmsc);
@@ -783,10 +783,10 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
             }
             Component c = new Component();
             c.setName("LTS "+cds.getName());
-            c.id = (pep.getSelectedProjectDS().id * 1000)+ 300 + id_ltsfrag;
+            c.setID((pep.getSelectedProjectDS().getID() * 1000)+ 300 + id_ltsfrag);
             LtsParser parser = new LtsParser(comunicacao, relativo, loopsOuAlts, c);
             c = parser.parseLTSA();
-//            layout.layout(c);
+            layout.layout(c);
             ltsGerados.add(c);
         }
         mViewer.getComponentBuildDS().createListLTS(ltsGerados);
@@ -799,6 +799,7 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
             }
             System.out.println("Nome da Composição é: "+ c.getName());
            // layout.layout(c);
+            c.setID((pep.getSelectedProjectDS().getID()*1000) + 100 + 1);
             mViewer.getComponentBuildDS().createGeneralLTS(c);
         } catch (CloneNotSupportedException cloneNotSupportedException) {}
     };

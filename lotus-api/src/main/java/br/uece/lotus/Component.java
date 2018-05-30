@@ -84,7 +84,7 @@ public class Component {
     //This attributes should be lists os states.
     private State mFinalState;
     private State mErrorState;
-    public int id;
+    private int id;
 
     private final List<State> mStates = new ArrayList<>();
     private final List<Transition> mTransitions = new ArrayList<>();
@@ -99,6 +99,13 @@ public class Component {
         for (Listener l : mListeners) {
             l.onChange(this);
         }
+    }
+
+    public int getID(){
+        return this.id;
+    }
+    public void setID(int id ){
+        this.id = id;
     }
 
     public Iterable<State> getStates() {
