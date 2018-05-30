@@ -575,7 +575,7 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
     public Object getComponentePelaPosicaoMouse(Point2D point) {
         Object b = mViewer.locateBlockBuildView(point);
         if(b == null){
-            b = mViewer.locateTransitionBuildView(mBounds);
+            b = mViewer.locateTransitionBuildView(point);
         }
         return b;
     }
