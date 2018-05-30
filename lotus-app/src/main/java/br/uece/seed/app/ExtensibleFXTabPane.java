@@ -47,7 +47,7 @@ public class ExtensibleFXTabPane implements ExtensibleTabPane {
         mCanHide = canHide;
         mOnClose = (Event e) -> {
             Tab t = (Tab) e.getSource();
-            mTabPane.getTabs().remove(t);   
+            mTabPane.getTabs().remove(t);
             if (mCanHide && mTabPane.getTabs().size() == 0) {
             	mTabPane.setMaxSize(0, 0);
             }
@@ -86,7 +86,6 @@ public class ExtensibleFXTabPane implements ExtensibleTabPane {
     public void closeTab(int id) {
         Platform.runLater(() -> {
             Tab t = getTabById(id);
-            System.out.println("T existe? "+t.getId() + "e o id qual é: "+id);
             if (t != null) {
                 mTabPane.getTabs().remove(t);
             }

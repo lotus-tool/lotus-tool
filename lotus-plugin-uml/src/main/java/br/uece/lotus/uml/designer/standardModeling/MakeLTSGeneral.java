@@ -73,7 +73,7 @@ public class MakeLTSGeneral {
                 id_lifes++;
                 Component linhaDeVidaAtor = new Component();
                 linhaDeVidaAtor.setName("Life " + ator);
-                linhaDeVidaAtor.id = (pep.getSelectedProjectDS().id * 1000) + 400 + id_lifes;
+                linhaDeVidaAtor.setID ((pep.getSelectedProjectDS().getID() * 1000) + 400 + id_lifes);
                 Hmsc inicial = listHmsc.get(0);
                 montagemRecursiva(inicial, ator, linhaDeVidaAtor, null, false);
                 

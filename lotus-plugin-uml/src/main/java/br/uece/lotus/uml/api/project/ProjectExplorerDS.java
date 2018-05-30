@@ -48,4 +48,5 @@ public interface ProjectExplorerDS {
     void removeListener(Listener l);
     void removeBMSC(ComponentDS bmsc);
     void clearSelecao();
+    void clear2();
 }

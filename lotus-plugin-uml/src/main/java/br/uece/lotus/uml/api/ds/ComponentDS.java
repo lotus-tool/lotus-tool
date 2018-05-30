@@ -19,7 +19,7 @@ public class ComponentDS {
     private final List<Listener> mListeners = new ArrayList<>();
     private List<TransitionMSC> mTransitions = new ArrayList<>();
     private final List<BlockDS> mBlockDSs = new ArrayList<>();
-    public int id;
+    private int id;
 
     public interface Listener {
         void onChange(ComponentDS cds);
@@ -33,14 +33,18 @@ public class ComponentDS {
     public ComponentDS(){
     }
 
-
-    public int getCountTransition() {
-        return mTransitions.size();
+    public int getID(){
+        return this.id;
     }
 
     public void setID(int i){
         this.id = i;
     }
+
+    public int getCountTransition() {
+        return mTransitions.size();
+    }
+
     public List<TransitionMSC> getAllTransitions(){
         return mTransitions;
     }

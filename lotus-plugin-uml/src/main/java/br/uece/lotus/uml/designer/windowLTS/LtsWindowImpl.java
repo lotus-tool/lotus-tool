@@ -70,7 +70,6 @@ public class LtsWindowImpl extends AnchorPane implements WindowDS{
     public LtsWindowImpl(){
         mViewer = new ComponentViewImpl();
         mScrollPanel = new ScrollPane((Node)mViewer);
-        
         mViewer.getNode().setPrefSize(1200, 600);
         mScrollPanel.viewportBoundsProperty().addListener((ObservableValue<? extends Bounds> observable, Bounds oldValue, Bounds newValue) -> {
             Node content = mScrollPanel.getContent();
