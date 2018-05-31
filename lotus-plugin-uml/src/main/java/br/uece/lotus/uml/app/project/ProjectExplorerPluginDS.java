@@ -35,6 +35,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import sun.reflect.generics.tree.Tree;
 
 /**
  *
@@ -511,6 +512,13 @@ public final class ProjectExplorerPluginDS extends Plugin implements ProjectExpl
                 dwimbd.close(bMSC);
                 clearSelecao();
                 return;
+    }
+
+    @Override
+    public void removeFragmetsLTS() {
+        TreeItem<WrapperDS> project = findItem(mProjectDSView.getRoot(), getSelectedProjectDS());
+        //TreeItem<WrapperDS> PastaFrag = project.getChildren().get(2);
+        project.getChildren().remove(2);
     }
 
     @Override

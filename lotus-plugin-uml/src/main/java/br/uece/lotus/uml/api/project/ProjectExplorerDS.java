@@ -43,10 +43,13 @@ public interface ProjectExplorerDS {
     List<Component> getSelectedComponentsLTS();
     List<ProjectDS> getAllProjectsDS();
     List<ComponentDS> getAll_BMSC();
+
     
     void addListener(Listener l);
     void removeListener(Listener l);
     void removeBMSC(ComponentDS bmsc);
+
+    void removeFragmetsLTS();
     void clearSelecao();
     void clear2();
 }

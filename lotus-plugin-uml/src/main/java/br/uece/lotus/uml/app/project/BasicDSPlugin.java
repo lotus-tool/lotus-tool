@@ -6,6 +6,7 @@
 package br.uece.lotus.uml.app.project;
 
 import br.uece.lotus.uml.api.ds.ComponentDS;
+import br.uece.lotus.uml.api.ds.Hmsc;
 import br.uece.lotus.uml.api.ds.ProjectDS;
 import br.uece.lotus.uml.api.ds.StandardModeling;
 import br.uece.lotus.uml.api.project.ProjectDSSerializer;
@@ -173,7 +174,12 @@ public class BasicDSPlugin extends Plugin {
             alert.show();
             return;
         } else {
-            mProjectExplorerDS.getSelectedBMSC().setName(pName);
+            for(Hmsc h : mProjectExplorerDS.getSelectedProjectDS().getStandardModeling().getBlocos()){
+                if(h.getmDiagramSequence() == componentDS){
+                    h.setLabel(pName);
+                }
+            }
+            componentDS.setName(pName);
             mProjectExplorerDS.clear2();
 
         }

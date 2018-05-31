@@ -68,6 +68,7 @@ import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.DragEvent;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
@@ -421,13 +422,29 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
         txtAction.setPromptText("Name/Action");
         txtAction.setOnKeyReleased((KeyEvent event) -> {
             Object obj = mComponentSelecionado;
-            if(obj instanceof TransitionMSCView){
-                ((TransitionMSCView)obj).getTransition().setLabel(txtAction.getText());
-            }
-            if(!selecao.isEmpty()){
-                Node node = selecao.iterator().next();
-                if(node instanceof HmscView){
-                    ((HmscView)node).getHMSC().setLabel(txtAction.getText());
+            if(event.getCode() != KeyCode.ENTER) {
+                if (obj instanceof TransitionMSCView) {
+                    ((TransitionMSCView) obj).getTransition().setLabel(txtAction.getText());
+                }
+                if (!selecao.isEmpty()) {
+                    Node node = selecao.iterator().next();
+                    if (node instanceof HmscView) {
+                        ((HmscView) node).getHMSC().setLabel(txtAction.getText());
+                        // Se O bMSC sempre tiver que ter o mesmo nome do hMSC
+                        ((HmscView) node).getHMSC().getmDiagramSequence().setName(txtAction.getText());
+                        pep.clear2();
+                    }
+                }
+            }else{
+                if (obj instanceof TransitionMSCView) {
+                    txtAction.setText(((TransitionMSCView) obj).getTransition().getLabel());
+                }
+                if (!selecao.isEmpty()) {
+                    Node node = selecao.iterator().next();
+                    if (node instanceof HmscView) {
+                        txtAction.setText(((HmscView) node).getHMSC().getLabel());
+                        pep.clear2();
+                    }
                 }
             }
         });
@@ -640,8 +657,8 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
     private void updatePropriedades(Object obj) {
         if(obj instanceof TransitionMSCView){
             TransitionMSC t = ((TransitionMSCView)obj).getTransition();
-            txtAction.requestFocus();
             txtAction.setText(t.getLabel());
+            txtAction.requestFocus();
             txtProbability.setText(t.getProbability() == null ? null : String.valueOf(t.getProbability()));
             lblProbability.setVisible(true);
             txtProbability.setVisible(true);
@@ -697,8 +714,8 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
         selecao.add(node);
         selecionadoPeloRetangulo = true;
         Hmsc hmsc = ((HmscView)node).getHMSC();
-        txtAction.requestFocus();
         txtAction.setText(hmsc.getLabel());
+        txtAction.requestFocus();
         lblProbability.setVisible(false);
         txtProbability.setVisible(false);
     }
@@ -739,6 +756,7 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
         
         //Limpar arvore do projeto
         //pep.removeFragmentsLTS();
+        pep.removeFragmetsLTS();
        // pep.removeLtsComposed();
 
         //Gerando o LTS Geral ----------------------------------------------------------------------------------------
