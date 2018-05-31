@@ -81,9 +81,9 @@ public abstract class DefaultWindowManagerPluginDS<E extends WindowDS> extends P
                 for (Listener l : mListeners) {
                     l.onCreateWindow(window);
                 }
+                buildDS.addListener(mComponentBuildDSListener);
+                onShow(window, buildDS);
             }
-            buildDS.addListener(mComponentBuildDSListener);
-            onShow(window, buildDS);
             id = mCenterPanel.newTab(window.getTitle(), window.getNode(),buildDS.getID() ,true);
             mComponentBuildDSids.put(buildDS, id);
             mCenterPanel.showTab(id);
@@ -118,9 +118,9 @@ public abstract class DefaultWindowManagerPluginDS<E extends WindowDS> extends P
                 for (Listener l : mListeners) {
                     l.onCreateWindow(window);
                 }
+                cds.addListener(mComponentDSListener);
+                onShow(window, cds);
             }
-            cds.addListener(mComponentDSListener);
-            onShow(window, cds);
             id = mCenterPanel.newTab(window.getTitle(), window.getNode(),cds.getID(), true);
             mComponentDSids.put(cds, id);
             mCenterPanel.showTab(id);
@@ -154,9 +154,9 @@ public abstract class DefaultWindowManagerPluginDS<E extends WindowDS> extends P
                 for (Listener l : mListeners) {
                     l.onCreateWindow(window);
                 }
+                c.addListener(mComponentLTSListener);
+                onShow(window, c);
             }
-            c.addListener(mComponentLTSListener);
-            onShow(window, c);
             id = mCenterPanel.newTab(window.getTitle(), window.getNode(),c.getID(), true);
             mComponentLTSids.put(c, id);
             mCenterPanel.showTab(id);
@@ -178,6 +178,13 @@ public abstract class DefaultWindowManagerPluginDS<E extends WindowDS> extends P
     public void close(ComponentDS cds) {
         if (mCenterPanel != null){
             mCenterPanel.closeTab(cds.getID());
+            StandardModeling stdm = mProjectExplorerDS.getSelectedProjectDS().getStandardModeling();
+            for(Hmsc hmsc : stdm.getBlocos()){
+                if(hmsc.getmDiagramSequence() == cds){
+                    hmsc.setColorStatus("red");
+                    mProjectExplorerDS.getAll_BMSC().remove(cds);
+                }
+            }
         }
     }
 
