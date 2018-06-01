@@ -31,6 +31,7 @@ public interface ProjectExplorerDS {
     
     void open(ProjectDS p);
     void close(ProjectDS p);
+    void rename(ProjectDS p);
     
     ProjectDS getSelectedProjectDS();
     StandardModeling getSelectedComponentBuildDS();
@@ -42,8 +43,13 @@ public interface ProjectExplorerDS {
     List<Component> getSelectedComponentsLTS();
     List<ProjectDS> getAllProjectsDS();
     List<ComponentDS> getAll_BMSC();
+
     
     void addListener(Listener l);
     void removeListener(Listener l);
-            
+    void removeBMSC(ComponentDS bmsc);
+
+    void removeFragmetsLTS();
+    void clearSelecao();
+    void clear2();
 }

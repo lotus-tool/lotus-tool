@@ -1029,7 +1029,7 @@ public class CompilerWindow extends AnchorPane implements Window, Initializable 
             loader.setLocation(location);
             loader.setBuilderFactory(new JavaFXBuilderFactory());
             Parent root = (Parent) loader.load(location.openStream());
-            int id = userInterface.getCenterPanel().newTab(c.getName() + " - [Compiler]", root, true);
+            int id = userInterface.getCenterPanel().newTab(c.getName() + " - [Compiler]", root,5,true);
             userInterface.getCenterPanel().showTab(id);
         } catch (IOException e) {
         }
