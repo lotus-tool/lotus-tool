@@ -249,8 +249,15 @@ public class Component {
     public Transition getTransitionByAction(String action){
         for (Transition t : mTransitions){
             String [] t_action = t.getLabel().split("[.]");
-            if(action.equals(t_action[2])){
-                return t;
+            try{
+                //Actions from LTS API from UML Module
+                if(action.equals(t_action[2])){
+                    return t;
+                }
+            } catch (IndexOutOfBoundsException e){
+                //LTS from Standard LTS API
+                if(action.equals(t.getLabel()))
+                    return t;
             }
         }
         return null;

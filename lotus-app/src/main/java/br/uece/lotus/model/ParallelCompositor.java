@@ -36,16 +36,16 @@ public class ParallelCompositor {
     public boolean contemTransicao(Component c, Transition t){
         Iterable<Transition> transicoes = c.getTransitions();
         String [] t_action = t.getLabel().split("[.]");
-        try{
-            for(Transition aux : transicoes){
+
+        for(Transition aux : transicoes){
+            try{
+                //Actions from LTS API from UML Module
                 String [] aux_action = aux.getLabel().split("[.]");
                 if(aux_action[2].equals( t_action[2] ) ){
                     return true;
                 }
-            }
-        } catch (IndexOutOfBoundsException e){
-            //System.out.println("");
-            for(Transition aux : transicoes){
+            } catch (IndexOutOfBoundsException e){
+                //LTS from Standard API without actions
                 if(aux.getLabel().equals( t.getLabel() ) ){
                     return true;
                 }
@@ -56,18 +56,18 @@ public class ParallelCompositor {
     
     public boolean contem(List<Transition> l, Transition t){
         String [] t_action = t.getLabel().split("[.]");
-        try{
-            for(Transition aux : l){
+        for(Transition aux : l){
+            try{
                 String [] aux_action = aux.getLabel().split("[.]");
                 if(aux_action[2].equals( t_action[2] )){
                     return true;
                 }
-            }
-        } catch (IndexOutOfBoundsException e){
-            for(Transition aux : l){
+            } catch (IndexOutOfBoundsException e){
+                //LTS from Standard API without actions
                 if(aux.getLabel().equals( t.getLabel() )){
                     return true;
                 }
+
             }
         }
         return false;
@@ -170,11 +170,22 @@ public class ParallelCompositor {
                 if(!contem(sharedActions, t)){
                     newPrlState = new ParallelState(aux.getA(), t.getDestiny());
                 }else{
-                    System.out.println("split [2]: "+PC.getTransitionByAction(t.getLabel().split("[.]")[2]));
-                    if(t2 != null && PC.getTransitionByAction(t.getLabel().split("[.]")[2]) == null){
-                        newPrlState = new ParallelState(t2.getDestiny(), t.getDestiny());
-                    }else{
-                        continue;
+                    try{
+                        //Actions from LTS API from UML Module
+                        System.out.println("split [2]: "+PC.getTransitionByAction(t.getLabel().split("[.]")[2]));
+                        if(t2 != null && PC.getTransitionByAction(t.getLabel().split("[.]")[2]) == null){
+                            newPrlState = new ParallelState(t2.getDestiny(), t.getDestiny());
+                        }else{
+                            continue;
+                        }
+                    } catch (IndexOutOfBoundsException e){
+                        //LTS from Standard API without actions
+                        //e.printStackTrace();
+                        if(t2 != null && PC.getTransitionByAction(t.getLabel()) == null){
+                            newPrlState = new ParallelState(t2.getDestiny(), t.getDestiny());
+                        }else{
+                            continue;
+                        }
                     }
                 }
 
@@ -222,20 +233,21 @@ public class ParallelCompositor {
     private Transition getTransitionByLabel(List<Transition> l, String label){
 //        List<Transition> list = s.getOutgoingTransitionsList();
         String [] t_action = label.split("[.]");
-        try{
-            for(Transition aux : l){
-                String [] aux_action = aux.getLabel().split("[.]");
-                if(aux_action[2].equals( t_action[2] )){
+        for(Transition aux : l) {
+            try {
+                //Actions from LTS API from UML Module
+                String[] aux_action = aux.getLabel().split("[.]");
+                if (aux_action[2].equals(t_action[2])) {
                     return aux;
                 }
-            }
-        } catch (IndexOutOfBoundsException e){
-            for(Transition aux : l){
-                if(aux.getLabel().equals(label)){
+            } catch (IndexOutOfBoundsException e) {
+                //LTS from Standard API without actions
+                if (aux.getLabel().equals(label)) {
                     return aux;
                 }
             }
         }
+
         return null;
     }
 
