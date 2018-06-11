@@ -38,14 +38,16 @@ public class StandardModeling {
     private List<TransitionMSC> mTransitions = new ArrayList<>();
     private final List<Listener> mListeners = new ArrayList<>();
     private int id;
+    private Hmsc hmsc_inicial = null;
 
     public int getID(){
         return this.id;
     }
-
     public void setID(int id){
         this.id = id;
     }
+    public Hmsc getHmsc_inicial(){ return this.hmsc_inicial;}
+    public void setHmsc_inicial(Hmsc hmsc){this.hmsc_inicial = hmsc;}
 
     public Hmsc newBlock(int id){
         Hmsc bbds = new Hmsc(this);
@@ -55,6 +57,9 @@ public class StandardModeling {
     }
     
     public void add(Hmsc b){
+        if(hmsc_inicial == null){
+            hmsc_inicial = b;
+        }
         mBlocos.add(b);
         for(Listener l : mListeners){
             l.onBlockCreate(this, b);

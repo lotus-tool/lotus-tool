@@ -19,7 +19,7 @@ import java.util.Queue;
 import java.util.LinkedList;
 
 
-public class ParallelCompositor {       
+public class ParallelCompositor {
                 
     public List compare(Component cA, Component cB){
         List<Transition> sharedActions = new ArrayList<>();

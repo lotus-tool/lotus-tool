@@ -236,6 +236,11 @@ public class State {
             l.onChange(this);
         }
     }
+
+    public void clearIniFin(){
+        setFinal(false);
+        markInitial(false);
+    }
     
     public boolean isBig(){
         return this.mBig;
@@ -306,7 +311,7 @@ public class State {
         mTransicoesEntrada.add(t);
     }
 
-    void addOutgoingTransition(Transition t) {
+    public void addOutgoingTransition(Transition t) {
         mTransicoesSaida.add(t);
     }
 

@@ -6,6 +6,8 @@
 package br.uece.lotus.uml.designer.standardModeling;
 
 import br.uece.lotus.Component;
+import br.uece.lotus.State;
+import br.uece.lotus.model.ParallelCompositor;
 import br.uece.lotus.uml.api.ds.BlockDS;
 import br.uece.lotus.uml.api.ds.Hmsc;
 import br.uece.lotus.uml.api.ds.StandardModeling;
@@ -804,24 +806,55 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
             c.setID((pep.getSelectedProjectDS().getID() * 1000)+ 300 + id_ltsfrag);
             LtsParser parser = new LtsParser(comunicacao, relativo, loopsOuAlts, c);
             c = parser.parseLTSA();
+
+            Iterator<State> it = c.getStates().iterator();
+            State fi = it.next();
+            c.setInitialState(fi);
+            while (it.hasNext()){
+                fi = it.next();
+            //    fi.clearIniFin();
+            }
+            c.setFinalState(fi);
+//            c.setInitialState(c.getStates().iterator().next());
+
             layout.layout(c);
             ltsGerados.add(c);
         }
         mViewer.getComponentBuildDS().createListLTS(ltsGerados);
+
         try {
-            Component c;
+            Component c = new Component();
+            List<Component> ltss = new ArrayList<>();
+            for(Component component : ltsGerados){
+                ltss.add(component.clone());
+            }
             if (ltsGerados.size() >= 2) {
-                c = buildGeneralLTS(ltsGerados);
+                c = buildGeneralLTS(ltss);
             } else {
                 c = ltsGerados.get(0).clone();
             }
             System.out.println("Nome da Composição é: "+ c.getName());
-           // layout.layout(c);
             c.setID((pep.getSelectedProjectDS().getID()*1000) + 100 + 1);
+
+            Iterator<State> it2 = c.getStates().iterator();
+            c.setInitialState(it2.next());
+            while(it2.hasNext()) {
+                System.out.println("Estado é: " +it2.next().getNameState());
+            }
+
+
+            layout(c);
             mViewer.getComponentBuildDS().createGeneralLTS(c);
         } catch (CloneNotSupportedException cloneNotSupportedException) {}
     };
-
+    public void layout(Component component) {
+        int i = 1;
+        for (State state : component.getStates()) {
+            state.setLayoutX(i * 200);
+            state.setLayoutY(600 + (i % 10));
+            i++;
+        }
+    }
     private Component buildGeneralLTS(List<Component> ltsGerados){
         List<Hmsc> listHmsc = mViewer.getComponentBuildDS().getBlocos();
         MakeLTSGeneral make = new MakeLTSGeneral(listHmsc,pep.getAll_BMSC(),ltsGerados,mViewer, pep);

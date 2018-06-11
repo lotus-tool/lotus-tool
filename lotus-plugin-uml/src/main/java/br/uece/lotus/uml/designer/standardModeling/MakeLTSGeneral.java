@@ -17,9 +17,9 @@ import br.uece.lotus.uml.api.viewer.hMSC.HmscView;
 import br.uece.lotus.uml.api.viewer.hMSC.StandardModelingView;
 import br.uece.lotus.uml.app.project.ProjectExplorerPluginDS;
 import br.uece.lotus.uml.designer.windowLTS.Layouter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+
+import java.util.*;
+import java.util.stream.StreamSupport;
 
 /**
  *
@@ -237,18 +237,37 @@ public class MakeLTSGeneral {
         if (tam < 2) {
             throw new RuntimeException("Select at least 2(two) components!");
         }
-        Component a = Components.get(0);
-        Component b = Components.get(1);
-        Component c = new ParallelCompositor().compor(a, b);
-        String name = a.getName() + " || " + b.getName();
-        for(int i = 2; i < tam; i++){
-            b = Components.get(i);
-            c = new ParallelCompositor().compor(c, b);
-            name += " || " + b.getName();
+            Hmsc inicial = mview.getComponentBuildDS().getHmsc_inicial();
+        List<Component> comp = new ArrayList<Component>();
+        for(Component c : Components){
+            try {
+                    comp.add(c.clone());
+            }catch(Exception e){
+
+            }
         }
-        c.setName(name);
-        return c;
+        compor(inicial, comp);
+        Component component = new Component();
+        try {
+            component = pegar_lts(inicial, comp);
+        }catch(Exception e){
+
+        }
+        ajustarIDs(component);
+        return component;
     }
+
+    private Component pegar_lts (Hmsc h, List<Component> c){
+        Component a = null;
+        for(Component comp : c){ // Pega o LTS
+            if(comp.getName().equals("LTS "+h.getLabel())){
+                a = comp;
+             //   c.remove(a);
+            }
+        }
+        return a;
+    }
+
     
     private ArrayList<String> verificarPossiveisAtores() {
         ArrayList<String> nomes = new ArrayList<>();
@@ -267,8 +286,19 @@ public class MakeLTSGeneral {
     
     private void ajustarIDs(Component build) {
         int id = 0;
-        for(State s : build.getStates()){
-            s.setID(id++);
+        List<State> visitados = new ArrayList<>();
+        Iterator<State> it = build.getStates().iterator();
+
+        while(it.hasNext()){
+            State s = it.next();
+            if(!visitados.contains(s)){
+                s.setNameState("" + id);
+                s.setLabel(""+id);
+                s.setID(id++);
+                visitados.add(s);
+            }else{
+                it.remove();
+            }
         }
     }
     
@@ -345,5 +375,95 @@ public class MakeLTSGeneral {
             this.ultimo = ultimo;
         }
         
+    }
+
+    private void compor(Hmsc hmsc, List<Component> components){
+     //   this.ltsGerados;
+     //   this.listHmsc;
+
+        Component a = pegar_lts(hmsc, components);
+        System.out.println("A é: "+ a.getName());
+        Hmsc h = null;
+        TransitionMSC t = null;
+
+        for(TransitionMSC transitionMSC : hmsc.getOutgoingTransitionsList()){
+            h = (Hmsc)transitionMSC.getDestiny();
+            t = transitionMSC;
+            compor(h, components);
+
+            Component b = pegar_lts(h, components);
+            System.out.println("A final state é: "+a.getFinalState().getLabel());
+
+            b.getInitialState().clearIniFin();
+            a.getInitialState().clearIniFin();
+            a.getFinalState().clearIniFin();
+
+                a.add(b.getInitialState());
+                a.buildTransition(a.getFinalState(), b.getInitialState())
+                        .setLabel(t.getLabel())
+                        .setViewType(1)
+                        .create();
+
+            // Remover Erro do Componente com mais de 1 final e mais de 1 inicial
+
+
+
+            add_lts_in_lts(a,b);
+
+        }
+
+        if( h == null && t == null){
+            return;
+        }
+
+        // Antes adicionar todos os Estados de b em a, bem como as transições, basicamente é adicionar o lts b no lts a
+        // Trocar var LTS gerados por um List com os LTS copiados, para não interferir nos fragments.
+
+
+
+        // Cria a ligação entre o LTS dos Hmsc's
+
+/*
+        State final_state = null;
+        for(State state : b.getStates()) {
+            for (Transition transition : state.getOutgoingTransitions()) {
+                a.buildTransition(state, transition.getDestiny())
+                        .setLabel(transition.getLabel())
+                        .setViewType(1)
+                        .create();
+            }
+            if(state.isFinal()){
+                System.out.println("Tem final sim");
+            }
+            final_state = state;
+        }
+        a.setFinalState(final_state);
+*/
+    }
+
+    private void add_lts_in_lts(Component a, Component b){
+        State src;
+        List<State> visitados = new ArrayList<State>();
+        Iterator it = b.getStates().iterator();
+        //System.out.println("Quantidade de Estadoss: " + StreamSupport.stream(b.getStates().spliterator(), false).count());
+        while (it.hasNext()) {
+            src = (State) it.next();
+//            if(visitados.contains(src)){
+ //               continue;
+  //          }
+            int count = src.getOutgoingTransitionsCount();
+            for (int i = 0; i < count;i++) {
+                Transition t = src.getOutgoingTransitionsList().get(i);
+                System.out.println("Aqui vei" + t.getDestiny().getLabel());
+                t.getDestiny().clearIniFin();
+                t.setValue("view.type",1);
+                a.add(t.getDestiny());
+                a.add(t);
+            }
+            if(count == 0){
+                a.add(src);
+            }
+//            visitados.add(src);
+        }
     }
 }
