@@ -112,6 +112,8 @@ public class Component {
         return mStates;
     }
 
+    public List<State> getStatesList(){ return mStates;}
+
     public int getStatesCount() {
         return mStates.size();
     }
@@ -131,6 +133,10 @@ public class Component {
     }
 
     public Iterable<Transition> getTransitions() {
+        return mTransitions;
+    }
+
+    public List<Transition> getTransitionsList(){
         return mTransitions;
     }
 

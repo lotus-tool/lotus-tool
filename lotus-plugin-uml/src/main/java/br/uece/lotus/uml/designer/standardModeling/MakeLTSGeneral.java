@@ -9,14 +9,17 @@ import br.uece.lotus.Component;
 import br.uece.lotus.State;
 import br.uece.lotus.Transition;
 import br.uece.lotus.model.ParallelCompositor;
+import br.uece.lotus.model.ParallelState;
 import br.uece.lotus.uml.api.ds.BlockDS;
 import br.uece.lotus.uml.api.ds.ComponentDS;
 import br.uece.lotus.uml.api.ds.Hmsc;
 import br.uece.lotus.uml.api.ds.TransitionMSC;
 import br.uece.lotus.uml.api.viewer.hMSC.HmscView;
+import br.uece.lotus.uml.api.viewer.hMSC.HmscViewImpl;
 import br.uece.lotus.uml.api.viewer.hMSC.StandardModelingView;
 import br.uece.lotus.uml.app.project.ProjectExplorerPluginDS;
 import br.uece.lotus.uml.designer.windowLTS.Layouter;
+import br.uece.lotus.viewer.TransitionView;
 
 import java.util.*;
 import java.util.stream.StreamSupport;
@@ -36,6 +39,11 @@ public class MakeLTSGeneral {
     private ProjectExplorerPluginDS pep;
     StandardModelingView mview;
     Layouter l = new Layouter();
+
+    private final List<Transition> listSelf;
+    private final List<Hmsc> listVisitados;
+    private final List<Transition> listCircTransition;
+    private final HashMap<Hmsc, List<Transition> > listHmsc_Inicial;
     
     public MakeLTSGeneral(List<Hmsc> listHmsc, List<ComponentDS> listBmsc, List<Component> ltsGerados,StandardModelingView mViewer, ProjectExplorerPluginDS projectExplorerPluginDS){
         this.ltsGerados = ltsGerados;
@@ -46,6 +54,12 @@ public class MakeLTSGeneral {
         visitados = new ArrayList<>();
         geral = new Component();
         mview = mViewer;
+
+        this.listSelf = new ArrayList<>();
+        this.listVisitados = new ArrayList<>();
+        this.listCircTransition = new ArrayList<>();
+
+        this.listHmsc_Inicial = new HashMap<>();
     }
     
     public Component produce(){
@@ -83,13 +97,14 @@ public class MakeLTSGeneral {
                 visitados.clear(); //Limpa para o proximo ator criar a linha de vida.
             }
         } catch (Exception e) {
-            throw new RuntimeException(e.getMessage());
+            e.printStackTrace();
+//            throw new RuntimeException(e.getMessage());
         }
         
         mview.getComponentBuildDS().createListLTS(preComposicao);
         //Faz a composicao parelela dos LTS completo
 //        geral = ParallelComposition(preComposicao);
-        geral = ParallelComposition(this.ltsGerados);
+        ParallelComposition(this.ltsGerados);
         
         return geral;
     }
@@ -197,6 +212,7 @@ public class MakeLTSGeneral {
         }
     }
 
+
     private Component createLTS_By_Actor_In_Hmsc(String ator, Component lts) {
         Component build = new Component();
         State src = null;
@@ -232,13 +248,17 @@ public class MakeLTSGeneral {
         return build;
     }
 
-    private Component ParallelComposition(List<Component> Components){
+    private void ParallelComposition(List<Component> Components){
         int tam = Components.size();
         if (tam < 2) {
             throw new RuntimeException("Select at least 2(two) components!");
         }
-            Hmsc inicial = mview.getComponentBuildDS().getHmsc_inicial();
+        Hmsc inicial = mview.getComponentBuildDS().getHmsc_inicial();
+
         List<Component> comp = new ArrayList<Component>();
+
+
+        // Clono para n interferir nos lts gerados
         for(Component c : Components){
             try {
                     comp.add(c.clone());
@@ -246,15 +266,52 @@ public class MakeLTSGeneral {
 
             }
         }
-        compor(inicial, comp);
-        Component component = new Component();
-        try {
-            component = pegar_lts(inicial, comp);
-        }catch(Exception e){
+        criar_list_initial();
+        Component component = pegar_lts(inicial,ltsGerados);
+/*
+        List<Transition> aux_list = new ArrayList<>();
+        for(Transition transition : component.getInitialState().getOutgoingTransitionsList())
+            try{
+                aux_list.add(transition.clone());
+            }catch (Exception e){
+        }
+        listHmsc_Inicial.put(inicial, aux_list);
+*/
+
+
+        for(State state : component.getStatesList()){
+            System.out.println("State é: "+state.getLabel());
+            int transition_count = state.getOutgoingTransitionsCount();
+            for(int i = 0; i < transition_count; i++){
+                Transition transition = state.getOutgoingTransitionsList().get(i);
+                geral.add(transition);
+                System.out.print("Transition é: "+transition.getLabel()+"\t");
+
+            }
+
+            geral.add(state);
+            System.out.println();
 
         }
-        ajustarIDs(component);
-        return component;
+        listVisitados.add(inicial);
+
+        compor2(inicial);
+
+
+//        listVisitados.add(inicial);
+        //compor(inicial, comp);
+        //Component component = new Component();
+        try {
+           // component = pegar_lts(inicial, comp);
+           // State estado_final = component.newState(component.getStatesCount()); // Estado final geral.
+           // ajustarIDs(component); // Ajusta os IDS e Remove os Estados Repetidos
+           // criar_circ_transition(component);
+           // convergir_estado_final(component); // Converge todos os estados para um final unico
+           // criar_self_transition(component);
+
+        }catch(Exception e){
+            e.printStackTrace();
+        }
     }
 
     private Component pegar_lts (Hmsc h, List<Component> c){
@@ -378,92 +435,247 @@ public class MakeLTSGeneral {
     }
 
     private void compor(Hmsc hmsc, List<Component> components){
-     //   this.ltsGerados;
-     //   this.listHmsc;
 
         Component a = pegar_lts(hmsc, components);
-        System.out.println("A é: "+ a.getName());
         Hmsc h = null;
         TransitionMSC t = null;
-
         for(TransitionMSC transitionMSC : hmsc.getOutgoingTransitionsList()){
-            h = (Hmsc)transitionMSC.getDestiny();
+            if(transitionMSC.getDestiny() instanceof Hmsc) {
+                h = (Hmsc) transitionMSC.getDestiny();
+            }else{
+                h = ((HmscViewImpl) transitionMSC.getDestiny()).getHMSC();
+            }
+
+
             t = transitionMSC;
-            compor(h, components);
+            if(hmsc == h) {
+                this.listSelf.add(new Component().buildTransition(a.getFinalState(), a.getInitialState())
+                        .setViewType(1)
+                        .setLabel(a.getFinalState().getIncomingTransitionsList().get(0).getLabel())
+                        .create());
+                continue;
+            }
+            if(!listVisitados.contains(h)) {
+                compor(h, components);
+            }
 
             Component b = pegar_lts(h, components);
-            System.out.println("A final state é: "+a.getFinalState().getLabel());
 
-            b.getInitialState().clearIniFin();
-            a.getInitialState().clearIniFin();
-            a.getFinalState().clearIniFin();
+            System.out.println("A é: "+ a.getName());
+            System.out.println("B é: "+ b.getName());
 
-                a.add(b.getInitialState());
-                a.buildTransition(a.getFinalState(), b.getInitialState())
-                        .setLabel(t.getLabel())
-                        .setViewType(1)
-                        .create();
+            if(listVisitados.contains(h)) {
 
-            // Remover Erro do Componente com mais de 1 final e mais de 1 inicial
+                for(Transition transition_circ : b.getInitialState().getOutgoingTransitionsList()) {
+                    Transition transition = new Component().buildTransition(a.getFinalState(), transition_circ.getDestiny())
+                            .setLabel(transition_circ.getLabel())
+                            .setViewType(1)
+                            .create();
+                    System.out.println("CIRC: "+transition_circ.getLabel()+ "  DST: "+transition_circ.getDestiny().getID());
+                    this.listCircTransition.add(transition);
+                }
+                continue;
 
+            }
+            add_lts_in_lts(a, b);
+            listVisitados.add(h);
 
-
-            add_lts_in_lts(a,b);
-
+            int count = b.getInitialState().getOutgoingTransitionsCount();
+            a.getFinalState().setFinal(false); // Sempre é o B que vai ter estado final O (E).
+            for(int i = 0 ; i < count ;i++){ // Elimina o inicial e linka o A as saidas do inicial de B
+                Transition transition = b.getInitialState().getOutgoingTransitionsList().get(i);
+                if(!a.getTransitionsList().contains(transition)){
+                    a.buildTransition(a.getFinalState(), transition.getDestiny())
+                            .setViewType(1)
+                            .setLabel(transition.getLabel())
+                            .create();
+                }
+                a.getTransitionsList().remove(transition);
+            }
         }
+
 
         if( h == null && t == null){
             return;
         }
 
-        // Antes adicionar todos os Estados de b em a, bem como as transições, basicamente é adicionar o lts b no lts a
-        // Trocar var LTS gerados por um List com os LTS copiados, para não interferir nos fragments.
+    }
 
+    private void criar_list_initial() {
+        for(Hmsc hmsc : mview.getComponentBuildDS().getBlocos()){
+            Component component = pegar_lts(hmsc,ltsGerados);
+            List<Transition> aux_lisTransitions = new ArrayList<>();
+            for(Transition transition : component.getInitialState().getOutgoingTransitionsList()){
+                try{
+                    aux_lisTransitions.add(transition.clone());
+                }catch(Exception e){
 
+                }
+            }
+            listHmsc_Inicial.put(hmsc,aux_lisTransitions);
+        }
+    }
 
-        // Cria a ligação entre o LTS dos Hmsc's
-
-/*
-        State final_state = null;
-        for(State state : b.getStates()) {
-            for (Transition transition : state.getOutgoingTransitions()) {
-                a.buildTransition(state, transition.getDestiny())
-                        .setLabel(transition.getLabel())
-                        .setViewType(1)
-                        .create();
+    private void convergir_estado_final(Component component){
+        int id = component.getStatesCount() -1;
+        System.out.println("ID é: "+id);
+        int states_count = component.getStatesCount();
+        for (int i = 0;i < states_count; i++){
+            State state = component.getStatesList().get(i);
+            if(state.getID() != id){
+                int transition_count = state.getOutgoingTransitionsCount();
+                for(int j = 0; j < transition_count; j++){
+                    Transition transition = state.getOutgoingTransitionsList().get(j);
+                    System.out.println("SOURCE: "+transition.getSource() == null);
+                    System.out.println("DESTINY: "+transition.getDestiny().getLabel());
+                    if (transition.getDestiny().isFinal()) {
+                        component.buildTransition(state, component.getStateByID(id))
+                                .setLabel(transition.getLabel())
+                                .setViewType(1)
+                                .create();
+                        // Remover a transição do component e decrementar ambos contadores, J e transition_count
+                        component.getTransitionsList().remove(transition);
+                        j--;
+                        transition_count--;
+                        break;
+                    }
+                }
             }
             if(state.isFinal()){
-                System.out.println("Tem final sim");
+                component.getStatesList().remove(state);
+                i--;
+                states_count--;
             }
-            final_state = state;
         }
-        a.setFinalState(final_state);
-*/
+        component.getStateByID(id).setFinal(true);
     }
 
     private void add_lts_in_lts(Component a, Component b){
+        // Verificar se já existe o estado em algum component e a trasição também!
         State src;
         List<State> visitados = new ArrayList<State>();
         Iterator it = b.getStates().iterator();
-        //System.out.println("Quantidade de Estadoss: " + StreamSupport.stream(b.getStates().spliterator(), false).count());
         while (it.hasNext()) {
             src = (State) it.next();
-//            if(visitados.contains(src)){
- //               continue;
-  //          }
+            if(visitados.contains(src)){
+                continue;
+            }
+            System.out.println("SRC: "+src.getLabel());
             int count = src.getOutgoingTransitionsCount();
             for (int i = 0; i < count;i++) {
                 Transition t = src.getOutgoingTransitionsList().get(i);
-                System.out.println("Aqui vei" + t.getDestiny().getLabel());
-                t.getDestiny().clearIniFin();
+               // System.out.println("Aqui vei" + t.getDestiny().getLabel());
                 t.setValue("view.type",1);
-                a.add(t.getDestiny());
-                a.add(t);
+                if(a.getTransitionByLabel(t.getLabel()) == null){
+                    a.add(t.getDestiny());
+                    a.add(t);
+                }
             }
             if(count == 0){
                 a.add(src);
             }
-//            visitados.add(src);
+            visitados.add(src);
+            //System.out.println("Quantidade de Estadoss: " + StreamSupport.stream(b.getStates().spliterator(), false).count());
+        }
+        //a.getStatesList().remove(a.getFinalState());
+    }
+
+    private void compor2(Hmsc hmsc){
+        Hmsc hmsc_next = null;
+        for(TransitionMSC transitionMSC : hmsc.getOutgoingTransitionsList()){
+            if(transitionMSC.getDestiny() instanceof Hmsc) {
+                hmsc_next = (Hmsc) transitionMSC.getDestiny();
+            }else{
+                hmsc_next = ((HmscViewImpl) transitionMSC.getDestiny()).getHMSC();
+            }
+
+            System.out.println("HMSC é: "+hmsc.getLabel()+"\tHMSC_NEXT é: "+hmsc_next.getLabel());
+            // Realizar Checagem se existe a ação no estado aux.getFinal, se sim, pular ao próximo estado que aquela trasição leva e voltar, séria como adicionar
+            // transição invertendo o Source e o Destiny.
+            if(hmsc == hmsc_next){ // self-Transition
+                Component aux = pegar_lts(hmsc_next,ltsGerados);
+                List<Transition> selfs = new ArrayList<>();
+                for(Transition t : aux.getInitialState().getOutgoingTransitionsList()) {
+                    if(!selfs.contains(t)) {
+                        Transition transition = geral.buildTransition(aux.getFinalState(), t.getDestiny())
+                                .setLabel(t.getLabel())
+                                .setViewType(1)
+                                .create();
+
+                        selfs.add(t);
+                    }
+                    System.out.println("SELF TRANSITION: ");
+                    System.out.println("FINAL: "+t.getDestiny().getLabel()+"\tInitial: "+aux.getInitialState().getLabel());
+                }
+                continue;
+            }
+
+            Component next = pegar_lts(hmsc_next, ltsGerados);
+
+            if(!listVisitados.contains(hmsc_next) && hmsc_next != null){
+                // Bloco que adiciona todos os Estados do lts ao novo component(O geral)
+
+                for(State state : next.getStatesList()){
+                    System.out.println("State é: "+state.getLabel());
+                    int transition_count = state.getOutgoingTransitionsCount();
+                    for(int i = 0; i < transition_count; i++){
+                        Transition transition = state.getOutgoingTransitionsList().get(i);
+                        geral.add(transition);
+                        System.out.print("Transition é: "+transition.getLabel()+"\t");
+                    }
+                    System.out.println();
+                    geral.add(state);
+
+                }
+                listVisitados.add(hmsc_next);
+                compor2(hmsc_next);
+
+                Component current = pegar_lts(hmsc,ltsGerados);
+                current.getFinalState().setFinal(false);
+                int t_count = next.getInitialState().getOutgoingTransitionsCount() -1;
+
+                List<Transition> aux_list = new ArrayList<>();
+                for(int j = 0; j < t_count; j++) { // Cria a Ligação entre os HMSCs e retira o estado inicial.
+                    System.out.println("T_COUNT: "+t_count + "SIZE: "+next.getInitialState().getOutgoingTransitionsList().size());
+                    Transition transition = next.getInitialState().getOutgoingTransitionsList().get(j);
+                    geral.buildTransition(current.getFinalState(), transition.getDestiny())
+                            .setViewType(1)
+                            .setLabel(transition.getLabel())
+                            .create();
+
+                    //Criar estrutura para manter o inicial e suas transições para reutilizar no self transition e no ciclo.
+                    try {
+                        aux_list.add(transition.clone());
+                    }catch(Exception e){
+                        e.printStackTrace();
+                    }
+
+                    geral.remove(next.getInitialState());
+                    j--;
+                    t_count--;
+                }
+
+              //  listHmsc_Inicial.put(hmsc_next, aux_list);
+            }else{
+
+                Component current = pegar_lts(hmsc,ltsGerados);
+                List<Transition> next_in_circ = listHmsc_Inicial.get(hmsc_next);
+                current.getFinalState().setFinal(false);
+
+                System.out.println("HMSC é: "+hmsc.getLabel()+"\tHMSC_NEXT é: "+hmsc_next.getLabel());
+                //System.out.println(" Count: "+ next_in_circ.size());
+
+                for(Transition transition : next_in_circ) {
+                    geral.buildTransition(current.getFinalState(), transition.getDestiny())
+                            .setLabel(transition.getLabel())
+                            .setViewType(1)
+                            .create();
+                }
+            }
+
+            // Criar a ligação entre os HMSCs
+
         }
     }
+
 }

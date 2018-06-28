@@ -851,7 +851,7 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
         int i = 1;
         for (State state : component.getStates()) {
             state.setLayoutX(i * 200);
-            state.setLayoutY(600 + (i % 10));
+            state.setLayoutY(300 + (i % 10));
             i++;
         }
     }

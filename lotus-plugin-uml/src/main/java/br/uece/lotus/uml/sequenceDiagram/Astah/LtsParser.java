@@ -55,6 +55,7 @@ public class LtsParser {
                     dst = c.newState(idrelativoClassifier(m.getRecebendo().getXmiID()));
                     c.buildTransition(org, dst)
                             .setLabel(m.getEnviando().getNome()+"."+m.getRecebendo().getNome()+"."+m.getMsg().replaceAll("\\+", ""))
+                            .setViewType(1)
                             .create();
                 }
             }else{
@@ -62,6 +63,7 @@ public class LtsParser {
                     org = dst;
                     c.buildTransition(org, dst)
                             .setLabel(m.getEnviando().getNome()+"."+m.getRecebendo().getNome()+"."+m.getMsg().replaceAll("\\+", ""))
+                            .setViewType(1)
                             .create();
                 }else{
                     if(!stateExiste(c, idrelativoClassifier(m.getRecebendo().getXmiID()))){
@@ -69,6 +71,7 @@ public class LtsParser {
                         dst= c.newState(idrelativoClassifier(m.getRecebendo().getXmiID()));
                         c.buildTransition(org, dst)
                                 .setLabel(m.getEnviando().getNome()+"."+m.getRecebendo().getNome()+"."+m.getMsg().replaceAll("\\+", ""))
+                                .setViewType(1)
                                 .create();
                     }
                     else if(stateExiste(c, idrelativoClassifier(m.getRecebendo().getXmiID()))){

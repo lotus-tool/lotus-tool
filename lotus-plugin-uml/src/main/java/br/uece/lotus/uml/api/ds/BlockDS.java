@@ -8,9 +8,13 @@ import static br.uece.lotus.State.TEXTSTYLE_BOLD;
 import static br.uece.lotus.State.TEXTSTYLE_NORMAL;
 
 /**
- * Created by lva on 11/12/15.
+ * Classe responsavel por gerênciar o gráfico dos Objetos no BMSC
+ * @author Created by lva on 11/12/15.
  */
 public class BlockDS {
+    /**
+     * O {@link BlockDS#mTextStyleBold} é alguma coisa
+     */
     public final static String mTextStyleBold = TEXTSTYLE_BOLD;
     public final static String mTextStyleNormal = TEXTSTYLE_NORMAL;
 
@@ -35,6 +39,10 @@ public class BlockDS {
     BlockDS(ComponentDS c) {
         componentDS =c;}
 
+    /**
+     * Retorna o getComponentDS
+     * @return
+     */
     public ComponentDS getComponentDS(){return this.componentDS;}
 
     public void setID(int id){mID =id;}

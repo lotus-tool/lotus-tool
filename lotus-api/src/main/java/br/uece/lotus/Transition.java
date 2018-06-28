@@ -112,6 +112,8 @@ public class Transition {
         return mDestiny;
     }
 
+    public void setDestiny(State mDestiny) {this.mDestiny = mDestiny;}
+
     public String getColor() {
         return mColor;
     }
@@ -266,7 +268,7 @@ public class Transition {
     }
 
     @Override
-    protected Transition clone() throws CloneNotSupportedException {
+    public Transition clone() throws CloneNotSupportedException {
         Transition t = new Transition(mSource, mDestiny);
         t.mColor = mColor;
         t.mGuard = mGuard;
