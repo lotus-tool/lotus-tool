@@ -12,7 +12,9 @@ import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.layout.Region;
 import javafx.scene.shape.Circle;
+import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.shape.TriangleMesh;
 
 /**
  *
@@ -26,6 +28,7 @@ public class HmscViewImpl extends Region implements HmscView, Hmsc.Listener{
     private Rectangle mRetangulo;
     private Circle mCircle;
     private Label mTitulo;
+    private Polygon mInitial;
     
     private Hmsc mBlock;
     private static final String DEFAULT_COLOR = "yellow";
@@ -40,11 +43,23 @@ public class HmscViewImpl extends Region implements HmscView, Hmsc.Listener{
         mCircle.layoutXProperty().bind(mRetangulo.layoutXProperty().add(mRetangulo.widthProperty().subtract(8)));
         mCircle.layoutYProperty().bind(mRetangulo.layoutYProperty().add(mRetangulo.heightProperty().subtract(8)));
         getChildren().add(mCircle);
+
+        mInitial = new Polygon();
+        mInitial.getPoints().addAll(new Double[]{
+                0.0, 0.0,
+                10.0, 0.0,
+                5.0, 10.0
+        });
+        mInitial.layoutXProperty().bind(mCircle.layoutXProperty().subtract(5));
+        mInitial.layoutYProperty().bind(mCircle.layoutYProperty().subtract(mCircle.layoutYProperty().divide(3)));
+        getChildren().add(mInitial);
         
         mTitulo = new Label();
         mTitulo.layoutXProperty().bind(mRetangulo.layoutXProperty().add(mRetangulo.widthProperty().divide(2)).subtract(mTitulo.widthProperty().divide(2)));
         mTitulo.layoutYProperty().bind(mRetangulo.layoutYProperty().add(mRetangulo.heightProperty().divide(2)).subtract(mTitulo.heightProperty().divide(2)));
         getChildren().add(mTitulo);
+
+
     }
     
     @Override
@@ -107,7 +122,12 @@ public class HmscViewImpl extends Region implements HmscView, Hmsc.Listener{
         style += "-fx-text-alignment: center;";
         mTitulo.setStyle(style);
         mTitulo.setText(mBlock.getLabel());
-        
+
+        if(mBlock.get_Initial()){
+                mInitial.setVisible(true);
+        }else{
+                mInitial.setVisible(false);
+        }
         setLayoutX(mBlock.getLayoutX());
         setLayoutY(mBlock.getLayoutY());
     }

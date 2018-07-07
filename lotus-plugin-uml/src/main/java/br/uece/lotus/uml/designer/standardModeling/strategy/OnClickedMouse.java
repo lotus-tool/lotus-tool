@@ -88,8 +88,12 @@ public class OnClickedMouse implements Strategy{
             if(e.getClickCount() == 2 && MouseButton.PRIMARY.equals(e.getButton()) && s.mComponentSobMouse instanceof HmscView){
                 pop.getContent().clear();
                 Hmsc block = ((HmscView)s.mComponentSobMouse).getHMSC();
-                pop.getContent().add(createPopup_hMSC_rename(block));
-                pop.show(s.mViewer.getNode().getScene().getWindow());
+                //pop.getContent().add(createPopup_hMSC_rename(block));
+
+                if(!s.pep.open_BMSC(block.getmDiagramSequence())) {
+                    s.mContextMenuBlockBuild.getItems().get(0).fire();
+                    s.pep.open_BMSC(block.getmDiagramSequence());
+                }
             }
             //renomeando TransitionMSC
             if(e.getClickCount() == 2 && MouseButton.PRIMARY.equals(e.getButton()) && s.mComponentSobMouse instanceof TransitionMSCView){
@@ -123,7 +127,9 @@ public class OnClickedMouse implements Strategy{
         }
           
     }
-    
+
+
+   /*
     private AnchorPane createPopup_hMSC_rename(Hmsc block){
         VBox vbox = new VBox(5);
         HBox hbox = new HBox(3);
@@ -144,8 +150,9 @@ public class OnClickedMouse implements Strategy{
         vbox.getChildren().addAll(lblnome,hbox);
         AnchorPane panePopup = new AnchorPane(vbox);
         panePopup.setStyle("-fx-background-color: whitesmoke; -fx-effect: dropshadow( gaussian , gray , 5 , 0.0 , 0 , 1);");
-        return panePopup;        
+        return panePopup;
     }
+    */
     
     private AnchorPane createPopup_TransitionMSC(TransitionMSC t){
         VBox box = new VBox(5);       

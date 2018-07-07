@@ -653,6 +653,30 @@ public final class ProjectExplorerPluginDS extends Plugin implements ProjectExpl
         }
         return null;
     }
+
+    public boolean open_BMSC(ComponentDS componentDS){
+        if(!getAll_BMSC().contains(componentDS)){
+            return false;
+        }
+        try {
+            dwimbd.show(componentDS);
+        }catch (IllegalStateException e){
+            try {
+                dwimbd.onStart(extension);
+            }catch (Exception e1){
+                System.out.println("ERROR ao Startar");
+            }
+            dwimbd.show(componentDS);
+        }catch(NullPointerException e){
+            try{
+                smwm.onStart(extension);
+            }catch (Exception e1){
+                System.out.println("ERROR AO START 2");
+            }
+            return false;
+        }
+        return true;
+    }
     
 }
 

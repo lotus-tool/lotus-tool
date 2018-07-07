@@ -36,11 +36,8 @@ import br.uece.lotus.uml.sequenceDiagram.Astah.TabelaReferenciaID;
 import br.uece.lotus.uml.sequenceDiagram.Astah.xmi.AtorAndClasse;
 import br.uece.lotus.uml.sequenceDiagram.Astah.xmi.InteractionFragments;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.value.ObservableValue;
@@ -79,6 +76,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
+import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.transform.Scale;
 import javafx.stage.FileChooser;
@@ -91,7 +89,7 @@ import javax.swing.JOptionPane;
 public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
 
     //Area de Projeto
-    private ProjectExplorerPluginDS pep;
+    public ProjectExplorerPluginDS pep;
     //Principais da Tela
     private final ScrollPane mScrollPanel;
     private final AnchorPane mPropriedadePanel;
@@ -379,8 +377,31 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
                 alert.show();
             }
         });
+
+        MenuItem set_initial = new MenuItem("Set initial");
+        set_initial.setOnAction((ActionEvent event) ->{
+            Hmsc h = ((HmscView)mComponentSobMouse).getHMSC();
+            if(mViewer.getComponentBuildDS().getHmsc_inicial() == h){
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Information");
+                alert.setHeaderText(null);
+                alert.setContentText("This HMSC is the initial!");
+                alert.show();
+                return;
+            }
+            Alert pergunta = new Alert(Alert.AlertType.CONFIRMATION);
+            pergunta.setTitle("Set initial");
+            pergunta.setHeaderText(null);
+            pergunta.setContentText("Set this HMSC as initial?");
+
+            Optional<ButtonType> resposta = pergunta.showAndWait();
+            if(resposta.get() == ButtonType.OK){
+                mViewer.getComponentBuildDS().setHmsc_inicial(h);
+            }
+        });
+
         
-        mContextMenuBlockBuild.getItems().addAll(creat_bMSC, mSaveAsPNG);
+        mContextMenuBlockBuild.getItems().addAll(creat_bMSC, set_initial ,mSaveAsPNG);
         mViewer.setBlockBuildContextMenu(mContextMenuBlockBuild);
         
         mViewer.getNode().getTransforms().add(escala);
@@ -433,7 +454,9 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
                     if (node instanceof HmscView) {
                         ((HmscView) node).getHMSC().setLabel(txtAction.getText());
                         // Se O bMSC sempre tiver que ter o mesmo nome do hMSC
-                        ((HmscView) node).getHMSC().getmDiagramSequence().setName(txtAction.getText());
+                        if(((HmscView) node).getHMSC().getmDiagramSequence() != null) {
+                            ((HmscView) node).getHMSC().getmDiagramSequence().setName(txtAction.getText());
+                        }
                         pep.clear2();
                     }
                 }
@@ -461,6 +484,7 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
                 try {
                     if(txtProbability.getText().equals("")){
                         ((TransitionMSCView) obj).getTransition().setProbability(null);
+                        mViewer.getComponentBuildDS().setProb( mViewer.getComponentBuildDS().getProb() - 1 );
                     }else{
                         String valorDoField = txtProbability.getText().trim();
                         String auxValor = "";
@@ -501,6 +525,8 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
                                 JOptionPane.showMessageDialog(null, "Imput probability need 0 to 1", "Erro", JOptionPane.ERROR_MESSAGE);
                             }
                         }
+                        mViewer.getComponentBuildDS().setProb( mViewer.getComponentBuildDS().getProb() +1 );
+
                         ((TransitionMSCView) obj).getTransition().setProbability(Double.parseDouble(auxValor));
                     }
                 } catch (Exception e) {
@@ -523,14 +549,26 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
         HBox infoFull = new HBox(2);
         infoFull.setPrefSize(utilidade.getPrefWidth(), utilidade.getPrefHeight());
         infoFull.setAlignment(Pos.CENTER);
-        
+        HBox infoInitial = new HBox(2);
+        infoInitial.setPrefSize(utilidade.getPrefWidth(), utilidade.getPrefHeight());
+        infoInitial.setAlignment(Pos.CENTER);
+
         Circle green = new Circle(7); green.setFill(Color.GREEN);
         Label full = new Label("Full");
         Circle red = new Circle(7); red.setFill(Color.RED);
         Label empyt = new Label("Empyt");
+        Polygon mInitial = new Polygon();
+        mInitial.getPoints().addAll(new Double[]{
+                0.0, 0.0,
+                10.0, 0.0,
+                5.0, 10.0
+        });
+        Label initial = new Label("Initial State");
+
         infoFull.getChildren().addAll(green,full);
         infoEmpyt.getChildren().addAll(red,empyt);
-        utilidade.getChildren().addAll(infoEmpyt,infoFull);
+        infoInitial.getChildren().addAll(mInitial,initial);
+        utilidade.getChildren().addAll(infoEmpyt,infoFull, infoInitial);
         
         Button gerarLts = new Button("Build LTS",new ImageView(new Image(getClass().getResourceAsStream("/imagens/ic_build_LTS.png"))));
         gerarLts.setOnAction(btnGerarLTS);

@@ -39,15 +39,31 @@ public class StandardModeling {
     private final List<Listener> mListeners = new ArrayList<>();
     private int id;
     private Hmsc hmsc_inicial = null;
+    private int probscount = 0;
 
     public int getID(){
         return this.id;
     }
+
     public void setID(int id){
         this.id = id;
     }
+
     public Hmsc getHmsc_inicial(){ return this.hmsc_inicial;}
-    public void setHmsc_inicial(Hmsc hmsc){this.hmsc_inicial = hmsc;}
+
+    public void setHmsc_inicial(Hmsc hmsc){
+        this.hmsc_inicial.set_Initial(false);
+        this.hmsc_inicial = hmsc;
+        this.hmsc_inicial.set_Initial(true);
+    }
+
+    public int getProb(){
+        return this.probscount;
+    }
+
+    public void setProb(int i){
+        this.probscount = i;
+    }
 
     public Hmsc newBlock(int id){
         Hmsc bbds = new Hmsc(this);
@@ -59,6 +75,7 @@ public class StandardModeling {
     public void add(Hmsc b){
         if(hmsc_inicial == null){
             hmsc_inicial = b;
+            hmsc_inicial.set_Initial(true);
         }
         mBlocos.add(b);
         for(Listener l : mListeners){

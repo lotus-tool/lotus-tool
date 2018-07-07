@@ -124,6 +124,7 @@ public class LineTransitionMSCViewImpl extends TransitionMSCViewImpl{
 
                     mSeta.layoutXProperty().bind(mLine.endXProperty().subtract(4));
                     mSeta.layoutYProperty().bind(mLine.endYProperty());
+
                 }
                 break;
             } 
@@ -134,10 +135,15 @@ public class LineTransitionMSCViewImpl extends TransitionMSCViewImpl{
 
     @Override
     protected void updateView() {
-        mLine.setStyle(StyleBuilder.stroke(mTransition.getColor(), mTransition.getWidth()));
-        mSeta.setStyle(StyleBuilder.fill(mTransition.getColor()));
-        mRotulo.setStyle(StyleBuilder.font(mTransition.getTextColor(), mTransition.getTextStyle(), mTransition.getTextSize()));
-        mRotulo.setText(getComputedLabel());
+        if (mValueType.equals("bMSC")){
+            mLine.setStyle(StyleBuilder.stroke("red", mTransition.getWidth()));
+            mRotulo.setStyle(StyleBuilder.font(mTransition.getTextColor(), mTransition.getTextStyle(), mTransition.getTextSize()));
+            mRotulo.setText(getComputedLabel());
+        }else {
+            mLine.setStyle(StyleBuilder.stroke(mTransition.getColor(), mTransition.getWidth()));
+            mRotulo.setStyle(StyleBuilder.font(mTransition.getTextColor(), mTransition.getTextStyle(), mTransition.getTextSize()));
+            mRotulo.setText(getComputedLabel());
+        }
     }
 
     @Override

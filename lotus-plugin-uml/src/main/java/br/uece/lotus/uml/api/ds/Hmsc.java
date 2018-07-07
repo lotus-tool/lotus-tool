@@ -31,7 +31,7 @@ public class Hmsc {
     
     private final static String mColorBlockFull = "green";
     private final static String mColorBlockEmpyt = "red";
-    
+    private boolean isInitial;
     //Propriedade do grafico
     private int mID;
     private final List<TransitionMSC> mTransicaoSaida = new ArrayList<>();
@@ -51,6 +51,7 @@ public class Hmsc {
     private String mColorStatus = mColorBlockEmpyt;
     //Propriedade Bloco de DS
     private ComponentDS mDiagramSequence;
+
 
     public Hmsc(StandardModeling mComponentBuildDS) {
         this.mComponentBuildDS = mComponentBuildDS;
@@ -292,5 +293,16 @@ public class Hmsc {
     
     public List<TransitionMSC> getIncomingTransitionsList(){
         return Collections.unmodifiableList(mTransicaoEntrada);
+    }
+
+    public void set_Initial(Boolean b){
+        this.isInitial = b;
+        for(Listener l : mListeners){
+            l.onChange(this);
+        }
+    }
+
+    public boolean get_Initial(){
+        return this.isInitial;
     }
 }

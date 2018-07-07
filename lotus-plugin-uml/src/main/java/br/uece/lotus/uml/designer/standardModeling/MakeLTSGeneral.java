@@ -20,6 +20,7 @@ import br.uece.lotus.uml.api.viewer.hMSC.StandardModelingView;
 import br.uece.lotus.uml.app.project.ProjectExplorerPluginDS;
 import br.uece.lotus.uml.designer.windowLTS.Layouter;
 import br.uece.lotus.viewer.TransitionView;
+import javafx.scene.control.Alert;
 
 import java.util.*;
 import java.util.stream.StreamSupport;
@@ -284,9 +285,13 @@ public class MakeLTSGeneral {
             int transition_count = state.getOutgoingTransitionsCount();
             for(int i = 0; i < transition_count; i++){
                 Transition transition = state.getOutgoingTransitionsList().get(i);
-                geral.add(transition);
-                System.out.print("Transition é: "+transition.getLabel()+"\t");
+                try {
+                    geral.remove(transition);
+                    geral.add(transition.clone());
+                }catch (Exception e){
 
+                }
+                System.out.print("Transition é: "+transition.getLabel()+"\t");
             }
 
             geral.add(state);
@@ -297,20 +302,8 @@ public class MakeLTSGeneral {
 
         compor2(inicial);
 
-
-//        listVisitados.add(inicial);
-        //compor(inicial, comp);
-        //Component component = new Component();
-        try {
-           // component = pegar_lts(inicial, comp);
-           // State estado_final = component.newState(component.getStatesCount()); // Estado final geral.
-           // ajustarIDs(component); // Ajusta os IDS e Remove os Estados Repetidos
-           // criar_circ_transition(component);
-           // convergir_estado_final(component); // Converge todos os estados para um final unico
-           // criar_self_transition(component);
-
-        }catch(Exception e){
-            e.printStackTrace();
+        if(mview.getComponentBuildDS().getProb() > 0){
+            adicionar_probabilidades();
         }
     }
 
@@ -560,11 +553,9 @@ public class MakeLTSGeneral {
             if(visitados.contains(src)){
                 continue;
             }
-            System.out.println("SRC: "+src.getLabel());
             int count = src.getOutgoingTransitionsCount();
             for (int i = 0; i < count;i++) {
                 Transition t = src.getOutgoingTransitionsList().get(i);
-               // System.out.println("Aqui vei" + t.getDestiny().getLabel());
                 t.setValue("view.type",1);
                 if(a.getTransitionByLabel(t.getLabel()) == null){
                     a.add(t.getDestiny());
@@ -575,7 +566,6 @@ public class MakeLTSGeneral {
                 a.add(src);
             }
             visitados.add(src);
-            //System.out.println("Quantidade de Estadoss: " + StreamSupport.stream(b.getStates().spliterator(), false).count());
         }
         //a.getStatesList().remove(a.getFinalState());
     }
@@ -589,9 +579,9 @@ public class MakeLTSGeneral {
                 hmsc_next = ((HmscViewImpl) transitionMSC.getDestiny()).getHMSC();
             }
 
-            System.out.println("HMSC é: "+hmsc.getLabel()+"\tHMSC_NEXT é: "+hmsc_next.getLabel());
             // Realizar Checagem se existe a ação no estado aux.getFinal, se sim, pular ao próximo estado que aquela trasição leva e voltar, séria como adicionar
             // transição invertendo o Source e o Destiny.
+
             if(hmsc == hmsc_next){ // self-Transition
                 Component aux = pegar_lts(hmsc_next,ltsGerados);
                 List<Transition> selfs = new ArrayList<>();
@@ -600,30 +590,31 @@ public class MakeLTSGeneral {
                         Transition transition = geral.buildTransition(aux.getFinalState(), t.getDestiny())
                                 .setLabel(t.getLabel())
                                 .setViewType(1)
+                                .setProbability(transitionMSC.getProbability())
                                 .create();
-
+                        System.out.println("PIA");
                         selfs.add(t);
                     }
-                    System.out.println("SELF TRANSITION: ");
-                    System.out.println("FINAL: "+t.getDestiny().getLabel()+"\tInitial: "+aux.getInitialState().getLabel());
                 }
                 continue;
             }
 
             Component next = pegar_lts(hmsc_next, ltsGerados);
 
-            if(!listVisitados.contains(hmsc_next) && hmsc_next != null){
-                // Bloco que adiciona todos os Estados do lts ao novo component(O geral)
+            if(!listVisitados.contains(hmsc_next) && hmsc_next != null){ // Se o próximo ainda n adicionado
 
                 for(State state : next.getStatesList()){
-                    System.out.println("State é: "+state.getLabel());
                     int transition_count = state.getOutgoingTransitionsCount();
                     for(int i = 0; i < transition_count; i++){
                         Transition transition = state.getOutgoingTransitionsList().get(i);
-                        geral.add(transition);
-                        System.out.print("Transition é: "+transition.getLabel()+"\t");
+                        try { // Bloco Feito, pois no Metodo ADD é adicionado novamente a transição na lista de transições do Source e do Destiny.
+                            geral.remove(transition);
+                            geral.add(transition.clone());
+                        }catch (Exception e){
+
+                        }
+                        System.out.println("[1] Transition é: "+transition.getLabel()+"\t");
                     }
-                    System.out.println();
                     geral.add(state);
 
                 }
@@ -632,48 +623,83 @@ public class MakeLTSGeneral {
 
                 Component current = pegar_lts(hmsc,ltsGerados);
                 current.getFinalState().setFinal(false);
-                int t_count = next.getInitialState().getOutgoingTransitionsCount() -1;
-
-                List<Transition> aux_list = new ArrayList<>();
+                int t_count = next.getInitialState().getOutgoingTransitionsCount();
                 for(int j = 0; j < t_count; j++) { // Cria a Ligação entre os HMSCs e retira o estado inicial.
-                    System.out.println("T_COUNT: "+t_count + "SIZE: "+next.getInitialState().getOutgoingTransitionsList().size());
                     Transition transition = next.getInitialState().getOutgoingTransitionsList().get(j);
-                    geral.buildTransition(current.getFinalState(), transition.getDestiny())
+                    Transition t = geral.buildTransition(current.getFinalState(), transition.getDestiny())
                             .setViewType(1)
                             .setLabel(transition.getLabel())
+                            .setProbability(transitionMSC.getProbability())
                             .create();
 
-                    //Criar estrutura para manter o inicial e suas transições para reutilizar no self transition e no ciclo.
-                    try {
-                        aux_list.add(transition.clone());
-                    }catch(Exception e){
-                        e.printStackTrace();
-                    }
+                    System.out.println("[2] Transition é: "+transition.getLabel()+"\t"+t.getLabel());
 
-                    geral.remove(next.getInitialState());
+
                     j--;
                     t_count--;
                 }
 
-              //  listHmsc_Inicial.put(hmsc_next, aux_list);
-            }else{
+                geral.remove(next.getInitialState());
 
+              //  listHmsc_Inicial.put(hmsc_next, aux_list);
+            }else if(hmsc_next != null){
                 Component current = pegar_lts(hmsc,ltsGerados);
                 List<Transition> next_in_circ = listHmsc_Inicial.get(hmsc_next);
                 current.getFinalState().setFinal(false);
 
-                System.out.println("HMSC é: "+hmsc.getLabel()+"\tHMSC_NEXT é: "+hmsc_next.getLabel());
-                //System.out.println(" Count: "+ next_in_circ.size());
 
                 for(Transition transition : next_in_circ) {
-                    geral.buildTransition(current.getFinalState(), transition.getDestiny())
+                    Transition t = geral.buildTransition(current.getFinalState(), transition.getDestiny())
                             .setLabel(transition.getLabel())
                             .setViewType(1)
+                            .setProbability(transitionMSC.getProbability())
                             .create();
+
+                    System.out.println("[3] Transition é: "+transition.getLabel()+"\t"+t.getLabel());
                 }
+
             }
 
-            // Criar a ligação entre os HMSCs
+
+        }
+    }
+
+    private void adicionar_probabilidades(){
+        State erro = geral.newState(geral.getStatesCount()+1);
+        geral.setErrorState(erro);
+        for(State state : geral.getStatesList()){
+            double prob_total = 0.0;
+            int t_count = state.getOutgoingTransitionsCount();
+            int n_states_prob_null = 0;
+
+            for(int i = 0 ; i < t_count; i++){
+                Transition transition = state.getOutgoingTransitionsList().get(i);
+                System.out.println("TRANS NAME: "+ transition.getLabel());
+                if(transition.getProbability() != null) {
+                    prob_total += transition.getProbability();
+                }else{
+                    n_states_prob_null++;
+                }
+            }
+            if(prob_total == 0.0){
+                for(int j = 0; j < t_count; j++){
+                    state.getOutgoingTransitionsList().get(j).setProbability(1.0 / t_count);
+                }
+            }else if(prob_total < 1.0){
+                double new_probability = ( 1.0 - prob_total ) / (n_states_prob_null + 1);
+                for(Transition transition : state.getOutgoingTransitionsList()){
+                    if(transition.getProbability() == null){
+                        transition.setProbability( new_probability);
+                    }
+                }
+
+                geral.buildTransition(state, erro)
+                        .setViewType(1)
+                        .setProbability(new_probability)
+                        .setLabel("ERROR")
+                        .create();
+
+            }
 
         }
     }

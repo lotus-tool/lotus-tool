@@ -20,7 +20,9 @@ import javafx.scene.shape.Rectangle;
 public class BlockDSViewImpl extends Region implements BlockDSView, BlockDS.Listener{
     static final double ALTURA_RETANGULO = 60;
     static final double LARGURA_RETANGULO = 100;
-    private static final String DEFAULT_COLOR = "green" ;
+   // private static final String DEFAULT_COLOR = "green" ;
+    private static final String DEFAULT_COLOR = "cornsilk" ;
+    private static final String DEFAULT_BORDER_COLOR = "red";
     private final Rectangle mRectangle;
     private BlockDS mDS;
     private Line mLine;
@@ -47,6 +49,7 @@ public class BlockDSViewImpl extends Region implements BlockDSView, BlockDS.List
         mLine.startYProperty().bind(mRectangle.layoutXProperty().add(mRectangle.heightProperty()));
         mLine.endYProperty().setValue(500);
         getChildren().add(mLine);
+
     }
 
 
@@ -92,10 +95,11 @@ public class BlockDSViewImpl extends Region implements BlockDSView, BlockDS.List
     private void updateView() {
         String style = "-fx-effect: dropshadow( gaussian , gray , 3 , 0.2 , 1 , 1);";
         style += "-fx-fill: linear-gradient(to bottom right, white, " + computedColor() + ");";
-        style += "-fx-stroke: " + (mDS.getBorderColor() == null ? "black" : mDS.getBorderColor()) + ";";
+      //  style += "-fx-stroke: " + (mDS.getBorderColor() == null ? DEFAULT_BORDER_COLOR : mDS.getBorderColor()) + ";";
+        style += "-fx-stroke: " + DEFAULT_BORDER_COLOR + ";";
         style += "-fx-stroke-width: " + (mDS.getBorderWidth() == null ? "1" : mDS.getBorderWidth()) + ";";
         mRectangle.setStyle(style);
-        mLine.setStyle(style);
+        mLine.setStyle(style + "-fx-stroke: black;");
         mName.setText(mDS.getLabel());
 //
 //        style = "-fx-text-fill: " + (mState.getTextColor() == null ? "black" : mState.getTextColor()) + ";";
