@@ -135,15 +135,15 @@ public class LineTransitionMSCViewImpl extends TransitionMSCViewImpl{
 
     @Override
     protected void updateView() {
-        if (mValueType.equals("bMSC")){
+    /*    if (mValueType.equals("bMSC")){  Caso as cores sejam diferente
             mLine.setStyle(StyleBuilder.stroke("red", mTransition.getWidth()));
             mRotulo.setStyle(StyleBuilder.font(mTransition.getTextColor(), mTransition.getTextStyle(), mTransition.getTextSize()));
             mRotulo.setText(getComputedLabel());
         }else {
-            mLine.setStyle(StyleBuilder.stroke(mTransition.getColor(), mTransition.getWidth()));
+    */      mLine.setStyle(StyleBuilder.stroke(mTransition.getColor(), mTransition.getWidth()));
             mRotulo.setStyle(StyleBuilder.font(mTransition.getTextColor(), mTransition.getTextStyle(), mTransition.getTextSize()));
             mRotulo.setText(getComputedLabel());
-        }
+    //    }
     }
 
     @Override

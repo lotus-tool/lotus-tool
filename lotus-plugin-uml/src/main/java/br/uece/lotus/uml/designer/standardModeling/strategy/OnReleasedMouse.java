@@ -60,8 +60,7 @@ public class OnReleasedMouse implements Strategy{
                 }
                 
                 if(s.mComponentSobMouse == null){
-                    s.txtAction.setText("");
-                    s.txtProbability.setText("");
+                    // EXECUTA COM NADA SELECIONADO
                 }
             }
             

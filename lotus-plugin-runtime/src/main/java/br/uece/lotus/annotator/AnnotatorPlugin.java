@@ -48,5 +48,4 @@ public class AnnotatorPlugin extends Plugin {
                 })
                 .create();
     }
-
 }

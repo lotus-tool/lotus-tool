@@ -99,7 +99,7 @@ public class BlockDSViewImpl extends Region implements BlockDSView, BlockDS.List
         style += "-fx-stroke: " + DEFAULT_BORDER_COLOR + ";";
         style += "-fx-stroke-width: " + (mDS.getBorderWidth() == null ? "1" : mDS.getBorderWidth()) + ";";
         mRectangle.setStyle(style);
-        mLine.setStyle(style + "-fx-stroke: black;");
+        mLine.setStyle(style);
         mName.setText(mDS.getLabel());
 //
 //        style = "-fx-text-fill: " + (mState.getTextColor() == null ? "black" : mState.getTextColor()) + ";";

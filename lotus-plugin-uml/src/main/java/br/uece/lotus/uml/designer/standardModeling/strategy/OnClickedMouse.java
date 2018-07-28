@@ -83,7 +83,10 @@ public class OnClickedMouse implements Strategy{
                 s.setComponenteSelecionado(s.mComponentSobMouse);
             }else{
                 s.setComponenteSelecionado(null);
-            } 
+            }
+            if(s.mComponentSobMouse == null && !s.selecionadoPeloRetangulo){
+                //s.changeToProperty();  // Apaga os Labels e talz
+            }
             //renomeando hMSC
             if(e.getClickCount() == 2 && MouseButton.PRIMARY.equals(e.getButton()) && s.mComponentSobMouse instanceof HmscView){
                 pop.getContent().clear();

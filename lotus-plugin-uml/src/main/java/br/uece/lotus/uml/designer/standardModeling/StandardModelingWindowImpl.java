@@ -8,6 +8,7 @@ package br.uece.lotus.uml.designer.standardModeling;
 import br.uece.lotus.Component;
 import br.uece.lotus.State;
 import br.uece.lotus.model.ParallelCompositor;
+import br.uece.lotus.tools.probabilisticReach.ProbabilisticReachWindow;
 import br.uece.lotus.uml.api.ds.BlockDS;
 import br.uece.lotus.uml.api.ds.Hmsc;
 import br.uece.lotus.uml.api.ds.StandardModeling;
@@ -35,12 +36,16 @@ import br.uece.lotus.uml.sequenceDiagram.Astah.Mensagem;
 import br.uece.lotus.uml.sequenceDiagram.Astah.TabelaReferenciaID;
 import br.uece.lotus.uml.sequenceDiagram.Astah.xmi.AtorAndClasse;
 import br.uece.lotus.uml.sequenceDiagram.Astah.xmi.InteractionFragments;
-import java.io.File;
+
+import java.io.*;
 import java.util.*;
 
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
@@ -48,22 +53,8 @@ import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.ColorPicker;
-import javafx.scene.control.ContextMenu;
-import javafx.scene.control.Label;
-import javafx.scene.control.MenuButton;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.Slider;
-import javafx.scene.control.TextField;
-import javafx.scene.control.ToggleButton;
-import javafx.scene.control.ToggleGroup;
-import javafx.scene.control.ToolBar;
-import javafx.scene.control.Tooltip;
+import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.DragEvent;
@@ -80,7 +71,9 @@ import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.transform.Scale;
 import javafx.stage.FileChooser;
-import javax.swing.JOptionPane;
+import javafx.stage.Popup;
+
+import javax.swing.*;
 
 /**
  *
@@ -88,6 +81,9 @@ import javax.swing.JOptionPane;
  */
 public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
 
+
+
+    private Popup popup = new Popup();
     //Area de Projeto
     public ProjectExplorerPluginDS pep;
     //Principais da Tela
@@ -138,6 +134,20 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
     public TextField txtProbability;
     private Label lblAction;
     private Label lblProbability;
+
+    private Button btnAddProperty;
+    private TitledPane propertyDropDown;
+    private CheckBox chkPropertyPanel;
+    private TableView<Entry> tableViewProperty;
+    private TableColumn<Entry, String> mSourceCol;
+    private TableColumn<Entry, String> mTargetCol;
+    private TableColumn<Entry, String> mInequationCol;
+    private TableColumn<Entry, String> mConditionCol;
+    private TableColumn<Entry, String> mExcSttCol;
+    private TableColumn<Entry, String> mResultCol;
+    private ObservableList<Entry> mEntries = FXCollections.observableArrayList();
+
+
     //Variaveis gerais
     public Set<Node> selecao = new HashSet<>();
     public double dragContextMouseAnchorX, dragContextMouseAnchorY;
@@ -221,8 +231,9 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
         AnchorPane.setLeftAnchor(mInfoPanel, 0D);
         AnchorPane.setRightAnchor(mInfoPanel, 0D);
         AnchorPane.setBottomAnchor(mInfoPanel, 0D);
-       
-        
+
+
+
         startComponentesTela();
         
     }
@@ -320,8 +331,14 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
         paleta = new HBox();
         paleta.setAlignment(Pos.CENTER);
         paleta.getChildren().addAll(cores,complementoColors);
-        
-        mToolBar.getItems().addAll(mBtnArrow,mBtnBlock,mBtnTransitionLine,mBtnTransitionArc,mBtnEraser,mBtnHand,mBtnZoom);
+
+
+        chkPropertyPanel = new CheckBox("Property Panel");
+        chkPropertyPanel.setOnAction((ActionEvent e) -> {
+            propertyDropDown.setVisible(chkPropertyPanel.isSelected());
+        });
+
+        mToolBar.getItems().addAll(mBtnArrow,mBtnBlock,mBtnTransitionLine,mBtnTransitionArc,mBtnEraser,mBtnHand,mBtnZoom, chkPropertyPanel);
         
         //ToolTips
         Tooltip arrowInfo = new Tooltip("Selection");
@@ -536,11 +553,56 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
         });
         lblAction = new Label("Name / Action:");
         lblProbability = new Label("Probability:");
-        
+
         blockPropriedade.getChildren().addAll(lblAction,txtAction,lblProbability,txtProbability);
-        mPropriedadePanel.getChildren().add(blockPropriedade);
-                
-        //Panel de info / utilidade
+
+        ////////////////// Propriedades para Runtime ///////////////////
+        popup.setHideOnEscape(false);
+        popup.setAutoFix(true);
+        popup.setAutoHide(false);
+
+        mSourceCol = new TableColumn<>("Source");
+        mSourceCol.setCellValueFactory(new PropertyValueFactory<Entry, String>("source"));
+        mSourceCol.setPrefWidth(100);
+        mTargetCol = new TableColumn<>("Target");
+        mTargetCol.setCellValueFactory(new PropertyValueFactory<Entry, String>("target"));
+        mTargetCol.setPrefWidth(100);
+        mInequationCol = new TableColumn<>("Inequation");
+        mInequationCol.setPrefWidth(100);
+        mInequationCol.setCellValueFactory(new PropertyValueFactory<Entry, String>("inequation"));
+        mConditionCol = new TableColumn<>("Condition");
+        mConditionCol.setPrefWidth(100);
+        mConditionCol.setCellValueFactory(new PropertyValueFactory<Entry, String>("condition"));
+        mExcSttCol = new TableColumn<>("Excluding States");
+        mExcSttCol.setPrefWidth(160);
+        mExcSttCol.setCellValueFactory(new PropertyValueFactory<Entry, String>("excstt"));
+        mResultCol = new TableColumn<>("Result");
+        mResultCol.setPrefWidth(100);
+        mResultCol.setCellValueFactory(new PropertyValueFactory<Entry, String>("result"));
+
+        tableViewProperty = new TableView<>();
+        tableViewProperty.setPrefWidth(150);
+        tableViewProperty.getColumns().addAll(mSourceCol, mTargetCol, mInequationCol, mConditionCol, mExcSttCol, mResultCol);
+        tableViewProperty.setItems(mEntries);
+
+
+        btnAddProperty = new Button("Add new property");
+        btnAddProperty.setOnAction(btnAddPropertyAction);
+
+        propertyDropDown = new TitledPane("Property Panel",propertyPanel()); // Trocar btnAdd por metodo que gera um Panel com todas as informações do Runtime
+        propertyDropDown.setVisible(false);
+        //propertyDropDown.setLayoutY(110);
+
+        VBox PropertyPanelBox = new VBox(5);
+        PropertyPanelBox.getChildren().addAll(blockPropriedade, propertyDropDown);
+
+        mPropriedadePanel.getChildren().add(PropertyPanelBox);
+
+
+
+
+
+       //Panel de info / utilidade
         HBox utilidade = new HBox(10); 
         utilidade.setPrefSize(mInfoPanel.getPrefWidth(), mInfoPanel.getPrefHeight());
         HBox infoEmpyt = new HBox(2);
@@ -880,7 +942,6 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
                 System.out.println("Estado é: " +it2.next().getNameState());
             }
 
-
             layout(c);
             mViewer.getComponentBuildDS().createGeneralLTS(c);
         } catch (CloneNotSupportedException cloneNotSupportedException) {}
@@ -897,5 +958,152 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
         List<Hmsc> listHmsc = mViewer.getComponentBuildDS().getBlocos();
         MakeLTSGeneral make = new MakeLTSGeneral(listHmsc,pep.getAll_BMSC(),ltsGerados,mViewer, pep);
         return make.produce();
+    }
+
+
+    ///////////////////////////////////////////////////////////////////////////////////
+    //                         Metodos das Propriedades                             //
+    //////////////////////////////////////////////////////////////////////////////////
+    public void changeToProperty(){
+        ( (VBox) mPropriedadePanel.getChildren().get(0) ).getChildren().get(0).setVisible(false);
+        /*
+        ( (VBox) mPropriedadePanel.getChildren().get(0) ).getChildren().get(1).setVisible(false);
+        ( (VBox) mPropriedadePanel.getChildren().get(0) ).getChildren().get(1).setLayoutY(5);
+        ( (VBox) mPropriedadePanel.getChildren().get(0) ).getChildren().get(1).setVisible(true);
+        */
+    }
+
+
+    EventHandler<ActionEvent> btnAddPropertyAction = (ActionEvent) -> {
+        if(!popup.isShowing()) {
+            popup.getContent().add(add_property());
+            popup.setAnchorX(btnAddProperty.getLocalToSceneTransform().getTx());
+            popup.setAnchorY(btnAddProperty.getLocalToSceneTransform().getTy());
+            popup.show(getNode().getScene().getWindow());
+            System.out.println(((AnchorPane)propertyDropDown.getContent()).getWidth() + "\t"+ propertyDropDown.getWidth());
+            System.out.println(tableViewProperty.getHeight()+"\t"+ ( (ScrollPane) ( (VBox) ((AnchorPane)propertyDropDown.getContent()).getChildren().get(0)).getChildren().get(0)).getViewportBounds() );
+            mEntries.add(new Entry("1", "1", "1", "1", "1", "1"));
+        }
+    };
+    private AnchorPane add_property(){
+        VBox box = new VBox(5);
+        Label lblSour = new Label("Source:");
+        ComboBox stats_source = new ComboBox();
+
+        Label lblDest = new Label("Destiny:");
+        ComboBox stats_destiny = new ComboBox();
+
+        List<String> blocks = new ArrayList<>();
+
+
+        for(Node node : mViewer.getNode().getChildren()){
+            if(node instanceof HmscView) {
+                HmscView b = (HmscView) node;
+                Hmsc block = b.getHMSC();
+                blocks.add(block.getLabel());
+            }
+        }
+
+        stats_source.getItems().addAll(blocks);
+        stats_destiny.getItems().addAll(blocks);
+
+
+        Button save = new Button("Save");
+
+        save.setOnAction((ActionEvent) -> {
+
+
+
+
+
+        });
+
+        Button close = new Button("close");
+        close.setOnAction((ActionEvent) -> {
+            popup.hide();
+        });
+        HBox hBox = new HBox(10);
+        hBox.getChildren().addAll(save, close);
+        box.getChildren().addAll(lblSour, stats_source, lblDest, stats_destiny,hBox);
+
+
+        AnchorPane anchorPane = new AnchorPane(box);
+        anchorPane.setStyle("-fx-background-color: whitesmoke; -fx-effect: dropshadow( gaussian , gray , 5 , 0.0 , 0 , 1);");
+        return anchorPane;
+    }
+
+    private AnchorPane propertyPanel(){
+        AnchorPane panel = new AnchorPane();
+        ScrollPane scrollPane = new ScrollPane();
+        scrollPane.setContent(tableViewProperty);
+        scrollPane.setFitToHeight(true);
+        scrollPane.setFitToWidth(true);
+        scrollPane.setMaxHeight(300);
+
+        VBox vBox = new VBox(5);
+        vBox.getChildren().add(scrollPane);
+
+        vBox.getChildren().add(btnAddProperty);
+
+
+
+        panel.getChildren().add(vBox);
+        return panel;
+    }
+
+    public class Entry {
+
+        private SimpleStringProperty  mSource;
+        private SimpleStringProperty mTarget;
+        private SimpleStringProperty mInequation;
+        private SimpleStringProperty mCondition;
+        private SimpleStringProperty mExcStt;
+        private SimpleStringProperty mResult;
+
+        Entry(String source, String target, String inequation, String condition, String excstt, String result) {
+            this.mSource = new SimpleStringProperty(source);
+            this.mTarget = new SimpleStringProperty(target);
+            this.mInequation = new SimpleStringProperty(inequation);
+            this.mCondition = new SimpleStringProperty(condition);
+            this.mExcStt = new SimpleStringProperty(excstt);
+            this.mResult = new SimpleStringProperty(result);
+        }
+
+        public String getSource() { return mSource.get(); }
+        public void setSource(String source) {
+            mSource.set(source);
+        }
+
+        public String getTarget() {
+            return mTarget.get();
+        }
+        public void setTarget(String target) {
+            mTarget.set(target);
+        }
+
+        public String getInequation() {
+            return mInequation.get();
+        }
+        public void setInequation(String inequation) {
+            mInequation.set(inequation);
+        }
+
+        public String getCondition() {
+            return mCondition.get();
+        }
+        public void setCondition(String condition) {
+            mCondition.set(condition);
+        }
+
+        public String getExcstt(){ return mExcStt.get(); }
+        public void setExcstt(String excstt){ mExcStt.set(excstt); }
+
+        public String getResult() {
+            return mResult.get();
+        }
+        public void setResult(String result) {
+            mResult.set(result);
+        }
+
     }
 }

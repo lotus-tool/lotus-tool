@@ -45,6 +45,7 @@ public class MakeLTSGeneral {
     private final List<Hmsc> listVisitados;
     private final List<Transition> listCircTransition;
     private final HashMap<Hmsc, List<Transition> > listHmsc_Inicial;
+    private static HashMap<Transition, TransitionMSC> listTransition_Relation = new HashMap<>();
     
     public MakeLTSGeneral(List<Hmsc> listHmsc, List<ComponentDS> listBmsc, List<Component> ltsGerados,StandardModelingView mViewer, ProjectExplorerPluginDS projectExplorerPluginDS){
         this.ltsGerados = ltsGerados;
@@ -305,6 +306,9 @@ public class MakeLTSGeneral {
         if(mview.getComponentBuildDS().getProb() > 0){
             adicionar_probabilidades();
         }
+
+        System.out.println("AGORA É: "+listTransition_Relation.size());
+
     }
 
     private Component pegar_lts (Hmsc h, List<Component> c){
@@ -592,7 +596,7 @@ public class MakeLTSGeneral {
                                 .setViewType(1)
                                 .setProbability(transitionMSC.getProbability())
                                 .create();
-                        System.out.println("PIA");
+                        listTransition_Relation.put(transition, transitionMSC);
                         selfs.add(t);
                     }
                 }
@@ -631,7 +635,7 @@ public class MakeLTSGeneral {
                             .setLabel(transition.getLabel())
                             .setProbability(transitionMSC.getProbability())
                             .create();
-
+                    listTransition_Relation.put(t, transitionMSC);
                     System.out.println("[2] Transition é: "+transition.getLabel()+"\t"+t.getLabel());
 
 
@@ -654,7 +658,7 @@ public class MakeLTSGeneral {
                             .setViewType(1)
                             .setProbability(transitionMSC.getProbability())
                             .create();
-
+                    listTransition_Relation.put(t, transitionMSC);
                     System.out.println("[3] Transition é: "+transition.getLabel()+"\t"+t.getLabel());
                 }
 
@@ -686,19 +690,20 @@ public class MakeLTSGeneral {
                     state.getOutgoingTransitionsList().get(j).setProbability(1.0 / t_count);
                 }
             }else if(prob_total < 1.0){
-                double new_probability = ( 1.0 - prob_total ) / (n_states_prob_null + 1);
+             //   double new_probability = ( 1.0 - prob_total ) / (n_states_prob_null + 1); ( COM ERRO )
+                double new_probability = ( 1.0 - prob_total ) / (n_states_prob_null);
                 for(Transition transition : state.getOutgoingTransitionsList()){
                     if(transition.getProbability() == null){
                         transition.setProbability( new_probability);
                     }
                 }
-
+/*
                 geral.buildTransition(state, erro)
                         .setViewType(1)
                         .setProbability(new_probability)
                         .setLabel("ERROR")
                         .create();
-
+*/
             }
 
         }
