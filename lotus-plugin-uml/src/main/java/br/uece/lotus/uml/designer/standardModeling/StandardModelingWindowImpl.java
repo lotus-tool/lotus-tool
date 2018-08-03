@@ -72,6 +72,7 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.transform.Scale;
 import javafx.stage.FileChooser;
 import javafx.stage.Popup;
+import org.w3c.dom.Text;
 
 import javax.swing.*;
 
@@ -503,48 +504,12 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
                         ((TransitionMSCView) obj).getTransition().setProbability(null);
                         mViewer.getComponentBuildDS().setProb( mViewer.getComponentBuildDS().getProb() - 1 );
                     }else{
-                        String valorDoField = txtProbability.getText().trim();
-                        String auxValor = "";
-                        if(valorDoField.contains(",")){
-                            auxValor = valorDoField.replaceAll(",", ".");
-                            double teste = Double.parseDouble(auxValor);
-                            if(teste<0 || teste >1){
-                                JOptionPane.showMessageDialog(null, "Input probability between 0 and 1", "Erro", JOptionPane.ERROR_MESSAGE);
-                                auxValor="";
-                                txtProbability.setText("");
-                            }
-                        }
-                        else if(valorDoField.contains(".")){
-                            auxValor = valorDoField;
-                            double teste = Double.parseDouble(auxValor);
-                            if(teste<0 || teste >1){
-                                JOptionPane.showMessageDialog(null, "Imput probability need 0 to 1", "Erro", JOptionPane.ERROR_MESSAGE);
-                                auxValor="";
-                                txtProbability.setText("");
-                            }
-                        }
-                        else if(valorDoField.contains("%")){
-                            double valorEntre0e1;
-                            auxValor = valorDoField.replaceAll("%", "");
-                            valorEntre0e1 = (Double.parseDouble(auxValor))/100;
-                            auxValor = String.valueOf(valorEntre0e1);
-                            double teste = Double.parseDouble(auxValor);
-                            if(teste<0 || teste >1){
-                                JOptionPane.showMessageDialog(null, "Imput probability need 0 to 1", "Erro", JOptionPane.ERROR_MESSAGE);
-                                auxValor="";
-                                txtProbability.setText("");
-                            }
-                        }
-                        else{
-                            if(valorDoField.equals("0") || valorDoField.equals("1")){
-                                auxValor = valorDoField;
-                            }else{
-                                JOptionPane.showMessageDialog(null, "Imput probability need 0 to 1", "Erro", JOptionPane.ERROR_MESSAGE);
-                            }
-                        }
-                        mViewer.getComponentBuildDS().setProb( mViewer.getComponentBuildDS().getProb() +1 );
+                        String auxValor = verify_Probability(txtProbability);
+                        if(!auxValor.equals("")) {
+                            mViewer.getComponentBuildDS().setProb(mViewer.getComponentBuildDS().getProb() + 1);
 
-                        ((TransitionMSCView) obj).getTransition().setProbability(Double.parseDouble(auxValor));
+                            ((TransitionMSCView) obj).getTransition().setProbability(Double.parseDouble(auxValor));
+                        }
                     }
                 } catch (Exception e) {
                     //ignora
@@ -977,16 +942,14 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
     EventHandler<ActionEvent> btnAddPropertyAction = (ActionEvent) -> {
         if(!popup.isShowing()) {
             popup.getContent().add(add_property());
-            popup.setAnchorX(btnAddProperty.getLocalToSceneTransform().getTx());
+            popup.setAnchorX(btnAddProperty.getLocalToSceneTransform().getTx() + 10);
             popup.setAnchorY(btnAddProperty.getLocalToSceneTransform().getTy());
             popup.show(getNode().getScene().getWindow());
-            System.out.println(((AnchorPane)propertyDropDown.getContent()).getWidth() + "\t"+ propertyDropDown.getWidth());
-            System.out.println(tableViewProperty.getHeight()+"\t"+ ( (ScrollPane) ( (VBox) ((AnchorPane)propertyDropDown.getContent()).getChildren().get(0)).getChildren().get(0)).getViewportBounds() );
-            mEntries.add(new Entry("1", "1", "1", "1", "1", "1"));
         }
     };
     private AnchorPane add_property(){
         VBox box = new VBox(5);
+
         Label lblSour = new Label("Source:");
         ComboBox stats_source = new ComboBox();
 
@@ -1007,13 +970,53 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
         stats_source.getItems().addAll(blocks);
         stats_destiny.getItems().addAll(blocks);
 
+        Label lblEquation = new Label("Equation");
+        ComboBox equation_Box = new ComboBox();
+        equation_Box.getItems().addAll("==", ">", ">=", "<", "<=", "!=");
+
+        Label lblProbability = new Label("Probability");
+        TextField prob_input = new TextField();
+        prob_input.setPromptText("0.x or x% or 0,x");
+        campoProbability(prob_input);
+
 
         Button save = new Button("Save");
 
         save.setOnAction((ActionEvent) -> {
+            if(stats_source.getValue() == null){
+                Alert alert = new Alert(Alert.AlertType.WARNING, "Source can not be Null", ButtonType.OK);
+                alert.show();
+                return;
+            }
 
+            if(stats_destiny.getValue() == null) {
+                Alert alert = new Alert(Alert.AlertType.WARNING, "Destiny can not be Null", ButtonType.OK);
+                alert.show();
+                return;
+            }
 
+            if(equation_Box.getValue() == null) {
+                Alert alert = new Alert(Alert.AlertType.WARNING, "Equation can not be Null", ButtonType.OK);
+                alert.show();
+                return;
+            }
 
+            if(prob_input.getText().equals("")){
+                Alert alert = new Alert(Alert.AlertType.WARNING, "Probability can not be Null", ButtonType.OK);
+                alert.show();
+                return;
+            }
+            String prob_value = verify_Probability(prob_input);
+            if(!prob_value.equals("")) {
+                Entry newEntry = new Entry(
+                        stats_source.getValue().toString(),
+                        stats_destiny.getValue().toString(),
+                        equation_Box.getValue().toString(), null, null,
+                        prob_value
+                );
+                mEntries.add(newEntry);
+                popup.hide();
+            }
 
 
         });
@@ -1024,7 +1027,7 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
         });
         HBox hBox = new HBox(10);
         hBox.getChildren().addAll(save, close);
-        box.getChildren().addAll(lblSour, stats_source, lblDest, stats_destiny,hBox);
+        box.getChildren().addAll(lblSour, stats_source, lblDest, stats_destiny,lblEquation,equation_Box,lblProbability,prob_input,hBox);
 
 
         AnchorPane anchorPane = new AnchorPane(box);
@@ -1049,6 +1052,46 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
 
         panel.getChildren().add(vBox);
         return panel;
+    }
+
+    private String verify_Probability(TextField textField){
+        String valorDoField = textField.getText().trim();
+        String auxValor = "";
+        if(valorDoField.contains(",")){
+            auxValor = valorDoField.replaceAll(",", ".");
+            double teste = Double.parseDouble(auxValor);
+            if(teste<0 || teste >1){
+                JOptionPane.showMessageDialog(null, "Input probability between 0 and 1", "Erro", JOptionPane.ERROR_MESSAGE);
+                auxValor="";
+            }
+        }
+        else if(valorDoField.contains(".")){
+            auxValor = valorDoField;
+            double teste = Double.parseDouble(auxValor);
+            if(teste<0 || teste >1){
+                JOptionPane.showMessageDialog(null, "Imput probability need 0 to 1", "Erro", JOptionPane.ERROR_MESSAGE);
+                auxValor="";
+            }
+        }
+        else if(valorDoField.contains("%")){
+            double valorEntre0e1;
+            auxValor = valorDoField.replaceAll("%", "");
+            valorEntre0e1 = (Double.parseDouble(auxValor))/100;
+            auxValor = String.valueOf(valorEntre0e1);
+            double teste = Double.parseDouble(auxValor);
+            if(teste<0 || teste >1){
+                JOptionPane.showMessageDialog(null, "Imput probability need 0 to 1", "Erro", JOptionPane.ERROR_MESSAGE);
+                auxValor="";
+            }
+        }
+        else{
+            if(valorDoField.equals("0") || valorDoField.equals("1")){
+                auxValor = "";
+            }else{
+                JOptionPane.showMessageDialog(null, "Imput probability need 0 to 1", "Erro", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+        return auxValor;
     }
 
     public class Entry {
