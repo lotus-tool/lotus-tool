@@ -7,8 +7,7 @@ package br.uece.lotus.uml.designer.standardModeling;
 
 import br.uece.lotus.Component;
 import br.uece.lotus.State;
-import br.uece.lotus.model.ParallelCompositor;
-import br.uece.lotus.tools.probabilisticReach.ProbabilisticReachWindow;
+import br.uece.lotus.uml.app.runtime.controller.PropertysPanelController;
 import br.uece.lotus.uml.api.ds.BlockDS;
 import br.uece.lotus.uml.api.ds.Hmsc;
 import br.uece.lotus.uml.api.ds.StandardModeling;
@@ -48,11 +47,13 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
@@ -72,7 +73,7 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.transform.Scale;
 import javafx.stage.FileChooser;
 import javafx.stage.Popup;
-import org.w3c.dom.Text;
+import javafx.stage.Stage;
 
 import javax.swing.*;
 
@@ -138,7 +139,7 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
 
     private Button btnAddProperty;
     private TitledPane propertyDropDown;
-    private CheckBox chkPropertyPanel;
+    private CheckBox propertyPanelCheckBox;
     private TableView<Entry> tableViewProperty;
     private TableColumn<Entry, String> mSourceCol;
     private TableColumn<Entry, String> mTargetCol;
@@ -334,12 +335,27 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
         paleta.getChildren().addAll(cores,complementoColors);
 
 
-        chkPropertyPanel = new CheckBox("Property Panel");
-        chkPropertyPanel.setOnAction((ActionEvent e) -> {
-            propertyDropDown.setVisible(chkPropertyPanel.isSelected());
+        propertyPanelCheckBox = new CheckBox("Property Panel");
+
+        propertyPanelCheckBox.setOnAction((ActionEvent e) -> {
+            //propertyDropDown.setVisible(propertyPanelCheckBox.isSelected());
+            Stage propertyPanelState = createPropertyPanel();
+
+            if(propertyPanelCheckBox.isSelected()){
+                propertyPanelState.show();
+                // showPropertyPanel();
+            }else {
+                propertyPanelState.hide();
+              //  hidePropertyPanel();
+            }
+
+            propertyPanelState.setOnCloseRequest(event -> {
+                propertyPanelCheckBox.setSelected(false);
+            });
+
         });
 
-        mToolBar.getItems().addAll(mBtnArrow,mBtnBlock,mBtnTransitionLine,mBtnTransitionArc,mBtnEraser,mBtnHand,mBtnZoom, chkPropertyPanel);
+        mToolBar.getItems().addAll(mBtnArrow,mBtnBlock,mBtnTransitionLine,mBtnTransitionArc,mBtnEraser,mBtnHand,mBtnZoom, propertyPanelCheckBox);
         
         //ToolTips
         Tooltip arrowInfo = new Tooltip("Selection");
@@ -603,6 +619,73 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
         mInfoPanel.getChildren().addAll(utilidade,gerarLts);
         
     }
+
+    private Stage createPropertyPanel(){
+        List<Hmsc> HMSCs = getComponentBuildDS().getBlocos();
+
+        Stage stage = new Stage();
+        stage.setTitle("Property Panel");
+
+        PropertysPanelController propertysPanelController = new PropertysPanelController(getComponentBuildDS());
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/propertysPanel.fxml"));
+        fxmlLoader.setController(propertysPanelController);
+        AnchorPane propertyPanelAnchorPane = null;
+        try {
+            propertyPanelAnchorPane = fxmlLoader.load();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        Scene scene = null;
+        if (propertyPanelAnchorPane != null) {
+            scene = new Scene(propertyPanelAnchorPane, 600, 380);
+
+        }
+        stage.setScene(scene);
+
+
+     //   getChildren().add(propertyPanelAnchorPane);
+
+        propertysPanelController.onCreatedView();
+
+
+        return stage;
+
+    }
+
+    private void hidePropertyPanel() {
+
+    }
+
+   // private AnchorPane showPropertyPanel() {
+
+
+//        getChildren().add(mInfoPanel);
+//        AnchorPane.setLeftAnchor(mInfoPanel, 0D);
+//        AnchorPane.setRightAnchor(mInfoPanel, 0D);
+//        AnchorPane.setBottomAnchor(mInfoPanel, 0D);
+
+
+//        PropertysPanelController equationsController = new PropertysPanelController();
+//        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/propertysPanel.fxml"));
+//        fxmlLoader.setController(equationsController);
+//        AnchorPane propertyPanelAnchorPane = null;
+//        try {
+//            propertyPanelAnchorPane = fxmlLoader.load();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//
+//
+//        getChildren().add(propertyPanelAnchorPane);
+//
+//        equationsController.onCreatedView();
+//
+//
+//        return propertyPanelAnchorPane;
+
+
+ //   }
 
     // Ao Mover o mouse----------------------------------------------------------------------
     private final EventHandler<? super MouseEvent> onMovedMouse = (MouseEvent event) -> {
