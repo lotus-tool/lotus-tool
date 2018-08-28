@@ -6,40 +6,43 @@ import javafx.beans.property.SimpleStringProperty;
 
 public class Equation {
 
-    private SimpleStringProperty sourceProperty;
-    private SimpleStringProperty destinyProperty;
+    private SimpleStringProperty firstHMSCProperty;
+    private SimpleStringProperty secondHMSCProperty;
     private SimpleStringProperty probabilityProperty;
     private SimpleStringProperty conditionalOperationProperty;
+    private SimpleStringProperty templateProperty;
 
-    private Hmsc sourceHMSC;
-    private Hmsc destinyHMSC;
+    private Hmsc firstHMSC;
+    private Hmsc secondHMSC;
     private Double probability;
     private ConditionalOperator conditionalOperator;
+    private String template;
 
     public Equation() {
-        sourceProperty = new SimpleStringProperty("sourceProperty");
-        destinyProperty = new SimpleStringProperty("destinyProperty");
+        firstHMSCProperty = new SimpleStringProperty("firstHMSCProperty");
+        secondHMSCProperty = new SimpleStringProperty("secondHMSCProperty");
         probabilityProperty = new SimpleStringProperty("probabilityProperty");
         conditionalOperationProperty = new SimpleStringProperty("conditionalOperationProperty");
+        templateProperty = new SimpleStringProperty("templateProperty");
     }
 
-    public String getSourceProperty() {
-        return sourceProperty.get();
+    public String getFirstHMSCProperty() {
+        return firstHMSCProperty.get();
     }
 
-    public Equation setSource(Hmsc source) {
-        this.sourceHMSC = source;
-        this.sourceProperty.set(source.getLabel());
+    public Equation setFirstHMSC(Hmsc firstHMSC) {
+        this.firstHMSC = firstHMSC;
+        this.firstHMSCProperty.set(firstHMSC.getLabel());
         return this;
     }
 
-    public String getDestinyProperty() {
-        return destinyProperty.get();
+    public String getSecondHMSCProperty() {
+        return secondHMSCProperty.get();
     }
 
-    public Equation setDestiny(Hmsc destiny) {
-        this.destinyHMSC = destiny;
-        this.destinyProperty.set(destiny.getLabel());
+    public Equation setSecondHMSC(Hmsc secondHMSC) {
+        this.secondHMSC = secondHMSC;
+        this.secondHMSCProperty.set(secondHMSC.getLabel());
         return this;
     }
 
@@ -63,12 +66,14 @@ public class Equation {
         return this;
     }
 
-    public Hmsc getSourceHMSC() {
-        return sourceHMSC;
+
+
+    public Hmsc getFirstHMSC() {
+        return firstHMSC;
     }
 
-    public Hmsc getDestinyHMSC() {
-        return destinyHMSC;
+    public Hmsc getSecondHMSC() {
+        return secondHMSC;
     }
 
     public Double getProbability() {
@@ -77,5 +82,27 @@ public class Equation {
 
     public ConditionalOperator getConditionalOperator() {
         return conditionalOperator;
+    }
+
+
+    public String getTemplateProperty() {
+        return templateProperty.get();
+    }
+
+    public SimpleStringProperty templatePropertyProperty() {
+        return templateProperty;
+    }
+
+    public void setTemplateProperty(String templateProperty) {
+        this.templateProperty.set(templateProperty);
+    }
+
+    public String getTemplate() {
+        return template;
+    }
+
+    public Equation setTemplate(String template) {
+        this.template = template;
+        return this;
     }
 }

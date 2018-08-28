@@ -7,13 +7,14 @@ package br.uece.lotus.uml.designer.standardModeling;
 
 import br.uece.lotus.Component;
 import br.uece.lotus.State;
+import br.uece.lotus.model.ParallelCompositor;
+import br.uece.lotus.uml.app.LifeLTSBuilder;
+import br.uece.lotus.uml.app.IndividualLTSBuilder;
 import br.uece.lotus.uml.app.runtime.controller.PropertysPanelController;
-import br.uece.lotus.uml.api.ds.BlockDS;
 import br.uece.lotus.uml.api.ds.Hmsc;
 import br.uece.lotus.uml.api.ds.StandardModeling;
 import br.uece.lotus.uml.api.ds.ComponentDS;
 import br.uece.lotus.uml.api.ds.TransitionMSC;
-import br.uece.lotus.uml.api.viewer.bMSC.BlockDSView;
 import br.uece.lotus.uml.api.viewer.hMSC.HmscView;
 import br.uece.lotus.uml.api.viewer.hMSC.StandardModelingView;
 import br.uece.lotus.uml.api.viewer.hMSC.StandardModelingViewImpl;
@@ -29,12 +30,6 @@ import br.uece.lotus.uml.designer.standardModeling.strategy.OnDraggedMouse;
 import br.uece.lotus.uml.designer.standardModeling.strategy.OnMovedMouse;
 import br.uece.lotus.uml.designer.standardModeling.strategy.OnPressedMouse;
 import br.uece.lotus.uml.designer.standardModeling.strategy.OnReleasedMouse;
-import br.uece.lotus.uml.designer.windowLTS.Layouter;
-import br.uece.lotus.uml.sequenceDiagram.Astah.LtsParser;
-import br.uece.lotus.uml.sequenceDiagram.Astah.Mensagem;
-import br.uece.lotus.uml.sequenceDiagram.Astah.TabelaReferenciaID;
-import br.uece.lotus.uml.sequenceDiagram.Astah.xmi.AtorAndClasse;
-import br.uece.lotus.uml.sequenceDiagram.Astah.xmi.InteractionFragments;
 
 import java.io.*;
 import java.util.*;
@@ -87,7 +82,7 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
 
     private Popup popup = new Popup();
     //Area de Projeto
-    public ProjectExplorerPluginDS pep;
+    public ProjectExplorerPluginDS projectExplorerPluginDS;
     //Principais da Tela
     private final ScrollPane mScrollPanel;
     private final AnchorPane mPropriedadePanel;
@@ -194,8 +189,8 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
     }
     
     
-    public StandardModelingWindowImpl(ProjectExplorerPluginDS pep) {
-        this.pep = pep;
+    public StandardModelingWindowImpl(ProjectExplorerPluginDS projectExplorerPluginDS) {
+        this.projectExplorerPluginDS = projectExplorerPluginDS;
         mViewer = new StandardModelingViewImpl();
         mToolBar = new ToolBar();
         mScrollPanel = new ScrollPane((Node)mViewer);
@@ -399,10 +394,10 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
             Hmsc h = ((HmscView)mComponentSobMouse).getHMSC();
             if(!h.isFull()){
                 ComponentDS bmsc = new ComponentDS();
-                if(!pep.getAll_BMSC().isEmpty()) {
-                    bmsc.setID((pep.getAll_BMSC().get(pep.getAll_BMSC().size() - 1).getID()) + 1);
+                if(!projectExplorerPluginDS.getAll_BMSC().isEmpty()) {
+                    bmsc.setID((projectExplorerPluginDS.getAll_BMSC().get(projectExplorerPluginDS.getAll_BMSC().size() - 1).getID()) + 1);
                 }else {
-                    bmsc.setID(( pep.getSelectedProjectDS().getID() * 1000 ) + 201);
+                    bmsc.setID(( projectExplorerPluginDS.getSelectedProjectDS().getID() * 1000 ) + 201);
                 }
                 bmsc.setName(h.getLabel());
                 mViewer.getComponentBuildDS().set_bMSC_in_hMSC(h, bmsc);
@@ -491,7 +486,7 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
                         if(((HmscView) node).getHMSC().getmDiagramSequence() != null) {
                             ((HmscView) node).getHMSC().getmDiagramSequence().setName(txtAction.getText());
                         }
-                        pep.clear2();
+                        projectExplorerPluginDS.clear2();
                     }
                 }
             }else{
@@ -502,7 +497,7 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
                     Node node = selecao.iterator().next();
                     if (node instanceof HmscView) {
                         txtAction.setText(((HmscView) node).getHMSC().getLabel());
-                        pep.clear2();
+                        projectExplorerPluginDS.clear2();
                     }
                 }
             }
@@ -613,10 +608,10 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
         infoInitial.getChildren().addAll(mInitial,initial);
         utilidade.getChildren().addAll(infoEmpyt,infoFull, infoInitial);
         
-        Button gerarLts = new Button("Build LTS",new ImageView(new Image(getClass().getResourceAsStream("/imagens/ic_build_LTS.png"))));
-        gerarLts.setOnAction(btnGerarLTS);
+        Button buildLTSFromHMSC = new Button("Build LTS",new ImageView(new Image(getClass().getResourceAsStream("/imagens/ic_build_LTS.png"))));
+        buildLTSFromHMSC.setOnAction(buildLTSFromHMSCEvent);
         
-        mInfoPanel.getChildren().addAll(utilidade,gerarLts);
+        mInfoPanel.getChildren().addAll(utilidade,buildLTSFromHMSC);
         
     }
 
@@ -638,7 +633,7 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
 
         Scene scene = null;
         if (propertyPanelAnchorPane != null) {
-            scene = new Scene(propertyPanelAnchorPane, 600, 380);
+            scene = new Scene(propertyPanelAnchorPane, 675, 470);
 
         }
         stage.setScene(scene);
@@ -889,111 +884,188 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
     ///////////////////////////////////////////////////////////////////////////////////
     //                         Metodos de Botoes                                    //
     //////////////////////////////////////////////////////////////////////////////////
-    
-    EventHandler<ActionEvent> btnGerarLTS = (ActionEvent event) -> {
-        //verificar se tem bloco com ds vazio
-        for(Node node : mViewer.getNode().getChildren()){
-            if(node instanceof HmscView){
-                HmscView b = (HmscView)node;
-                Hmsc block = b.getHMSC();
-                if(!block.isFull()){
-                    Alert alerta = new Alert(Alert.AlertType.WARNING, "Algum bloco esta vazio", ButtonType.OK);
-                    alerta.show();
-                    return;
-                }
-            }
+
+    EventHandler<ActionEvent> buildLTSFromHMSCEvent = (ActionEvent event) -> {
+
+        List<Component> createdComponentsWithIndividualLTS = tryBuildIndividualLTS();
+
+        if(createdComponentsWithIndividualLTS == null){
+            return;
         }
-        
-        //Limpar arvore do projeto
-        //pep.removeFragmentsLTS();
-        pep.removeFragmetsLTS();
-       // pep.removeLtsComposed();
 
-        //Gerando o LTS Geral ----------------------------------------------------------------------------------------
-        
-        Layouter layout = new Layouter();
-        List<Component> ltsGerados = new ArrayList<>();
-        List<ComponentDS> listaBMSC = pep.getAll_BMSC();
-        int id_ltsfrag = 0;
-        for(ComponentDS cds : listaBMSC){
-            id_ltsfrag++;
-            List<TabelaReferenciaID> relativo = new ArrayList<>();
-            ArrayList<BlockDS> blocos = (ArrayList<BlockDS>) cds.getBlockDS();
-            for(int i=0;i<blocos.size();i++){
-                TabelaReferenciaID id = new TabelaReferenciaID(i+1, blocos.get(i).getID()+"");
-                relativo.add(id);
-            }
-            List<InteractionFragments> loopsOuAlts = new ArrayList<>();
-            List<Mensagem> comunicacao = new ArrayList<>();
-            for(TransitionMSC t : cds.getAllTransitions()){
-                Mensagem m = new Mensagem();
-                if(t.getSource() instanceof BlockDSView) {
-                    m.setEnviando(new AtorAndClasse(((BlockDSView) t.getSource()).getBlockDS().getLabel(),
-                            String.valueOf(((BlockDSView) t.getSource()).getBlockDS().getID()),
-                            "actor"));
-                }else if(t.getSource() instanceof BlockDS){
-                    m.setEnviando(new AtorAndClasse(((BlockDS) t.getSource()).getLabel(),
-                            String.valueOf(((BlockDS)t.getSource()).getID()),
-                            "actor"));
-                }
-                if(t.getDestiny() instanceof BlockDSView) {
-                    m.setRecebendo(new AtorAndClasse(((BlockDSView) t.getDestiny()).getBlockDS().getLabel(),
-                            String.valueOf(((BlockDSView) t.getDestiny()).getBlockDS().getID()),
-                            "actor"));
-                }else if(t.getDestiny() instanceof BlockDS){
-                    m.setRecebendo(new AtorAndClasse(((BlockDS)t.getDestiny()).getLabel(),
-                            String.valueOf(((BlockDS)t.getDestiny()).getID()),
-                            "actor"));
-                }
-                m.setMsg(t.getLabel());
-                m.setXmiIdMsg(t.getIdSequence()+"");
-                comunicacao.add(m);
-            }
-            Component c = new Component();
-            c.setName("LTS "+cds.getName());
-            c.setID((pep.getSelectedProjectDS().getID() * 1000)+ 300 + id_ltsfrag);
-            LtsParser parser = new LtsParser(comunicacao, relativo, loopsOuAlts, c);
-            c = parser.parseLTSA();
+        projectExplorerPluginDS.removeFragmetsLTS();
 
-            Iterator<State> it = c.getStates().iterator();
-            State fi = it.next();
-            c.setInitialState(fi);
-            while (it.hasNext()){
-                fi = it.next();
-            //    fi.clearIniFin();
-            }
-            c.setFinalState(fi);
-//            c.setInitialState(c.getStates().iterator().next());
+        mViewer.getComponentBuildDS().createListLTS(createdComponentsWithIndividualLTS);
 
-            layout.layout(c);
-            ltsGerados.add(c);
+        List<Component> createdComponentsWithLifeLTS
+                = tryBuilderLifeLTS(projectExplorerPluginDS.getSelectedComponentBuildDS(),
+                createdComponentsWithIndividualLTS);
+
+        if(createdComponentsWithLifeLTS == null){
+            return;
         }
-        mViewer.getComponentBuildDS().createListLTS(ltsGerados);
 
-        try {
-            Component c = new Component();
-            List<Component> ltss = new ArrayList<>();
-            for(Component component : ltsGerados){
-                ltss.add(component.clone());
-            }
-            if (ltsGerados.size() >= 2) {
-                c = buildGeneralLTS(ltss);
-            } else {
-                c = ltsGerados.get(0).clone();
-            }
-            System.out.println("Nome da Composição é: "+ c.getName());
-            c.setID((pep.getSelectedProjectDS().getID()*1000) + 100 + 1);
+    //    parallelComposition(createdComponentsWithLifeLTS);
 
-            Iterator<State> it2 = c.getStates().iterator();
-            c.setInitialState(it2.next());
-            while(it2.hasNext()) {
-                System.out.println("Estado é: " +it2.next().getNameState());
-            }
 
-            layout(c);
-            mViewer.getComponentBuildDS().createGeneralLTS(c);
-        } catch (CloneNotSupportedException cloneNotSupportedException) {}
+
+
     };
+
+    public Component parallelComposition(List<Component> Components){
+        int tam = Components.size();
+        if (tam < 2) {
+            throw new RuntimeException("Select at least 2(two) components!");
+        }
+        Component a = Components.get(0);
+        Component b = Components.get(1);
+        Component newComponent = new ParallelCompositor().compor(a, b);
+        String name = a.getName() + " || " + b.getName();
+        for(int i = 2; i < tam; i++){
+            b = Components.get(i);
+            newComponent = new ParallelCompositor().compor(newComponent, b);
+            name += " || " + b.getName();
+        }
+        newComponent.setName(name);
+        return newComponent;
+    }
+
+
+
+
+    private List<Component> tryBuildIndividualLTS() {
+        try {
+            return IndividualLTSBuilder.buildLTS(projectExplorerPluginDS);
+
+        } catch (Exception e) {
+            Alert emptyAlert = new Alert(Alert.AlertType.WARNING, e.getMessage(), ButtonType.OK);
+            emptyAlert.show();
+
+            e.printStackTrace();
+
+        }
+        return null;
+    }
+
+    private List<Component> tryBuilderLifeLTS(StandardModeling selectedComponentBuildDS, List<Component> createdComponentsWithIndividualLTS) {
+        try {
+            return LifeLTSBuilder.builderLTS(selectedComponentBuildDS, createdComponentsWithIndividualLTS);
+        }catch (Exception e){
+            Alert emptyAlert = new Alert(Alert.AlertType.WARNING, e.getMessage(), ButtonType.OK);
+            emptyAlert.show();
+
+            e.printStackTrace();
+        }
+
+        return null;
+
+    }
+
+
+    //    EventHandler<ActionEvent> buildLTSFromHMSCEvent = (ActionEvent event) -> {
+//        //verificar se tem bloco com ds vazio
+//        for(Node node : mViewer.getNode().getChildren()){
+//            if(node instanceof HmscView){
+//                HmscView b = (HmscView)node;
+//                Hmsc block = b.getHMSC();
+//                if(!block.isFull()){
+//                    Alert alerta = new Alert(Alert.AlertType.WARNING, "Algum bloco esta vazio", ButtonType.OK);
+//                    alerta.show();
+//                    return;
+//                }
+//            }
+//        }
+//
+//        //Limpar arvore do projeto
+//        //projectExplorerPluginDS.removeFragmentsLTS();
+//        projectExplorerPluginDS.removeFragmetsLTS();
+//       // projectExplorerPluginDS.removeLtsComposed();
+//
+//        //Gerando o LTS Geral ----------------------------------------------------------------------------------------
+//
+//        Layouter layout = new Layouter();
+//        List<Component> ltsGerados = new ArrayList<>();
+//        List<ComponentDS> listaBMSC = projectExplorerPluginDS.getAll_BMSC();
+//        int id_ltsfrag = 0;
+//        for(ComponentDS atualComponenteDiagramaSequencia : listaBMSC){
+//            id_ltsfrag++;
+//            List<TabelaReferenciaID> relativo = new ArrayList<>();
+//            ArrayList<BlockDS> objetos = (ArrayList<BlockDS>) atualComponenteDiagramaSequencia.getBlockDS();
+//            for(int i=0;i<objetos.size();i++){
+//                TabelaReferenciaID id = new TabelaReferenciaID(i+1, objetos.get(i).getID()+"");
+//                relativo.add(id);
+//            }
+//            List<InteractionFragments> loopsOuAlts = new ArrayList<>();
+//            List<Mensagem> comunicacao = new ArrayList<>();
+//            for(TransitionMSC t : atualComponenteDiagramaSequencia.getAllTransitions()){
+//                Mensagem m = new Mensagem();
+//                if(t.getSource() instanceof BlockDSView) {
+//                    m.setEnviando(new AtorAndClasse(((BlockDSView) t.getSource()).getBlockDS().getLabel(),
+//                            String.valueOf(((BlockDSView) t.getSource()).getBlockDS().getID()),
+//                            "actor"));
+//                }else if(t.getSource() instanceof BlockDS){
+//                    m.setEnviando(new AtorAndClasse(((BlockDS) t.getSource()).getLabel(),
+//                            String.valueOf(((BlockDS)t.getSource()).getID()),
+//                            "actor"));
+//                }
+//                if(t.getDestiny() instanceof BlockDSView) {
+//                    m.setRecebendo(new AtorAndClasse(((BlockDSView) t.getDestiny()).getBlockDS().getLabel(),
+//                            String.valueOf(((BlockDSView) t.getDestiny()).getBlockDS().getID()),
+//                            "actor"));
+//                }else if(t.getDestiny() instanceof BlockDS){
+//                    m.setRecebendo(new AtorAndClasse(((BlockDS)t.getDestiny()).getLabel(),
+//                            String.valueOf(((BlockDS)t.getDestiny()).getID()),
+//                            "actor"));
+//                }
+//                m.setMsg(t.getLabel());
+//                m.setXmiIdMsg(t.getIdSequence()+"");
+//                comunicacao.add(m);
+//            }
+//            Component c = new Component();
+//            c.setName("LTS "+atualComponenteDiagramaSequencia.getName());
+//            c.setID((projectExplorerPluginDS.getSelectedProjectDS().getID() * 1000)+ 300 + id_ltsfrag);
+//            LtsParser parser = new LtsParser(comunicacao, relativo, loopsOuAlts, c);
+//            c = parser.parseLTSA();
+//
+//            Iterator<State> it = c.getStates().iterator();
+//            State fi = it.next();
+//            c.setInitialState(fi);
+//            while (it.hasNext()){
+//                fi = it.next();
+//            //    fi.clearIniFin();
+//            }
+//            c.setFinalState(fi);
+////            c.setInitialState(c.getStates().iterator().next());
+//
+//            layout.layout(c);
+//            ltsGerados.add(c);
+//        }
+//        mViewer.getComponentBuildDS().createListLTS(ltsGerados);
+//
+//        try {
+//            Component c = new Component();
+//            List<Component> ltss = new ArrayList<>();
+//            for(Component component : ltsGerados){
+//                ltss.add(component.clone());
+//            }
+//            if (ltsGerados.size() >= 2) {
+//                c = buildGeneralLTS(ltss);
+//            } else {
+//                c = ltsGerados.get(0).clone();
+//            }
+//            System.out.println("Nome da Composição é: "+ c.getName());
+//            c.setID((projectExplorerPluginDS.getSelectedProjectDS().getID()*1000) + 100 + 1);
+//
+//            Iterator<State> it2 = c.getStates().iterator();
+//            c.setInitialState(it2.next());
+//            while(it2.hasNext()) {
+//                System.out.println("Estado é: " +it2.next().getNameState());
+//            }
+//
+//            layout(c);
+//            mViewer.getComponentBuildDS().createGeneralLTS(c);
+//        } catch (CloneNotSupportedException cloneNotSupportedException) {}
+//    };
     public void layout(Component component) {
         int i = 1;
         for (State state : component.getStates()) {
@@ -1004,7 +1076,8 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
     }
     private Component buildGeneralLTS(List<Component> ltsGerados){
         List<Hmsc> listHmsc = mViewer.getComponentBuildDS().getBlocos();
-        MakeLTSGeneral make = new MakeLTSGeneral(listHmsc,pep.getAll_BMSC(),ltsGerados,mViewer, pep);
+        GeneralLTSMaker make =
+                new GeneralLTSMaker(listHmsc, projectExplorerPluginDS.getAll_BMSC(),ltsGerados, mViewer, projectExplorerPluginDS);
         return make.produce();
     }
 

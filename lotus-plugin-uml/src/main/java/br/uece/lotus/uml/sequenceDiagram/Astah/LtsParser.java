@@ -37,48 +37,48 @@ public class LtsParser {
     }
     
     public Component parseLTSA(){
-        State org = null;
-        State dst = null;
+        State srcState = null;
+        State dstState = null;
         
         //=================================Montar linha de vida=================================================
         
-        for(Mensagem m : comunicacao){
-            if(c.getInitialState() == null){
-                if(m.getEnviando().getXmiID().equals(m.getRecebendo().getXmiID())){
-                    org = c.newState(idrelativoClassifier(m.getEnviando().getXmiID()));
-                    dst = org;
-                    c.buildTransition(org, dst)
-                            .setLabel(m.getEnviando().getNome()+"."+m.getRecebendo().getNome()+"."+m.getMsg().replaceAll("\\+", ""))
+        for(Mensagem mensagem : comunicacao){
+            if(componentIsEmpty()){
+                if(mensagem.getEnviando().getXmiID().equals(mensagem.getRecebendo().getXmiID())){
+                    srcState = c.newState(idrelativoClassifier(mensagem.getEnviando().getXmiID()));
+                    dstState = srcState;
+                    c.buildTransition(srcState, dstState)
+                            .setLabel(mensagem.getEnviando().getNome()+"."+mensagem.getRecebendo().getNome()+"."+mensagem.getMsg().replaceAll("\\+", ""))
                             .create();
                 }else{
-                    org = c.newState(idrelativoClassifier(m.getEnviando().getXmiID()));
-                    dst = c.newState(idrelativoClassifier(m.getRecebendo().getXmiID()));
-                    c.buildTransition(org, dst)
-                            .setLabel(m.getEnviando().getNome()+"."+m.getRecebendo().getNome()+"."+m.getMsg().replaceAll("\\+", ""))
+                    srcState = c.newState(idrelativoClassifier(mensagem.getEnviando().getXmiID()));
+                    dstState = c.newState(idrelativoClassifier(mensagem.getRecebendo().getXmiID()));
+                    c.buildTransition(srcState, dstState)
+                            .setLabel(mensagem.getEnviando().getNome()+"."+mensagem.getRecebendo().getNome()+"."+mensagem.getMsg().replaceAll("\\+", ""))
                             .setViewType(1)
                             .create();
                 }
             }else{
-                if(m.getEnviando().getXmiID().equals(m.getRecebendo().getXmiID())){
-                    org = dst;
-                    c.buildTransition(org, dst)
-                            .setLabel(m.getEnviando().getNome()+"."+m.getRecebendo().getNome()+"."+m.getMsg().replaceAll("\\+", ""))
+                if(mensagem.getEnviando().getXmiID().equals(mensagem.getRecebendo().getXmiID())){
+                    srcState = dstState;
+                    c.buildTransition(srcState, dstState)
+                            .setLabel(mensagem.getEnviando().getNome()+"."+mensagem.getRecebendo().getNome()+"."+mensagem.getMsg().replaceAll("\\+", ""))
                             .setViewType(1)
                             .create();
                 }else{
-                    if(!stateExiste(c, idrelativoClassifier(m.getRecebendo().getXmiID()))){
-                        org = dst;
-                        dst= c.newState(idrelativoClassifier(m.getRecebendo().getXmiID()));
-                        c.buildTransition(org, dst)
-                                .setLabel(m.getEnviando().getNome()+"."+m.getRecebendo().getNome()+"."+m.getMsg().replaceAll("\\+", ""))
+                    if(!stateExiste(c, idrelativoClassifier(mensagem.getRecebendo().getXmiID()))){
+                        srcState = dstState;
+                        dstState= c.newState(idrelativoClassifier(mensagem.getRecebendo().getXmiID()));
+                        c.buildTransition(srcState, dstState)
+                                .setLabel(mensagem.getEnviando().getNome()+"."+mensagem.getRecebendo().getNome()+"."+mensagem.getMsg().replaceAll("\\+", ""))
                                 .setViewType(1)
                                 .create();
                     }
-                    else if(stateExiste(c, idrelativoClassifier(m.getRecebendo().getXmiID()))){
-                        org = dst;
-                        dst = c.getStateByID(Integer.parseInt(m.getRecebendo().getXmiID()));
-                        c.buildTransition(org, dst)
-                                .setLabel(m.getEnviando().getNome()+"."+m.getRecebendo().getNome()+"."+m.getMsg().replaceAll("\\+", ""))
+                    else if(stateExiste(c, idrelativoClassifier(mensagem.getRecebendo().getXmiID()))){
+                        srcState = dstState;
+                        dstState = c.getStateByID(Integer.parseInt(mensagem.getRecebendo().getXmiID()));
+                        c.buildTransition(srcState, dstState)
+                                .setLabel(mensagem.getEnviando().getNome()+"."+mensagem.getRecebendo().getNome()+"."+mensagem.getMsg().replaceAll("\\+", ""))
                                 .setViewType(1)
                                 .create();
                     }
@@ -229,7 +229,11 @@ public class LtsParser {
         
         return c;
     }
-    
+
+    private boolean componentIsEmpty() {
+        return c.getInitialState() == null;
+    }
+
     private boolean stateExiste(Component c,int id){
         boolean existe = false;
         for(State s : c.getStates()){

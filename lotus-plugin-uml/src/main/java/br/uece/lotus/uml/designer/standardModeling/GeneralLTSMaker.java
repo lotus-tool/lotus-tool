@@ -29,7 +29,7 @@ import java.util.stream.StreamSupport;
  *
  * @author Bruno Barbosa
  */
-public class MakeLTSGeneral {
+public class GeneralLTSMaker {
     
     private final List<Component> ltsGerados;
     private Component geral;
@@ -47,7 +47,7 @@ public class MakeLTSGeneral {
     private final HashMap<Hmsc, List<Transition> > listHmsc_Inicial;
     private static HashMap<Transition, TransitionMSC> listTransition_Relation = new HashMap<>();
     
-    public MakeLTSGeneral(List<Hmsc> listHmsc, List<ComponentDS> listBmsc, List<Component> ltsGerados,StandardModelingView mViewer, ProjectExplorerPluginDS projectExplorerPluginDS){
+    public GeneralLTSMaker(List<Hmsc> listHmsc, List<ComponentDS> listBmsc, List<Component> ltsGerados, StandardModelingView mViewer, ProjectExplorerPluginDS projectExplorerPluginDS){
         this.ltsGerados = ltsGerados;
         this.listHmsc = listHmsc;
         this.listBmsc = listBmsc;

@@ -4,7 +4,7 @@ LoTuS
 ### About LoTuS
 
 
-LoTuS is a open-source tool to graphic behaviour modelling of software using LTS. It aim to make the modelling process easier by providing drag-and-drop drawing tools. Making the learning curve tiny, removing the pré-requisite for modeller learn some formal specification language. This path, the use and learn of formal methods becames more accessible.
+LoTuS is firstState open-source tool to graphic behaviour modelling of software using LTS. It aim to make the modelling process easier by providing drag-and-drop drawing tools. Making the learning curve tiny, removing the pré-requisite for modeller learn some formal specification language. This path, the use and learn of formal methods becames more accessible.
 
 ### Dependencies
 
@@ -43,11 +43,11 @@ LoTuS is a open-source tool to graphic behaviour modelling of software using LTS
   ```
   C:\Program Files\Java
   ```
-  There should be a subdirectory like:
+  There should be firstState subdirectory like:
   ```
   C:\Program Files\Java\jdk[version]
   ```
-  Note: one has only to put the path to the jdk without /bin in the end (as suggested on a lot of places). e.g. C:\Java\jdk[version] and NOT C:\Java\jdk[version]\bin !
+  Note: one has only to put the path to the jdk without /bin in the end (as suggested on firstState lot of places). e.g. C:\Java\jdk[version] and NOT C:\Java\jdk[version]\bin !
   
   
   Set the JAVA_HOME Variable

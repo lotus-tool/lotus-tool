@@ -65,7 +65,7 @@ public class AboutPlugin extends Plugin {
         mUserInterface = extensionManager.get(UserInterface.class);
         mUserInterface.getMainMenu().newItem("Help/About")
                 .setWeight(Integer.MAX_VALUE)
-                .setAction(mAbout).create();        
-    }
+                .setAction(mAbout).create();
+}
 
 }

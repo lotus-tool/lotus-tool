@@ -21,21 +21,22 @@ import java.util.LinkedList;
 
 public class ParallelCompositor {
                 
-    public List compare(Component cA, Component cB){
+    public List<Transition> compare(Component component1, Component component2){
         List<Transition> sharedActions = new ArrayList<>();
-        Iterable<Transition> tA = cA.getTransitions();
-        Iterable<Transition> tB = cB.getTransitions();
-        for(Transition t1 : tA){
-            if(contemTransicao(cB, t1)){
-                sharedActions.add(t1);
+        Iterable<Transition> transitionsFromComponent1 = component1.getTransitions();
+        Iterable<Transition> transitionsFromComponent2 = component2.getTransitions();
+        for(Transition transitionFromComponent1 : transitionsFromComponent1){
+
+            if(thereIsTransitionInComponent(transitionFromComponent1, component2)){
+                sharedActions.add(transitionFromComponent1);
             }
         }
         return sharedActions;
     }
     
-    public boolean contemTransicao(Component c, Transition t){
+    public boolean thereIsTransitionInComponent( Transition transition, Component c){
         Iterable<Transition> transicoes = c.getTransitions();
-        String [] t_action = t.getLabel().split("[.]");
+        String [] t_action = transition.getLabel().split("[.]");
         try{
             for(Transition aux : transicoes){
                 String [] aux_action = aux.getLabel().split("[.]");
@@ -46,7 +47,7 @@ public class ParallelCompositor {
         } catch (IndexOutOfBoundsException e){
             //System.out.println("");
             for(Transition aux : transicoes){
-                if(aux.getLabel().equals( t.getLabel() ) ){
+                if(aux.getLabel().equals( transition.getLabel() ) ){
                     return true;
                 }
             }
@@ -92,103 +93,108 @@ public class ParallelCompositor {
         }
     }
     
-    public Component compor(Component cA, Component cB) {
+    public Component compor(Component component1, Component component2) {
 
 
         // CORRIGIR AS SHARED ACTIONS, PEGAR APENAS A AÇÃO SEM O OBJETO QUE A CHAMA
 
 
-        Component PC = new Component();
-        PC.setAutoUpdateLabels(false);
-        List<Transition> sharedActions = new ArrayList<>();
-        Queue<ParallelState> Q = new LinkedList<>();
-        List<ParallelState> mVisitedStates = new ArrayList<>();
+        Component newComponent = new Component();
+        newComponent.setAutoUpdateLabels(false);
+        List<Transition> sharedActions;
+        Queue<ParallelState> parallelStatesQueue = new LinkedList<>();
+        List<ParallelState> visitedParallelStates = new ArrayList<>();
 
-        //System.out.println("Component A: " + cA.getName()+ " Component B: " + cB.getName());
+        sharedActions = compare(component1, component2); // OK! - Felipe Vidal
 
-        sharedActions = compare(cA, cB); // OK! - Felipe Vidal
         System.out.println("Shared actions: ");
         for(Transition action : sharedActions){
             System.out.print(action.getLabel() + " ");
         }
-        System.out.println();
-        ParallelState firstPrlState = new ParallelState(cA.getInitialState(), cB.getInitialState()); // Estado ( 0 , 0 )
-        firstPrlState.setCompositeState(criarEstadoParalelo(PC, firstPrlState));
-        Q.add(firstPrlState);
+        System.out.println("");
 
-        while (!Q.isEmpty()) {
+        ParallelState firstParallelState = new ParallelState(component1.getInitialState(), component2.getInitialState()); // Estado ( 0 , 0 )
+        firstParallelState.setCompositeState(buildParallelState(newComponent, firstParallelState));
+        parallelStatesQueue.add(firstParallelState);
 
-            ParallelState aux = Q.remove();
-            if (mVisitedStates.contains(aux)) {
+        while (!parallelStatesQueue.isEmpty()) {
+
+            ParallelState currentParallelState = parallelStatesQueue.remove();
+            if (visitedParallelStates.contains(currentParallelState)) {
                 continue;
             }
-            for (Transition t : aux.getA().getOutgoingTransitions()) {
-                //System.out.println("Visiting state " + aux.a.getLabel() + " of LTS A.");
-                ParallelState newPrlState = null;
-                Transition t2 = getTransitionByLabel(aux.getB().getOutgoingTransitionsList(),t.getLabel()); // Verifica se B tem a mesma transição saindo que A.
-                if(!contem(sharedActions, t)){
-                    newPrlState = new ParallelState(t.getDestiny(), aux.getB());
+
+            for (Transition transitionOutFromFirstState : currentParallelState.getFirstState().getOutgoingTransitions()) {
+
+                ParallelState newParalledState = null;
+
+                Transition t2 = getTransitionByLabel(currentParallelState.getSecondState().getOutgoingTransitionsList(),
+                        transitionOutFromFirstState.getLabel()); // Verifica se B tem a mesma transição saindo que A.
+
+                if(!contem(sharedActions, transitionOutFromFirstState)){
+                    newParalledState = new ParallelState(transitionOutFromFirstState.getDestiny(), currentParallelState.getSecondState());
                 }else{
                     if(t2 != null){
-                        newPrlState = new ParallelState(t.getDestiny(), t2.getDestiny());
+                        newParalledState = new ParallelState(transitionOutFromFirstState.getDestiny(), t2.getDestiny());
                     }else{
                         continue;
                     }
                 }
 
-                newPrlState.setCompositeState(criarEstadoParalelo(PC, newPrlState));
+                newParalledState.setCompositeState(buildParallelState(newComponent, newParalledState));
 
                 // Até aqui OK! - Felipe vidal
-                // Possivel erro nesse bloco, já que ele verifica todo o Componente PC se existe essa transição, porém era pra olhar só no estado
-                List<Transition> transitionsTo = aux.getCompositeState().getTransitionsTo(newPrlState.getCompositeState()); // Verifica se o estado composto já tem a transição para esse novo estado
+                // Possivel erro nesse bloco, já que ele verifica todo o Componente newComponent se existe essa transição, porém era pra olhar só no estado
+                List<Transition> transitionsTo = currentParallelState.getCompositeState().getTransitionsTo(newParalledState.getCompositeState()); // Verifica se o estado composto já tem a transição para esse novo estado
                 Transition.Builder tt = null;
                // if(transitionsTo.size() == 0){
-                    tt = PC.buildTransition(aux.getCompositeState(), newPrlState.getCompositeState());
+                    tt = newComponent.buildTransition(currentParallelState.getCompositeState(), newParalledState.getCompositeState());
                 //}else{
                  //   continue;
                // }
 
-                tt.setLabel(t.getLabel());
-                if(aux.getCompositeState().getID() > newPrlState.getCompositeState().getID()){
+                tt.setLabel(transitionOutFromFirstState.getLabel());
+                if(currentParallelState.getCompositeState().getID() > newParalledState.getCompositeState().getID()){
                  tt.setViewType(1);
                 }else {
                     tt.setViewType(1);
                 }
                 Transition transicao = tt.create();
-                //System.out.println("Added transition " + t.getLabel() + " .");
+                //System.out.println("Added transitionOutFromFirstState " + transitionOutFromFirstState.getLabel() + " .");
 
-                if (!Q.contains(newPrlState)) {
-                    Q.add(newPrlState);
+                if (!parallelStatesQueue.contains(newParalledState)) {
+                    parallelStatesQueue.add(newParalledState);
                 }
             }
 
-            for (Transition t : aux.getB().getOutgoingTransitions()) {
-                //System.out.println("Visiting state " + aux.b.getLabel() + " of LTS B.");
+            for (Transition t : currentParallelState.getSecondState().getOutgoingTransitions()) {
+                //System.out.println("Visiting state " + currentParallelState.b.getLabel() + " of LTS B.");
                 ParallelState newPrlState = null;
-                Transition t2 = getTransitionByLabel(aux.getA().getOutgoingTransitionsList(),t.getLabel());
+                Transition t2 = getTransitionByLabel(currentParallelState.getFirstState().getOutgoingTransitionsList(),t.getLabel());
 
                 if(!contem(sharedActions, t)){
-                    newPrlState = new ParallelState(aux.getA(), t.getDestiny());
+                    newPrlState = new ParallelState(currentParallelState.getFirstState(), t.getDestiny());
                 }else{
-                    System.out.println("split [2]: "+PC.getTransitionByAction(t.getLabel().split("[.]")[2]));
-                    if(t2 != null && PC.getTransitionByAction(t.getLabel().split("[.]")[2]) == null){
+
+                    if(t2 != null && newComponent.getTransitionByAction(t.getLabel().split("[.]")[2]) == null){
                         newPrlState = new ParallelState(t2.getDestiny(), t.getDestiny());
                     }else{
                         continue;
                     }
+
                 }
 
-                newPrlState.setCompositeState(criarEstadoParalelo(PC, newPrlState));
+                newPrlState.setCompositeState(buildParallelState(newComponent, newPrlState));
 
-                List<Transition> transitionsTo = aux.getCompositeState().getTransitionsTo(newPrlState.getCompositeState());
+                List<Transition> transitionsTo = currentParallelState.getCompositeState().getTransitionsTo(newPrlState.getCompositeState());
                 Transition.Builder tt = null;
              //   if(transitionsTo.size() == 0){
-                    tt = PC.buildTransition(aux.getCompositeState(), newPrlState.getCompositeState());
+                    tt = newComponent.buildTransition(currentParallelState.getCompositeState(), newPrlState.getCompositeState());
              //   }else{
              //       continue;
              //   }
                 tt.setLabel(t.getLabel());
-                if(aux.getCompositeState().getID() > newPrlState.getCompositeState().getID()){
+                if(currentParallelState.getCompositeState().getID() > newPrlState.getCompositeState().getID()){
                     tt.setViewType(1);
 
                 }else {
@@ -197,18 +203,18 @@ public class ParallelCompositor {
                 Transition transicao = tt.create();
                 //System.out.println("Added transition " + t.getLabel() + ".");
 
-                if (!Q.contains(newPrlState)) {
-                    Q.add(newPrlState);
+                if (!parallelStatesQueue.contains(newPrlState)) {
+                    parallelStatesQueue.add(newPrlState);
                 }
             }
-            mVisitedStates.add(aux); // Indico se o Estado Composto foi Visitado;
+            visitedParallelStates.add(currentParallelState); // Indico se o Estado Composto foi Visitado;
 
         }
 
-        //AjustarIDs(PC);
+        //AjustarIDs(newComponent);
 
-        layout(PC);
-        return PC;
+        layout(newComponent);
+        return newComponent;
     }
 
     private void AjustarIDs(Component PC){
@@ -219,18 +225,17 @@ public class ParallelCompositor {
         }
     }
 
-    private Transition getTransitionByLabel(List<Transition> l, String label){
-//        List<Transition> list = s.getOutgoingTransitionsList();
+    private  Transition getTransitionByLabel(Component component, String label){
         String [] t_action = label.split("[.]");
         try{
-            for(Transition aux : l){
+            for(Transition aux : component.getTransitions()){
                 String [] aux_action = aux.getLabel().split("[.]");
                 if(aux_action[2].equals( t_action[2] )){
                     return aux;
                 }
             }
         } catch (IndexOutOfBoundsException e){
-            for(Transition aux : l){
+            for(Transition aux : component.getTransitions()){
                 if(aux.getLabel().equals(label)){
                     return aux;
                 }
@@ -239,20 +244,40 @@ public class ParallelCompositor {
         return null;
     }
 
-    private State criarEstadoParalelo(Component p, ParallelState PrlState) {
-        int id = PrlState.getA().getID() * 10 + PrlState.getB().getID();
-        System.out.println("ID é: "+id+"\tA é: "+PrlState.getA().getLabel()+"\tB é: "+PrlState.getB().getLabel());
+    private Transition getTransitionByLabel(List<Transition> transitionList, String label){
+//        List<Transition> list = s.getOutgoingTransitionsList();
+        String [] t_action = label.split("[.]");
+        try{
+            for(Transition aux : transitionList){
+                String [] aux_action = aux.getLabel().split("[.]");
+                if(aux_action[2].equals( t_action[2] )){
+                    return aux;
+                }
+            }
+        } catch (IndexOutOfBoundsException e){
+            for(Transition aux : transitionList){
+                if(aux.getLabel().equals(label)){
+                    return aux;
+                }
+            }
+        }
+        return null;
+    }
+
+    private State buildParallelState(Component p, ParallelState PrlState) {
+        int id = PrlState.getFirstState().getID() * 10 + PrlState.getSecondState().getID();
+        System.out.println("ID é: "+id+"\tA é: "+PrlState.getFirstState().getLabel()+"\tB é: "+PrlState.getSecondState().getLabel());
         State s = p.getStateByID(id);
         if (s == null) {
             s = p.newState(id);
-            if (PrlState.getA().isInitial() && PrlState.getB().isInitial()) {
+            if (PrlState.getFirstState().isInitial() && PrlState.getSecondState().isInitial()) {
                 p.setInitialState(s);
-            } else if (PrlState.getA().isFinal() && PrlState.getB().isFinal()) {
+            } else if (PrlState.getFirstState().isFinal() && PrlState.getSecondState().isFinal()) {
                 p.setFinalState(s);
-            } else if (PrlState.getA().isError() || PrlState.getB().isError()) {
+            } else if (PrlState.getFirstState().isError() || PrlState.getSecondState().isError()) {
                 p.setErrorState(s);
             }
-            s.setLabel("<" + PrlState.getA().getID() + ", " + PrlState.getB().getID() + ">");
+            s.setLabel("<" + PrlState.getFirstState().getID() + ", " + PrlState.getSecondState().getID() + ">");
             System.out.println("Added state " + s.getLabel() + "."+"\t ID: "+s.getID());
         }
         return s;

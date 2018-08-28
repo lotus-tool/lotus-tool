@@ -88,7 +88,7 @@ public class State {
     }
     
 
-    State(Component c) {
+    public State(Component c) {
         mComponent = c;
     }
     

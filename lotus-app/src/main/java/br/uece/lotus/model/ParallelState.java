@@ -14,33 +14,33 @@ import java.util.Objects;
  */
     public class ParallelState {
 
-        private State a;
-        private State b;
+        private State firstState;
+        private State secondState;
         private State compositeState;
 
-        public ParallelState(State a, State b) {
-            this.a = a;
-            this.b = b;
+        public ParallelState(State firstState, State secondState) {
+            this.firstState = firstState;
+            this.secondState = secondState;
         }
 
-        public State getA(){
-            return a;
+        public State getFirstState(){
+            return firstState;
         }
 
-        public State getB(){
-            return b;
+        public State getSecondState(){
+            return secondState;
         }
 
         public State getCompositeState(){
             return compositeState;
         }
 
-        public void setA(State newA){
-            a = newA;
+        public void setFirstState(State newA){
+            firstState = newA;
         }
 
-        public void setB(State newB){
-            b = newB;
+        public void setSecondState(State newB){
+            secondState = newB;
         }
 
         public void setCompositeState(State newCompositeState){
@@ -50,8 +50,8 @@ import java.util.Objects;
         @Override
         public int hashCode() {
             int hash = 7;
-            hash = 97 * hash + Objects.hashCode(this.a);
-            hash = 97 * hash + Objects.hashCode(this.b);
+            hash = 97 * hash + Objects.hashCode(this.firstState);
+            hash = 97 * hash + Objects.hashCode(this.secondState);
             return hash;
         }
 
@@ -64,9 +64,9 @@ import java.util.Objects;
                 return false;
             }
             final ParallelState other = (ParallelState) obj;
-            if (!Objects.equals(this.a, other.a)) {
+            if (!Objects.equals(this.firstState, other.firstState)) {
                 return false;
             }
-            return Objects.equals(this.b, other.b);
+            return Objects.equals(this.secondState, other.secondState);
         }
     }

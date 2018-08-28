@@ -93,9 +93,9 @@ public class OnClickedMouse implements Strategy{
                 Hmsc block = ((HmscView)s.mComponentSobMouse).getHMSC();
                 //pop.getContent().add(createPopup_hMSC_rename(block));
 
-                if(!s.pep.open_BMSC(block.getmDiagramSequence())) {
+                if(!s.projectExplorerPluginDS.open_BMSC(block.getmDiagramSequence())) {
                     s.mContextMenuBlockBuild.getItems().get(0).fire();
-                    s.pep.open_BMSC(block.getmDiagramSequence());
+                    s.projectExplorerPluginDS.open_BMSC(block.getmDiagramSequence());
                 }
             }
             //renomeando TransitionMSC

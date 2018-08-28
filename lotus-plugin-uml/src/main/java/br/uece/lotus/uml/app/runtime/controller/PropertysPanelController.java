@@ -8,6 +8,7 @@ import br.uece.lotus.uml.app.runtime.config.Configuration;
 import br.uece.lotus.uml.app.runtime.model.Equation;
 import br.uece.lotus.uml.app.runtime.utils.checker.ConditionalOperator;
 import br.uece.lotus.uml.app.runtime.utils.checker.Property;
+import br.uece.lotus.uml.app.runtime.utils.checker.Template;
 import br.uece.lotus.uml.app.runtime.utils.component_service.Runtime;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -44,17 +45,17 @@ public class PropertysPanelController {
 
     @FXML
     private
-    ChoiceBox<String> srcHMSCChoiseBox, dstHMSCChoiseBox;
+    ChoiceBox<String> firstHMSCChoiseBox, secondHMSCChoiseBox, templateChoiseBox;
 
     @FXML
     private
-    ChoiceBox<String>operationHMSCChoiseBox;
+    ChoiceBox<String> operationChoiseBox;
 
     @FXML
     TableView equationsTable;
 
     @FXML
-    TableColumn srcCol,dstCol, opCol, probCol;
+    TableColumn firstHMSCColumn, templateColumn, secondHMSCColumn, operationColumn, probabilityColumn;
 
     @FXML
     TextField probabilityTextField;
@@ -104,8 +105,8 @@ public class PropertysPanelController {
 
 		for(Equation equation :addedEquations){
             properties.add(new Property.PropertyBuilder()
-                    .sourceHMSCId(equation.getSourceHMSC().getID())
-                    .targetHMSCId(equation.getDestinyHMSC().getID())
+                    .sourceHMSCId(equation.getFirstHMSC().getID())
+                    .targetHMSCId(equation.getSecondHMSC().getID())
                     .conditionalOperator(equation.getConditionalOperator())
                     .probability(equation.getProbability())
                     .build());
@@ -141,41 +142,54 @@ public class PropertysPanelController {
             itemsHMSCChoiseBox.add(hmsc.getLabel());
         }
 
-        srcHMSCChoiseBox.setItems(FXCollections.observableArrayList(itemsHMSCChoiseBox));
-        dstHMSCChoiseBox.setItems(FXCollections.observableArrayList(itemsHMSCChoiseBox));
+        firstHMSCChoiseBox.setItems(FXCollections.observableArrayList(itemsHMSCChoiseBox));
+        secondHMSCChoiseBox.setItems(FXCollections.observableArrayList(itemsHMSCChoiseBox));
 
 
         ObservableList<String> itemsOperationChoiseBox = FXCollections.observableArrayList();
         for(ConditionalOperator operation : ConditionalOperator.values()){
             itemsOperationChoiseBox.add(operation.toString());
         }
+        ObservableList<String> itemsTemplateChoiseBox = FXCollections.observableArrayList();
 
-        operationHMSCChoiseBox.setItems(FXCollections.observableArrayList(itemsOperationChoiseBox));
+        for(Template template: Template.values()){
+            itemsTemplateChoiseBox.add(template.toString());
+        }
+
+
+
+
+        operationChoiseBox.setItems(FXCollections.observableArrayList(itemsOperationChoiseBox));
+
+        templateChoiseBox.setItems(FXCollections.observableArrayList(itemsTemplateChoiseBox));
     }
 
     private void configureTableColumn() {
-        srcCol.setCellValueFactory(new PropertyValueFactory<>("sourceProperty"));
-        dstCol.setCellValueFactory(new PropertyValueFactory<>("destinyProperty"));
-        probCol.setCellValueFactory(new PropertyValueFactory<>("probabilityProperty"));
-        opCol.setCellValueFactory(new PropertyValueFactory<>("conditionalOperationProperty"));
+        firstHMSCColumn.setCellValueFactory(new PropertyValueFactory<>("firstHMSCProperty"));
+        secondHMSCColumn.setCellValueFactory(new PropertyValueFactory<>("secondHMSCProperty"));
+        probabilityColumn.setCellValueFactory(new PropertyValueFactory<>("probabilityProperty"));
+        operationColumn.setCellValueFactory(new PropertyValueFactory<>("conditionalOperationProperty"));
+        templateColumn.setCellValueFactory(new PropertyValueFactory<>("templateProperty"));
 
     }
 
     private void buildEquation() {
-        //Hmsc srcHMSCSelected = (HMSC) getSelectedItem(srcHMSCChoiseBox, HMSCs);
-        Hmsc srcHMSCSelected = getSelectedHMSC(srcHMSCChoiseBox, HMSCs);
+        //Hmsc srcHMSCSelected = (HMSC) getSelectedItem(firstHMSCChoiseBox, HMSCs);
+        Hmsc srcHMSCSelected = getSelectedHMSC(firstHMSCChoiseBox, HMSCs);
+        String selectedTemplateItem = templateChoiseBox.getValue();
+        Hmsc dstHMSCSelected = getSelectedHMSC(secondHMSCChoiseBox, HMSCs);
 
-        Hmsc dstHMSCSelected = getSelectedHMSC(dstHMSCChoiseBox, HMSCs);
-
-        ConditionalOperator opItemSelect =  getSelectedOperation(operationHMSCChoiseBox, operations);
+        ConditionalOperator selectedOperationItem =  getSelectedOperation(operationChoiseBox, operations);
 
         String probabilityInString = probabilityTextField.getText();
         Double probabilityInDouble = Double.valueOf(probabilityInString);
 
-        System.out.println("Item selecionado "+ srcHMSCSelected.getLabel()+ "  "+ dstHMSCSelected.getLabel()+ " "+opItemSelect.toString()+ " "+probabilityInString);
+        System.out.println("Item selecionado "+ srcHMSCSelected.getLabel()+ "  "+ dstHMSCSelected.getLabel()+ " "+selectedOperationItem.toString()+ " "+probabilityInString);
 
         Equation currentEquation = new Equation();
-        currentEquation.setSource(srcHMSCSelected).setDestiny(dstHMSCSelected).setConditionalOperation(opItemSelect).setProbability(probabilityInDouble);
+
+        currentEquation.setFirstHMSC(srcHMSCSelected).setTemplate(selectedTemplateItem).setSecondHMSC(dstHMSCSelected)
+                .setConditionalOperation(selectedOperationItem).setProbability(probabilityInDouble);
         addedEquations.add(currentEquation);
 
         ObservableList<Equation> data = FXCollections.observableArrayList(addedEquations);

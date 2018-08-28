@@ -6,56 +6,66 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane fx:id="anchorPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="280.0" minWidth="600.0" prefHeight="380.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane fx:id="anchorPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="280.0" minWidth="600.0" prefHeight="470.0" prefWidth="675.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <TableView fx:id="equationsTable" layoutY="46.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="250.0" prefWidth="600.0">
+      <TableView fx:id="equationsTable" layoutY="46.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="273.0" prefWidth="675.0">
         <columns>
-          <TableColumn fx:id="srcCol" maxWidth="1.7976931348623157E308" prefWidth="150" text="Source" />
-          <TableColumn fx:id="dstCol" maxWidth="1.7976931348623157E308" prefWidth="150" text="Destiny" />
-            <TableColumn fx:id="opCol" maxWidth="1.7976931348623157E308" prefWidth="150" text="Operation" />
-            <TableColumn fx:id="probCol" maxWidth="1.7976931348623157E308" prefWidth="150" text="Probability" />
+            <TableColumn fx:id="firstHMSCColumn" maxWidth="1.7976931348623157E308" prefWidth="162.0" text="First HMSC" />
+            <TableColumn fx:id="secondHMSCColumn" maxWidth="1.7976931348623157E308" prefWidth="184.0" text="Second HMSC" />
+            <TableColumn fx:id="operationColumn" maxWidth="1.7976931348623157E308" prefWidth="87.0" text="Operation" />
+            <TableColumn fx:id="probabilityColumn" maxWidth="1.7976931348623157E308" prefWidth="88.0" text="Probability" />
+           <TableColumn fx:id="templateColumn" prefWidth="154.0" text="Template" />
         </columns>
          <padding>
             <Insets bottom="1.0" left="1.0" right="1.0" top="1.0" />
          </padding>
       </TableView>
-      <ChoiceBox fx:id="srcHMSCChoiseBox" layoutX="1.0" layoutY="305.0" prefWidth="150.0">
+
+      <ChoiceBox fx:id="firstHMSCChoiseBox" layoutX="1.0" layoutY="328.0" prefWidth="150.0">
 
          <padding>
             <Insets bottom="1.0" left="1.0" right="1.0" top="1.0" />
          </padding>
       </ChoiceBox>
-      <ChoiceBox fx:id="dstHMSCChoiseBox" layoutX="177.0" layoutY="305.0" prefWidth="150.0">
+      <ChoiceBox fx:id="secondHMSCChoiseBox" layoutX="312.0" layoutY="328.0" prefWidth="150.0">
          <padding>
             <Insets bottom="1.0" left="1.0" right="1.0" top="1.0" />
          </padding>
       </ChoiceBox>
-      <ChoiceBox fx:id="operationHMSCChoiseBox" layoutX="329.0" layoutY="305.0" prefWidth="53.0">
+      <ChoiceBox fx:id="operationChoiseBox" layoutX="473.0" layoutY="328.0" prefWidth="53.0">
          <padding>
             <Insets bottom="1.0" left="1.0" right="1.0" top="1.0" />
          </padding>
       </ChoiceBox>
-      <TextField fx:id="probabilityTextField" layoutX="383.0" layoutY="305.0" prefHeight="28.0" prefWidth="150.0">
+
+      <ChoiceBox fx:id="templateChoiseBox" layoutX="156.0" layoutY="328.0" prefHeight="28.0" prefWidth="150.0" >
+         <padding>
+            <Insets bottom="1.0" left="1.0" right="1.0" top="1.0" />
+         </padding>
+      </ChoiceBox>
+
+      <TextField fx:id="probabilityTextField" layoutX="529.0" layoutY="328.0" prefHeight="28.0" prefWidth="76.0" promptText="Probability">
          <padding>
             <Insets bottom="1.0" left="1.0" right="1.0" top="1.0" />
          </padding>
       </TextField>
-      <Button fx:id="addButton" layoutX="536.0" layoutY="305.0" mnemonicParsing="false" prefHeight="28.0" prefWidth="62.0" text="Add">
+      <Button fx:id="addButton" layoutX="610.0" layoutY="328.0" mnemonicParsing="false" prefHeight="28.0" prefWidth="62.0" text="Add">
          <padding>
             <Insets bottom="1.0" left="1.0" right="1.0" top="1.0" />
          </padding>
       </Button>
-      <TextField fx:id="pathTraceTxtField" disable="true" layoutX="74.0" layoutY="10.0" prefHeight="28.0" prefWidth="450.0">
+      <TextField fx:id="pathTraceTxtField" disable="true" layoutX="77.0" layoutY="10.0" prefHeight="28.0" prefWidth="517.0">
          <padding>
             <Insets bottom="1.0" left="1.0" right="1.0" top="1.0" />
          </padding>
       </TextField>
       <Label layoutX="2.0" layoutY="16.0" text="Path Trace" />
-      <Button fx:id="chooseButton" layoutX="529.0" layoutY="10.0" mnemonicParsing="false" prefHeight="28.0" prefWidth="62.0" text="Choose">
+      <Button fx:id="chooseButton" layoutX="602.0" layoutY="10.0" mnemonicParsing="false" prefHeight="28.0" prefWidth="62.0" text="Choose">
          <padding>
             <Insets bottom="1.0" left="1.0" right="1.0" top="1.0" />
          </padding>
@@ -63,6 +73,8 @@
       <ImageView fitHeight="28.0" fitWidth="27.0" layoutX="150.0" layoutY="305.0" pickOnBounds="true" preserveRatio="true">
          <!--<Image backgroundLoading="true" url="/imagens/arrow.png" />-->
       </ImageView>
-      <Button fx:id="startButton" disable="true" layoutX="199.0" layoutY="344.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="202.0" text="Start" />
+      <Button fx:id="startButton" disable="true" layoutX="255.0" layoutY="430.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="202.0" text="Start" />
+
+      <TextArea fx:id="resultingEquationTextArea" disable="true" layoutX="4.0" layoutY="365.0" prefHeight="49.0" prefWidth="666.0" promptText="Resulting equation" />
    </children>
 </AnchorPane>

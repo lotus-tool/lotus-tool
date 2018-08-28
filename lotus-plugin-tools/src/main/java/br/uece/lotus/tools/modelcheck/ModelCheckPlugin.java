@@ -48,6 +48,7 @@ public class ModelCheckPlugin extends Plugin {
         mUserInterface = (UserInterface) extensionManager.get(UserInterface.class);
         mProjectExplorer = (ProjectExplorer) extensionManager.get(ProjectExplorer.class);
 
+
         mProjectExplorer.getComponentMenu().newItem("Probabilities Check")
                 .setWeight(Integer.MAX_VALUE)
                 .setAction(() -> {

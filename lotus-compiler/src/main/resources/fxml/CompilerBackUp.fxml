@@ -29,7 +29,7 @@
         <items>
           <AnchorPane fx:id="AnchorPane1" minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
                <children>
-                  <TextArea fx:id="mTextArea" layoutX="6.0" prefHeight="196.0" prefWidth="160.0" text="I=((0.35)a-&gt;b-&gt;J|(0.60)c-&gt;L|(0.05)d-&gt;ERROR),&#10;J=((1)e-&gt;STOP),&#10;L=((0.4)f-&gt;L | (0.6)g-&gt;M),&#10;M=((1.0)h-&gt;I)." AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                  <TextArea fx:id="mTextArea" layoutX="6.0" prefHeight="196.0" prefWidth="160.0" text="I=((0.35)firstState-&gt;secondState-&gt;J|(0.60)c-&gt;L|(0.05)d-&gt;ERROR),&#10;J=((1)e-&gt;STOP),&#10;L=((0.4)f-&gt;L | (0.6)g-&gt;M),&#10;M=((1.0)h-&gt;I)." AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                      <font>
                         <Font size="18.0" />
                      </font>
