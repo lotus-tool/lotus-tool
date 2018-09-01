@@ -916,7 +916,9 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
 
         }
 
-    //    parallelComposition(createdComponentsWithLifeLTS);
+       Component parallelComponent =  parallelComposition(createdComponentsWithLifeLTS);
+
+        mViewer.getComponentBuildDS().createGeneralLTS(parallelComponent);
 
 
 

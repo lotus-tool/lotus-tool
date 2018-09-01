@@ -59,7 +59,7 @@ public class LifeLTSBuilder {
                  int idSrc = Integer.valueOf(((String)componentWithoutTals.getValue(srcHmscLabel)).split(",")[1]);
                 int idDst = Integer.valueOf(((String)componentWithoutTals.getValue(dstHmscLabel)).split(",")[0]);
                 componentWithoutTals.buildTransition(idSrc, idDst)
-                        .setLabel(labelTrasition).setViewType(TransitionView.Geometry.CURVE)
+                        .setLabel(srcHmscLabel.concat(".").concat(labelTrasition).concat(".").concat(dstHmscLabel)).setViewType(TransitionView.Geometry.CURVE)
                         .create();
             }
 
