@@ -905,6 +905,17 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
             return;
         }
 
+        mViewer.getComponentBuildDS().createListLTS(createdComponentsWithLifeLTS);
+
+        for(Component component: createdComponentsWithLifeLTS){
+            System.out.println("nome component:"+ component.getName());
+
+                for(Hmsc hmsc : getComponentBuildDS().getBlocos()){
+                    System.out.println(hmsc.getLabel()+": "+ component.getValue(hmsc.getLabel()));
+                }
+
+        }
+
     //    parallelComposition(createdComponentsWithLifeLTS);
 
 
@@ -940,7 +951,6 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
         } catch (Exception e) {
             Alert emptyAlert = new Alert(Alert.AlertType.WARNING, e.getMessage(), ButtonType.OK);
             emptyAlert.show();
-
             e.printStackTrace();
 
         }
@@ -949,7 +959,7 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
 
     private List<Component> tryBuilderLifeLTS(StandardModeling selectedComponentBuildDS, List<Component> createdComponentsWithIndividualLTS) {
         try {
-            return LifeLTSBuilder.builderLTS(selectedComponentBuildDS, createdComponentsWithIndividualLTS);
+            return LifeLTSBuilder.builderLTS(projectExplorerPluginDS, createdComponentsWithIndividualLTS);
         }catch (Exception e){
             Alert emptyAlert = new Alert(Alert.AlertType.WARNING, e.getMessage(), ButtonType.OK);
             emptyAlert.show();

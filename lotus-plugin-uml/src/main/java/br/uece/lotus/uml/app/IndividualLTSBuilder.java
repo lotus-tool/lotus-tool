@@ -63,6 +63,8 @@ public class IndividualLTSBuilder {
                currentComponentLTS.setValue("BMSC_label", currentBlockDS.getLabel());
 
                createdComponents.add(currentComponentLTS);
+
+
                State currentState = null;
 
                for(TransitionMSC currentTransitionMSC : allTransitonFromCurrentBlockDS){
@@ -90,6 +92,8 @@ public class IndividualLTSBuilder {
                     currentState = dstState;
                }
 
+               setInitialAndFinalIDStates(currentComponentLTS);
+
                layout(currentComponentLTS);
 
                allBlockDSWithOutRepetition.remove(currentBlockDS.getLabel());
@@ -104,10 +108,15 @@ public class IndividualLTSBuilder {
                currentComponentLTS.setName(buildName(currentBlockPair.getKey(), currentHMSC.getLabel()));
                currentComponentLTS.setID(buildID(currentStandardModeling, currentIndexComponentDS));
 
+
                currentComponentLTS.setValue("object_label", currentBlockPair.getKey());
                currentComponentLTS.setValue("BMSC_label", currentBlockPair.getKey());
                currentComponentLTS.newState(0).setAsInitial();
                createdComponents.add(currentComponentLTS);
+
+                setInitialAndFinalIDStates(currentComponentLTS);
+
+
 
                layout(currentComponentLTS);
            }
@@ -120,6 +129,11 @@ public class IndividualLTSBuilder {
         return createdComponents;
 
 
+    }
+
+    private static void setInitialAndFinalIDStates(Component currentComponentLTS) {
+        currentComponentLTS.setValue("initial_and_final_id_state", currentComponentLTS.getInitialState().getID()
+                +","+ (currentComponentLTS.getStatesCount()-1));
     }
 
     private static Map<String, BlockDS> getAllBlockDSWithOutRepetition(ProjectExplorerPluginDS projectExplorerPluginDS) {

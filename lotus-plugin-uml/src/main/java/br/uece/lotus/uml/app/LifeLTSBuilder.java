@@ -1,43 +1,258 @@
 package br.uece.lotus.uml.app;
 
 import br.uece.lotus.Component;
-import br.uece.lotus.uml.api.ds.BlockDS;
-import br.uece.lotus.uml.api.ds.Hmsc;
-import br.uece.lotus.uml.api.ds.StandardModeling;
+import br.uece.lotus.State;
+import br.uece.lotus.Transition;
+import br.uece.lotus.uml.api.ds.*;
+import br.uece.lotus.uml.app.project.ProjectExplorerPluginDS;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class LifeLTSBuilder {
-    public static List<Component> builderLTS(StandardModeling selectedComponentBuildDS,
-                                             List<Component> createdComponentsWithLifeLTS) throws Exception {
+    public static List<Component> builderLTS(ProjectExplorerPluginDS projectExplorerPluginDS,
+                                             List<Component> createdComponentsWithIndividualLTS) throws Exception {
 
-        List<Component> createdComponentsWithIndividualLTS = new ArrayList<>();
+        StandardModeling selectedComponentBuildDS = projectExplorerPluginDS.getSelectedComponentBuildDS();
+
+        List<Component> createdComponentsWithLifeLTS = new ArrayList<>();
+
+        Map <String, List<Component>> individualLTSMapByObject = buildComponentsWithIndividualLTSInMap(createdComponentsWithIndividualLTS);
+
+        List<BlockDS> objectList = getAllBlockDSWithOutRepetition(projectExplorerPluginDS);
+
+       // Map<String, Component> createdComponentsWithIndividualLTSMap = new HashMap<>(createdComponentsWithIndividualLTS.size());
+      //  createdComponentsWithIndividualLTSMap = parseToMap(createdComponentsWithIndividualLTS);
+
         Component currentIndividualComponent = new Component();
 
-        Hmsc currentHMSC = selectedComponentBuildDS.getHmsc_inicial();
+        Map<String, List<String>> trasitionsHmscInMapBySrcHmsc;
+
+        trasitionsHmscInMapBySrcHmsc = buildTrasitionsInMap(selectedComponentBuildDS.getTransitions());
+
+        Queue<Hmsc> hmscQueue = new LinkedList<>();
 
 
-//        for (Hmsc currentHMSC : selectedComponentBuildDS.getBlocos()){
-//            for(BlockDS currentBlockDS : currentHMSC.getmDiagramSequence().getBlockDS()){
+      //  concatIndividualLTSsWithOutTalTrasition(trasitionsHmscInMapBySrcHmsc, hmscQueue, selectedComponentBuildDS, individualLTSMapByObject);
+
+
+
+        return  concatIndividualLTSsWithOutTalTrasition(trasitionsHmscInMapBySrcHmsc, individualLTSMapByObject, objectList, hmscQueue);
+    }
+
+    private static List<Component> concatIndividualLTSsWithOutTalTrasition(Map<String, List<String>> trasitionsHmscInMapBySrcHmsc,
+                                                                Map<String, List<Component>> individualLTSMapByObject,
+                                                                List<BlockDS> objectList,
+                                                                Queue<Hmsc> hmscQueue) {
+
+        List<Component> componentListByObjectWithOutTalTrasition = new ArrayList<>();
+
+        Component currentComponentByObjectOutTalTrasition;
+        // todo setar o id e o nome
+
+        for(BlockDS object : objectList){
+            currentComponentByObjectOutTalTrasition = new Component();
+            componentListByObjectWithOutTalTrasition.add(currentComponentByObjectOutTalTrasition);
+
+          List<Component> componentListByObject =  individualLTSMapByObject.get(object.getLabel());
+          currentComponentByObjectOutTalTrasition.setName(object.getLabel().concat("_life"));
+
+          for(Component componentByObject : componentListByObject){
+
+              addStatesAndTrasitionIn(componentByObject, currentComponentByObjectOutTalTrasition);
+          }
+
+          layout(currentComponentByObjectOutTalTrasition);
+
+
+
+
+
+
+        }
+        return componentListByObjectWithOutTalTrasition;
+
+    }
+
+    private static void addStatesAndTrasitionIn(Component componentSrc, Component componentDst) {
+        int delta = componentDst.getStatesCount();
+
+       updateInternalInitialAndFinalIDsStates(componentSrc, componentDst);
+
+       if(componentSrc.getTransitionsList().size() == 0){
+           State oldSrcState = componentSrc.getInitialState();
+
+           int oldIdSrc = oldSrcState.getID();
+           int newIdSrc = oldIdSrc+delta;
+            componentDst.newState(newIdSrc);
+       }
+
+       for(Transition trasitionSrc : componentSrc.getTransitionsList()){
+           State oldSrcState = trasitionSrc.getSource();
+           int oldIdSrc = oldSrcState.getID();
+
+           State oldDstState = trasitionSrc.getDestiny();
+
+           int oldIdDst = oldDstState.getID();
+
+           int newIdSrc = oldIdSrc+delta;
+           int newIdDst = oldIdDst+delta;
+
+           State newSrcState;
+           State newDstState;
+
+           if(componentDst.getStateByID(newIdSrc)!=null){
+               newSrcState = componentDst.getStateByID(newIdSrc);
+           }else {
+                newSrcState = componentDst.newState(newIdSrc);
+           }
+
+           if(componentDst.getStateByID(newIdDst)!=null){
+               newDstState = componentDst.getStateByID(newIdDst);
+           }else {
+               newDstState = componentDst.newState(newIdDst);
+           }
+
+
+
+         // newSrcState.setValue("hmsc",componentSrc.getName().split("_")[0]);
+
+           componentDst.buildTransition(newIdSrc, newIdDst)
+                   .setLabel(trasitionSrc.getLabel())
+                   .create();
+       }
+
+    }
+
+    private static void updateInternalInitialAndFinalIDsStates(Component componentSrc, Component componentDst) {
+        int delta = componentDst.getStatesCount();
+        String old_initial_and_final_id_state = (String) componentSrc.getValue("initial_and_final_id_state");
+
+        String oldIdInitialStateInString = old_initial_and_final_id_state.split(",")[0];
+        String oldIdFinalStateInString = old_initial_and_final_id_state.split(",")[1];
+
+        int oldIdInitialState = Integer.valueOf(oldIdInitialStateInString);
+        int oldIdFinalState = Integer.valueOf(oldIdFinalStateInString);
+
+        int newIdInitialState = oldIdInitialState+delta;
+
+        int newIdFinalState = oldIdFinalState+delta;
+
+        String new_initial_and_final_id_state = newIdInitialState+","+newIdFinalState;
+
+        String labelHmsc = getLabel(componentSrc);
+
+        componentDst.setValue(labelHmsc, new_initial_and_final_id_state);
+    }
+
+    private static String getLabel(Component componentSrc) {
+        return componentSrc.getName().split("_")[1].trim();
+    }
+
+    private static Map<String, List<Component>> buildComponentsWithIndividualLTSInMap(List<Component> createdComponentsWithIndividualLTS) {
+        Map<String, List<Component>> individualLTSInMap = new HashMap<>();
+
+        for(Component component : createdComponentsWithIndividualLTS){
+
+            String [] array = component.getName().split("_");
+            String objectLabel = array[0];
+          //  String hmscLabel = array[1];
+
+            if(individualLTSInMap.containsKey(objectLabel)){
+                individualLTSInMap.get(objectLabel).add(component);
+            }else {
+                List<Component> componentList = new ArrayList<>();
+                componentList.add(component);
+                individualLTSInMap.put(objectLabel, componentList);
+            }
+
+
+        }
+
+        return individualLTSInMap;
+    }
+
+//    private static void concatIndividualLTSsWithOutTalTrasition(Map<String, List<String>> trasitionsInMap,
+//                                             Queue<Hmsc> hmscQueue,
+//                                             StandardModeling selectedComponentBuildDS,
+//                                             Map<String, List<String>> mapIndividualLTS) {
 //
-//                String nameComponentRequested
-//                        = currentBlockDS.getLabel()+"_"+currentHMSC.getLabel()+"_life";
+//        Hmsc initialHmsc = selectedComponentBuildDS.getHmsc_inicial();
 //
-//                Component requestedComponet = getComponentFromName(nameComponentRequested,
-//                        createdComponentsWithIndividualLTS);
+//        hmscQueue.add(initialHmsc);
 //
-//                if(requestedComponet == null){
-//                    throw new Exception("Component with Name" + nameComponentRequested+"not found!");
-//                }
-//
-//                currentIndividualComponent.setName(currentBlockDS.getLabel()+"_"+"individual");
-//
-//
-//            }
+//        while (!hmscQueue.isEmpty()){
+//            concat(trasitionsInMap, hmscQueue, selectedComponentBuildDS,
+//                    mapIndividualLTS );
 //        }
+//
+//
+//
+//
+//    }
 
-        return createdComponentsWithLifeLTS;
+    private static Component concat(Map<String, List<String>> trasitionsInMap,
+                                    Queue<Hmsc> hmscQueue, StandardModeling selectedComponentBuildDS,
+                                    Map<String, List<String>> mapIndividualLTS) {
+
+        Component component = new Component();
+
+        Hmsc firstHmsc = hmscQueue.peek();
+
+        List<String>  labelAndDstHmscStringsList = trasitionsInMap.get(firstHmsc.getLabel());
+
+        for(String labelAndDstHmscString : labelAndDstHmscStringsList){
+            String [] array = labelAndDstHmscString.split("$$");
+            String labelTrasition  = array[0].trim();
+            String dstHmscLabel = array[1].trim();
+
+            component = concat(firstHmsc.getLabel(), labelTrasition, dstHmscLabel);
+        }
+
+        hmscQueue.remove();
+
+
+        return component;
+    }
+
+    private static Component concat(String srcHmscLabel, String labelTrasition, String dstHmscLabel) {
+        Component component = new Component();
+
+        //for(Component individualComponent: )
+
+        return component;
+    }
+
+    private static Map<String, List<String>> buildTrasitionsInMap(List<TransitionMSC> transitions) {
+        Map<String, List<String>> stringListMap = new HashMap<>();
+
+        for(TransitionMSC transitionMSC : transitions){
+            Hmsc srcHmsc = (Hmsc) transitionMSC.getSource();
+            Hmsc dstHmsc = (Hmsc) transitionMSC.getDestiny();
+
+            String labelAndDstHmsc = transitionMSC.getLabel().concat("$$").concat(dstHmsc.getLabel());
+
+            if(stringListMap.containsKey(srcHmsc.getLabel())){
+                stringListMap.get(srcHmsc.getLabel()).add(labelAndDstHmsc);
+            }else {
+                List<String> labelAndDstHmscStrings = new ArrayList<>();
+                labelAndDstHmscStrings.add(labelAndDstHmsc);
+                stringListMap.put(srcHmsc.getLabel(),labelAndDstHmscStrings);
+            }
+
+
+
+        }
+
+        return stringListMap;
+    }
+
+    private static Map<String, Component> parseToMap(List<Component> createdComponentsWithIndividualLTS) {
+        Map<String, Component> map = new HashMap<>(createdComponentsWithIndividualLTS.size());
+        for(Component component : createdComponentsWithIndividualLTS){
+            map.put(component.getName(),component);
+        }
+
+        return map;
     }
 
     private static Component getComponentFromName(String nameComponentRequested,
@@ -48,5 +263,25 @@ public class LifeLTSBuilder {
             }
         }
         return null;
+    }
+
+    private static List<BlockDS> getAllBlockDSWithOutRepetition(ProjectExplorerPluginDS projectExplorerPluginDS) {
+        List<ComponentDS> componentDSList =  projectExplorerPluginDS.getAll_BMSC();
+        Map<String, BlockDS> blocksWithOutRepetition = new HashMap<>();
+        for(ComponentDS componentDS : componentDSList){
+            for(BlockDS blockDS : componentDS.getBlockDS()){
+                blocksWithOutRepetition.put(blockDS.getLabel(),blockDS);
+            }
+        }
+        return new ArrayList<BlockDS>(blocksWithOutRepetition.values());
+    }
+
+    private static void layout(Component component) {
+        int i = 1;
+        for (State state : component.getStates()) {
+            state.setLayoutX(i * 200);
+            state.setLayoutY(300 + (i % 10));
+            i++;
+        }
     }
 }
