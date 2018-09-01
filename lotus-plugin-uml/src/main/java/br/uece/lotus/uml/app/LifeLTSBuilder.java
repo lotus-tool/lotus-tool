@@ -3,8 +3,10 @@ package br.uece.lotus.uml.app;
 import br.uece.lotus.Component;
 import br.uece.lotus.State;
 import br.uece.lotus.Transition;
+import br.uece.lotus.tools.layout.TreeLayouter;
 import br.uece.lotus.uml.api.ds.*;
 import br.uece.lotus.uml.app.project.ProjectExplorerPluginDS;
+import br.uece.lotus.viewer.TransitionView;
 
 import java.util.*;
 
@@ -32,11 +34,40 @@ public class LifeLTSBuilder {
         Queue<Hmsc> hmscQueue = new LinkedList<>();
 
 
-      //  concatIndividualLTSsWithOutTalTrasition(trasitionsHmscInMapBySrcHmsc, hmscQueue, selectedComponentBuildDS, individualLTSMapByObject);
+        List<Component> componentListWithOutTals = concatIndividualLTSsWithOutTalTrasition(trasitionsHmscInMapBySrcHmsc, individualLTSMapByObject, objectList, hmscQueue);
+
+         addTals(componentListWithOutTals, selectedComponentBuildDS.getTransitions());
+
+         createdComponentsWithLifeLTS = componentListWithOutTals;
+
+        return  createdComponentsWithLifeLTS;
+    }
+
+    private static void addTals(List<Component> componentListWithOutTals, List<TransitionMSC> transitionsHmsc) {
+
+
+        for(TransitionMSC transitionMSC : transitionsHmsc){
+            Hmsc srcHmsc = (Hmsc) transitionMSC.getSource();
+            Hmsc dstHmsc = (Hmsc) transitionMSC.getDestiny();
+
+            String srcHmscLabel = srcHmsc.getLabel();
+            String dstHmscLabel = dstHmsc.getLabel();
+
+            String labelTrasition = transitionMSC.getLabel();
+
+            for(Component componentWithoutTals : componentListWithOutTals){
+                 int idSrc = Integer.valueOf(((String)componentWithoutTals.getValue(srcHmscLabel)).split(",")[1]);
+                int idDst = Integer.valueOf(((String)componentWithoutTals.getValue(dstHmscLabel)).split(",")[0]);
+                componentWithoutTals.buildTransition(idSrc, idDst)
+                        .setLabel(labelTrasition).setViewType(TransitionView.Geometry.CURVE)
+                        .create();
+            }
+
+
+        }
 
 
 
-        return  concatIndividualLTSsWithOutTalTrasition(trasitionsHmscInMapBySrcHmsc, individualLTSMapByObject, objectList, hmscQueue);
     }
 
     private static List<Component> concatIndividualLTSsWithOutTalTrasition(Map<String, List<String>> trasitionsHmscInMapBySrcHmsc,
@@ -60,6 +91,8 @@ public class LifeLTSBuilder {
 
               addStatesAndTrasitionIn(componentByObject, currentComponentByObjectOutTalTrasition);
           }
+
+
 
           layout(currentComponentByObjectOutTalTrasition);
 
@@ -117,7 +150,7 @@ public class LifeLTSBuilder {
          // newSrcState.setValue("hmsc",componentSrc.getName().split("_")[0]);
 
            componentDst.buildTransition(newIdSrc, newIdDst)
-                   .setLabel(trasitionSrc.getLabel())
+                   .setLabel(trasitionSrc.getLabel()).setViewType(TransitionView.Geometry.CURVE)
                    .create();
        }
 
