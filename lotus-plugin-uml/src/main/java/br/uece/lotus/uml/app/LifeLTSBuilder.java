@@ -3,12 +3,16 @@ package br.uece.lotus.uml.app;
 import br.uece.lotus.Component;
 import br.uece.lotus.State;
 import br.uece.lotus.Transition;
-import br.uece.lotus.tools.layout.TreeLayouter;
 import br.uece.lotus.uml.api.ds.*;
 import br.uece.lotus.uml.app.project.ProjectExplorerPluginDS;
 import br.uece.lotus.viewer.TransitionView;
-
 import java.util.*;
+
+/**
+ *
+ * @author Lucas Vieira Alves
+ */
+
 
 public class LifeLTSBuilder {
     public static List<Component> builderLTS(ProjectExplorerPluginDS projectExplorerPluginDS,

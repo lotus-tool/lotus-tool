@@ -8,6 +8,11 @@ import br.uece.lotus.uml.app.project.ProjectExplorerPluginDS;
 
 import java.util.*;
 
+/**
+ *
+ * @author Lucas Vieira Alves
+ */
+
 
 public class IndividualLTSBuilder {
     public static List<Component> buildLTS(ProjectExplorerPluginDS projectExplorerPluginDS) throws Exception  {

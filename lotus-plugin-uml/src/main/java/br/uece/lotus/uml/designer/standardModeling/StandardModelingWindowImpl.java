@@ -10,6 +10,7 @@ import br.uece.lotus.State;
 import br.uece.lotus.model.ParallelCompositor;
 import br.uece.lotus.uml.app.LifeLTSBuilder;
 import br.uece.lotus.uml.app.IndividualLTSBuilder;
+import br.uece.lotus.uml.app.ProbabilitySetter;
 import br.uece.lotus.uml.app.runtime.controller.PropertysPanelController;
 import br.uece.lotus.uml.api.ds.Hmsc;
 import br.uece.lotus.uml.api.ds.StandardModeling;
@@ -916,7 +917,10 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
 
         }
 
-       Component parallelComponent =  parallelComposition(createdComponentsWithLifeLTS);
+        Component parallelComponent =  parallelComposition(createdComponentsWithLifeLTS);
+
+        trySetPtobabilityFromTransitionMSC(parallelComponent, getComponentBuildDS().getTransitions());
+
 
         mViewer.getComponentBuildDS().createGeneralLTS(parallelComponent);
 
@@ -924,6 +928,17 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
 
 
     };
+
+    private void trySetPtobabilityFromTransitionMSC(Component parallelComponent, List<TransitionMSC> transitions) {
+        try {
+            ProbabilitySetter.setProbabilityFromTransitionMSCAndObjectActions(parallelComponent, transitions);
+        } catch (Exception e) {
+
+            Alert emptyAlert = new Alert(Alert.AlertType.WARNING, e.getMessage(), ButtonType.OK);
+            emptyAlert.show();
+            e.printStackTrace();
+        }
+    }
 
     public Component parallelComposition(List<Component> Components){
         int tam = Components.size();
