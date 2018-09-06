@@ -277,7 +277,7 @@ public class GeneralLTSMaker {
                 aux_list.add(transition.clone());
             }catch (Exception e){
         }
-        listHmsc_Inicial.put(inicial, aux_list);
+        listHmsc_Inicial.putValue(inicial, aux_list);
 */
 
 
@@ -645,7 +645,7 @@ public class GeneralLTSMaker {
 
                 geral.remove(next.getInitialState());
 
-              //  listHmsc_Inicial.put(hmsc_next, aux_list);
+              //  listHmsc_Inicial.putValue(hmsc_next, aux_list);
             }else if(hmsc_next != null){
                 Component current = pegar_lts(hmsc,ltsGerados);
                 List<Transition> next_in_circ = listHmsc_Inicial.get(hmsc_next);

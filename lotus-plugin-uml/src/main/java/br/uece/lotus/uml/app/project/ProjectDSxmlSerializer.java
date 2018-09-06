@@ -453,10 +453,10 @@ public class ProjectDSxmlSerializer implements ProjectDSSerializer{
         //DEBUG-----------------------------------------
     /*  private void printHmsc() {
             System.out.println("--------------------StandardModeling-----------------");
-            for(Hmsc h : mProject.getStandardModeling().getBlocos()){
+            for(Hmsc h : mProject.getParallelComponent().getBlocos()){
                 System.out.println("Hmsc: "+h.getLabel()+" id:"+h.getID());
             }
-            for(TransitionMSC t : mProject.getStandardModeling().getTransitions()){
+            for(TransitionMSC t : mProject.getParallelComponent().getTransitions()){
                 System.out.println("TransitionHMSC from: "+((Hmsc)t.getSource()).getID()+" to: "+((Hmsc)t.getDestiny()).getID());
             }
             System.out.println("-------------------------------------------------");

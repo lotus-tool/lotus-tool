@@ -30,7 +30,7 @@ import java.util.LinkedList;
 
 public interface MonitorComponentService extends ComponentService {
 	
-	void processTrace(LinkedList<String> trace);
+	void processTrace(LinkedList<String> trace) throws Exception;
 	
 	Path getTracePath();
 	

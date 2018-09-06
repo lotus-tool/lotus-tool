@@ -211,19 +211,18 @@ public class ParallelCompositor {
 
         }
 
-        //AjustarIDs(newComponent);
+        AjustarIDs(newComponent);
 
         layout(newComponent);
         return newComponent;
     }
 
     private void AjustarIDs(Component PC){
-        int id;
+        int newId =0;
         for(State state : PC.getStates()){
-            id = Integer.parseInt(state.getLabel());
-            state.setID(id);
-        }
-    }
+            state.setID(newId);
+            newId++;
+        } }
 
     private  Transition getTransitionByLabel(Component component, String label){
         String [] t_action = label.split("[.]");

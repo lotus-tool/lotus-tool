@@ -22,8 +22,9 @@
  */
 package br.uece.lotus.uml.app.runtime.utils.checker;
 
+import br.uece.lotus.uml.api.ds.StandardModeling;
+import br.uece.lotus.uml.app.ParallelComponentController;
 import br.uece.lotus.uml.app.runtime.config.ConfigurationServiceComponent;
-import br.uece.lotus.uml.app.runtime.model.custom.StantardModelingCustom;
 import br.uece.lotus.uml.app.runtime.notifier.NotifierComponentService;
 import br.uece.lotus.uml.app.runtime.probabilisticReach.ProbabilisticReachAlgorithm;
 import br.uece.lotus.uml.app.runtime.utils.checker.conditional.ConditionContext;
@@ -48,7 +49,8 @@ public class ModelCheckerComponentServiceImpl implements Component, ModelChecker
 	private NotifierComponentService eventBusComponentService;
 	
 	private ConditionContext conditionContext;
-	
+	private br.uece.lotus.Component parallelComponent;
+
 	public ModelCheckerComponentServiceImpl() {
 		this.reachAlgorithm = new ProbabilisticReachAlgorithm();
 		this.conditionContext = new ConditionContext();
@@ -60,14 +62,15 @@ public class ModelCheckerComponentServiceImpl implements Component, ModelChecker
 		this.properties = configurationComponent.getConfiguration().getProperties();
 		this.modelComponent = manager.getComponentService(ProjectMscServiceComponent.class);
 		this.eventBusComponentService = manager.getComponentService(NotifierComponentService.class);
+		parallelComponent = modelComponent.getParallelComponent();
+
 	}
 	
 	@Override
-	public void verifyModel() {
-		StantardModelingCustom StantardModelingCustom = modelComponent.getStantardModelingCustom();
+	public void verifyModel() throws Exception {
 
 		for (Property property : properties) {
-			Double probabilityBetween = reachAlgorithm.probabilityBetween(StantardModelingCustom, property.getSourceHMSCId(), property.getTargetHMSCId());
+			Double probabilityBetween = reachAlgorithm.probabilityBetween(parallelComponent, property.getFirstStateId(), property.getSecondStateId());
 			
 			if (conditionContext.verify(property.getProbability(), property.getConditionalOperator(), probabilityBetween)) {
 				eventBusComponentService.publish(property);

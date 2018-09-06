@@ -11,36 +11,37 @@ import java.util.*;
 /**
  *
  * @author Lucas Vieira Alves
+ * 03/09/2018
  */
 
 
 public class IndividualLTSBuilder {
-    public static List<Component> buildLTS(ProjectExplorerPluginDS projectExplorerPluginDS) throws Exception  {
+    public static List<Component> buildLTS(StandardModeling currentStandardModeling) throws Exception  {
 
 
-        StandardModeling currentStandardModeling = projectExplorerPluginDS.getSelectedComponentBuildDS();
 
 
-        if(!standardModelingIsSelectedInProjectExplorerPanel(projectExplorerPluginDS)){
+
+        if(!standardModelingIsSelectedInProjectExplorerPanel(currentStandardModeling)){
             throw new Exception("Standard Modeling is not selected in Project Explorer Panel!");
         }
 
 
-        if(standardModelingIsEmpty(projectExplorerPluginDS)){
+        if(standardModelingIsEmpty(currentStandardModeling)){
            throw new Exception("Standard Modeling Is Empty!");
         }
 
-        if(thereIsHMSCWithOutBMSC(projectExplorerPluginDS)) {
+        if(thereIsHMSCWithOutBMSC(currentStandardModeling)) {
             throw new Exception("There is Empty HMSC!");
 
         }
 
-        if(thereIsBMSCWithOutObject(projectExplorerPluginDS)) {
+        if(thereIsBMSCWithOutObject(currentStandardModeling)) {
             throw new Exception("There is Empty BMSC!");
 
         }
 
-        Map<String, BlockDS> allBlockDSWithOutRepetition = getAllBlockDSWithOutRepetition(projectExplorerPluginDS);
+        Map<String, BlockDS> allBlockDSWithOutRepetition = getAllBlockDSWithOutRepetition(currentStandardModeling);
 
         Map<String, BlockDS> allBlockDSWithOutRepetitionBackUp = new HashMap<>();
         allBlockDSWithOutRepetitionBackUp.putAll(allBlockDSWithOutRepetition);
@@ -141,29 +142,31 @@ public class IndividualLTSBuilder {
                 +","+ (currentComponentLTS.getStatesCount()-1));
     }
 
-    private static Map<String, BlockDS> getAllBlockDSWithOutRepetition(ProjectExplorerPluginDS projectExplorerPluginDS) {
-      List<ComponentDS> componentDSList =  projectExplorerPluginDS.getAll_BMSC();
+    private static Map<String, BlockDS> getAllBlockDSWithOutRepetition(StandardModeling standardModeling) {
+
       Map<String, BlockDS> blocksWithOutRepetition = new HashMap<>();
-      for(ComponentDS componentDS : componentDSList){
+      for(Hmsc currentHmsc : standardModeling.getBlocos()) {
+          ComponentDS componentDS = currentHmsc.getmDiagramSequence();
           for(BlockDS blockDS : componentDS.getBlockDS()){
               blocksWithOutRepetition.put(blockDS.getLabel(),blockDS);
           }
       }
+
       return blocksWithOutRepetition;
     }
 
 
-    private static boolean standardModelingIsSelectedInProjectExplorerPanel(ProjectExplorerPluginDS projectExplorerPluginDS) {
-        return projectExplorerPluginDS.getSelectedComponentBuildDS() != null;
+    private static boolean standardModelingIsSelectedInProjectExplorerPanel(StandardModeling standardModeling) {
+        return standardModeling != null;
     }
 
-    private static boolean standardModelingIsEmpty(ProjectExplorerPluginDS projectExplorerPluginDS) {
-        return projectExplorerPluginDS.getSelectedComponentBuildDS().getBlocos().isEmpty();
+    private static boolean standardModelingIsEmpty(StandardModeling standardModeling) {
+        return standardModeling.getBlocos().isEmpty();
     }
 
-    private static boolean thereIsHMSCWithOutBMSC(ProjectExplorerPluginDS projectExplorerPluginDS) {
+    private static boolean thereIsHMSCWithOutBMSC(StandardModeling standardModeling) {
 
-        for(Hmsc currentHMSC : projectExplorerPluginDS.getSelectedComponentBuildDS().getBlocos()){
+        for(Hmsc currentHMSC : standardModeling.getBlocos()){
             if(!containsBMSC(currentHMSC)){
                 return true;
             }
@@ -171,8 +174,8 @@ public class IndividualLTSBuilder {
         return false;
 
     }
-    private static boolean thereIsBMSCWithOutObject(ProjectExplorerPluginDS projectExplorerPluginDS) {
-        for(Hmsc currentHMSC : projectExplorerPluginDS.getSelectedComponentBuildDS().getBlocos()){
+    private static boolean thereIsBMSCWithOutObject(StandardModeling standardModeling) {
+        for(Hmsc currentHMSC : standardModeling.getBlocos()){
             if(!containsObjects(currentHMSC)){
                 return true;
             }

@@ -6,11 +6,7 @@
 package br.uece.lotus.uml.designer.standardModeling;
 
 import br.uece.lotus.Component;
-import br.uece.lotus.State;
-import br.uece.lotus.model.ParallelCompositor;
-import br.uece.lotus.uml.app.LifeLTSBuilder;
-import br.uece.lotus.uml.app.IndividualLTSBuilder;
-import br.uece.lotus.uml.app.ProbabilitySetter;
+import br.uece.lotus.uml.app.ParallelComponentController;
 import br.uece.lotus.uml.app.runtime.controller.PropertysPanelController;
 import br.uece.lotus.uml.api.ds.Hmsc;
 import br.uece.lotus.uml.api.ds.StandardModeling;
@@ -152,7 +148,8 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
     public Rectangle rectSelecao;
     public boolean segundaVezAoArrastar;
     public double ultimoInstanteX, ultimoInstanteY;
-    
+    private Component parallelComponet;
+
     /////////////////////////////////////////////////////////////////////////
     //                   IMPLEMENTACAO DA WINDOW_DS                        //
     /////////////////////////////////////////////////////////////////////////
@@ -165,7 +162,7 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
     public ComponentDS getComponentDS() {return null;}
 
     @Override
-    public Component getComponentLTS() {return null;}
+    public Component getComponentLTS() {return parallelComponet;}
 
     @Override
     public void setComponentBuildDS(StandardModeling buildDS) {
@@ -176,7 +173,9 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
     public void setComponentDS(ComponentDS cds) {}
 
     @Override
-    public void setComponentLTS(Component c) {}
+    public void setComponentLTS(Component c) {
+         parallelComponet = c;
+    }
 
     @Override
     public String getTitle() {
@@ -335,6 +334,7 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
 
         propertyPanelCheckBox.setOnAction((ActionEvent e) -> {
             //propertyDropDown.setVisible(propertyPanelCheckBox.isSelected());
+
             Stage propertyPanelState = createPropertyPanel();
 
             if(propertyPanelCheckBox.isSelected()){
@@ -568,7 +568,6 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
 
         propertyDropDown = new TitledPane("Property Panel",propertyPanel()); // Trocar btnAdd por metodo que gera um Panel com todas as informações do Runtime
         propertyDropDown.setVisible(false);
-        //propertyDropDown.setLayoutY(110);
 
         VBox PropertyPanelBox = new VBox(5);
         PropertyPanelBox.getChildren().addAll(blockPropriedade, propertyDropDown);
@@ -609,7 +608,7 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
         infoInitial.getChildren().addAll(mInitial,initial);
         utilidade.getChildren().addAll(infoEmpyt,infoFull, infoInitial);
         
-        Button buildLTSFromHMSC = new Button("Build LTS",new ImageView(new Image(getClass().getResourceAsStream("/imagens/ic_build_LTS.png"))));
+        Button buildLTSFromHMSC = new Button("Build LTS", new ImageView(new Image(getClass().getResourceAsStream("/imagens/ic_build_LTS.png"))));
         buildLTSFromHMSC.setOnAction(buildLTSFromHMSCEvent);
         
         mInfoPanel.getChildren().addAll(utilidade,buildLTSFromHMSC);
@@ -618,11 +617,10 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
 
     private Stage createPropertyPanel(){
         List<Hmsc> HMSCs = getComponentBuildDS().getBlocos();
-
         Stage stage = new Stage();
         stage.setTitle("Property Panel");
 
-        PropertysPanelController propertysPanelController = new PropertysPanelController(getComponentBuildDS());
+        PropertysPanelController propertysPanelController = new PropertysPanelController(this);
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/propertysPanel.fxml"));
         fxmlLoader.setController(propertysPanelController);
         AnchorPane propertyPanelAnchorPane = null;
@@ -887,106 +885,34 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
     //////////////////////////////////////////////////////////////////////////////////
 
     EventHandler<ActionEvent> buildLTSFromHMSCEvent = (ActionEvent event) -> {
+        StandardModeling standardModeling = this.getComponentBuildDS();
 
-        List<Component> createdComponentsWithIndividualLTS = tryBuildIndividualLTS();
+        ParallelComponentController parallelComponentController =  new ParallelComponentController(standardModeling);
 
-        if(createdComponentsWithIndividualLTS == null){
-            return;
+
+        try {
+            List<Component> createdComponentsWithIndividualLTS = parallelComponentController.buildIndividualComponents();
+            parallelComponentController.addIndividualComponentsInLeftPanel(this, createdComponentsWithIndividualLTS);
+
+            List<Component> createdComponentsWithLifeLTS = parallelComponentController.buildLifeComponents();
+            parallelComponentController.addLifeComponentsInLeftPanel(this, createdComponentsWithLifeLTS);
+
+            Component parallelComponent = parallelComponentController.buildParallelComponent();
+
+            setComponentLTS(parallelComponent);
+
+            parallelComponentController.addParallelComponentInLeftPanel(this, parallelComponent);
+
+        } catch (Exception e) {
+            Alert emptyAlert = new Alert(Alert.AlertType.WARNING, e.getMessage(), ButtonType.OK);
+            emptyAlert.show();
+            e.printStackTrace();
         }
-
-        projectExplorerPluginDS.removeFragmetsLTS();
-
-        mViewer.getComponentBuildDS().createListLTS(createdComponentsWithIndividualLTS);
-
-        List<Component> createdComponentsWithLifeLTS
-                = tryBuilderLifeLTS(projectExplorerPluginDS.getSelectedComponentBuildDS(),
-                createdComponentsWithIndividualLTS);
-
-        if(createdComponentsWithLifeLTS == null){
-            return;
-        }
-
-        mViewer.getComponentBuildDS().createListLTS(createdComponentsWithLifeLTS);
-
-        for(Component component: createdComponentsWithLifeLTS){
-            System.out.println("nome component:"+ component.getName());
-
-                for(Hmsc hmsc : getComponentBuildDS().getBlocos()){
-                    System.out.println(hmsc.getLabel()+": "+ component.getValue(hmsc.getLabel()));
-                }
-
-        }
-
-        Component parallelComponent =  parallelComposition(createdComponentsWithLifeLTS);
-
-        trySetPtobabilityFromTransitionMSC(parallelComponent, getComponentBuildDS().getTransitions());
-
-
-        mViewer.getComponentBuildDS().createGeneralLTS(parallelComponent);
-
-
-
 
     };
 
-    private void trySetPtobabilityFromTransitionMSC(Component parallelComponent, List<TransitionMSC> transitions) {
-        try {
-            ProbabilitySetter.setProbabilityFromTransitionMSCAndObjectActions(parallelComponent, transitions);
-        } catch (Exception e) {
-
-            Alert emptyAlert = new Alert(Alert.AlertType.WARNING, e.getMessage(), ButtonType.OK);
-            emptyAlert.show();
-            e.printStackTrace();
-        }
-    }
-
-    public Component parallelComposition(List<Component> Components){
-        int tam = Components.size();
-        if (tam < 2) {
-            throw new RuntimeException("Select at least 2(two) components!");
-        }
-        Component a = Components.get(0);
-        Component b = Components.get(1);
-        Component newComponent = new ParallelCompositor().compor(a, b);
-        String name = a.getName() + " || " + b.getName();
-        for(int i = 2; i < tam; i++){
-            b = Components.get(i);
-            newComponent = new ParallelCompositor().compor(newComponent, b);
-            name += " || " + b.getName();
-        }
-        newComponent.setName(name);
-        return newComponent;
-    }
 
 
-
-
-    private List<Component> tryBuildIndividualLTS() {
-        try {
-            return IndividualLTSBuilder.buildLTS(projectExplorerPluginDS);
-
-        } catch (Exception e) {
-            Alert emptyAlert = new Alert(Alert.AlertType.WARNING, e.getMessage(), ButtonType.OK);
-            emptyAlert.show();
-            e.printStackTrace();
-
-        }
-        return null;
-    }
-
-    private List<Component> tryBuilderLifeLTS(StandardModeling selectedComponentBuildDS, List<Component> createdComponentsWithIndividualLTS) {
-        try {
-            return LifeLTSBuilder.builderLTS(projectExplorerPluginDS, createdComponentsWithIndividualLTS);
-        }catch (Exception e){
-            Alert emptyAlert = new Alert(Alert.AlertType.WARNING, e.getMessage(), ButtonType.OK);
-            emptyAlert.show();
-
-            e.printStackTrace();
-        }
-
-        return null;
-
-    }
 
 
     //    EventHandler<ActionEvent> buildLTSFromHMSCEvent = (ActionEvent event) -> {
@@ -1093,21 +1019,21 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
 //            mViewer.getComponentBuildDS().createGeneralLTS(c);
 //        } catch (CloneNotSupportedException cloneNotSupportedException) {}
 //    };
-    public void layout(Component component) {
-        int i = 1;
-        for (State state : component.getStates()) {
-            state.setLayoutX(i * 200);
-            state.setLayoutY(300 + (i % 10));
-            i++;
-        }
-    }
-    private Component buildGeneralLTS(List<Component> ltsGerados){
-        List<Hmsc> listHmsc = mViewer.getComponentBuildDS().getBlocos();
-        GeneralLTSMaker make =
-                new GeneralLTSMaker(listHmsc, projectExplorerPluginDS.getAll_BMSC(),ltsGerados, mViewer, projectExplorerPluginDS);
-        return make.produce();
-    }
-
+//    public void layout(Component component) {
+//        int i = 1;
+//        for (State state : component.getStates()) {
+//            state.setLayoutX(i * 200);
+//            state.setLayoutY(300 + (i % 10));
+//            i++;
+//        }
+//    }
+//    private Component buildGeneralLTS(List<Component> ltsGerados){
+//        List<Hmsc> listHmsc = mViewer.getComponentBuildDS().getBlocos();
+//        GeneralLTSMaker make =
+//                new GeneralLTSMaker(listHmsc, projectExplorerPluginDS.getAll_BMSC(),ltsGerados, mViewer, projectExplorerPluginDS);
+//        return make.produce();
+//    }
+//
 
     ///////////////////////////////////////////////////////////////////////////////////
     //                         Metodos das Propriedades                             //
@@ -1331,5 +1257,15 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
             mResult.set(result);
         }
 
+
+
+    }
+
+    public StandardModelingView getmViewer() {
+        return mViewer;
+    }
+
+    public void setmViewer(StandardModelingView mViewer) {
+        this.mViewer = mViewer;
     }
 }

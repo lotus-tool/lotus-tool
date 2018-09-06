@@ -5,8 +5,6 @@
  */
 package br.uece.lotus.uml.api.ds;
 
-import br.uece.lotus.Component;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -36,7 +34,7 @@ public class TransitionMSC {
         }
 
        public Builder setValue(String s, Object o) {
-           mTransitionMSC.setValue(s, o);
+           mTransitionMSC.putValue(s, o);
            return this;
        }
 
@@ -81,7 +79,7 @@ public class TransitionMSC {
        }
 
        public Builder setViewType(int type) {
-           mTransitionMSC.setValue("view.type", type);
+           mTransitionMSC.putValue("view.type", type);
            return this;
        }
     }
@@ -181,22 +179,24 @@ public class TransitionMSC {
         return mProbability;
     }
 
-    public void setProbability(Double mProbability) {
+    public TransitionMSC setProbability(Double mProbability) {
         this.mProbability = mProbability;
         for(Listener l : mListeners){
             l.onChange(this);
         }
+        return this;
     }
 
     public String getLabel() {
         return mLabel;
     }
 
-    public void setLabel(String mLabel) {
+    public TransitionMSC setLabel(String mLabel) {
         this.mLabel = mLabel;
         for(Listener l : mListeners){
             l.onChange(this);
         }
+        return this;
     }
     
     public void setGuard(String guard) {
@@ -273,7 +273,7 @@ public class TransitionMSC {
         return mValues.get(key);
     }
 
-    public void setValue(String key, Object value) {
+    public void putValue(String key, Object value) {
         mValues.put(key, value);
     }
     

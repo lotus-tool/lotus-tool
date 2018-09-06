@@ -15,16 +15,16 @@ import java.util.*;
 
 
 public class LifeLTSBuilder {
-    public static List<Component> builderLTS(ProjectExplorerPluginDS projectExplorerPluginDS,
+    public static List<Component> builderLTS(StandardModeling standardModeling,
                                              List<Component> createdComponentsWithIndividualLTS) throws Exception {
 
-        StandardModeling selectedComponentBuildDS = projectExplorerPluginDS.getSelectedComponentBuildDS();
+
 
         List<Component> createdComponentsWithLifeLTS = new ArrayList<>();
 
         Map <String, List<Component>> individualLTSMapByObject = buildComponentsWithIndividualLTSInMap(createdComponentsWithIndividualLTS);
 
-        List<BlockDS> objectList = getAllBlockDSWithOutRepetition(projectExplorerPluginDS);
+        List<BlockDS> objectList = getAllBlockDSWithOutRepetition(standardModeling);
 
        // Map<String, Component> createdComponentsWithIndividualLTSMap = new HashMap<>(createdComponentsWithIndividualLTS.size());
       //  createdComponentsWithIndividualLTSMap = parseToMap(createdComponentsWithIndividualLTS);
@@ -33,14 +33,14 @@ public class LifeLTSBuilder {
 
         Map<String, List<String>> trasitionsHmscInMapBySrcHmsc;
 
-        trasitionsHmscInMapBySrcHmsc = buildTrasitionsInMap(selectedComponentBuildDS.getTransitions());
+        trasitionsHmscInMapBySrcHmsc = buildTrasitionsInMap(standardModeling.getTransitions());
 
         Queue<Hmsc> hmscQueue = new LinkedList<>();
 
 
         List<Component> componentListWithOutTals = concatIndividualLTSsWithOutTalTrasition(trasitionsHmscInMapBySrcHmsc, individualLTSMapByObject, objectList, hmscQueue);
 
-         addTals(componentListWithOutTals, selectedComponentBuildDS.getTransitions());
+         addTals(componentListWithOutTals, standardModeling.getTransitions());
 
          createdComponentsWithLifeLTS = componentListWithOutTals;
 
@@ -151,7 +151,7 @@ public class LifeLTSBuilder {
 
 
 
-         // newSrcState.setValue("hmsc",componentSrc.getName().split("_")[0]);
+         // newSrcState.putValue("hmsc",componentSrc.getName().split("_")[0]);
 
            componentDst.buildTransition(newIdSrc, newIdDst)
                    .setLabel(trasitionSrc.getLabel()).setViewType(TransitionView.Geometry.CURVE)
@@ -302,14 +302,17 @@ public class LifeLTSBuilder {
         return null;
     }
 
-    private static List<BlockDS> getAllBlockDSWithOutRepetition(ProjectExplorerPluginDS projectExplorerPluginDS) {
-        List<ComponentDS> componentDSList =  projectExplorerPluginDS.getAll_BMSC();
+    private static List<BlockDS> getAllBlockDSWithOutRepetition(StandardModeling standardModeling) {
         Map<String, BlockDS> blocksWithOutRepetition = new HashMap<>();
-        for(ComponentDS componentDS : componentDSList){
-            for(BlockDS blockDS : componentDS.getBlockDS()){
-                blocksWithOutRepetition.put(blockDS.getLabel(),blockDS);
-            }
+
+        for(Hmsc hmsc : standardModeling.getBlocos()){
+            ComponentDS currentComponentDS = hmsc.getmDiagramSequence();
+                for(BlockDS blockDS : currentComponentDS.getBlockDS()){
+                    blocksWithOutRepetition.put(blockDS.getLabel(),blockDS);
+                }
+
         }
+
         return new ArrayList<BlockDS>(blocksWithOutRepetition.values());
     }
 

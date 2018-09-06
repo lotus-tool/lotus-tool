@@ -24,7 +24,8 @@ package br.uece.lotus.uml.app.runtime.utils;
 
 
 
-import br.uece.lotus.uml.app.runtime.model.custom.ProjectMSCCustom;
+import br.uece.lotus.uml.api.ds.ProjectDS;
+
 
 /**
  *
@@ -33,11 +34,11 @@ import br.uece.lotus.uml.app.runtime.model.custom.ProjectMSCCustom;
 public interface ProjectMSCConverter<Source> {
 
 
-    ProjectMSCCustom toConverter(Source s) throws Exception;
+    ProjectDS toConverter(Source s) throws Exception;
 
-    void toUpdate(ProjectMSCCustom projectMSCCustomIn, Source s) throws Exception;
+    void toUpdate(ProjectDS projectDSIn, Source s) throws Exception;
 
-    Source toUndo(ProjectMSCCustom projectMSCCustomIn) throws Exception;
+    Source toUndo(ProjectDS projectDSIn) throws Exception;
 
 
 

@@ -22,8 +22,11 @@
  */
 package br.uece.lotus.uml.app.runtime.config;
 
+import br.uece.lotus.Component;
+import br.uece.lotus.uml.api.ds.ProjectDS;
 import br.uece.lotus.uml.api.ds.StandardModeling;
 import br.uece.lotus.uml.app.runtime.utils.checker.Property;
+import br.uece.lotus.uml.designer.standardModeling.StandardModelingWindowImpl;
 
 
 import java.util.List;
@@ -43,8 +46,9 @@ public class Configuration {
 	
 	private List<Property> properties;
 
-	private  StandardModeling standardModeling;
-	
+	private ProjectDS projectDS;
+	private Component parallelComponent;
+
 	public Configuration() { }
 
 	private Configuration(ConfigurationBuilder builder) {
@@ -53,9 +57,18 @@ public class Configuration {
 		this.projectFile = builder.projectFile;
 		this.milliseconds = builder.milliseconds;
 		this.properties = builder.properties;
-		this.standardModeling = builder.standardModeling;
+		this.projectDS = builder.projectDS;
+		this.parallelComponent = builder.parallelComponent;
 	}
-	
+
+	public void setProjectDS(ProjectDS projectDS) {
+		this.projectDS = projectDS;
+	}
+
+	public void setParallelComponent(Component parallelComponent) {
+		this.parallelComponent = parallelComponent;
+	}
+
 	public String getName() {
 		return name;
 	}
@@ -96,12 +109,18 @@ public class Configuration {
 		this.properties = properties;
 	}
 
-	public StandardModeling getStandardModeling() {
-		return standardModeling;
+	public ProjectDS getProjectDS() {
+		return projectDS;
+	}
+
+	public Component getParallelComponent() {
+		return parallelComponent;
 	}
 
 	public static class ConfigurationBuilder {
-		
+
+		private Component parallelComponent;
+
 		private String name;
 		
 		private String traceFile;
@@ -112,12 +131,17 @@ public class Configuration {
 		
 		private List<Property> properties;
 
-		private StandardModeling standardModeling;
+		private ProjectDS projectDS;
 
 		public ConfigurationBuilder() { }
 		
 		public ConfigurationBuilder name(String name) {
 			this.name = name;
+			return this;
+		}
+
+		public ConfigurationBuilder parallelComponent (Component parallelComponent){
+			this.parallelComponent = parallelComponent;
 			return this;
 		}
 		
@@ -130,10 +154,11 @@ public class Configuration {
 			this.projectFile = projectFile;
 			return this;
 		}
-		public ConfigurationBuilder project(StandardModeling standardModeling){
-			this.standardModeling = standardModeling;
+		public ConfigurationBuilder project(ProjectDS projectDS){
+			this.projectDS = projectDS;
 			return this;
 		}
+
 		
 		public ConfigurationBuilder milliseconds(Long milliseconds) {
 			this.milliseconds = milliseconds;
@@ -149,7 +174,8 @@ public class Configuration {
 			return new Configuration(this);
 		}
 
-		
-	}
+
+
+    }
 	
 }

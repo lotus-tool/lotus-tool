@@ -22,6 +22,9 @@ public class StandardModeling {
     private final Map<String, Object> mValues = new HashMap<>();
     private String mName;
 
+
+
+
     public interface Listener{
         void onChange(StandardModeling buildDS);
         void onBlockCreate(StandardModeling buildDS, Hmsc bbds);
@@ -206,6 +209,24 @@ public class StandardModeling {
         for(Hmsc h : mBlocos){
             if(id == h.getID()){
                 return h;
+            }
+        }
+        return null;
+    }
+
+    public TransitionMSC getTransitionMSC(Integer srcState, Integer dstState){
+        for(TransitionMSC transitionMSC : getTransitions()){
+            if(((Hmsc)transitionMSC.getSource()).getID() == srcState && ((Hmsc)transitionMSC.getDestiny()).getID() == dstState){
+                return transitionMSC;
+            }
+        }
+        return null;
+    }
+
+    public Hmsc getBlocoByLabel(String label) {
+        for(Hmsc hmsc: getBlocos()){
+            if( hmsc.getLabel().equals(label)){
+                return hmsc;
             }
         }
         return null;

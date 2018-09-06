@@ -22,7 +22,7 @@
 //        super.onStop(extensionManager);
 //    }
 //
-//    public StandardModeling getStandardModeling() {
+//    public StandardModeling getParallelComponent() {
 //        return standardModeling;
 //    }
 //}

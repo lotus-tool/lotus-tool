@@ -41,6 +41,7 @@ public class ProjectDS {
 
 
 
+
     public int getID(){
         return this.id;
     }
@@ -186,7 +187,7 @@ public class ProjectDS {
         return mValues.get(key);
     }
 
-    public void setValue(String key, Object value) {
+    public void putValue(String key, Object value) {
         mValues.put(key, value);
     }
 }

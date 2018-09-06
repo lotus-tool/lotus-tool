@@ -28,7 +28,7 @@ import javafx.scene.SnapshotParameters;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.image.WritableImage;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.shape.Circle;
+
 import javax.imageio.ImageIO;
 
 /**
@@ -163,7 +163,7 @@ public class StandardModelingViewImpl extends AnchorPane implements StandardMode
                 mBlockViews.add(view);
                 node = view.getNode();
                 view.setHMSC(bbds);
-                bbds.setValue("view", view);
+                bbds.putValue("view", view);
                 getChildren().add(node);
             }
         }
@@ -194,7 +194,7 @@ public class StandardModelingViewImpl extends AnchorPane implements StandardMode
         
         synchronized (this) {
             aux.remove(view);
-            bbds.setValue("view", null);
+            bbds.putValue("view", null);
             view.setHMSC(null);
             mBlockViews.remove(view);
         }
@@ -208,7 +208,7 @@ public class StandardModelingViewImpl extends AnchorPane implements StandardMode
                 view = transitionBuildFactory.create(t);
                 mTransitionViews.add(view);
                 view.setTransitionMSC(t, mComponentBuild);
-                t.setValue("view", view);
+                t.putValue("view", view);
                 node = view.getNode();
                 getChildren().add(node);
                 if (view instanceof SelfTransitionMSCViewImpl) {
@@ -233,7 +233,7 @@ public class StandardModelingViewImpl extends AnchorPane implements StandardMode
             if(view != null){
                 mTransitionViews.remove(view);
                 view.setTransitionMSC(null, null);
-                t.setValue("view", null);
+                t.putValue("view", null);
                 getChildren().remove(view);
             }
         }

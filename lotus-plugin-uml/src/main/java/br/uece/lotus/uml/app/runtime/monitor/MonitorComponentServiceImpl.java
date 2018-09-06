@@ -72,7 +72,7 @@ public class MonitorComponentServiceImpl implements Component, MonitorComponentS
 	}
 	
 	@Override
-	public void processTrace(LinkedList<String> trace) {
+	public void processTrace(LinkedList<String> trace) throws Exception {
 		this.lotusModelComponent.updateProject(trace);
 		this.modelCheckerComponent.verifyModel();
 	}

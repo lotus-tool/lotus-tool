@@ -1,17 +1,17 @@
 /**
  * The MIT License
  * Copyright © 2017 Davi Monteiro Barbosa
- *
+ * <p>
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- *
+ * <p>
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- *
+ * <p>
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -22,15 +22,14 @@
  */
 package br.uece.lotus.uml.app.runtime.utils.component_service;
 
+
+import br.uece.lotus.uml.api.ds.ProjectDS;
 import br.uece.lotus.uml.api.ds.StandardModeling;
-
-
+import br.uece.lotus.uml.app.ParallelComponentController;
 import br.uece.lotus.uml.app.runtime.config.ConfigurationServiceComponent;
-import br.uece.lotus.uml.app.runtime.model.custom.ProjectMSCCustom;
-import br.uece.lotus.uml.app.runtime.model.custom.StantardModelingCustom;
 import br.uece.lotus.uml.app.runtime.monitor.ProbabilisticAnnotator;
 import br.uece.lotus.uml.app.runtime.utils.ProjectMSCConverter;
-import br.uece.lotus.uml.app.runtime.utils.ProjectObjectLotusProjectMSCCustomConverter;
+import br.uece.lotus.uml.app.runtime.utils.ProjectXMLProjectMSCMSCConverterMSC;
 import com.google.common.base.Throwables;
 import net.engio.mbassy.listener.Synchronized;
 
@@ -42,104 +41,127 @@ import java.util.logging.Logger;
 import static com.google.common.base.Strings.isNullOrEmpty;
 
 public class ProjectMscServiceComponentImpl implements Component, ProjectMscServiceComponent {
-	
-	private static final Logger log = Logger.getLogger(ProjectMscServiceComponentImpl.class.getName());
-	
-	private Path projectFile;
-	
-	private ProjectMSCCustom projectMSCCustom;
-	
-	private ProbabilisticAnnotator annotator;
-	
-	private ProjectMSCConverter mscConverter;
 
-	private StandardModeling standardModeling;
+    private static final Logger log = Logger.getLogger(ProjectMscServiceComponentImpl.class.getName());
 
+    private Path projectFile;
 
+    private ProjectDS projectDS;
 
-	public ProjectMscServiceComponentImpl() {
-      //  RuntimePlugin plugin = new RuntimePlugin();
+    private ProbabilisticAnnotator annotator;
 
-		this.mscConverter = new ProjectObjectLotusProjectMSCCustomConverter();
-		this.annotator = new ProbabilisticAnnotator();
-		//this.standardModeling = plugin.getStandardModeling();
-	}
+    private ProjectMSCConverter mscConverter;
 
-	@Override
-	public void start(ComponentManager manager) throws Exception {
-		ConfigurationServiceComponent configurationComponent = manager.getComponentService(ConfigurationServiceComponent.class);
-		if(configurationComponent.getConfiguration().getProjectFile() == null){
-			this.standardModeling = configurationComponent.getConfiguration().getStandardModeling();
-		}else {
-			this.projectFile = Paths.get(configurationComponent.getConfiguration().getProjectFile());
-		}
+    private StandardModeling standardModeling;
+    private ParallelComponentController parallelComponentController;
 
-		loadProject();
-	}
-	
-	@Override
-	public void stop(ComponentManager manager) throws Exception {
-		//saveProject();
-		updateProbabilityProject();
-		manager.uninstallComponent(this);
-	}
-
-	private void updateProbabilityProject(){
+    private Object sourcObject = null;
+    private br.uece.lotus.Component parallelComponent;
 
 
-		try {
-			mscConverter.toUpdate(projectMSCCustom, standardModeling);
-		} catch (Exception e) {
-			log.severe(e.getMessage());
-			Throwables.propagate(e);
-		}
-	}
+    public ProjectMscServiceComponentImpl() {
+        //  RuntimePlugin plugin = new RuntimePlugin();
+        this.mscConverter = new ProjectXMLProjectMSCMSCConverterMSC();
+        this.annotator = new ProbabilisticAnnotator();
+        this.parallelComponentController = new ParallelComponentController(standardModeling);
+        //this.standardModeling = plugin.getProjectDS();
+    }
 
-	private void saveProject() {
-		try {
-			mscConverter.toUndo(projectMSCCustom);
-		} catch (Exception e) {
-			log.severe(e.getMessage());
-			Throwables.propagate(e);
-		}
-	}
-	
-	private void loadProject() {
-		try  {
-			projectMSCCustom = mscConverter.toConverter(standardModeling);
+    @Override
+    public void start(ComponentManager manager) throws Exception {
+        ConfigurationServiceComponent configurationComponent = manager.getComponentService(ConfigurationServiceComponent.class);
+        if (configurationComponent.getConfiguration().getProjectFile() == null) {
+            this.projectDS = configurationComponent.getConfiguration().getProjectDS();
+            this.parallelComponent = configurationComponent.getConfiguration().getParallelComponent();
+            this.standardModeling = projectDS.getStandardModeling();
+            this.mscConverter = new ProjectDSConverterMSC();
+            this.sourcObject = standardModeling;
 
-			if(projectFile == null){
-				projectMSCCustom.putValue("file","");
-			}else {
-				projectMSCCustom.putValue("file", projectFile.toFile());
-			}
-			
-			if (isNullOrEmpty(projectMSCCustom.getName())) {
-				projectMSCCustom.setName("Untitled");
-			}
-		} catch (Exception e) {
-			log.severe(e.getMessage());
-			Throwables.propagate(e);
-		}
-	}
-	
-	@Override
-	@Synchronized
-	public void updateProject(LinkedList<String> trace) {
-		this.annotator.annotate(getStantardModelingCustom(), trace);
-		updateProbabilityProject();
-		//saveProject();
-	}
-	
-	@Override
-	@Synchronized
-	public ProjectMSCCustom getProjectMSCCustom() {
-		return this.projectMSCCustom;
-	}
 
-	@Synchronized
-	public StantardModelingCustom getStantardModelingCustom() {
-		return this.projectMSCCustom.getStantardModelingCustom(0);
-	}
-	
+        } else {
+            this.projectFile = Paths.get(configurationComponent.getConfiguration().getProjectFile());
+            this.mscConverter = new ProjectXMLProjectMSCMSCConverterMSC();
+            this.sourcObject = projectFile;
+            loadProject();
+
+        }
+
+
+    }
+
+    @Override
+    public void stop(ComponentManager manager) throws Exception {
+        //saveProject();
+        updateProbabilityProject();
+        manager.uninstallComponent(this);
+    }
+
+    private void updateProbabilityProject() {
+        try {
+            mscConverter.toUpdate(projectDS, sourcObject);
+        } catch (Exception e) {
+            log.severe(e.getMessage());
+            Throwables.propagate(e);
+        }
+    }
+
+    private void saveProject() {
+        try {
+            mscConverter.toUndo(projectDS);
+        } catch (Exception e) {
+            log.severe(e.getMessage());
+            Throwables.propagate(e);
+        }
+    }
+
+    private void loadProject() {
+
+        try {
+
+            projectDS = mscConverter.toConverter(sourcObject);
+
+            if (projectFile == null) {
+                projectDS.putValue("file", "");
+            } else {
+                projectDS.putValue("file", projectFile.toFile());
+            }
+
+            if (isNullOrEmpty(projectDS.getName())) {
+                projectDS.setName("Untitled");
+            }
+        } catch (Exception e) {
+            log.severe(e.getMessage());
+            Throwables.propagate(e);
+        }
+    }
+
+
+
+    @Override
+    @Synchronized
+    public void updateProject(LinkedList<String> trace) {
+        this.annotator.annotate(getStantardModeling(), trace);
+        updateProbabilityProject();
+        parallelComponentController.trySetProbabilityFromTransitionMSC(parallelComponent, standardModeling.getTransitions());
+
+
+        //saveProject();
+    }
+
+    @Override
+    @Synchronized
+    public ProjectDS getProjectDS() {
+        return this.projectDS;
+    }
+
+    @Synchronized
+    public StandardModeling getStantardModeling() {
+        return this.standardModeling;
+    }
+
+    @Override
+    public br.uece.lotus.Component getParallelComponent() {
+        return this.parallelComponent;
+    }
+
 }

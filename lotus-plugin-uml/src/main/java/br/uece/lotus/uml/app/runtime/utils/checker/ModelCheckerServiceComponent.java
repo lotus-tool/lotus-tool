@@ -27,6 +27,6 @@ import br.uece.lotus.uml.app.runtime.utils.component_service.ComponentService;
 
 public interface ModelCheckerServiceComponent extends ComponentService {
 	
-	public void verifyModel();
+	public void verifyModel() throws Exception;
 
 }

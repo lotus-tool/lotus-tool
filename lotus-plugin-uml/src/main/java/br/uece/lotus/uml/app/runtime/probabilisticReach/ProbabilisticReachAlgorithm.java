@@ -27,10 +27,10 @@
  */
 package br.uece.lotus.uml.app.runtime.probabilisticReach;
 
-import br.uece.lotus.uml.app.runtime.model.custom.HMSCCustom;
-import br.uece.lotus.uml.app.runtime.model.custom.StantardModelingCustom;
+import br.uece.lotus.Component;
+import br.uece.lotus.State;
+import br.uece.lotus.Transition;
 
-import br.uece.lotus.uml.app.runtime.model.custom.TransitionHMSCCustom;
 import com.google.common.collect.Iterables;
 
 import java.util.ArrayList;
@@ -45,15 +45,15 @@ import static java.lang.Math.abs;
  */
 public class ProbabilisticReachAlgorithm {
 
-	public double probabilityBetween(StantardModelingCustom StantardModelingCustom, Integer sourceId, Integer targetId) {
-		int tam = StantardModelingCustom.getHMSCCustomCount();
+	public double probabilityBetween(Component parallelComponet, Integer sourceId, Integer targetId) {
+		int tam = parallelComponet.getStatesCount();
 		double[][] probabilities = new double[tam][tam];
 		probabilities = zerar(probabilities, tam);
-		List<TransitionHMSCCustom> transitions = transitionsList(StantardModelingCustom);
+		List<Transition> transitions = transitionsList(parallelComponet);
 
-		for (TransitionHMSCCustom t : transitions) {
-			sourceId = t.getSourceHMSCCustom().getId();
-			targetId = t.getDestinyHMSCCustom().getId();
+		for (Transition t : transitions) {
+			sourceId = t.getSource().getID();
+			targetId = t.getDestiny().getID();
 			probabilities[sourceId][targetId] = t.getProbability();
 			printMatrix(probabilities);
 		}
@@ -107,17 +107,17 @@ public class ProbabilisticReachAlgorithm {
 		return multiply;
 	}
 
-	public List<TransitionHMSCCustom> transitionsList(StantardModelingCustom StantardModelingCustom) {
-		Iterable<TransitionHMSCCustom> aux = StantardModelingCustom.getTransitionsHMSCCustom();
-		List<TransitionHMSCCustom> aux2 = new ArrayList<TransitionHMSCCustom>();
-		for (TransitionHMSCCustom t : aux) {
+	public List<Transition> transitionsList(Component component) {
+		Iterable<Transition> aux = component.getTransitions();
+		List<Transition> aux2 = new ArrayList<Transition>();
+		for (Transition t : aux) {
 			aux2.add(t);
 		}
 		return aux2;
 	}
 
-	public int getBMSCsSize(Iterable<HMSCCustom> bMSC) {
-		return Iterables.size(bMSC);
+	public int getStatesSize(Iterable<State> states) {
+		return Iterables.size(states);
 	}
 
 	public double[][] zerar(double[][] probabilities, int tam) {

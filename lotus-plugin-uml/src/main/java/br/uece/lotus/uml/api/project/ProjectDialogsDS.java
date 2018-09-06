@@ -41,7 +41,7 @@ public class ProjectDialogsDS extends Plugin{
         ProjectDS p = null;
         try (FileInputStream in = new FileInputStream(file)) {
             p = serializer.parseStream(in);
-            p.setValue("file", file);
+            p.putValue("file", file);
             if (p.getName() == null || p.getName().trim().isEmpty()) {
                 p.setName("Untitled");
             }
@@ -84,7 +84,7 @@ public class ProjectDialogsDS extends Plugin{
         try (FileOutputStream out = new FileOutputStream(f)) {
             serializer.toStream(project, out);
             if (cacheFileName) {
-                project.setValue("file", f);
+                project.putValue("file", f);
             }
         } catch (Exception e) {
             mDialogsHelper.showException(e);

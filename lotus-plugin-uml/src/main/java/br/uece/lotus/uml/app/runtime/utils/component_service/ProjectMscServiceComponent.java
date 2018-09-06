@@ -22,8 +22,9 @@
  */
 package br.uece.lotus.uml.app.runtime.utils.component_service;
 
-import br.uece.lotus.uml.app.runtime.model.custom.ProjectMSCCustom;
-import br.uece.lotus.uml.app.runtime.model.custom.StantardModelingCustom;
+import br.uece.lotus.Component;
+import br.uece.lotus.uml.api.ds.ProjectDS;
+import br.uece.lotus.uml.api.ds.StandardModeling;;
 
 
 import java.util.LinkedList;
@@ -32,8 +33,9 @@ public interface ProjectMscServiceComponent extends ComponentService {
 
 	void updateProject(LinkedList<String> trace);
 
-	ProjectMSCCustom getProjectMSCCustom();
+	ProjectDS getProjectDS();
 
-	StantardModelingCustom getStantardModelingCustom();
+	StandardModeling getStantardModeling();
 
+	Component getParallelComponent();
 }

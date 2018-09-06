@@ -2,10 +2,8 @@ package br.uece.lotus.uml.app.runtime.utils;
 
 
 
-import br.uece.lotus.uml.app.runtime.model.custom.HMSCCustom;
-import br.uece.lotus.uml.app.runtime.model.custom.ProjectMSCCustom;
-import br.uece.lotus.uml.app.runtime.model.custom.TransitionHMSCCustom;
-import br.uece.lotus.uml.app.runtime.model.custom.StantardModelingCustom;
+import br.uece.lotus.uml.api.ds.*;
+
 import org.w3c.dom.*;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -23,10 +21,10 @@ import java.nio.file.Path;
 
 public class ProjectXMLProjectMSCMSCConverterMSC implements ProjectMSCConverter<Path> {
 
-    private ProjectMSCCustom projectMSCCustom;
+    private ProjectDS projectDS;
     private  DocumentBuilderFactory factory;
     private  DocumentBuilder documentBuilder;
-    private StantardModelingCustom StantardModelingCustom;
+    private StandardModeling stantardModeling;
 
     public ProjectXMLProjectMSCMSCConverterMSC() {
          factory = DocumentBuilderFactory.newInstance();
@@ -42,26 +40,26 @@ public class ProjectXMLProjectMSCMSCConverterMSC implements ProjectMSCConverter<
 
 
     @Override
-    public ProjectMSCCustom toConverter(Path path) throws Exception {
+    public ProjectDS toConverter(Path path) throws Exception {
         // fazer o tratamento para quando for importanto um arquivo xml vazio ou algo parecido
         InputStream inputStream = Files.newInputStream(path);
 
         Document document = documentBuilder.parse(inputStream);
         document.getDocumentElement().normalize();
         parseAboutProjectMSCCustom(document);
-        return projectMSCCustom;
+        return projectDS;
     }
 
 
     private void parseAboutProjectMSCCustom(Document document) {
 
-        projectMSCCustom = new ProjectMSCCustom();
+        projectDS = new ProjectDS();
 
         NodeList projectMscNodeList = document.getElementsByTagName("project-msc");
         Node projectMscNode =  projectMscNodeList.item(0);
         Element projectMscElement = (Element) projectMscNode;
         String nameProjectMsc = projectMscElement.getAttribute("name");
-        projectMSCCustom.setName(nameProjectMsc);
+        projectDS.setName(nameProjectMsc);
 
         parseAboutStandardModelingCustom(document);
 
@@ -70,8 +68,8 @@ public class ProjectXMLProjectMSCMSCConverterMSC implements ProjectMSCConverter<
     }
 
     private void parseAboutStandardModelingCustom(Document document) {
-        StantardModelingCustom = new StantardModelingCustom();
-        projectMSCCustom.addStantardModelingCustom(StantardModelingCustom);
+        stantardModeling = new StandardModeling();
+        projectDS.setComponentBuildDS(stantardModeling);
 
         parseAboutHMSC(document);
 
@@ -84,12 +82,12 @@ public class ProjectXMLProjectMSCMSCConverterMSC implements ProjectMSCConverter<
         NodeList transitionHMSCNodeList = document.getElementsByTagName("TransitionHMSC");
         Node transitionHMSCNode;
         Element transitionHMSCElement;
-        TransitionHMSCCustom transitionHMSCCustom;
+        TransitionMSC transitionMSC;
         Integer srcHMSCInInt,dstHMSCInInt;
         String srcHMSCInString,dstHMSCInString, label;
         Double probability;
 
-        HMSCCustom srcHMSCCustom, dstHMSCCustom;
+        Hmsc srcHMSCCustom, dstHMSCCustom;
 
         for(int i = 0; i < transitionHMSCNodeList.getLength(); i++ ){
            transitionHMSCNode = transitionHMSCNodeList.item(i);
@@ -108,12 +106,14 @@ public class ProjectXMLProjectMSCMSCConverterMSC implements ProjectMSCConverter<
 
            probability = Double.valueOf(transitionHMSCElement.getAttribute("prob"));
 
-           srcHMSCCustom = StantardModelingCustom.getHMSCCustomFromId(srcHMSCInInt);
-           dstHMSCCustom = StantardModelingCustom.getHMSCCustomFromId(dstHMSCInInt);
+           srcHMSCCustom = stantardModeling.getBlocoByID(srcHMSCInInt);
+           dstHMSCCustom = stantardModeling.getBlocoByID(dstHMSCInInt);
 
-           transitionHMSCCustom = new TransitionHMSCCustom(StantardModelingCustom, srcHMSCCustom, dstHMSCCustom);
-           transitionHMSCCustom.setLabel(label);
-           transitionHMSCCustom.setProbability(probability);
+
+           new TransitionMSC.Builder(stantardModeling, new TransitionMSC(srcHMSCCustom,dstHMSCCustom))
+                   .setLabel(label)
+                   .setProbability(probability)
+                   .create();
         }
 
     }
@@ -124,7 +124,7 @@ public class ProjectXMLProjectMSCMSCConverterMSC implements ProjectMSCConverter<
         Element HMSCElement;
         String HMSCLabel, HMSCIdInString;
         Integer HMSCIdInInt;
-        HMSCCustom HMSCCustom;
+        Hmsc hmsc;
 
         NodeList HMSCNodeList = document.getElementsByTagName("hMSC");
         for(int i = 0; i<HMSCNodeList.getLength(); i++){
@@ -134,8 +134,9 @@ public class ProjectXMLProjectMSCMSCConverterMSC implements ProjectMSCConverter<
             HMSCIdInInt = Integer.valueOf(HMSCIdInString);
             HMSCLabel = HMSCElement.getAttribute("label");
 
-            HMSCCustom = new HMSCCustom(StantardModelingCustom, HMSCIdInInt);
-            HMSCCustom.setLabel(HMSCLabel);
+            hmsc = new Hmsc(stantardModeling);
+            hmsc.setID(HMSCIdInInt);
+            hmsc.setLabel(HMSCLabel);
 
 
         }
@@ -144,7 +145,7 @@ public class ProjectXMLProjectMSCMSCConverterMSC implements ProjectMSCConverter<
 
 
     @Override
-    public void toUpdate(ProjectMSCCustom projectMSCCustom, Path pathSrc) throws Exception {
+    public void toUpdate(ProjectDS projectDSIn, Path pathSrc) throws Exception {
         InputStream inputStream = Files.newInputStream(pathSrc);
 
         Document document = documentBuilder.parse(inputStream);
@@ -152,27 +153,27 @@ public class ProjectXMLProjectMSCMSCConverterMSC implements ProjectMSCConverter<
 
 
         NodeList transitionHMSCNodeList = document.getElementsByTagName("TransitionHMSC");
-        Node transitionHMSCNode;
+        Node transitionMSCNode;
         Element transitionHMSCElement;
         Integer srcHMSCInInt,dstHMSCInInt;
         String srcHMSCInString,dstHMSCInString;
 
         for(int i = 0; i < transitionHMSCNodeList.getLength(); i++ ){
-            transitionHMSCNode = transitionHMSCNodeList.item(i);
-            transitionHMSCElement = (Element) transitionHMSCNode;
+            transitionMSCNode = transitionHMSCNodeList.item(i);
+            transitionHMSCElement = (Element) transitionMSCNode;
             srcHMSCInString = transitionHMSCElement.getAttribute("from");
             srcHMSCInInt = Integer.valueOf(srcHMSCInString);
 
             dstHMSCInString = transitionHMSCElement.getAttribute("to");
             dstHMSCInInt = Integer.valueOf(dstHMSCInString);
 
-            TransitionHMSCCustom currentTransitionHMSCCustom = StantardModelingCustom.getTransitionHMSCCustom(srcHMSCInInt, dstHMSCInInt);
+            TransitionMSC currentTransitionMSC = stantardModeling.getTransitionMSC(srcHMSCInInt, dstHMSCInInt);
 
-            if(currentTransitionHMSCCustom == null){
+            if(currentTransitionMSC == null){
                 throw new Exception("TransitionHMSCCustom from xml not found!");
             }else {
 
-                updateProbabilityInTranstionHMSCNode(transitionHMSCNode, currentTransitionHMSCCustom);
+                updateProbabilityInTranstionMSCNode(transitionMSCNode, currentTransitionMSC);
             }
 
         }
@@ -187,16 +188,16 @@ public class ProjectXMLProjectMSCMSCConverterMSC implements ProjectMSCConverter<
 
 
 
-    private void updateProbabilityInTranstionHMSCNode(Node transitionHMSCNode, TransitionHMSCCustom transitionHMSCCustom) {
-        NamedNodeMap attr = transitionHMSCNode.getAttributes();
+    private void updateProbabilityInTranstionMSCNode(Node transitionMSCNode, TransitionMSC transitionMSC) {
+        NamedNodeMap attr = transitionMSCNode.getAttributes();
         Node probAttr = attr.getNamedItem("prob");
-        Double updateProbabilityDouble = transitionHMSCCustom.getProbability();
+        Double updateProbabilityDouble = transitionMSC.getProbability();
         String updateProbabilityString = String.valueOf(updateProbabilityDouble);
         probAttr.setTextContent(updateProbabilityString);
     }
 
     @Override
-    public Path toUndo(ProjectMSCCustom projectMSCCustom) throws Exception {
+    public Path toUndo(ProjectDS projectDSIn) throws Exception {
         return null;
     }
 

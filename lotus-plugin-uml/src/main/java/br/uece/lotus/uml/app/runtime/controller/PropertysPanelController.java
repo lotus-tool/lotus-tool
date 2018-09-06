@@ -1,8 +1,11 @@
 package br.uece.lotus.uml.app.runtime.controller;
 
 
+import br.uece.lotus.Component;
+import br.uece.lotus.Transition;
 import br.uece.lotus.uml.api.ds.Hmsc;
 import br.uece.lotus.uml.api.ds.StandardModeling;
+import br.uece.lotus.uml.app.ParallelComponentController;
 import br.uece.lotus.uml.app.runtime.app.MyHandler;
 import br.uece.lotus.uml.app.runtime.config.Configuration;
 import br.uece.lotus.uml.app.runtime.model.Equation;
@@ -10,6 +13,7 @@ import br.uece.lotus.uml.app.runtime.utils.checker.ConditionalOperator;
 import br.uece.lotus.uml.app.runtime.utils.checker.Property;
 import br.uece.lotus.uml.app.runtime.utils.checker.Template;
 import br.uece.lotus.uml.app.runtime.utils.component_service.Runtime;
+import br.uece.lotus.uml.designer.standardModeling.StandardModelingWindowImpl;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -27,10 +31,18 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ *
+ * @author Lucas Vieira Alves
+ * 03/09/2018
+ */
+
 
 public class PropertysPanelController {
 
     private final StandardModeling standardModeling;
+    private Component parrallelComponent;
+    private final StandardModelingWindowImpl standardModelingWindow;
     @FXML
     private
     AnchorPane anchorPane;
@@ -68,13 +80,12 @@ public class PropertysPanelController {
 
     private List<ConditionalOperator> operations;
     private List<Equation> addedEquations = new ArrayList<>();
-
-
-
     private final List<Hmsc> HMSCs;
 
-    public PropertysPanelController(StandardModeling standardModeling) {
-        this.standardModeling = standardModeling;
+    public PropertysPanelController(StandardModelingWindowImpl standardModelingWindow) {
+        this.standardModelingWindow = standardModelingWindow;
+        this.standardModeling = standardModelingWindow.getComponentBuildDS();
+        this.parrallelComponent = standardModelingWindow.getComponentLTS();
         this.HMSCs = standardModeling.getBlocos();
         operations = new ArrayList<>(Arrays.asList(ConditionalOperator.values()));
     }
@@ -97,16 +108,59 @@ public class PropertysPanelController {
 
     private void start() {
         Path traceFile = Paths.get(pathTraceTxtField.getText());
-//		Path lotusFile = Paths.get("/home/lucas-vieira/Desktop/exemplo-2/exemplo2.xml");
+
+        ParallelComponentController parallelComponentController = new ParallelComponentController(standardModeling);
+
+        try {
+            List<Component> createdComponentsWithIndividualLTS = parallelComponentController.buildIndividualComponents();
+            parallelComponentController.addIndividualComponentsInLeftPanel(standardModelingWindow,createdComponentsWithIndividualLTS);
+
+            List<Component> createdComponentsWithLifeLTS = parallelComponentController.buildLifeComponents();
+            parallelComponentController.addLifeComponentsInLeftPanel(standardModelingWindow, createdComponentsWithLifeLTS);
+
+            parrallelComponent = parallelComponentController.buildParallelComponent();
+
+            standardModelingWindow.setComponentLTS(parrallelComponent);
+
+            parallelComponentController.addParallelComponentInLeftPanel(standardModelingWindow, parrallelComponent);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
 
-		// Condictions that I want to verify
+        // Condictions that I want to verify
 		List<Property> properties = new ArrayList<>();
 
-		for(Equation equation :addedEquations){
+		for(Equation equation : addedEquations){
+
+            Integer firstStateId = getStateIdInComponetAboutFirstHMSC(parrallelComponent, equation.getFirstHMSC());
+
+            Integer secondStateId = null;
+
+		    if(equation.getFirstHMSC() == equation.getSecondHMSC()){
+		        secondStateId = firstStateId;
+            }else {
+                secondStateId = getStateIdInComponetAboutSecondHMSC(parrallelComponent, equation.getSecondHMSC());
+            }
+//
+//            System.out.println(" probabilidade do cenario "+ equation.getFirstHMSC().getLabel() + "para p cenário "+ equation.getSecondHMSC().getLabel() );
+//            System.out.println(" é a probabilidade do estado " + firstStateId +"para o estado"+ secondStateId);
+//            System.out.println("<<><><><><><>>");
+
+            if(firstStateId == null || secondStateId == null){
+                try {
+                    throw new Exception("Not found state! ");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return;
+                }
+            }
+
             properties.add(new Property.PropertyBuilder()
-                    .sourceHMSCId(equation.getFirstHMSC().getID())
-                    .targetHMSCId(equation.getSecondHMSC().getID())
+                    .firstStateId(firstStateId)
+                    .template(equation.getTemplate())
+                    .secondStateId(secondStateId)
                     .conditionalOperator(equation.getConditionalOperator())
                     .probability(equation.getProbability())
                     .build());
@@ -122,7 +176,8 @@ public class PropertysPanelController {
 		Configuration configuration = new Configuration.ConfigurationBuilder()
 				.traceFile(traceFile.toString())
 				.milliseconds(2000L)
-				.project(standardModeling)
+				.project(standardModelingWindow.projectExplorerPluginDS.getSelectedProjectDS())
+                .parallelComponent(parrallelComponent)
 				.properties(properties)
 				.build();
 
@@ -134,6 +189,48 @@ public class PropertysPanelController {
             e.printStackTrace();
         }
     }
+
+
+    private Integer getStateIdInComponetAboutFirstHMSC(Component parrallelComponent, Hmsc firstHMSC) {
+        if(firstHMSC.get_Initial()){
+           return parrallelComponent.getInitialState().getID();
+        }
+
+        String labelHMSC = firstHMSC.getLabel();
+
+        for(Transition transition : parrallelComponent.getTransitionsList()){
+            if(transition.getLabel().split("[.]")[2].equals(labelHMSC)){
+                return transition.getDestiny().getID();
+            }
+        }
+        return null;
+    }
+
+        private Integer getStateIdInComponetAboutSecondHMSC(Component parrallelComponent, Hmsc secondHMSC) {
+            if(secondHMSC.get_Initial()){
+                return parrallelComponent.getInitialState().getID();
+            }
+
+            String labelHMSC = secondHMSC.getLabel();
+
+            for(Transition transition : parrallelComponent.getTransitionsList()){
+                if(transition.getLabel().split("[.]")[0].equals(labelHMSC)){
+                    return transition.getSource().getID();
+                }
+            }
+
+            return null;
+    }
+
+    /* Optional<Transition>  transitionOptional = parrallelComponent.getTransitionsList().stream().filter(transition
+             -> (transition.getLabel().split("[.]"))[1].equals(labelHMSC)).findAny();
+
+     Transition transition = transitionOptional.get();*/
+
+
+   //  return transition.getSource().getID();
+
+
 
     private void addItemsInChoiseBoxs() {
         ObservableList<String> itemsHMSCChoiseBox = FXCollections.observableArrayList();
@@ -184,7 +281,7 @@ public class PropertysPanelController {
         String probabilityInString = probabilityTextField.getText();
         Double probabilityInDouble = Double.valueOf(probabilityInString);
 
-        System.out.println("Item selecionado "+ srcHMSCSelected.getLabel()+ "  "+ dstHMSCSelected.getLabel()+ " "+selectedOperationItem.toString()+ " "+probabilityInString);
+       // System.out.println("Item selecionado "+ srcHMSCSelected.getLabel()+ "  "+ dstHMSCSelected.getLabel()+ " "+selectedOperationItem.toString()+ " "+probabilityInString);
 
         Equation currentEquation = new Equation();
 

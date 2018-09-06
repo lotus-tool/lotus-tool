@@ -26,9 +26,11 @@ public class Property {
 
 	private Integer id;
 	
-	private Integer sourceHMSCId;
+	private Integer firstStateId;
+
+	private String template;
 	
-	private Integer targetHMSCId;
+	private Integer secondStateId;
 	
 	private ConditionalOperator conditionalOperator;
 	
@@ -38,10 +40,11 @@ public class Property {
 	
 	private Property(PropertyBuilder builder) {
 		this.id = builder.id;
-		this.sourceHMSCId = builder.sourceHMSCId;
-		this.targetHMSCId = builder.targetHMSCId;
+		this.firstStateId = builder.firstStateId;
+		this.secondStateId = builder.secondStateId;
 		this.conditionalOperator = builder.conditionalOperator;
 		this.probability = builder.probability;
+		this.template = builder.template;
 	}
 
 	public Integer getId() {
@@ -52,20 +55,28 @@ public class Property {
 		this.id = id;
 	}
 
-	public Integer getSourceHMSCId() {
-		return sourceHMSCId;
+	public String getTemplate() {
+		return template;
 	}
 
-	public void setSourceHMSCId(Integer sourceHMSCId) {
-		this.sourceHMSCId = sourceHMSCId;
+	public void setTemplate(String template) {
+		this.template = template;
 	}
 
-	public Integer getTargetHMSCId() {
-		return targetHMSCId;
+	public Integer getFirstStateId() {
+		return firstStateId;
 	}
 
-	public void setTargetHMSCId(Integer targetHMSCId) {
-		this.targetHMSCId = targetHMSCId;
+	public void setFirstStateId(Integer firstStateId) {
+		this.firstStateId = firstStateId;
+	}
+
+	public Integer getSecondStateId() {
+		return secondStateId;
+	}
+
+	public void setSecondStateId(Integer secondStateId) {
+		this.secondStateId = secondStateId;
 	}
 
 	public ConditionalOperator getConditionalOperator() {
@@ -88,14 +99,16 @@ public class Property {
 		
 		private Integer id;
 		
-		private Integer sourceHMSCId;
+		private Integer firstStateId;
 		
-		private Integer targetHMSCId;
+		private Integer secondStateId;
 		
 		private ConditionalOperator conditionalOperator;
 		
 		private Double probability;
-		
+
+		private String template;
+
 		public PropertyBuilder() { }
 		
 		public PropertyBuilder id(Integer id) {
@@ -103,13 +116,13 @@ public class Property {
 			return this;
 		}
 		
-		public PropertyBuilder sourceHMSCId(Integer sourceHMSCId) {
-			this.sourceHMSCId = sourceHMSCId;
+		public PropertyBuilder firstStateId(Integer firstStateId) {
+			this.firstStateId = firstStateId;
 			return this;
 		}
 		
-		public PropertyBuilder targetHMSCId(Integer targetHMSCId) {
-			this.targetHMSCId = targetHMSCId;
+		public PropertyBuilder secondStateId(Integer secondStateId) {
+			this.secondStateId = secondStateId;
 			return this;
 		}
 		
@@ -126,7 +139,11 @@ public class Property {
 		public Property build() {
 			return new Property(this);
 		}
-		
-	}
+
+		public PropertyBuilder template(String template) {
+			this.template = template;
+			return this;
+		}
+    }
 	
 }

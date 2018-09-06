@@ -199,7 +199,7 @@ public class ComponentDSViewImpl extends AnchorPane implements ComponentDSView, 
                 view = transitionFactory.create(t);
                 mTransitionViews.add(view);
                 view.setTransitionMSC(t, mComponentDS);
-                t.setValue("view", view);
+                t.putValue("view", view);
                 node = view.getNode();
                 getChildren().add(node);
                 if (view instanceof SelfTransitionMSCViewImpl) {
@@ -220,7 +220,7 @@ public class ComponentDSViewImpl extends AnchorPane implements ComponentDSView, 
             if(view != null){
                 mTransitionViews.remove(view);
                 view.setTransitionMSC(null, null);
-                t.setValue("view", null);
+                t.putValue("view", null);
                 getChildren().remove(view);
             }
         }

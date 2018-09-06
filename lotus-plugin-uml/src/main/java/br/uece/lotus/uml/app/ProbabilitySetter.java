@@ -9,6 +9,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ *
+ * @author Lucas Vieira Alves
+ * 03/09/2018
+ */
+
 public class ProbabilitySetter {
 
     public static void setProbabilityFromTransitionMSCAndObjectActions(Component component, List<TransitionMSC> transitionMSCList) throws Exception{

@@ -119,6 +119,8 @@ public class FileWatcher {
 		} catch (IOException e) {
 			e.printStackTrace();
 			log.severe(e.getMessage());
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 
