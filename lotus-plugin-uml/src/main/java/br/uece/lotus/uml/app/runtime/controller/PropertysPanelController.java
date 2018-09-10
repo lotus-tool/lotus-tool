@@ -14,6 +14,7 @@ import br.uece.lotus.uml.app.runtime.utils.checker.Property;
 import br.uece.lotus.uml.app.runtime.utils.checker.Template;
 import br.uece.lotus.uml.app.runtime.utils.component_service.Runtime;
 import br.uece.lotus.uml.designer.standardModeling.StandardModelingWindowImpl;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -24,6 +25,8 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
+import javax.swing.*;
+import javax.swing.event.ChangeListener;
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -75,11 +78,19 @@ public class PropertysPanelController {
     @FXML
     Button startButton;
 
+    @FXML
+    TextArea resultingEquationTextArea;
+
+    @FXML
+    TextField numberStepsInput;
     private Stage stage;
 
 
     private List<ConditionalOperator> operations;
     private List<Equation> addedEquations = new ArrayList<>();
+
+
+
     private final List<Hmsc> HMSCs;
 
     public PropertysPanelController(StandardModelingWindowImpl standardModelingWindow) {
@@ -95,6 +106,7 @@ public class PropertysPanelController {
 
         configureTableColumn();
         addItemsInChoiseBoxs();
+        changeListners();
 
         stage = (Stage) anchorPane.getScene().getWindow();
         chooseButton.setOnAction(onClickChooseButton());
@@ -102,9 +114,10 @@ public class PropertysPanelController {
         addButton.setOnAction(event ->
                 buildEquation());
 
+        templateChoiseBox.setOnAction(onSelectedTemplate());
         startButton.setOnAction(event -> start());
-
     }
+
 
     private void start() {
         Path traceFile = Paths.get(pathTraceTxtField.getText());
@@ -273,21 +286,55 @@ public class PropertysPanelController {
     private void buildEquation() {
         //Hmsc srcHMSCSelected = (HMSC) getSelectedItem(firstHMSCChoiseBox, HMSCs);
         Hmsc srcHMSCSelected = getSelectedHMSC(firstHMSCChoiseBox, HMSCs);
-        String selectedTemplateItem = templateChoiseBox.getValue();
-        Hmsc dstHMSCSelected = getSelectedHMSC(secondHMSCChoiseBox, HMSCs);
+        if(srcHMSCSelected == null){
+            JOptionPane.showMessageDialog(null, "Source Hmsc not be null", "Source Hmsc Erro", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        if(templateChoiseBox.getSelectionModel().isEmpty()){
+            JOptionPane.showMessageDialog(null, "Template not be null", "Template Hmsc Erro", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        String selectedTemplateItem = resultingEquationTextArea.getText();
 
         ConditionalOperator selectedOperationItem =  getSelectedOperation(operationChoiseBox, operations);
+        if(selectedOperationItem == null){
+            JOptionPane.showMessageDialog(null, "Operation not be null", "Operation Erro", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
 
         String probabilityInString = probabilityTextField.getText();
+        if(probabilityInString.equals("")){
+            JOptionPane.showMessageDialog(null, "Probability not be null", "Probability Erro", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
         Double probabilityInDouble = Double.valueOf(probabilityInString);
 
-       // System.out.println("Item selecionado "+ srcHMSCSelected.getLabel()+ "  "+ dstHMSCSelected.getLabel()+ " "+selectedOperationItem.toString()+ " "+probabilityInString);
+       // System.out.println("Item selecionado "+ srcHMSCSelected.getLabel()+ "  "+ selectedTemplateItem +" "+dstHMSCSelected.getLabel()+ " "+selectedOperationItem.toString()+ " "+probabilityInString);
 
         Equation currentEquation = new Equation();
 
-        currentEquation.setFirstHMSC(srcHMSCSelected).setTemplate(selectedTemplateItem).setSecondHMSC(dstHMSCSelected)
-                .setConditionalOperation(selectedOperationItem).setProbability(probabilityInDouble);
-        addedEquations.add(currentEquation);
+
+        if(secondHMSCChoiseBox.isVisible()) {
+            Hmsc dstHMSCSelected = getSelectedHMSC(secondHMSCChoiseBox, HMSCs);
+            if(dstHMSCSelected == null){
+                JOptionPane.showMessageDialog(null, "Destiny Hmsc not be null", "Destiny Hmsc Erro", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            currentEquation.setFirstHMSC(srcHMSCSelected).setTemplate(selectedTemplateItem).setSecondHMSC(dstHMSCSelected)
+                    .setConditionalOperation(selectedOperationItem).setProbability(probabilityInDouble);
+            addedEquations.add(currentEquation);
+        }else{
+            String nSteps = numberStepsInput.getText();
+            if(nSteps.equals("")){
+                JOptionPane.showMessageDialog(null, "Number of Steps not be null", "Nº Steps Erro", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            currentEquation.setFirstHMSC(srcHMSCSelected).setTemplate(selectedTemplateItem).set2HMSCProperty(nSteps)
+                    .setConditionalOperation(selectedOperationItem).setProbability(probabilityInDouble);
+            addedEquations.add(currentEquation);
+        }
 
         ObservableList<Equation> data = FXCollections.observableArrayList(addedEquations);
         equationsTable.setItems(data);
@@ -299,10 +346,16 @@ public class PropertysPanelController {
     }
 
     private ConditionalOperator getSelectedOperation(ChoiceBox<String> choiceBox, List<ConditionalOperator> operations) {
+        if(choiceBox.getSelectionModel().isEmpty()){
+            return null;
+        }
         return operations.get(choiceBox.getSelectionModel().getSelectedIndex());
     }
 
     private Hmsc getSelectedHMSC(ChoiceBox<String> choiceBox, List<Hmsc> HMSCs) {
+        if(choiceBox.getSelectionModel().isEmpty()){
+            return null;
+        }
         return HMSCs.get(choiceBox.getSelectionModel().getSelectedIndex());
     }
 
@@ -311,7 +364,158 @@ public class PropertysPanelController {
         return event -> showChooser();
     }
 
+    private EventHandler<ActionEvent> onSelectedTemplate(){
+            return event -> {
+                String templateChoiseBoxValue = templateChoiseBox.getSelectionModel().getSelectedItem();
+                System.out.println(templateChoiseBoxValue);
+                if (templateChoiseBoxValue.equals("in steps")) {
+                    secondHMSCChoiseBox.setVisible(false);
+                    secondHMSCChoiseBox.getSelectionModel().clearSelection();
+                    numberStepsInput.setVisible(true);
+                }else{
+                    numberStepsInput.setVisible(false);
+                    numberStepsInput.setText("");
+                    secondHMSCChoiseBox.setVisible(true);
+                }
+            };
 
+    }
+
+
+
+    private void changeListners() {
+        firstHMSCChoiseBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> updateResultingEquation());
+        secondHMSCChoiseBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> updateResultingEquation());
+        numberStepsInput.textProperty().addListener((observable, oldValue, newValue) -> updateResultingEquation());
+        templateChoiseBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> updateResultingEquation());
+        operationChoiseBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> updateResultingEquation());
+        probabilityTextField.textProperty().addListener((observable, oldValue, newValue) -> updateResultingEquation());
+        probabilityTextField.textProperty().addListener((observable, oldValue, newValue) -> patternProbability(oldValue, newValue));
+
+
+        /*
+        secondHMSCChoiseBox.setOnInputMethodTextChanged(event -> {
+            updateResultingEquation();
+        });
+        numberStepsInput.setOnInputMethodTextChanged(event -> {
+            updateResultingEquation();
+        });
+        templateChoiseBox.setOnInputMethodTextChanged(event -> {
+            updateResultingEquation();
+        });
+        operationChoiseBox.setOnInputMethodTextChanged(event -> {
+            updateResultingEquation();
+        });
+        probabilityTextField.setOnInputMethodTextChanged(event -> {
+            updateResultingEquation();
+        });
+        */
+    }
+
+    private void patternProbability(String oldValue, String newValue) {
+        System.out.println("pattern: "+oldValue+" : "+newValue);
+        String valorDoField = newValue.trim();
+        String auxValor = "";
+        double valor;
+      //  if(valorDoField.matches(" null | [0-1] \\.? [0-9]* | [0-1] \\,{0,1} [0-9] | [0-9]* ")){
+            if(valorDoField.matches("[0-9]+%")) {
+                auxValor = valorDoField.replaceAll("%","");
+                valor = Double.parseDouble(auxValor);
+                if(valor > 100){
+                    valorDoField = oldValue;
+                    JOptionPane.showMessageDialog(null, "Imput probability need 0% to 100%", "Erro[1]", JOptionPane.ERROR_MESSAGE);
+
+                }else {
+                    valor = valor / 100;
+                    valorDoField = "" + valor;
+                }
+            }else if(valorDoField.matches("[0-1]\\,[0-9]+")) {
+                auxValor = valorDoField.replaceAll("," , ".");
+                valor = Double.parseDouble(auxValor);
+                if(valor > 1.0){
+                    valorDoField = oldValue;
+                    JOptionPane.showMessageDialog(null, "Imput probability need 0,0 to 1,0", "Erro[2]", JOptionPane.ERROR_MESSAGE);
+                }else{
+                    valorDoField = ""+valor;
+                }
+            }else if (valorDoField.matches("[0-1]\\.[0-9]+")){
+                valor = Double.parseDouble(valorDoField);
+                if(valor > 1.0){
+                    valorDoField = oldValue;
+                    JOptionPane.showMessageDialog(null, "Imput probability need 0.0 to 1.0", "Erro[3]", JOptionPane.ERROR_MESSAGE);
+                }else{
+                    valorDoField = ""+valor;
+                }
+            }else if(valorDoField.matches("[0-9]*\\.?|[0-9]*\\,?|")){
+
+            }
+       // }
+        else{
+            JOptionPane.showMessageDialog(null, "Imput probability must be in the format: 0.0 or 0,0 or 0% ", "Erro[4]", JOptionPane.ERROR_MESSAGE);
+            valorDoField = oldValue;
+        }
+
+        probabilityTextField.setText(valorDoField);
+
+/*
+        if(valorDoField.contains(",")){
+            auxValor = valorDoField.replaceAll(",", ".");
+            double teste = Double.parseDouble(auxValor);
+            if(teste<0 || teste >1){
+                JOptionPane.showMessageDialog(null, "Input probability between 0 and 1", "Erro[1]", JOptionPane.ERROR_MESSAGE);
+                probabilityTextField.setText("");
+            }
+        }
+        else if(valorDoField.contains(".")){
+            auxValor = valorDoField;
+            double teste = Double.parseDouble(auxValor);
+            if(teste<0 || teste >1){
+                JOptionPane.showMessageDialog(null, "Imput probability need 0 to 1", "Erro[2]", JOptionPane.ERROR_MESSAGE);
+                probabilityTextField.setText("");
+            }
+        }
+        else if(valorDoField.contains("%")){
+            double valorEntre0e1;
+            auxValor = valorDoField.replaceAll("%", "");
+            valorEntre0e1 = (Double.parseDouble(auxValor))/100;
+            auxValor = String.valueOf(valorEntre0e1);
+            double teste = Double.parseDouble(auxValor);
+            if(teste<0 || teste >1){
+                JOptionPane.showMessageDialog(null, "Imput probability need 0 to 1", "Erro[3]", JOptionPane.ERROR_MESSAGE);
+                probabilityTextField.setText("");
+            }
+        }
+        else{
+            if(valorDoField.matches("[0-1][0-9]*")){
+                if(!probabilityTextField.isFocused()){
+                    if( !valorDoField.contains("%") ){
+
+                    }
+                }
+            }else{
+                JOptionPane.showMessageDialog(null, "Imput probability need 0 to 1", "Erro[4]", JOptionPane.ERROR_MESSAGE);
+                probabilityTextField.setText("");
+            }
+        }
+        */
+    }
+
+    private void updateResultingEquation(){
+        String secondTarget;
+        String first = firstHMSCChoiseBox.getSelectionModel().getSelectedItem();
+        String template = templateChoiseBox.getSelectionModel().getSelectedItem();
+
+        String operation = operationChoiseBox.getSelectionModel().getSelectedItem();
+        String probability = probabilityTextField.getText();
+        if(secondHMSCChoiseBox.isVisible()) {
+            secondTarget = secondHMSCChoiseBox.getSelectionModel().getSelectedItem();
+            resultingEquationTextArea.setText(first + " " + template + " " + secondTarget + " " + operation + " " + probability);
+        }else{
+            secondTarget = numberStepsInput.getText();
+            resultingEquationTextArea.setText(first + " "  + "in " + secondTarget + " steps" + operation + " " + probability);
+        }
+
+    }
 //    private ChangeListener<Number> onSelectedSrcHMSCChoiseBox(){
 //        return (observable, oldValue, newValue) -> {
 //            System.out.println("");

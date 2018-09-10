@@ -46,6 +46,15 @@ public class Equation {
         return this;
     }
 
+    /*
+    TEMP METHOD
+     */
+
+    public Equation set2HMSCProperty(String nSteps){
+        this.secondHMSCProperty.set(nSteps);
+        return this;
+    }
+
     public String getProbabilityProperty() {
         return probabilityProperty.get();
     }
@@ -102,7 +111,7 @@ public class Equation {
     }
 
     public Equation setTemplate(String template) {
-        this.template = template;
+        setTemplateProperty(template);
         return this;
     }
 }
