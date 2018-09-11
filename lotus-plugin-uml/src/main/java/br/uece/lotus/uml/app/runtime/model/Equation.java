@@ -18,12 +18,23 @@ public class Equation {
     private ConditionalOperator conditionalOperator;
     private String template;
 
+
     public Equation() {
         firstHMSCProperty = new SimpleStringProperty("firstHMSCProperty");
         secondHMSCProperty = new SimpleStringProperty("secondHMSCProperty");
         probabilityProperty = new SimpleStringProperty("probabilityProperty");
         conditionalOperationProperty = new SimpleStringProperty("conditionalOperationProperty");
         templateProperty = new SimpleStringProperty("templateProperty");
+    }
+
+
+    public String getTemplateProperty() {
+        return templateProperty.get();
+    }
+
+
+    public void setTemplateProperty(String templateProperty) {
+        this.templateProperty.set(templateProperty);
     }
 
     public String getFirstHMSCProperty() {
@@ -46,9 +57,7 @@ public class Equation {
         return this;
     }
 
-    /*
-    TEMP METHOD
-     */
+
 
     public Equation set2HMSCProperty(String nSteps){
         this.secondHMSCProperty.set(nSteps);
@@ -75,6 +84,12 @@ public class Equation {
         return this;
     }
 
+    public Equation setTemplate(String template) {
+        this.template = template;
+        this.templateProperty.set(template);
+        return this;
+    }
+
 
 
     public Hmsc getFirstHMSC() {
@@ -93,25 +108,9 @@ public class Equation {
         return conditionalOperator;
     }
 
-
-    public String getTemplateProperty() {
-        return templateProperty.get();
-    }
-
-    public SimpleStringProperty templatePropertyProperty() {
-        return templateProperty;
-    }
-
-    public void setTemplateProperty(String templateProperty) {
-        this.templateProperty.set(templateProperty);
-    }
-
     public String getTemplate() {
         return template;
     }
 
-    public Equation setTemplate(String template) {
-        setTemplateProperty(template);
-        return this;
-    }
+
 }

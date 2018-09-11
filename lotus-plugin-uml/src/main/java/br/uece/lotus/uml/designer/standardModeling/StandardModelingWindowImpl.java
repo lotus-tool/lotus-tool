@@ -616,7 +616,6 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
     }
 
     private Stage createPropertyPanel(){
-        List<Hmsc> HMSCs = getComponentBuildDS().getBlocos();
         Stage stage = new Stage();
         stage.setTitle("Property Panel");
 
@@ -632,10 +631,11 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
 
         Scene scene = null;
         if (propertyPanelAnchorPane != null) {
-            scene = new Scene(propertyPanelAnchorPane, 675, 470);
+            scene = new Scene(propertyPanelAnchorPane, 692, 470);
 
         }
         stage.setScene(scene);
+        stage.resizableProperty().setValue(Boolean.FALSE);
 
 
      //   getChildren().add(propertyPanelAnchorPane);

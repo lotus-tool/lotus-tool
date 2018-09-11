@@ -5,6 +5,7 @@ import br.uece.lotus.Component;
 import br.uece.lotus.Transition;
 import br.uece.lotus.uml.api.ds.Hmsc;
 import br.uece.lotus.uml.api.ds.StandardModeling;
+import br.uece.lotus.uml.api.ds.TransitionMSC;
 import br.uece.lotus.uml.app.ParallelComponentController;
 import br.uece.lotus.uml.app.runtime.app.MyHandler;
 import br.uece.lotus.uml.app.runtime.config.Configuration;
@@ -14,7 +15,6 @@ import br.uece.lotus.uml.app.runtime.utils.checker.Property;
 import br.uece.lotus.uml.app.runtime.utils.checker.Template;
 import br.uece.lotus.uml.app.runtime.utils.component_service.Runtime;
 import br.uece.lotus.uml.designer.standardModeling.StandardModelingWindowImpl;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -26,7 +26,6 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
 import javax.swing.*;
-import javax.swing.event.ChangeListener;
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -44,7 +43,7 @@ import java.util.List;
 public class PropertysPanelController {
 
     private final StandardModeling standardModeling;
-    private Component parrallelComponent;
+    private Component parallelComponent;
     private final StandardModelingWindowImpl standardModelingWindow;
     @FXML
     private
@@ -60,7 +59,7 @@ public class PropertysPanelController {
 
     @FXML
     private
-    ChoiceBox<String> firstHMSCChoiseBox, secondHMSCChoiseBox, templateChoiseBox;
+    ChoiceBox<String> firstHMSCChoiseBox, secondHMSCChoiseBox, templateChoiseBox/*, action1ChoiseBox,action2ChoiseBox*/;
 
     @FXML
     private
@@ -83,9 +82,11 @@ public class PropertysPanelController {
 
     @FXML
     TextField numberStepsInput;
+
+    @FXML
+    TextField frequencyTxtField;
+
     private Stage stage;
-
-
     private List<ConditionalOperator> operations;
     private List<Equation> addedEquations = new ArrayList<>();
 
@@ -96,9 +97,9 @@ public class PropertysPanelController {
     public PropertysPanelController(StandardModelingWindowImpl standardModelingWindow) {
         this.standardModelingWindow = standardModelingWindow;
         this.standardModeling = standardModelingWindow.getComponentBuildDS();
-        this.parrallelComponent = standardModelingWindow.getComponentLTS();
+        this.parallelComponent = standardModelingWindow.getComponentLTS();
         this.HMSCs = standardModeling.getBlocos();
-        operations = new ArrayList<>(Arrays.asList(ConditionalOperator.values()));
+        this.operations = new ArrayList<>(Arrays.asList(ConditionalOperator.values()));
     }
 
 
@@ -122,6 +123,10 @@ public class PropertysPanelController {
     private void start() {
         Path traceFile = Paths.get(pathTraceTxtField.getText());
 
+        String frequencyInString = frequencyTxtField.getText();
+        Long frequencyInLong = Long.valueOf(frequencyInString);
+
+
         ParallelComponentController parallelComponentController = new ParallelComponentController(standardModeling);
 
         try {
@@ -131,11 +136,11 @@ public class PropertysPanelController {
             List<Component> createdComponentsWithLifeLTS = parallelComponentController.buildLifeComponents();
             parallelComponentController.addLifeComponentsInLeftPanel(standardModelingWindow, createdComponentsWithLifeLTS);
 
-            parrallelComponent = parallelComponentController.buildParallelComponent();
+            parallelComponent = parallelComponentController.buildParallelComponent();
 
-            standardModelingWindow.setComponentLTS(parrallelComponent);
+            standardModelingWindow.setComponentLTS(parallelComponent);
 
-            parallelComponentController.addParallelComponentInLeftPanel(standardModelingWindow, parrallelComponent);
+            parallelComponentController.addParallelComponentInLeftPanel(standardModelingWindow, parallelComponent);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -145,21 +150,43 @@ public class PropertysPanelController {
         // Condictions that I want to verify
 		List<Property> properties = new ArrayList<>();
 
+
 		for(Equation equation : addedEquations){
-
-            Integer firstStateId = getStateIdInComponetAboutFirstHMSC(parrallelComponent, equation.getFirstHMSC());
-
+            Integer firstStateId = null;
             Integer secondStateId = null;
 
-		    if(equation.getFirstHMSC() == equation.getSecondHMSC()){
-		        secondStateId = firstStateId;
-            }else {
-                secondStateId = getStateIdInComponetAboutSecondHMSC(parrallelComponent, equation.getSecondHMSC());
-            }
-//
-//            System.out.println(" probabilidade do cenario "+ equation.getFirstHMSC().getLabel() + "para p cenário "+ equation.getSecondHMSC().getLabel() );
-//            System.out.println(" é a probabilidade do estado " + firstStateId +"para o estado"+ secondStateId);
-//            System.out.println("<<><><><><><>>");
+             if(equation.getTemplate().equals(Template.AFTER.toString())){
+
+                firstStateId = HMSCLTSMapper.getStateIdInComponetAboutInitialHMSC(parallelComponent, equation.getFirstHMSC());
+
+                if(equation.getFirstHMSC() == equation.getSecondHMSC()){
+                    secondStateId = firstStateId;
+                }else {
+                    secondStateId = HMSCLTSMapper.getStateIdInComponetAboutInitialHMSC(parallelComponent, equation.getSecondHMSC());
+                }
+             }else if(equation.getTemplate().equals(Template.DEFAULT.toString())){
+                 firstStateId = HMSCLTSMapper.getStateIdInComponetAboutInitialHMSC(parallelComponent, equation.getFirstHMSC());
+
+                 if(equation.getFirstHMSC() == equation.getSecondHMSC()){
+                     secondStateId = firstStateId;
+                 }else {
+                     secondStateId = HMSCLTSMapper.getStateIdInComponetAboutInitialHMSC(parallelComponent, equation.getSecondHMSC());
+                 }
+             }else if(equation.getTemplate().equals(Template.AND_NOT.toString())){
+                 firstStateId = parallelComponent.getInitialState().getID();
+
+                 if(equation.getFirstHMSC() == equation.getSecondHMSC()){
+                     // todo fazer lançamento de exception
+                 }else {
+                     secondStateId = HMSCLTSMapper.getStateIdInComponetAboutInitialHMSC(parallelComponent, equation.getFirstHMSC());
+                 }
+             }
+
+
+
+            System.out.println(" probabilidade do cenario "+ equation.getFirstHMSC().getLabel() + "para p cenário "+ equation.getSecondHMSC().getLabel() );
+            System.out.println(" é a probabilidade do estado " + firstStateId +"para o estado"+ secondStateId);
+            System.out.println("<<><><><><><>>");
 
             if(firstStateId == null || secondStateId == null){
                 try {
@@ -188,9 +215,9 @@ public class PropertysPanelController {
 
 		Configuration configuration = new Configuration.ConfigurationBuilder()
 				.traceFile(traceFile.toString())
-				.milliseconds(2000L)
+				.milliseconds(frequencyInLong)
 				.project(standardModelingWindow.projectExplorerPluginDS.getSelectedProjectDS())
-                .parallelComponent(parrallelComponent)
+                .parallelComponent(parallelComponent)
 				.properties(properties)
 				.build();
 
@@ -204,38 +231,8 @@ public class PropertysPanelController {
     }
 
 
-    private Integer getStateIdInComponetAboutFirstHMSC(Component parrallelComponent, Hmsc firstHMSC) {
-        if(firstHMSC.get_Initial()){
-           return parrallelComponent.getInitialState().getID();
-        }
 
-        String labelHMSC = firstHMSC.getLabel();
-
-        for(Transition transition : parrallelComponent.getTransitionsList()){
-            if(transition.getLabel().split("[.]")[2].equals(labelHMSC)){
-                return transition.getDestiny().getID();
-            }
-        }
-        return null;
-    }
-
-        private Integer getStateIdInComponetAboutSecondHMSC(Component parrallelComponent, Hmsc secondHMSC) {
-            if(secondHMSC.get_Initial()){
-                return parrallelComponent.getInitialState().getID();
-            }
-
-            String labelHMSC = secondHMSC.getLabel();
-
-            for(Transition transition : parrallelComponent.getTransitionsList()){
-                if(transition.getLabel().split("[.]")[0].equals(labelHMSC)){
-                    return transition.getSource().getID();
-                }
-            }
-
-            return null;
-    }
-
-    /* Optional<Transition>  transitionOptional = parrallelComponent.getTransitionsList().stream().filter(transition
+    /* Optional<Transition>  transitionOptional = parallelComponent.getTransitionsList().stream().filter(transition
              -> (transition.getLabel().split("[.]"))[1].equals(labelHMSC)).findAny();
 
      Transition transition = transitionOptional.get();*/
@@ -247,6 +244,7 @@ public class PropertysPanelController {
 
     private void addItemsInChoiseBoxs() {
         ObservableList<String> itemsHMSCChoiseBox = FXCollections.observableArrayList();
+        ObservableList<String> itemsActionsChoiseBox  = FXCollections.observableArrayList();
 
         for(Hmsc hmsc : HMSCs){
             itemsHMSCChoiseBox.add(hmsc.getLabel());
@@ -268,10 +266,20 @@ public class PropertysPanelController {
 
 
 
-
         operationChoiseBox.setItems(FXCollections.observableArrayList(itemsOperationChoiseBox));
 
         templateChoiseBox.setItems(FXCollections.observableArrayList(itemsTemplateChoiseBox));
+
+        templateChoiseBox.getSelectionModel().selectFirst();
+
+        for(TransitionMSC transitionMSC : standardModeling.getTransitions()){
+            itemsActionsChoiseBox.add(transitionMSC.getLabel());
+        }
+
+//        action1ChoiseBox.setItems(FXCollections.observableArrayList(itemsActionsChoiseBox));
+//        action2ChoiseBox.setItems(FXCollections.observableArrayList(itemsActionsChoiseBox));
+
+
     }
 
     private void configureTableColumn() {
@@ -295,7 +303,7 @@ public class PropertysPanelController {
             JOptionPane.showMessageDialog(null, "Template not be null", "Template Hmsc Erro", JOptionPane.ERROR_MESSAGE);
             return;
         }
-        String selectedTemplateItem = resultingEquationTextArea.getText();
+        String selectedTemplateItem = templateChoiseBox.getValue();
 
         ConditionalOperator selectedOperationItem =  getSelectedOperation(operationChoiseBox, operations);
         if(selectedOperationItem == null){
@@ -366,17 +374,8 @@ public class PropertysPanelController {
 
     private EventHandler<ActionEvent> onSelectedTemplate(){
             return event -> {
-                String templateChoiseBoxValue = templateChoiseBox.getSelectionModel().getSelectedItem();
-                System.out.println(templateChoiseBoxValue);
-                if (templateChoiseBoxValue.equals("in steps")) {
-                    secondHMSCChoiseBox.setVisible(false);
-                    secondHMSCChoiseBox.getSelectionModel().clearSelection();
-                    numberStepsInput.setVisible(true);
-                }else{
-                    numberStepsInput.setVisible(false);
-                    numberStepsInput.setText("");
-                    secondHMSCChoiseBox.setVisible(true);
-                }
+                firstHMSCChoiseBox.getSelectionModel().clearSelection();
+                secondHMSCChoiseBox.getSelectionModel().clearSelection();
             };
 
     }

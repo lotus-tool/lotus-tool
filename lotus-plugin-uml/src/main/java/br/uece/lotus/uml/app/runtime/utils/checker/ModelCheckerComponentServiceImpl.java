@@ -22,11 +22,11 @@
  */
 package br.uece.lotus.uml.app.runtime.utils.checker;
 
-import br.uece.lotus.uml.api.ds.StandardModeling;
-import br.uece.lotus.uml.app.ParallelComponentController;
 import br.uece.lotus.uml.app.runtime.config.ConfigurationServiceComponent;
 import br.uece.lotus.uml.app.runtime.notifier.NotifierComponentService;
-import br.uece.lotus.uml.app.runtime.probabilisticReach.ProbabilisticReachAlgorithm;
+import br.uece.lotus.uml.app.runtime.probabilisticReach.DefaultProbabilisticReachAlgorithm;
+import br.uece.lotus.uml.app.runtime.probabilisticReach.AfterAndAndNotProbabilisticReachAlgorithm;
+import br.uece.lotus.uml.app.runtime.probabilisticReach.ProbabilisticReachAlgorithmStrategy;
 import br.uece.lotus.uml.app.runtime.utils.checker.conditional.ConditionContext;
 import br.uece.lotus.uml.app.runtime.utils.component_service.Component;
 import br.uece.lotus.uml.app.runtime.utils.component_service.ComponentManager;
@@ -44,7 +44,7 @@ public class ModelCheckerComponentServiceImpl implements Component, ModelChecker
 	
 	private List<Property> properties;
 	
-	private ProbabilisticReachAlgorithm reachAlgorithm;
+	private ProbabilisticReachAlgorithmStrategy reachAlgorithm;
 	
 	private NotifierComponentService eventBusComponentService;
 	
@@ -52,7 +52,6 @@ public class ModelCheckerComponentServiceImpl implements Component, ModelChecker
 	private br.uece.lotus.Component parallelComponent;
 
 	public ModelCheckerComponentServiceImpl() {
-		this.reachAlgorithm = new ProbabilisticReachAlgorithm();
 		this.conditionContext = new ConditionContext();
 	}
 	
@@ -70,12 +69,46 @@ public class ModelCheckerComponentServiceImpl implements Component, ModelChecker
 	public void verifyModel() throws Exception {
 
 		for (Property property : properties) {
-			Double probabilityBetween = reachAlgorithm.probabilityBetween(parallelComponent, property.getFirstStateId(), property.getSecondStateId());
-			
-			if (conditionContext.verify(property.getProbability(), property.getConditionalOperator(), probabilityBetween)) {
+
+            Double probabilityBetween = null;
+			if(property.getTemplate().equals(Template.DEFAULT.toString())){
+
+				reachAlgorithm = new DefaultProbabilisticReachAlgorithm();
+                 probabilityBetween = reachAlgorithm.probabilityBetween(
+                        parallelComponent,
+                        property.getFirstStateId(),
+                        property.getSecondStateId());
+
+
+			}else if(property.getTemplate().equals(Template.AFTER.toString())){
+
+				reachAlgorithm = new AfterAndAndNotProbabilisticReachAlgorithm();
+                probabilityBetween = reachAlgorithm.probabilityBetween(
+                        parallelComponent,
+                        property.getSecondStateId(),
+                        property.getFirstStateId(),
+                        -1,
+                        property.getFirstStateId());
+
+			}else if (property.getTemplate().equals(Template.AND_NOT.toString())){
+                reachAlgorithm = new AfterAndAndNotProbabilisticReachAlgorithm();
+                probabilityBetween = reachAlgorithm.probabilityBetween(
+                        parallelComponent,
+                        property.getFirstStateId(),
+                        property.getSecondStateId(),
+                        -1,
+                        property.getSecondStateId());
+            }
+
+
+
+
+			if (conditionContext.verify(property.getProbability(), property.getConditionalOperator(),
+					probabilityBetween)) {
 				eventBusComponentService.publish(property);
 				log.info(property.toString());
 			}
+
 		}
 	}
 	

@@ -43,8 +43,9 @@ import static java.lang.Math.abs;
  *
  * @author Ranniery
  */
-public class ProbabilisticReachAlgorithm {
+public class DefaultProbabilisticReachAlgorithm extends ProbabilisticReachAlgorithmStrategy {
 
+	@Override
 	public double probabilityBetween(Component parallelComponet, Integer sourceId, Integer targetId) {
 		int tam = parallelComponet.getStatesCount();
 		double[][] probabilities = new double[tam][tam];
