@@ -25,8 +25,8 @@ package br.uece.lotus.uml.app.runtime.utils.checker.conditional;
 public class ConditionLessThan implements ConditionChecker {
 
 	@Override
-	public boolean verify(Double probability1, Double probability2) {
-		return probability1 < probability2 ? true : false;
+	public boolean verify(Double userProbability, Double probabilityBetween) {
+		return probabilityBetween.doubleValue() < userProbability.doubleValue() ? true : false;
 	}
 
 }

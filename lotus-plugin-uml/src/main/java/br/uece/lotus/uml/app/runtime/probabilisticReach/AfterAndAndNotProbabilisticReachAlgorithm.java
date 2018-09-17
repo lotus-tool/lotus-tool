@@ -30,6 +30,8 @@ public class AfterAndAndNotProbabilisticReachAlgorithm extends ProbabilisticReac
             probabilities[i][j] = t.getProbability();
         }
         zerarDiagonal(probabilities, tam);
+
+       // printMatrix(probabilities);
         probabilities[0][0] = 1;
         probabilities[source][source] = 1;
         i = source;
@@ -87,6 +89,17 @@ public class AfterAndAndNotProbabilisticReachAlgorithm extends ProbabilisticReac
 
         return pot;
     }
+
+    //	private void printMatrix(double[][] matrix) {
+//		for (int i = 0; i < matrix.length; i++) {
+//			for (int j = 0; j < matrix[i].length; j++) {
+//				System.out.print(matrix[i][j] + " ");
+//			}
+//			System.out.println("");
+//		}
+//
+//		System.out.println("|||||||||||||||||||");
+//	}
 
     public double[][] multiply(double[][] matrixA, double[][] matrixB, int tam){
         double sum = 0;

@@ -16,8 +16,8 @@
    <children>
       <TableView fx:id="equationsTable" layoutY="74.0" maxHeight="245.0" maxWidth="691.0" prefHeight="212.0" prefWidth="691.0">
         <columns>
-            <TableColumn fx:id="firstHMSCColumn" maxWidth="1.7976931348623157E308" prefWidth="200.0" text="First HMSC" />
-            <TableColumn fx:id="secondHMSCColumn" maxWidth="1.7976931348623157E308" prefWidth="200.0" text="Second HMSC" />
+            <TableColumn fx:id="firstHMSCColumn" maxWidth="1.7976931348623157E308" prefWidth="200.0" text="First bMSC" />
+            <TableColumn fx:id="secondHMSCColumn" maxWidth="1.7976931348623157E308" prefWidth="200.0" text="Second bMSC" />
             <TableColumn fx:id="operationColumn" maxWidth="1.7976931348623157E308" prefWidth="100.0" text="Operation" />
             <TableColumn fx:id="probabilityColumn" maxWidth="1.7976931348623157E308" prefWidth="100.0" text="Probability" />
            <TableColumn fx:id="templateColumn" maxWidth="1.7976931348623157E308" prefWidth="100.0" text="Template" />

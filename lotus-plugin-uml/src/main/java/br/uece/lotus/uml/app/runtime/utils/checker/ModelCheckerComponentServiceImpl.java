@@ -144,10 +144,14 @@ public class ModelCheckerComponentServiceImpl implements Component, ModelChecker
 
 
 
-			if (conditionContext.verify(property.getProbability(), property.getConditionalOperator(),
-					probabilityBetween)) {
+			if (!conditionContext.verify(
+					(double)property.getProbability(),
+					property.getConditionalOperator(),
+					(double)probabilityBetween)) {
 				eventBusComponentService.publish(property);
 				log.info(property.toString());
+
+				System.out.println("violou");
 			}
 
 			System.out.println("prob"+ probabilityBetween);

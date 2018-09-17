@@ -43,8 +43,8 @@ public class ConditionContext {
 		
 	}
 
-	public boolean verify(Double probability1, ConditionalOperator operator, Double probability2) {
-		return checkers.get(operator).verify(probability1, probability2);
+	public boolean verify(Double userProbability, ConditionalOperator operator, Double probabilityBetween) {
+		return checkers.get(operator).verify(userProbability, probabilityBetween);
 	}
 	
 }
