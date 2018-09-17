@@ -100,6 +100,8 @@ public class PropertysPanelController {
         this.parallelComponent = standardModelingWindow.getComponentLTS();
         this.HMSCs = standardModeling.getBlocos();
         this.operations = new ArrayList<>(Arrays.asList(ConditionalOperator.values()));
+
+
     }
 
 
@@ -162,7 +164,7 @@ public class PropertysPanelController {
                 if(equation.getFirstHMSC() == equation.getSecondHMSC()){
                     secondStateId = firstStateId;
                 }else {
-                    secondStateId = HMSCLTSMapper.getStateIdInComponetAboutInitialHMSC(parallelComponent, equation.getSecondHMSC());
+                    secondStateId = HMSCLTSMapper.getStateIdInComponetAboutFinalHMSC(parallelComponent, equation.getSecondHMSC());
                 }
              }else if(equation.getTemplate().equals(Template.DEFAULT.toString())){
                  firstStateId = HMSCLTSMapper.getStateIdInComponetAboutInitialHMSC(parallelComponent, equation.getFirstHMSC());
@@ -170,15 +172,15 @@ public class PropertysPanelController {
                  if(equation.getFirstHMSC() == equation.getSecondHMSC()){
                      secondStateId = firstStateId;
                  }else {
-                     secondStateId = HMSCLTSMapper.getStateIdInComponetAboutInitialHMSC(parallelComponent, equation.getSecondHMSC());
+                     secondStateId = HMSCLTSMapper.getStateIdInComponetAboutFinalHMSC(parallelComponent, equation.getSecondHMSC());
                  }
              }else if(equation.getTemplate().equals(Template.AND_NOT.toString())){
-                 firstStateId = parallelComponent.getInitialState().getID();
+                 firstStateId = HMSCLTSMapper.getStateIdInComponetAboutInitialHMSC(parallelComponent,equation.getFirstHMSC());
 
                  if(equation.getFirstHMSC() == equation.getSecondHMSC()){
                      // todo fazer lançamento de exception
                  }else {
-                     secondStateId = HMSCLTSMapper.getStateIdInComponetAboutInitialHMSC(parallelComponent, equation.getFirstHMSC());
+                     secondStateId = HMSCLTSMapper.getStateIdInComponetAboutInitialHMSC(parallelComponent, equation.getSecondHMSC());
                  }
              }
 

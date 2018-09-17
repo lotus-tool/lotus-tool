@@ -53,13 +53,14 @@ public class DefaultProbabilisticReachAlgorithm extends ProbabilisticReachAlgori
 		List<Transition> transitions = transitionsList(parallelComponet);
 
 		for (Transition t : transitions) {
-			sourceId = t.getSource().getID();
-			targetId = t.getDestiny().getID();
-			probabilities[sourceId][targetId] = t.getProbability();
-			printMatrix(probabilities);
-		}
-		zerarDiagonal(probabilities, tam);
+            int i = t.getSource().getID();
+            int j = t.getDestiny().getID();
+			probabilities[i][j] = t.getProbability();
 
+		}
+
+		zerarDiagonal(probabilities, tam);
+        printMatrix(probabilities);
 		double[][] mult = probabilities;
 		double difference = 1;
 		double total = 0;

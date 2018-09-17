@@ -22,6 +22,7 @@
  */
 package br.uece.lotus.uml.app.runtime.utils.checker;
 
+import br.uece.lotus.Transition;
 import br.uece.lotus.uml.app.runtime.config.ConfigurationServiceComponent;
 import br.uece.lotus.uml.app.runtime.notifier.NotifierComponentService;
 import br.uece.lotus.uml.app.runtime.probabilisticReach.DefaultProbabilisticReachAlgorithm;
@@ -92,12 +93,52 @@ public class ModelCheckerComponentServiceImpl implements Component, ModelChecker
 
 			}else if (property.getTemplate().equals(Template.AND_NOT.toString())){
                 reachAlgorithm = new AfterAndAndNotProbabilisticReachAlgorithm();
+
+              /*  br.uece.lotus.Component changedComponent = parallelComponent.clone();
+				Transition transition = changedComponent.getStateByID(property.getSecondStateId()).getOutgoingTransitionsList().get(0);
+               	transition.setProbability(0.0);
+
+				State currentState = changedComponent.getStateByID(property.getSecondStateId());
+
+				while (currentState != null){
+					Transition currentTrasition = null;
+
+					if(!currentState.getOutgoingTransitionsList().isEmpty()){
+						currentTrasition = currentState.getOutgoingTransitionsList().get(0);
+					}else {
+						break;
+					}
+
+					currentState = currentTrasition.getDestiny();
+
+				}
+
                 probabilityBetween = reachAlgorithm.probabilityBetween(
-                        parallelComponent,
-                        property.getFirstStateId(),
+						changedComponent,
+                        0,
                         property.getSecondStateId(),
                         -1,
-                        property.getSecondStateId());
+						*//*changedComponent.getStateByID(property
+								.getFirstStateId())
+								.getOutgoingTransitionsList()
+								.get(0)
+								.getDestiny()
+								.getID()*//*
+						currentState.getID()
+						);*/
+
+                br.uece.lotus.Component changedComponent = parallelComponent.clone();
+                Transition transition = changedComponent.getStateByID(property.getSecondStateId()).getOutgoingTransitionsList().get(0);
+                transition.setProbability(0.0);
+
+
+                probabilityBetween = reachAlgorithm.probabilityBetween(
+                        changedComponent,
+                        0,
+                        property.getFirstStateId(),
+                        -1,
+						property.getSecondStateId()
+                );
             }
 
 
@@ -108,6 +149,8 @@ public class ModelCheckerComponentServiceImpl implements Component, ModelChecker
 				eventBusComponentService.publish(property);
 				log.info(property.toString());
 			}
+
+			System.out.println("prob"+ probabilityBetween);
 
 		}
 	}
