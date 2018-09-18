@@ -62,13 +62,13 @@ public class ModelCheckerComponentServiceImpl implements Component, ModelChecker
 		this.properties = configurationComponent.getConfiguration().getProperties();
 		this.modelComponent = manager.getComponentService(ProjectMscServiceComponent.class);
 		this.eventBusComponentService = manager.getComponentService(NotifierComponentService.class);
-		parallelComponent = modelComponent.getParallelComponent();
+
 
 	}
 	
 	@Override
 	public void verifyModel() throws Exception {
-
+        parallelComponent = modelComponent.getParallelComponent();
 		for (Property property : properties) {
 
             Double probabilityBetween = null;
@@ -94,39 +94,6 @@ public class ModelCheckerComponentServiceImpl implements Component, ModelChecker
 			}else if (property.getTemplate().equals(Template.AND_NOT.toString())){
                 reachAlgorithm = new AfterAndAndNotProbabilisticReachAlgorithm();
 
-              /*  br.uece.lotus.Component changedComponent = parallelComponent.clone();
-				Transition transition = changedComponent.getStateByID(property.getSecondStateId()).getOutgoingTransitionsList().get(0);
-               	transition.setProbability(0.0);
-
-				State currentState = changedComponent.getStateByID(property.getSecondStateId());
-
-				while (currentState != null){
-					Transition currentTrasition = null;
-
-					if(!currentState.getOutgoingTransitionsList().isEmpty()){
-						currentTrasition = currentState.getOutgoingTransitionsList().get(0);
-					}else {
-						break;
-					}
-
-					currentState = currentTrasition.getDestiny();
-
-				}
-
-                probabilityBetween = reachAlgorithm.probabilityBetween(
-						changedComponent,
-                        0,
-                        property.getSecondStateId(),
-                        -1,
-						*//*changedComponent.getStateByID(property
-								.getFirstStateId())
-								.getOutgoingTransitionsList()
-								.get(0)
-								.getDestiny()
-								.getID()*//*
-						currentState.getID()
-						);*/
-
                 br.uece.lotus.Component changedComponent = parallelComponent.clone();
                 Transition transition = changedComponent.getStateByID(property.getSecondStateId()).getOutgoingTransitionsList().get(0);
                 transition.setProbability(0.0);
@@ -145,9 +112,9 @@ public class ModelCheckerComponentServiceImpl implements Component, ModelChecker
 
 
 			if (!conditionContext.verify(
-					(double)property.getProbability(),
+					property.getProbability(),
 					property.getConditionalOperator(),
-					(double)probabilityBetween)) {
+					probabilityBetween)) {
 				eventBusComponentService.publish(property);
 				log.info(property.toString());
 

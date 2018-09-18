@@ -60,7 +60,7 @@ public class DefaultProbabilisticReachAlgorithm extends ProbabilisticReachAlgori
 		}
 
 		zerarDiagonal(probabilities, tam);
-       // printMatrix(probabilities);
+        printMatrix(probabilities);
 		double[][] mult = probabilities;
 		double difference = 1;
 		double total = 0;
@@ -82,16 +82,16 @@ public class DefaultProbabilisticReachAlgorithm extends ProbabilisticReachAlgori
 		return total;
 	}
 
-//	private void printMatrix(double[][] matrix) {
-//		for (int i = 0; i < matrix.length; i++) {
-//			for (int j = 0; j < matrix[i].length; j++) {
-//				System.out.print(matrix[i][j] + " ");
-//			}
-//			System.out.println("");
-//		}
-//
-//		System.out.println("|||||||||||||||||||");
-//	}
+	private void printMatrix(double[][] matrix) {
+		for (int i = 0; i < matrix.length; i++) {
+			for (int j = 0; j < matrix[i].length; j++) {
+				System.out.print(matrix[i][j] + " ");
+			}
+			System.out.println("");
+		}
+
+		System.out.println("|||||||||||||||||||");
+	}
 
 	public double[][] multiply(double[][] matrixA, double[][] matrixB, int tam) {
 		double sum = 0;

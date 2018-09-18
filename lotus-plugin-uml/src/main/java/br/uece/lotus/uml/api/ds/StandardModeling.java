@@ -17,7 +17,7 @@ import java.util.Objects;
  *
  * @author Bruno Barbosa
  */
-public class StandardModeling {
+public class StandardModeling  {
     
     private final Map<String, Object> mValues = new HashMap<>();
     private String mName;
@@ -43,6 +43,50 @@ public class StandardModeling {
     private int id;
     private Hmsc hmsc_inicial = null;
     private int probscount = 0;
+
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        StandardModeling standardModeling = new StandardModeling();
+        standardModeling.mName = mName;
+
+        for (Hmsc olgHmsc : mBlocos) {
+            Hmsc newHmsc = standardModeling.newBlock(olgHmsc.getID());
+            copyHmsc(olgHmsc, newHmsc);
+        }
+
+        for (TransitionMSC oldTransition : mTransitions) {
+            int src = ((Hmsc)oldTransition.getSource()).getID();
+            int dst = ((Hmsc)oldTransition.getDestiny()).getID();
+            TransitionMSC newTransition = standardModeling.buildTransition(getBlocoByID(src),getBlocoByID(dst)).create();
+            copyTransition(oldTransition, newTransition);
+        }
+
+        if (hmsc_inicial != null) {
+            //c.getStateByID(mInitialState.getID())
+            standardModeling.setHmsc_inicial(standardModeling.getBlocoByID(hmsc_inicial.getID()));
+        }
+
+
+        return standardModeling;
+
+    }
+
+
+    private void copyHmsc(Hmsc from, Hmsc to) {
+        to.setLabel(from.getLabel());
+        to.setLayoutX(from.getLayoutX());
+        to.setLayoutY(from.getLayoutY());
+
+        if (from.get_Initial()) {
+            to.set_Initial(true);
+        }
+    }
+
+    private void copyTransition(TransitionMSC from, TransitionMSC to) {
+        to.setLabel(from.getLabel());
+        to.setProbability(from.getProbability());
+        to.setGuard(from.getGuard());
+    }
 
     public int getID(){
         return this.id;

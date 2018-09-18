@@ -10,6 +10,7 @@ import br.uece.lotus.uml.app.ParallelComponentController;
 import br.uece.lotus.uml.app.runtime.app.MyHandler;
 import br.uece.lotus.uml.app.runtime.config.Configuration;
 import br.uece.lotus.uml.app.runtime.model.Equation;
+import br.uece.lotus.uml.app.runtime.monitor.ProbabilisticAnnotator;
 import br.uece.lotus.uml.app.runtime.utils.checker.ConditionalOperator;
 import br.uece.lotus.uml.app.runtime.utils.checker.Property;
 import br.uece.lotus.uml.app.runtime.utils.checker.Template;
@@ -42,7 +43,7 @@ import java.util.List;
 
 public class PropertysPanelController {
 
-    private final StandardModeling standardModeling;
+    private StandardModeling standardModeling;
     private Component parallelComponent;
     private final StandardModelingWindowImpl standardModelingWindow;
     @FXML
@@ -92,7 +93,9 @@ public class PropertysPanelController {
 
 
 
+
     private final List<Hmsc> HMSCs;
+    private Runtime runTime;
 
     public PropertysPanelController(StandardModelingWindowImpl standardModelingWindow) {
         this.standardModelingWindow = standardModelingWindow;
@@ -100,6 +103,7 @@ public class PropertysPanelController {
         this.parallelComponent = standardModelingWindow.getComponentLTS();
         this.HMSCs = standardModeling.getBlocos();
         this.operations = new ArrayList<>(Arrays.asList(ConditionalOperator.values()));
+
 
 
     }
@@ -119,10 +123,25 @@ public class PropertysPanelController {
 
         templateChoiseBox.setOnAction(onSelectedTemplate());
         startButton.setOnAction(event -> start());
+
+        pathTraceTxtField.setText("/home/lucas-vieira/Desktop/trace1-exemplo1.csv");
+        frequencyTxtField.setText("5000");
     }
 
 
     private void start() {
+
+        if(runTime != null) {
+            try {
+                runTime.stop();
+                restartStandardModeling();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+
+
         Path traceFile = Paths.get(pathTraceTxtField.getText());
 
         String frequencyInString = frequencyTxtField.getText();
@@ -223,12 +242,23 @@ public class PropertysPanelController {
 				.properties(properties)
 				.build();
 
-        Runtime runTime = new Runtime(configuration, handler);
+
+
 
         try {
+            runTime = new Runtime(configuration, handler);
             runTime.start();
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    private void restartStandardModeling() {
+        for(TransitionMSC transitionMSC : standardModeling.getTransitions()){
+            transitionMSC.setProbability(0.0);
+            transitionMSC.putValue(ProbabilisticAnnotator.VISIT_COUNT, null);
+            ((Hmsc)transitionMSC.getSource()).putValue(ProbabilisticAnnotator.VISIT_COUNT, null);
+            ((Hmsc)transitionMSC.getDestiny()).putValue(ProbabilisticAnnotator.VISIT_COUNT, null);
         }
     }
 

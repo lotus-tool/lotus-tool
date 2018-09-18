@@ -51,7 +51,7 @@ public  class ParallelComponentController {
     public Component buildParallelComponent() throws Exception {
         Component createdParallelComponent = tryBuildParallelComponent();
 
-        trySetProbabilityFromTransitionMSC(createdParallelComponent,standardModeling.getTransitions());
+        trySetProbabilityFromTransitionMSC(createdParallelComponent, standardModeling.getTransitions());
 
     //    updateIdsAndLabels(createdParallelComponent);
         return createdParallelComponent;

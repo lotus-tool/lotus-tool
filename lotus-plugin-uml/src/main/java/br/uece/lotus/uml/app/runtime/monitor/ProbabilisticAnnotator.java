@@ -42,7 +42,7 @@ import java.util.LinkedList;
 public class ProbabilisticAnnotator {
 	
    private StandardModeling standardModeling;
-    private static final String VISIT_COUNT = "visit.count";
+    public static final String VISIT_COUNT = "visit.count";
     private Hmsc currentHMSC, nextHMSC;
 
     public void annotate(StandardModeling standardModeling, LinkedList<String> HMSCtrace) {
