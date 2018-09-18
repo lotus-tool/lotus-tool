@@ -30,6 +30,7 @@ import br.uece.lotus.uml.designer.standardModeling.strategy.OnReleasedMouse;
 
 import java.io.*;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
@@ -66,6 +67,7 @@ import javafx.scene.transform.Scale;
 import javafx.stage.FileChooser;
 import javafx.stage.Popup;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 import javax.swing.*;
 
@@ -329,26 +331,29 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
         paleta.setAlignment(Pos.CENTER);
         paleta.getChildren().addAll(cores,complementoColors);
 
-
+        final boolean[] forceChecked = {false};
         propertyPanelCheckBox = new CheckBox("Property Panel");
+        AtomicReference<Stage> propertyPanelState = new AtomicReference<>();
+        propertyPanelCheckBox.selectedProperty().addListener((observable, oldValue, newValue) -> {
 
-        propertyPanelCheckBox.setOnAction((ActionEvent e) -> {
-            //propertyDropDown.setVisible(propertyPanelCheckBox.isSelected());
 
-            Stage propertyPanelState = createPropertyPanel();
+            if(newValue && !forceChecked[0]){
+                forceChecked[0] = false;
+                propertyPanelState.set(createPropertyPanel());
+                propertyPanelState.get().show();
 
-            if(propertyPanelCheckBox.isSelected()){
-                propertyPanelState.show();
-                // showPropertyPanel();
-            }else {
-                propertyPanelState.hide();
-              //  hidePropertyPanel();
+            }else if(oldValue && !newValue){
+                Alert alert = new Alert(Alert.AlertType.NONE, "Really close the Propertys Panel?", ButtonType.YES, ButtonType.NO);
+                if (alert.showAndWait().orElse(ButtonType.NO) == ButtonType.YES) {
+                    // you may need to close other windows or replace this with Platform.exit();
+                    propertyPanelState.get().close();
+                    forceChecked[0] = false;
+                }else {
+                    forceChecked[0] = true;
+                    propertyPanelCheckBox.setSelected(true);
+
+                }
             }
-
-            propertyPanelState.setOnCloseRequest(event -> {
-                propertyPanelCheckBox.setSelected(false);
-            });
-
         });
 
         mToolBar.getItems().addAll(mBtnArrow,mBtnBlock,mBtnTransitionLine,mBtnTransitionArc,mBtnEraser,mBtnHand,mBtnZoom, propertyPanelCheckBox);
@@ -635,10 +640,19 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
 
         }
         stage.setScene(scene);
-        stage.resizableProperty().setValue(Boolean.FALSE);
+        stage.initStyle(StageStyle.UNDECORATED);
+        stage.setOnCloseRequest(event -> {
+            propertyPanelCheckBox.setSelected(false);
+//            Alert alert = new Alert(Alert.AlertType.NONE, "Really close the Propertys Panel?", ButtonType.YES, ButtonType.NO);
+//            if (alert.showAndWait().orElse(ButtonType.NO) == ButtonType.YES) {
+//                // you may need to close other windows or replace this with Platform.exit();
+//                stage.close();
+//                propertyPanelCheckBox.setSelected(false);
+//            }
+        });
 
 
-     //   getChildren().add(propertyPanelAnchorPane);
+    //   getChildren().add(propertyPanelAnchorPane);
 
         propertysPanelController.onCreatedView();
 

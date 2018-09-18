@@ -88,6 +88,7 @@
       <Label layoutX="4.0" layoutY="47.0" text="Frequency:" />
       <TextField fx:id="frequencyTxtField" layoutX="106.0" layoutY="43.0" />
       <Label layoutX="282.0" layoutY="48.0" text="in milliseconds" />
+      <Button fx:id="removeButton" disable="true" layoutX="10.0" layoutY="332.0" mnemonicParsing="false" text="Remove" />
 
       <!--<ChoiceBox fx:id="action1ChoiseBox" layoutX="1.0" layoutY="333.0" prefWidth="150.0" disable="true" />-->
       <!--<ChoiceBox fx:id="action2ChoiseBox" layoutX="156.0" layoutY="334.0" prefWidth="150.0" disable="true" />-->

@@ -2,7 +2,6 @@ package br.uece.lotus.uml.app.runtime.controller;
 
 
 import br.uece.lotus.Component;
-import br.uece.lotus.Transition;
 import br.uece.lotus.uml.api.ds.Hmsc;
 import br.uece.lotus.uml.api.ds.StandardModeling;
 import br.uece.lotus.uml.api.ds.TransitionMSC;
@@ -16,6 +15,7 @@ import br.uece.lotus.uml.app.runtime.utils.checker.Property;
 import br.uece.lotus.uml.app.runtime.utils.checker.Template;
 import br.uece.lotus.uml.app.runtime.utils.component_service.Runtime;
 import br.uece.lotus.uml.designer.standardModeling.StandardModelingWindowImpl;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -76,7 +76,7 @@ public class PropertysPanelController {
     TextField probabilityTextField;
 
     @FXML
-    Button startButton;
+    Button startButton, removeButton;
 
     @FXML
     TextArea resultingEquationTextArea;
@@ -113,19 +113,51 @@ public class PropertysPanelController {
 
         configureTableColumn();
         addItemsInChoiseBoxs();
-        changeListners();
+        changeListeners();
 
         stage = (Stage) anchorPane.getScene().getWindow();
         chooseButton.setOnAction(onClickChooseButton());
 
-        addButton.setOnAction(event ->
-                buildEquation());
+        addButton.setOnAction(event ->{
+
+            removeButton.setDisable(true);
+            buildEquation();
+
+            firstHMSCChoiseBox.getSelectionModel().clearSelection();
+            secondHMSCChoiseBox.getSelectionModel().clearSelection();
+            templateChoiseBox.getSelectionModel().selectFirst();
+            operationChoiseBox.getSelectionModel().clearSelection();
+            probabilityTextField.setText("");
+                });
+
 
         templateChoiseBox.setOnAction(onSelectedTemplate());
-        startButton.setOnAction(event -> start());
+        startButton.setOnAction(event -> {
+            start();
+        });
 
-        pathTraceTxtField.setText("/home/lucas-vieira/Desktop/trace1-exemplo1.csv");
-        frequencyTxtField.setText("5000");
+        removeButton.setOnAction(event -> {
+
+            firstHMSCChoiseBox.getSelectionModel().clearSelection();
+            secondHMSCChoiseBox.getSelectionModel().clearSelection();
+            templateChoiseBox.getSelectionModel().selectFirst();
+            operationChoiseBox.getSelectionModel().clearSelection();
+            probabilityTextField.setText("");
+
+            removeButton.setDisable(true);
+            removeProperty();
+        });
+
+    }
+
+    private void removeProperty() {
+        Equation equationForDelete = (Equation) equationsTable.getSelectionModel().getSelectedItem();
+        equationsTable.getItems().remove(equationForDelete);
+        addedEquations.remove(equationForDelete);
+
+        if(addedEquations.isEmpty()){
+            removeButton.setDisable(true);
+        }
     }
 
 
@@ -327,7 +359,7 @@ public class PropertysPanelController {
         //Hmsc srcHMSCSelected = (HMSC) getSelectedItem(firstHMSCChoiseBox, HMSCs);
         Hmsc srcHMSCSelected = getSelectedHMSC(firstHMSCChoiseBox, HMSCs);
         if(srcHMSCSelected == null){
-            JOptionPane.showMessageDialog(null, "Source Hmsc not be null", "Source Hmsc Erro", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Source bMSC not be null", "Source bMSC Erro", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
@@ -359,7 +391,7 @@ public class PropertysPanelController {
         if(secondHMSCChoiseBox.isVisible()) {
             Hmsc dstHMSCSelected = getSelectedHMSC(secondHMSCChoiseBox, HMSCs);
             if(dstHMSCSelected == null){
-                JOptionPane.showMessageDialog(null, "Destiny Hmsc not be null", "Destiny Hmsc Erro", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(null, "Destiny bMSC not be null", "Destiny bMSC Erro", JOptionPane.ERROR_MESSAGE);
                 return;
             }
             currentEquation.setFirstHMSC(srcHMSCSelected).setTemplate(selectedTemplateItem).setSecondHMSC(dstHMSCSelected)
@@ -414,7 +446,8 @@ public class PropertysPanelController {
 
 
 
-    private void changeListners() {
+    private void changeListeners() {
+        equationsTable.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> tableListener(observable, oldValue, newValue));
         firstHMSCChoiseBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> updateResultingEquation());
         secondHMSCChoiseBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> updateResultingEquation());
         numberStepsInput.textProperty().addListener((observable, oldValue, newValue) -> updateResultingEquation());
@@ -441,6 +474,10 @@ public class PropertysPanelController {
             updateResultingEquation();
         });
         */
+    }
+
+    private void tableListener(ObservableValue observable, Object oldValue, Object newValue) {
+        removeButton.setDisable(false);
     }
 
     private void patternProbability(String oldValue, String newValue) {
