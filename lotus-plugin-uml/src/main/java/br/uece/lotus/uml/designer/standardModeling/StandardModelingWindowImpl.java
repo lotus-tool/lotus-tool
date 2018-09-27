@@ -640,7 +640,6 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
 
         }
         stage.setScene(scene);
-        stage.initStyle(StageStyle.UNDECORATED);
         stage.setOnCloseRequest(event -> {
             propertyPanelCheckBox.setSelected(false);
 //            Alert alert = new Alert(Alert.AlertType.NONE, "Really close the Propertys Panel?", ButtonType.YES, ButtonType.NO);
