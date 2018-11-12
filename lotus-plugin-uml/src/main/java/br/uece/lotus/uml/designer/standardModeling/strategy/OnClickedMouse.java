@@ -161,8 +161,13 @@ public class OnClickedMouse implements Strategy{
         VBox box = new VBox(5);       
         Label lblAcao = new Label("Action:");
         TextField txtAcao = new TextField(t.getLabel() != null ? t.getLabel() : "");
+
+        Label lblGuard = new Label("Guard:");
+        TextField txtGuard = new TextField(t.getGuard() != null ? t.getGuard() : "");
+
         Label lblProb = new Label("Probability:");
         TextField txtProb = new TextField(String.valueOf(t.getProbability() != null ? t.getProbability() : ""));
+
         Button btnSet = new Button("Set");
         HBox b = new HBox(btnSet);
         b.setAlignment(Pos.CENTER);
@@ -220,10 +225,16 @@ public class OnClickedMouse implements Strategy{
                     t.setProbability(Double.parseDouble(auxValor));
                 }
                 pop.hide();
+
+               if(txtGuard.getText().isEmpty() || txtGuard.equals("")){
+                   t.setGuard(null);
+               }else {
+                   t.setGuard(txtGuard.getText());
+               }
             }
         });
         btnSet.setDefaultButton(true);
-        box.getChildren().addAll(lblAcao,txtAcao,lblProb,txtProb,b);
+        box.getChildren().addAll(lblAcao,txtAcao,lblGuard, txtGuard, lblProb,txtProb,b);
         AnchorPane panePopup = new AnchorPane(box);
         panePopup.setStyle("-fx-background-color: whitesmoke; -fx-effect: dropshadow( gaussian , gray , 5 , 0.0 , 0 , 1);");
         return panePopup;        

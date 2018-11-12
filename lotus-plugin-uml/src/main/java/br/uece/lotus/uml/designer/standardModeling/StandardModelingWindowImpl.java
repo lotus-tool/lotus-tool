@@ -127,8 +127,10 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
     public double yInicial;
     //Painel de Propriedades
     public TextField txtAction;
+    private TextField txtGuard;
     public TextField txtProbability;
     private Label lblAction;
+    private Label lblGuard;
     private Label lblProbability;
 
     private Button btnAddProperty;
@@ -533,10 +535,28 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
                 }
             }
         });
+
+
+        txtGuard = new TextField();
+        txtGuard.setPrefWidth(50);
+        txtGuard.setAlignment(Pos.CENTER);
+        txtGuard.setPromptText("[ Guard ]");
+        txtGuard.setOnAction(event -> {
+            Object obj = mComponentSelecionado;
+            if (obj instanceof TransitionMSCView) {
+                if(txtGuard.getText().isEmpty() || txtGuard.getText().equals("")){
+                    ((TransitionMSCView) obj).getTransition().setGuard(null);
+                }else {
+                    ((TransitionMSCView) obj).getTransition().setGuard(txtGuard.getText());
+                }
+            }
+        });
+
         lblAction = new Label("Name / Action:");
+        lblGuard = new Label("Guard:");
         lblProbability = new Label("Probability:");
 
-        blockPropriedade.getChildren().addAll(lblAction,txtAction,lblProbability,txtProbability);
+        blockPropriedade.getChildren().addAll(lblAction,txtAction,lblGuard, txtGuard, lblProbability,txtProbability);
 
         ////////////////// Propriedades para Runtime ///////////////////
         popup.setHideOnEscape(false);
@@ -817,6 +837,8 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
             txtAction.setText(t.getLabel());
             txtAction.requestFocus();
             txtProbability.setText(t.getProbability() == null ? null : String.valueOf(t.getProbability()));
+            txtGuard.setText(t.getGuard()== null ? "" : t.getGuard());
+            txtGuard.setVisible(true);
             lblProbability.setVisible(true);
             txtProbability.setVisible(true);
             
@@ -875,6 +897,8 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
         txtAction.requestFocus();
         lblProbability.setVisible(false);
         txtProbability.setVisible(false);
+        txtGuard.setVisible(false);
+        lblGuard.setVisible(false);
     }
     
     public void removeNoSelecao(Node node){
