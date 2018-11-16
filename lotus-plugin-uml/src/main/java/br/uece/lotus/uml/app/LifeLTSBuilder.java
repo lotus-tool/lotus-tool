@@ -15,6 +15,8 @@ import java.util.*;
 
 
 public class LifeLTSBuilder {
+    public static final String TRANSITION_LABEL = "transition_label";
+
     public static List<Component> builderLTS(StandardModeling standardModeling,
                                              List<Component> createdComponentsWithIndividualLTS) throws Exception {
 
@@ -59,18 +61,37 @@ public class LifeLTSBuilder {
 
             String labelTrasition = transitionMSC.getLabel();
 
+            if(labelTrasition.isEmpty()){
+                String tempLabelTranstion = buildTempLabelTranstion(transitionMSC);
+                transitionMSC.putValue(TRANSITION_LABEL, tempLabelTranstion);
+
+            }else {
+                transitionMSC.putValue(TRANSITION_LABEL, labelTrasition);
+            }
+
             for(Component componentWithoutTals : componentListWithOutTals){
                  int idSrc = Integer.valueOf(((String)componentWithoutTals.getValue(srcHmscLabel)).split(",")[1]);
                 int idDst = Integer.valueOf(((String)componentWithoutTals.getValue(dstHmscLabel)).split(",")[0]);
                 componentWithoutTals.buildTransition(idSrc, idDst)
                         .setLabel(srcHmscLabel.concat(".").concat(labelTrasition).concat(".").concat(dstHmscLabel)).setViewType(TransitionView.Geometry.CURVE)
-                        .create();
+                        .setGuard(transitionMSC.getGuard()).create();
             }
 
 
         }
 
 
+
+    }
+
+    private static String buildTempLabelTranstion(TransitionMSC transitionMSC) {
+        Hmsc srcHmsc = (Hmsc) transitionMSC.getSource();
+        Hmsc dstHmsc = (Hmsc) transitionMSC.getDestiny();
+
+        String srcHmscLabel = srcHmsc.getLabel();
+        String dstHmscLabel = dstHmsc.getLabel();
+        String tempLabel = srcHmscLabel.concat(".").concat(dstHmscLabel);
+       return tempLabel;
 
     }
 

@@ -6,6 +6,8 @@
 package br.uece.lotus.uml.designer.standardModeling;
 
 import br.uece.lotus.Component;
+import br.uece.lotus.Project;
+import br.uece.lotus.Transition;
 import br.uece.lotus.uml.app.ParallelComponentController;
 import br.uece.lotus.uml.app.runtime.controller.PropertysPanelController;
 import br.uece.lotus.uml.api.ds.Hmsc;
@@ -936,8 +938,31 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
 
             Component parallelComponent = parallelComponentController.buildParallelComponent();
 
+
+            //remover labals//
+            for(Transition transition : parallelComponent.getTransitionsList()){
+                transition.setProbability(null);
+                if( transition.getLabel().split("\\.")[1].isEmpty()){
+                    transition.setLabel(null);
+                }else {
+                    transition.setLabel(transition.getLabel().split("\\.")[2]);
+                }
+
+            }
+
+
             setComponentLTS(parallelComponent);
 
+            //new project lts
+/*
+            Project p = new Project();
+            String namePrompt = "Untitled" + (projectExplorerPluginDS.mProjectExplorer.getAllProjects().size() + 1);
+            String name = JOptionPane.showInputDialog(null, "Enter the new project's name", namePrompt);
+
+            p.setName(name);
+
+            p.addComponent(parallelComponent);
+            projectExplorerPluginDS.mProjectExplorer.open(p);*/
             parallelComponentController.addParallelComponentInLeftPanel(this, parallelComponent);
 
         } catch (Exception e) {

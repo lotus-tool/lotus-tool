@@ -8,6 +8,7 @@ package br.uece.lotus.uml.app.project;
 import br.uece.lotus.Component;
 import br.uece.lotus.State;
 import br.uece.lotus.Transition;
+import br.uece.lotus.project.ProjectExplorer;
 import br.uece.lotus.uml.api.ds.BlockDS;
 import br.uece.lotus.uml.api.ds.Hmsc;
 import br.uece.lotus.uml.api.ds.StandardModeling;
@@ -246,12 +247,13 @@ public final class ProjectExplorerPluginDS extends Plugin implements ProjectExpl
     DesingWindowImplManegerBlockDs dwimbd = new DesingWindowImplManegerBlockDs();
     StandardModelingWindowManager smwm = new StandardModelingWindowManager();
     LtsWindowManager lwm = new LtsWindowManager();
-
+   // public ProjectExplorer mProjectExplorer;
 
 
     @Override
     public void onStart(ExtensionManager extensionManager) throws Exception{
         mUserInterface = extensionManager.get(UserInterface.class);
+        //mProjectExplorer = extensionManager.get(ProjectExplorer.class);
         extension = extensionManager;
         AnchorPane.setTopAnchor(mProjectDSView, 0D);
         AnchorPane.setRightAnchor(mProjectDSView, 0D);

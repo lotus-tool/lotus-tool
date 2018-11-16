@@ -154,6 +154,8 @@ public class ParallelCompositor {
                // }
 
                 tt.setLabel(transitionOutFromFirstState.getLabel());
+                tt.setGuard(transitionOutFromFirstState.getGuard());
+
                 if(currentParallelState.getCompositeState().getID() > newParalledState.getCompositeState().getID()){
                  tt.setViewType(1);
                 }else {
@@ -194,6 +196,7 @@ public class ParallelCompositor {
              //       continue;
              //   }
                 tt.setLabel(t.getLabel());
+                tt.setGuard(t.getGuard());
                 if(currentParallelState.getCompositeState().getID() > newPrlState.getCompositeState().getID()){
                     tt.setViewType(1);
 
