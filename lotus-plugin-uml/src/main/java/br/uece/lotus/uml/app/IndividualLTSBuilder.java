@@ -73,6 +73,10 @@ public class IndividualLTSBuilder {
 
                State currentState = null;
 
+               if(allTransitonFromCurrentBlockDS.size()==0){
+                   currentComponentLTS.newState(0);
+               }
+
                for(TransitionMSC currentTransitionMSC : allTransitonFromCurrentBlockDS){
 
                    String createdLabel = buildLabelToCurrentTransitionLTS(currentTransitionMSC);

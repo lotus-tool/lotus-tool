@@ -247,13 +247,12 @@ public final class ProjectExplorerPluginDS extends Plugin implements ProjectExpl
     DesingWindowImplManegerBlockDs dwimbd = new DesingWindowImplManegerBlockDs();
     StandardModelingWindowManager smwm = new StandardModelingWindowManager();
     LtsWindowManager lwm = new LtsWindowManager();
-   // public ProjectExplorer mProjectExplorer;
+    // public ProjectExplorer mProjectExplorer;
 
 
     @Override
     public void onStart(ExtensionManager extensionManager) throws Exception{
         mUserInterface = extensionManager.get(UserInterface.class);
-        //mProjectExplorer = extensionManager.get(ProjectExplorer.class);
         extension = extensionManager;
         AnchorPane.setTopAnchor(mProjectDSView, 0D);
         AnchorPane.setRightAnchor(mProjectDSView, 0D);
