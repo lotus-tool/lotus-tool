@@ -52,7 +52,7 @@ public class OnDraggedMouse implements Strategy {
                         s.ultimoInstanteY = e.getY();
                     }else{
                         offsetX = e.getX() - s.ultimoInstanteX;
-                        //offsetY = e.getY() - s.ultimoInstanteY;
+                        //offsetY = e.getY() - run.ultimoInstanteY;
                         s.ultimoInstanteX = e.getX();
                         s.ultimoInstanteY = e.getY();
                     }

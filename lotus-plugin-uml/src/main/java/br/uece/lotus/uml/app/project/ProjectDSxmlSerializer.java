@@ -19,10 +19,13 @@ import br.uece.lotus.uml.api.ds.TransitionMSC;
 import br.uece.lotus.uml.api.project.ProjectDSSerializer;
 import br.uece.lotus.uml.api.viewer.bMSC.BlockDSView;
 import br.uece.lotus.uml.api.viewer.hMSC.HmscView;
-import br.uece.lotus.uml.api.viewer.transition.TransitionMSCView;
+
 import java.io.InputStream;
 import java.io.OutputStream;
-import javafx.scene.shape.Line;
+import java.util.Arrays;
+import java.util.List;
+
+
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -35,12 +38,12 @@ import org.xml.sax.helpers.XMLReaderFactory;
  * @author Bruno Barbosa
  */
 public class ProjectDSxmlSerializer implements ProjectDSSerializer{
-    
+
     private static ProjectDS mProject;
     private static StandardModeling standardModeling;
     private static Component lts;
     private static ComponentDS bMSC;
-    
+
     @Override
     public ProjectDS parseStream(InputStream stream) throws Exception {
         XMLReader xr = XMLReaderFactory.createXMLReader();
@@ -51,218 +54,249 @@ public class ProjectDSxmlSerializer implements ProjectDSSerializer{
 
     @Override
     public void toStream(ProjectDS p, OutputStream stream) throws Exception {
-        
-        try {
+
+
             XMLWritter xml = new XMLWritter(stream);
             xml.begin("project-msc");
             xml.attr("version", "1.0");
             xml.attr("name", p.getName());
-            
-                xml.begin("StandardModeling");
-                    xml.begin("hMSCs");
-                    for(Hmsc hmsc : p.getStandardModeling().getBlocos()){
-                        xml.begin("hMSC");
-                        xml.attr("id", hmsc.getID());
-                        xml.attr("x", hmsc.getLayoutX());
-                        xml.attr("y", hmsc.getLayoutY());
-                        xml.attr("label", hmsc.getLabel());
-                        
-                        if(hmsc.isFull()){
-                            xml.attr("isFull", "true");
-                            xml.attr("bMSC", hmsc.getmDiagramSequence().getName());
-                        }
-                        
-                        xml.end();
-                    }
-                    xml.end();
-                    xml.begin("TransitionMSC");
-                    for(TransitionMSC t : p.getStandardModeling().getTransitions()){
-                        xml.begin("TransitionHMSC");
-                        if(t.getSource() instanceof Hmsc){
-                            xml.attr("from", ((Hmsc) t.getSource()).getID() );
-                        }else {
-                            xml.attr("from", ((HmscView) t.getSource()).getHMSC().getID());
-                        }if(t.getDestiny() instanceof  Hmsc){
-                            xml.attr("to", ((Hmsc) t.getDestiny()).getID() );
-                        }else {
-                            xml.attr("to", ((HmscView) t.getDestiny()).getHMSC().getID());
-                        }
-                        String label = t.getLabel();
-                        xml.attr("label", label == null ? "" : label);
-                        Double prob = t.getProbability();
-                        if(prob != null){
-                            xml.attr("prob", prob);
-                        }
-                        Integer i = (Integer) t.getValue("view.type");
-                        if (i != null) {
-                            xml.attr("view-type", String.valueOf(i));
-                        }
-                        xml.end();
-                    }
-                    xml.end();
-                    
-                    Component composed = p.getLTS_Composed();
-                    if(composed != null){
-                        xml.begin("LTS-Composed");
-                            xml.begin("States");
-                            for(State v : composed.getStates()){
-                                xml.begin("state");
-                                xml.attr("id", v.getID());
-                                xml.attr("x", v.getLayoutX());
-                                xml.attr("y", v.getLayoutY());
-                                xml.attr("label", v.getLabel());
 
-                                if (v.isInitial()) {
-                                    xml.attr("initial", "true");
-                                }
-                                if (v.isError()) {
-                                    xml.attr("error", "true");
-                                }
-                                if (v.isFinal()) {
-                                    xml.attr("final", "true");
-                                }
-                                if (BigState.verifyIsBigState(v)) {
-                                    xml.attr("bigstate", "true");
-                                }
-                                xml.end();
-                            }
-                            xml.end();
-                            xml.begin("Transitions");
-                                for (Transition t : composed.getTransitions()) {
-                                    xml.begin("transition");
-                                    xml.attr("from", t.getSource().getID());
-                                    xml.attr("to", t.getDestiny().getID());
-                                    Double d = t.getProbability();
-                                    if (d != null) {
-                                        xml.attr("prob", t.getProbability());
-                                    }
-                                    String s = t.getLabel();
-                                    xml.attr("label", s == null ? "" : s);
-                                    s = t.getGuard();
-                                    if (s != null) {
-                                        xml.attr("guard", s);
-                                    }
+            xml.begin("StandardModeling");
+            xml.begin("hMSCs");
+            for(Hmsc hmsc : p.getStandardModeling().getBlocos()){
+                xml.begin("hMSC");
+                xml.attr("id", hmsc.getID());
+                xml.attr("x", hmsc.getLayoutX());
+                xml.attr("y", hmsc.getLayoutY());
+                xml.attr("label", hmsc.getLabel());
 
-                                    Integer i = (Integer) t.getValue("view.type");
-                                    if (i != null) {
-                                        xml.attr("view-type", String.valueOf(i));
-                                    }
-                                    xml.end();
-                                }
-                            xml.end();
-                        xml.end();//Lts - composed
-                    }
-                xml.end();//StandardModeling
-                
-                xml.begin("bMSCs");
-                    for(ComponentDS bmsc : p.getComponentsDS()){
-                        xml.begin("bMSC");
-                        xml.attr("name", bmsc.getName());
-                            xml.begin("Objects");
-                            for(BlockDS o : bmsc.getBlockDS()){
-                                xml.begin("Object");
-                                xml.attr("name", o.getLabel());
-                                xml.attr("id", o.getID());
-                                xml.attr("x", o.getLayoutX());
-                                xml.attr("y", o.getLayoutY());
-                                xml.end();
-                            }
-                            xml.end();//Objects
-                            xml.begin("TransitionMSC");
-                            for(TransitionMSC t : bmsc.getAllTransitions()){
-                                xml.begin("TransitionBMSC");
+                if(hmsc.isFull()){
+                    xml.attr("isFull", "true");
+                    xml.attr("bMSC", hmsc.getmDiagramSequence().getName());
+                }
 
-                                if(t.getSource() instanceof BlockDS){
-                                    xml.attr("from", ((BlockDS) t.getSource()).getID());
-                                }else {
-                                    xml.attr("from", ((BlockDSView) t.getSource()).getBlockDS().getID());
-                                }
-                                if(t.getDestiny() instanceof BlockDS){
-                                    xml.attr("to", ((BlockDS) t.getDestiny()).getID());
-                                }else {
-                                    xml.attr("to", ((BlockDSView) t.getDestiny()).getBlockDS().getID());
-                                }
-
-                                xml.attr("sequence", String.valueOf(t.getIdSequence()));
-                                
-                                String label = t.getLabel();
-                                xml.attr("label", label == null ? "" : label);
-                                label = t.getGuard();
-                                    if (label != null) {
-                                        xml.attr("guard", label);
-                                    }
-                                Integer i = (Integer) t.getValue("view.type");
-                                if (i != null) {
-                                    xml.attr("view-type", String.valueOf(i));
-                                }
-                                xml.end();
-                            }
-                            xml.end();//TransitionMSC
-                        xml.end();//bMSC
-                    }
-                xml.end();//bMSC's
-                xml.begin("FragmentsLTS");
-                    for(Component c : p.getFragments()){
-                        xml.begin("LTS");
-                        xml.attr("name", c.getName());
-                            xml.begin("States");
-                            for(State v : c.getStates()){
-                                xml.begin("state");
-                                xml.attr("id", v.getID());
-                                xml.attr("x", v.getLayoutX());
-                                xml.attr("y", v.getLayoutY());
-                                xml.attr("label", v.getLabel());
-
-                                if (v.isInitial()) {
-                                    xml.attr("initial", "true");
-                                }
-                                if (v.isError()) {
-                                    xml.attr("error", "true");
-                                }
-                                if (v.isFinal()) {
-                                    xml.attr("final", "true");
-                                }
-                                if (BigState.verifyIsBigState(v)) {
-                                    xml.attr("bigstate", "true");
-                                }
-                                xml.end();
-                            }
-                            xml.end();
-                            xml.begin("Transitions");
-                                for (Transition t : c.getTransitions()) {
-                                    xml.begin("transition");
-                                    xml.attr("from", t.getSource().getID());
-                                    xml.attr("to", t.getDestiny().getID());
-                                    Double d = t.getProbability();
-                                    if (d != null) {
-                                        xml.attr("prob", t.getProbability());
-                                    }
-                                    String s = t.getLabel();
-                                    xml.attr("label", s == null ? "" : s);
-                                    s = t.getGuard();
-                                    if (s != null) {
-                                        xml.attr("guard", s);
-                                    }
-
-                                    Integer i = (Integer) t.getValue("view.type");
-                                    if (i != null) {
-                                        xml.attr("view-type", String.valueOf(i));
-                                    }
-                                    xml.end();
-                                }
-                            xml.end();
-                        xml.end();
-                    }
-                xml.end();//FragmentsLTS
-                
+                xml.end();
+            }
             xml.end();
-        } catch (Exception e) {
-            System.out.println("Erro ao salvar o xml MSC");
-            System.out.println(e.getMessage());
-        }
-        
+            xml.begin("TransitionMSC");
+            for(TransitionMSC t : p.getStandardModeling().getTransitions()){
+                xml.begin("TransitionHMSC");
+                if(t.getSource() instanceof Hmsc){
+                    xml.attr("from", ((Hmsc) t.getSource()).getID() );
+                }else {
+                    xml.attr("from", ((HmscView) t.getSource()).getHMSC().getID());
+                }if(t.getDestiny() instanceof  Hmsc){
+                    xml.attr("to", ((Hmsc) t.getDestiny()).getID() );
+                }else {
+                    xml.attr("to", ((HmscView) t.getDestiny()).getHMSC().getID());
+                }
+                String label = t.getLabel();
+                xml.attr("label", label == null ? "" : label);
+
+                Double prob = t.getProbability();
+                if(prob != null){
+                    xml.attr("prob", prob);
+                }
+
+                Integer i = (Integer) t.getValue("view.type");
+                if (i != null) {
+                    xml.attr("view-type", String.valueOf(i));
+                }
+
+                String guard = t.getGuard();
+                if (guard != null && !guard.isEmpty()) {
+                    guard = guard.replace("&&","@EE;").replace("<","@LESS").replace(">","@MORE");
+                    xml.attr("guard", guard);
+                }
+
+                String action = String.join("," ,t.getActions());
+                if (action != null && !action.isEmpty()) {
+                    xml.attr("action", action);
+                }
+
+                xml.end();
+            }
+            xml.end();
+
+            Component composed = p.getLTS_Composed();
+            if(composed != null){
+                xml.begin("LTS-Composed");
+                xml.begin("States");
+                for(State v : composed.getStates()){
+                    xml.begin("stateInBase");
+                    xml.attr("id", v.getID());
+                    xml.attr("x", v.getLayoutX());
+                    xml.attr("y", v.getLayoutY());
+                    xml.attr("label", v.getLabel());
+
+                    if (v.isInitial()) {
+                        xml.attr("initial", "true");
+                    }
+                    if (v.isError()) {
+                        xml.attr("error", "true");
+                    }
+                    if (v.isFinal()) {
+                        xml.attr("final", "true");
+                    }
+                    if (BigState.verifyIsBigState(v)) {
+                        xml.attr("bigstate", "true");
+                    }
+                    xml.end();
+                }
+                xml.end();
+                xml.begin("Transitions");
+                for (Transition t : composed.getTransitions()) {
+                    xml.begin("transition");
+                    xml.attr("from", t.getSource().getID());
+                    xml.attr("to", t.getDestiny().getID());
+                    Double d = t.getProbability();
+                    if (d != null) {
+                        xml.attr("prob", t.getProbability());
+                    }
+                    String s = t.getLabel();
+                    xml.attr("label", s == null ? "" : s);
+                    s = t.getGuard();
+                    if (s != null) {
+                        s = s.replace("&&","@EE;").replace("<","@LESS").replace(">","@MORE");
+                        xml.attr("guard", s);
+                    }
+
+                    Integer i = (Integer) t.getValue("view.type");
+                    if (i != null) {
+                        xml.attr("view-type", String.valueOf(i));
+                    }
+                    xml.end();
+                }
+                xml.end();
+                xml.end();//Lts - composed
+            }
+            xml.end();//StandardModeling
+
+            xml.begin("bMSCs");
+            for(ComponentDS bmsc : p.getComponentsDS()){
+                xml.begin("bMSC");
+                xml.attr("name", bmsc.getName());
+                xml.begin("Objects");
+                for(BlockDS o : bmsc.getBlockDS()){
+                    xml.begin("Object");
+                    xml.attr("name", o.getLabel());
+                    xml.attr("id", o.getID());
+                    xml.attr("x", o.getLayoutX());
+                    xml.attr("y", o.getLayoutY());
+                    xml.end();
+                }
+                xml.end();//Objects
+                xml.begin("TransitionMSC");
+                for(TransitionMSC t : bmsc.getAllTransitions()){
+                    xml.begin("TransitionBMSC");
+
+                    if(t.getSource() instanceof BlockDS){
+                        xml.attr("from", ((BlockDS) t.getSource()).getID());
+                    }else {
+                        xml.attr("from", ((BlockDSView) t.getSource()).getBlockDS().getID());
+                    }
+                    if(t.getDestiny() instanceof BlockDS){
+                        xml.attr("to", ((BlockDS) t.getDestiny()).getID());
+                    }else {
+                        xml.attr("to", ((BlockDSView) t.getDestiny()).getBlockDS().getID());
+                    }
+
+                    xml.attr("sequence", String.valueOf(t.getIdSequence()));
+
+                    String label = t.getLabel();
+                    xml.attr("label", label == null ? "" : label);
+
+                    String guard = t.getGuard();
+                    if (guard != null) {
+                        guard = guard.replace("&&","@EE;").replace("<","@LESS").replace(">","@MORE");
+                        xml.attr("guard", guard);
+                    }
+
+                    String parameters = String.join(",", t.getParameters());
+                    if (t.getParameters().size() > 0) {
+                        xml.attr("parameters", parameters);
+                    }
+
+                    Integer i = (Integer) t.getValue("view.type");
+                    if (i != null) {
+                        xml.attr("view-type", String.valueOf(i));
+                    }
+                    xml.end();
+
+//                    List<String> parameters = t.getParameters();
+//                    xml.begin("Parameters");
+//                    for(String parameter : parameters){
+//                        xml.begin("Parameter");
+//                        xml.attr("name", parameter);
+//                        xml.end();
+//                    }
+//                    xml.end();//Parameters
+
+                }
+                xml.end();//TransitionMSC
+                xml.end();//bMSC
+            }
+            xml.end();//bMSC'run
+            xml.begin("FragmentsLTS");
+            for(Component c : p.getFragments()){
+                xml.begin("LTS");
+                xml.attr("name", c.getName());
+                xml.begin("States");
+                for(State v : c.getStates()){
+                    xml.begin("stateInBase");
+                    xml.attr("id", v.getID());
+                    xml.attr("x", v.getLayoutX());
+                    xml.attr("y", v.getLayoutY());
+                    xml.attr("label", v.getLabel());
+
+                    if (v.isInitial()) {
+                        xml.attr("initial", "true");
+                    }
+                    if (v.isError()) {
+                        xml.attr("error", "true");
+                    }
+                    if (v.isFinal()) {
+                        xml.attr("final", "true");
+                    }
+                    if (BigState.verifyIsBigState(v)) {
+                        xml.attr("bigstate", "true");
+                    }
+                    xml.end();
+                }
+                xml.end();
+                xml.begin("Transitions");
+                for (Transition t : c.getTransitions()) {
+                    xml.begin("transition");
+                    xml.attr("from", t.getSource().getID());
+                    xml.attr("to", t.getDestiny().getID());
+                    Double d = t.getProbability();
+                    if (d != null) {
+                        xml.attr("prob", t.getProbability());
+                    }
+                    String s = t.getLabel();
+                    xml.attr("label", s == null ? "" : s);
+                    s = t.getGuard();
+                    if (s != null) {
+                        s = s.replace("&&","@EE;").replace("<","@LESS").replace(">","@MORE");
+                        xml.attr("guard", s);
+                    }
+
+                    Integer i = (Integer) t.getValue("view.type");
+                    if (i != null) {
+                        xml.attr("view-type", String.valueOf(i));
+                    }
+                    xml.end();
+                }
+                xml.end();
+                xml.end();
+            }
+            xml.end();//FragmentsLTS
+
+            xml.end();
+
+
     }
-    
+
     private static final DefaultHandler handler = new DefaultHandler(){
 
         @Override
@@ -280,7 +314,7 @@ public class ProjectDSxmlSerializer implements ProjectDSSerializer{
                     parseTransitionHMSC_Tag(attributes);
                     break;
                 }
-                case "state":{
+                case "stateInBase":{
                     parseState_Tag(attributes);
                     break;
                 }
@@ -301,6 +335,10 @@ public class ProjectDSxmlSerializer implements ProjectDSSerializer{
                     parseTransitionBMSC_Tag(attributes);
                     break;
                 }
+//                case "Parameters":{
+//                    parseParameters(attributes);
+//                    break;
+//                }
                 case "LTS":{
                     lts = new Component();
                     lts.setName(attributes.getValue("name"));
@@ -355,23 +393,38 @@ public class ProjectDSxmlSerializer implements ProjectDSSerializer{
             hmsc.setLabel(attributes.getValue("label"));
             hmsc.setLayoutX(Double.parseDouble(attributes.getValue("x")));
             hmsc.setLayoutY(Double.parseDouble(attributes.getValue("y")));
-            
+
         }
 
         private void parseTransitionHMSC_Tag(Attributes attributes) {
             String label = attributes.getValue("label");
+            String guard = attributes.getValue("guard");
+            List<String> actions = null;
+
+            if(attributes.getValue("action")!= null){
+                 actions = Arrays.asList(attributes.getValue("action").split(","));
+            }
+
+
+
+
+            if(guard != null){
+                guard = guard.replace("@EE;","&&").replace("@LESS","<").replace("@MORE",">");
+            }
+
             String prob = attributes.getValue("prob");
             String viewType = attributes.getValue("view-type");
-            
             Hmsc src = standardModeling.getBlocoByID(Integer.parseInt(attributes.getValue("from")));
             Hmsc dst = standardModeling.getBlocoByID(Integer.parseInt(attributes.getValue("to")));
-            
+
             standardModeling.buildTransition(src, dst)
-                                    .setLabel(label)
-                                    .setProbability(prob == null? null : Double.parseDouble(prob))
-                                    .setValue("view.type", viewType == null? null : Integer.parseInt(viewType))
-                                    .createForXmlHMSC();
-            
+                    .setLabel(label)
+                    .setGuard(guard)
+                    .setActions(actions)
+                    .setProbability(prob == null? null : Double.parseDouble(prob))
+                    .setValue("view.type", viewType == null? null : Integer.parseInt(viewType))
+                    .createForXmlHMSC();
+
         }
 
         private void parseState_Tag(Attributes attributes) {
@@ -393,7 +446,7 @@ public class ProjectDSxmlSerializer implements ProjectDSSerializer{
                     s.setAsInitial();
                     lts.setInitialState(s);
                 }
-                
+
             } catch (NumberFormatException | NullPointerException e) {
                 //System.out.println("erro: "+e.getMessage());
             }
@@ -405,17 +458,21 @@ public class ProjectDSxmlSerializer implements ProjectDSSerializer{
             String label = attributes.getValue("label");
             String prob = attributes.getValue("prob");
             String guard = attributes.getValue("guard");
+            if(guard != null){
+                guard = guard.replace("@EE;","&&").replace("@LESS","<").replace("@MORE",">");
+            }
+
             String viewType = attributes.getValue("view-type");
-            
+
             lts.buildTransition(srcId, dstId)
-                .setLabel(label)
-                .setProbability(prob == null ? null : Double.parseDouble(prob))
-                .setGuard(guard)
-                .setValue("view.type", viewType == null ? null : Integer.parseInt(viewType))
-                .create();
-           
-        }   
-        
+                    .setLabel(label)
+                    .setProbability(prob == null ? null : Double.parseDouble(prob))
+                    .setGuard(guard)
+                    .setValue("view.type", viewType == null ? null : Integer.parseInt(viewType))
+                    .create();
+
+        }
+
         private void parseObject_Tag(Attributes attributes) {
             Integer id = Integer.parseInt(attributes.getValue("id"));
             BlockDS object = bMSC.newBlockDS(id);
@@ -428,19 +485,37 @@ public class ProjectDSxmlSerializer implements ProjectDSSerializer{
             String label = attributes.getValue("label");
             String sequence =  attributes.getValue("sequence");
             String guard = attributes.getValue("guard");
+
+            if(guard != null){
+                guard = guard.replace("@EE;","&&").replace("@LESS","<").replace("@MORE",">");
+            }
+
             String viewType = attributes.getValue("view-type");
-            
+            String parameters = attributes.getValue("parameters");
+            List<String> parametersList = null;
+
+            if(parameters!= null){
+                parametersList = Arrays.asList(parameters.split(","));
+            }
+
+
             BlockDS src = bMSC.getBMSC_ByID(Integer.parseInt(attributes.getValue("from")));
             BlockDS dst = bMSC.getBMSC_ByID(Integer.parseInt(attributes.getValue("to")));
-            
-            bMSC.buildTransition(src, dst)
+
+          //  List<String> parameters = attributes.get
+            TransitionMSC transitionMSC= bMSC.buildTransition(src, dst)
                     .setLabel(label)
                     .setIdSequence(Integer.parseInt(sequence))
                     .setGuard(guard)
                     .setValue("view.type", viewType == null? null : Integer.parseInt(viewType))
                     .createForXmlBMSC();
+
+            if(parametersList!=null){
+                transitionMSC.setParameters(parametersList);
+            }
+
         }
-        
+
         private void bindHMSC(ComponentDS bmsc) {
             StandardModeling sm = mProject.getStandardModeling();
             for(Hmsc h : sm.getBlocos()){
@@ -464,8 +539,8 @@ public class ProjectDSxmlSerializer implements ProjectDSSerializer{
 /*
         private void printLTSComposed() {
             System.out.println("--------------------LTS Composed-----------------");
-            for(State s : mProject.getLTS_Composed().getStates()){
-                System.out.println("State: "+s.getLabel()+" x:"+s.getLayoutX()+" y:"+s.getLayoutY());
+            for(State run : mProject.getLTS_Composed().getStates()){
+                System.out.println("State: "+run.getLabel()+" x:"+run.getLayoutX()+" y:"+run.getLayoutY());
             }
             for(Transition t : mProject.getLTS_Composed().getTransitions()){
                 System.out.println("Transition composed   from: "+t.getSource().getID()+" to: "+t.getDestiny().getID());
@@ -477,8 +552,8 @@ public class ProjectDSxmlSerializer implements ProjectDSSerializer{
             System.out.println("--------------------LTS Fragment-----------------");
             for(Component c : mProject.getFragments()){
                 System.out.println("Fragment : "+c.getName());
-                for(State s : c.getStates()){
-                    System.out.println("State: "+s.getLabel()+" x:"+s.getLayoutX()+" y:"+s.getLayoutY());
+                for(State run : c.getStates()){
+                    System.out.println("State: "+run.getLabel()+" x:"+run.getLayoutX()+" y:"+run.getLayoutY());
                 }
                 for(Transition t : c.getTransitions()){
                     System.out.println("Transition fragment   from: "+t.getSource().getID()+" to: "+t.getDestiny().getID());
@@ -487,4 +562,8 @@ public class ProjectDSxmlSerializer implements ProjectDSSerializer{
             System.out.println("-------------------------------------------------");
         }*/
     };
+
+    private void parseParameters(Attributes attributes) {
+
+    }
 }

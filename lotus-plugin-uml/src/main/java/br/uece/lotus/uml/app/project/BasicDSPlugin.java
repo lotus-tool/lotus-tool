@@ -94,7 +94,7 @@ public class BasicDSPlugin extends Plugin {
         TextInputDialog d = new TextInputDialog(prompt);
         d.setTitle("New Project");
         d.setHeaderText("New Project to MSC");
-        d.setContentText("Enter the new project's name:");
+        d.setContentText("Enter the new project'run name:");
         Optional<String> resul = d.showAndWait();
         if (resul.isPresent()) {
             pName = resul.get();
@@ -128,7 +128,7 @@ public class BasicDSPlugin extends Plugin {
         TextInputDialog d = new TextInputDialog(prompt);
         d.setTitle("Rename Project");
         d.setHeaderText("New Name to Project");
-        d.setContentText("Enter the new project's name:");
+        d.setContentText("Enter the new project'run name:");
         Optional<String> resul = d.showAndWait();
         if (resul.isPresent()) {
             pName = resul.get();
@@ -158,7 +158,7 @@ public class BasicDSPlugin extends Plugin {
         TextInputDialog d = new TextInputDialog(prompt);
         d.setTitle("Rename bMSC");
         d.setHeaderText("New Name to bMSC");
-        d.setContentText("Enter the new bMSC's name:");
+        d.setContentText("Enter the new bMSC'run name:");
         Optional<String> resul = d.showAndWait();
         if (resul.isPresent()) {
             pName = resul.get();

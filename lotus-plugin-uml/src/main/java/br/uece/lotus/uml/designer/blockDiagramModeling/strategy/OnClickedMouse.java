@@ -12,9 +12,7 @@ import br.uece.lotus.uml.api.viewer.bMSC.BlockDSView;
 import br.uece.lotus.uml.api.viewer.transition.TransitionMSCView;
 import br.uece.lotus.uml.designer.blockDiagramModeling.DesingWindowImplBlockDs;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.Pos;
-import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -23,6 +21,9 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Popup;
+
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * @author Bruno Barbosa
@@ -120,32 +121,61 @@ public class OnClickedMouse implements Strategy {
 
     private AnchorPane createPopup_TransitionMSC(TransitionMSC t) {
         VBox box = new VBox(5);
-        Label lblAction = new Label("Action:");
-        TextField txtAction = new TextField(t.getLabel() != null ? t.getLabel() : "");
+        Label lblLabel = new Label("Label:");
+        TextField txtLabel = new TextField(t.getLabel() != null ? t.getLabel() : "");
+
         Label lblGuard = new Label("Guard:");
         TextField txtGuard = new TextField(t.getGuard() != null ? t.getGuard() : "");
+
+        Label lblAction = new Label("Actions:");
+        TextField txtAction = new TextField(t.getActions().size() != 0 ? String.join(",", t.getActions()) : "");
+
+
+        Label lblParameters = new Label("Parameters:");
+        TextField txtParameters = new TextField(t.getParameters().size() !=0 ? String.join(",",t.getParameters()): "");
+
         Button btnSet = new Button("Set");
         HBox b = new HBox(btnSet);
         b.setAlignment(Pos.CENTER);
         btnSet.setOnAction((ActionEvent event) -> {
-           if(txtAction.getText().equals("")){
-               pop.hide();
-           }else{
-               t.setLabel(txtAction.getText());
-               if(txtGuard.getText().equals("")){
-                   pop.hide();
-               }else{
-                   t.setGuard(txtGuard.getText());
-               }
-               pop.hide();
+           if(txtLabel.getText().equals("")){
+              t.setLabel("");
+           }else {
+               t.setLabel(txtLabel.getText());
            }
+
+            if(txtGuard.getText().equals("")){
+               t.setGuard("");
+           }else {
+                t.setGuard(txtGuard.getText());
+            }
+
+            if(txtAction.getText().equals("")){
+               t.clearActions();
+            }else {
+               t.clearActions();
+               t.setActions(Arrays.asList(txtAction.getText().split(",")));
+            }
+
+
+
+            if(txtParameters.getText().equals("")){
+               t.clearParameters();
+           }else {
+                t.clearParameters();
+               t.setParameters(Arrays.asList(txtParameters.getText().split(",")));
+            }
+
+            pop.hide();
         });
+
         btnSet.setDefaultButton(true);
-        box.getChildren().addAll(lblAction,txtAction,lblGuard,txtGuard,b);
+        box.getChildren().addAll(lblLabel,txtLabel,lblGuard,txtGuard,lblAction,txtAction, lblParameters,txtParameters,b);
         AnchorPane panePopup = new AnchorPane(box);
         panePopup.setStyle("-fx-background-color: whitesmoke; -fx-effect: dropshadow( gaussian , gray , 5 , 0.0 , 0 , 1);");
         return panePopup;
     }
+
 
     private AnchorPane createPopup_bMSC_rename(BlockDS block) {
         VBox vbox = new VBox(5);

@@ -46,7 +46,7 @@ public class RunnerWindowManager extends DefaultWindowManagerPlugin<RunnerWindow
                 .newItem("Run/Run component")
                 .setWeight(Integer.MIN_VALUE + 2)
                 .setAccelerator(KeyCode.R, KeyCombination.CONTROL_DOWN)
-                .setAction(mRunComponent)
+                .addAction(mRunComponent)
                 .create();*/
 
         mUserInterface.getToolBar().newItem(null)

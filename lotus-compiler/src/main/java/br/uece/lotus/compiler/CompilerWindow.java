@@ -281,7 +281,7 @@ public class CompilerWindow extends AnchorPane implements Window, Initializable 
 
         }
         /**
-         * *Split principal que define o número de LTS's da entrada**
+         * *Split principal que define o número de LTS'run da entrada**
          */
         lts = converteArray(texto.split("[.]"));
         for (int i = 0; i < lts.size(); i++) {
@@ -291,7 +291,7 @@ public class CompilerWindow extends AnchorPane implements Window, Initializable 
          * *Cada LTS será posto em um novo arraylist para verificar suas
          * expressões**
          */
-        System.out.println("\n*********Lista de LTS's:*********");
+        System.out.println("\n*********Lista de LTS'run:*********");
         for (int i = 0; i < lts.size(); i++) {
             texto = lts.get(i);
 

@@ -71,8 +71,8 @@ public class SelfTransitionMSCViewImpl extends TransitionMSCViewImpl{
                 r.pivotYProperty().bind(mCurva.heightProperty());
                 mCurva.getTransforms().add(r);
                 mCurva.rotulo.rotateProperty().bind(new Geom.CartesianCase(origemView, destinoView)
-                                .second(180)
-                                .thirth(180)
+                                .second(270)
+                                .thirth(270)
                 );
                 getChildren().add(mCurva);
             }

@@ -78,7 +78,16 @@ public abstract class TransitionViewImpl extends Region implements TransitionVie
             if(mTransition.getGuard().equals("")){
                 s += "";
             }else{
-                s += "[" + mTransition.getGuard() + "]";
+                s += "(" + mTransition.getGuard() + ")";
+            }
+        }
+
+        if(mTransition.getActions() != null){
+            if(mTransition.getActions().isEmpty()){
+                s+="";
+            }else {
+
+                s += "{" + String.join(",",mTransition.getActions()) + "}";
             }
         }
 
@@ -86,15 +95,25 @@ public abstract class TransitionViewImpl extends Region implements TransitionVie
             if(mTransition.getProbability() == null){
                 s += "";
             }else{
-                s += String.format(" (%.2f)", mTransition.getProbability());
+                s += String.format(" %.2f", mTransition.getProbability());
             }
         }
 
         if (mTransition.getLabel() != null) {
-            s += " " + mTransition.getLabel();
+            s += " " + mTransition.getLabel()+" ";
+        }
+
+        if(!mTransition.getParameters().isEmpty()){
+
+            s +="["+String.join("," , mTransition.getParameters())+"]";
+
+        }else {
+            s += "";
         }
         return s;
     }
+
+
 
     @Override
     public Node getNode() {

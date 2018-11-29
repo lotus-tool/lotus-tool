@@ -420,7 +420,7 @@ public class LtsParserTCG {
             }
             //Ligacao dos loops
             for(String[] s : loops){
-                //String das transitions "s"
+                //String das transitions "run"
                 State ini=null, fim=null;
                 for(Transition t : c.getTransitions()){
                     if(t.getLabel().equals(s[0])){

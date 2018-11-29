@@ -76,7 +76,7 @@ public class ExtensibleFXTabPane implements ExtensibleTabPane {
         Platform.runLater(() -> {
             Tab t = getTabById(id);
             if (t != null) {
-                System.out.println("ID da TAB É: "+t.getId());
+            //    System.out.println("ID da TAB É: "+t.getId());
                 mTabPane.getSelectionModel().select(t);
             }
         });

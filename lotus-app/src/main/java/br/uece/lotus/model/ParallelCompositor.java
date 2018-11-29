@@ -107,11 +107,11 @@ public class ParallelCompositor {
 
         sharedActions = compare(component1, component2); // OK! - Felipe Vidal
 
-        System.out.println("Shared actions: ");
+      //  System.out.println("Shared actions: ");
         for(Transition action : sharedActions){
             System.out.print(action.getLabel() + " ");
         }
-        System.out.println("");
+     //   System.out.println("");
 
         ParallelState firstParallelState = new ParallelState(component1.getInitialState(), component2.getInitialState()); // Estado ( 0 , 0 )
         firstParallelState.setCompositeState(buildParallelState(newComponent, firstParallelState));
@@ -155,6 +155,8 @@ public class ParallelCompositor {
 
                 tt.setLabel(transitionOutFromFirstState.getLabel());
                 tt.setGuard(transitionOutFromFirstState.getGuard());
+                tt.setParameters(transitionOutFromFirstState.getParameters());
+                tt.setActions(transitionOutFromFirstState.getActions());
 
                 if(currentParallelState.getCompositeState().getID() > newParalledState.getCompositeState().getID()){
                  tt.setViewType(1);
@@ -197,6 +199,8 @@ public class ParallelCompositor {
              //   }
                 tt.setLabel(t.getLabel());
                 tt.setGuard(t.getGuard());
+                tt.setActions(t.getActions());
+                tt.setParameters(t.getParameters());
                 if(currentParallelState.getCompositeState().getID() > newPrlState.getCompositeState().getID()){
                     tt.setViewType(1);
 
@@ -268,7 +272,7 @@ public class ParallelCompositor {
 
     private State buildParallelState(Component p, ParallelState PrlState) {
         int id = PrlState.getFirstState().getID() * 10 + PrlState.getSecondState().getID();
-        System.out.println("ID é: "+id+"\tA é: "+PrlState.getFirstState().getLabel()+"\tB é: "+PrlState.getSecondState().getLabel());
+       // System.out.println("ID é: "+id+"\tA é: "+PrlState.getFirstState().getLabel()+"\tB é: "+PrlState.getSecondState().getLabel());
         State s = p.getStateByID(id);
         if (s == null) {
             s = p.newState(id);
@@ -280,7 +284,7 @@ public class ParallelCompositor {
                 p.setErrorState(s);
             }
             s.setLabel("<" + PrlState.getFirstState().getID() + ", " + PrlState.getSecondState().getID() + ">");
-            System.out.println("Added state " + s.getLabel() + "."+"\t ID: "+s.getID());
+          //  System.out.println("Added state " + s.getLabel() + "."+"\t ID: "+s.getID());
         }
         return s;
     }

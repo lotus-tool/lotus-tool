@@ -45,6 +45,7 @@ import br.uece.seed.app.ExtensibleToolbar;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javafx.beans.property.DoubleProperty;
@@ -93,7 +94,9 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
 
     public final TextField txtLabel;
     public final TextField txtGuard;
+    public final TextField txtAction;
     public final TextField txtProbability;
+    public final TextField txtParameters;
     public Rectangle ultimoRetanguloAdicionado;
     public double coordenadaInicialX;
     public double coordenadaInicialY;
@@ -522,7 +525,7 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
         paleta.setVisible(false);
 
         txtLabel = new TextField();
-        txtLabel.setPromptText("Action");
+        txtLabel.setPromptText("Label");
         txtLabel.setOnKeyReleased(event -> {
             Object obj = getSelectedView();
             if (obj instanceof TransitionView) {
@@ -538,6 +541,32 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
                 ((TransitionView) obj).getTransition().setGuard(txtGuard.getText());
             }
         });
+
+        txtAction = new TextField();
+        txtAction.setPromptText("Action");
+        // txtGuard.setOnAction(event -> {
+        txtAction.setOnKeyReleased(event -> {
+            Object obj = getSelectedView();
+            if (obj instanceof TransitionView) {
+                ((TransitionView) obj).getTransition().setActions(Arrays.asList(txtAction.getText().split(",")));
+            }
+        });
+
+        txtParameters = new TextField();
+        txtParameters.setPromptText("Parameters");
+        txtParameters.setOnKeyReleased(event -> {
+            Object obj = getSelectedView();
+            if (obj instanceof TransitionView) {
+                  if(txtParameters.getText().equals("")){
+                      ((TransitionView)obj).getTransition().getParameters().clear();
+                  } else {
+                      ((TransitionView)obj).getTransition().getParameters().clear();
+                      addParamenters(obj, txtParameters.getText());
+                  }
+
+            }
+        });
+
         txtProbability = new TextField();
         txtProbability.setPrefWidth(50);
         txtProbability.setAlignment(Pos.CENTER);
@@ -600,6 +629,8 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
                 Transition t = ((TransitionView) obj).getTransition();
                 txtGuard.setText(t.getGuard());
                 txtLabel.setText(t.getLabel());
+                txtAction.setText(String.join(",", t.getActions()));
+                txtParameters.setText(structureParameters(obj));
                 txtProbability.setText(t.getProbability() == null ? "" : t.getProbability().toString());
             }
         });
@@ -676,10 +707,17 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
 
         //Propriedades
         VBox mPainelPropriedades = new VBox();
-        mPainelPropriedades.getChildren().add(new Label("Action"));
+        mPainelPropriedades.getChildren().add(new Label("Label"));
         mPainelPropriedades.getChildren().add(txtLabel);
+
         mPainelPropriedades.getChildren().add(new Label("Guard"));
         mPainelPropriedades.getChildren().add(txtGuard);
+
+        mPainelPropriedades.getChildren().add(new Label("Action"));
+        mPainelPropriedades.getChildren().add(txtAction);
+
+        mPainelPropriedades.getChildren().add(new Label("Parameters"));
+        mPainelPropriedades.getChildren().add(txtParameters);
 
         HBox mPainelPropriedadeProbability = new HBox(2);
         mPainelPropriedadeProbability.setAlignment(Pos.CENTER);
@@ -750,6 +788,16 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
                 mViewer.getNode().setTranslateY(mViewerTranslateYPadrao);
             }
         });
+
+    }
+
+    private void addParamenters(Object o, String txt) {
+        Transition transition = ((TransitionView)o).getTransition();
+        String [] arrayParam = txt.split(",");
+
+        for(int i = 0; i < arrayParam.length; i++){
+            transition.addParameter(arrayParam[i]);
+        }
 
     }
 
@@ -960,10 +1008,29 @@ public class DesignerWindowImpl extends AnchorPane implements DesignerWindow {
         if (t instanceof TransitionView) {
             Transition tt = ((TransitionView) t).getTransition();
             txtGuard.setText(tt.getGuard());
+            txtAction.setText(String.join(",",tt.getActions()));
             txtProbability.setText(tt.getProbability() == null ? null : String.valueOf(tt.getProbability()));
             txtLabel.setText(tt.getLabel());
+            txtParameters.setText(structureParameters(t));
             txtLabel.requestFocus();
         }
+    }
+
+    private String structureParameters(Object t) {
+        Transition transition = ((TransitionView) t).getTransition();
+        String s ="";
+
+        if(transition.getParameters().isEmpty()){
+            return "";
+        }
+        for(String param :transition.getParameters()){
+            s += param+",";
+        }
+
+        s = s.substring(0, s.length() - 1);
+
+        return s;
+
     }
 
     public Object getSelectedView() {

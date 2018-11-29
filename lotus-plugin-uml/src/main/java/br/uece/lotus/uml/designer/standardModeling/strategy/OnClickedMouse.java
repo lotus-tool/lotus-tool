@@ -29,6 +29,8 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Popup;
 
+import java.util.Arrays;
+
 /**
  *
  * @author Bruno Barbosa
@@ -85,7 +87,7 @@ public class OnClickedMouse implements Strategy{
                 s.setComponenteSelecionado(null);
             }
             if(s.mComponentSobMouse == null && !s.selecionadoPeloRetangulo){
-                //s.changeToProperty();  // Apaga os Labels e talz
+                //run.changeToProperty();  // Apaga os Labels e talz
             }
             //renomeando hMSC
             if(e.getClickCount() == 2 && MouseButton.PRIMARY.equals(e.getButton()) && s.mComponentSobMouse instanceof HmscView){
@@ -120,8 +122,16 @@ public class OnClickedMouse implements Strategy{
         }
         else if(s.mModoAtual == s.MODO_REMOVER){
             if(s.mComponentSobMouse instanceof HmscView){
+
+                if(s.mComponentSelecionado == s.mComponentSobMouse){
+                    s.removeSelectedStyles(s.mComponentSelecionado);
+                    s.mComponentSelecionado = null;
+                }
+
                 Hmsc b = ((HmscView)s.mComponentSobMouse).getHMSC();
                 s.mViewer.getComponentBuildDS().remove(b);
+
+
             }
             if(s.mComponentSobMouse instanceof TransitionMSCView){
                 TransitionMSC t = ((TransitionMSCView)s.mComponentSobMouse).getTransition();
@@ -159,11 +169,16 @@ public class OnClickedMouse implements Strategy{
     
     private AnchorPane createPopup_TransitionMSC(TransitionMSC t){
         VBox box = new VBox(5);       
-        Label lblAcao = new Label("Action:");
-        TextField txtAcao = new TextField(t.getLabel() != null ? t.getLabel() : "");
+        Label lblLabel = new Label("Label:");
+        TextField txtLabel = new TextField(t.getLabel() != null ? t.getLabel() : "");
 
         Label lblGuard = new Label("Guard:");
         TextField txtGuard = new TextField(t.getGuard() != null ? t.getGuard() : "");
+
+        Label lblAction = new Label("Actions:");
+
+
+        TextField txtAction = new TextField(t.getActions().size() ==  0 ? "" : String.join(",", t.getActions()));
 
         Label lblProb = new Label("Probability:");
         TextField txtProb = new TextField(String.valueOf(t.getProbability() != null ? t.getProbability() : ""));
@@ -172,10 +187,17 @@ public class OnClickedMouse implements Strategy{
         HBox b = new HBox(btnSet);
         b.setAlignment(Pos.CENTER);
         btnSet.setOnAction((ActionEvent event) -> {
-            if(txtAcao.getText().equals("")){
-                pop.hide();
+
+            if(txtLabel.getText().equals("")){
+                t.setLabel("");
+            }else {
+                t.setLabel(txtLabel.getText());
+            }
+
+            if(txtProb.getText().equals("")){
+                t.setProbability(null);
             }else{
-                t.setLabel(txtAcao.getText());
+                t.setLabel(txtLabel.getText());
                 if(txtProb.getText().equals("")){
                     t.setProbability(null);
                 }else{
@@ -224,17 +246,27 @@ public class OnClickedMouse implements Strategy{
                     }
                     t.setProbability(Double.parseDouble(auxValor));
                 }
-                pop.hide();
 
-               if(txtGuard.getText().isEmpty() || txtGuard.equals("")){
-                   t.setGuard(null);
-               }else {
-                   t.setGuard(txtGuard.getText());
-               }
             }
+
+            if(txtGuard.getText().isEmpty() || txtGuard.equals("")){
+                t.setGuard(null);
+            }else {
+                t.setGuard(txtGuard.getText());
+            }
+
+            if(txtAction.getText().isEmpty() || txtAction.equals("")){
+                t.clearActions();
+            }else {
+                t.setActions(Arrays.asList(txtAction.getText().trim().split(",")));
+            }
+
+            pop.hide();
+
+
         });
         btnSet.setDefaultButton(true);
-        box.getChildren().addAll(lblAcao,txtAcao,lblGuard, txtGuard, lblProb,txtProb,b);
+        box.getChildren().addAll(lblLabel, txtLabel, lblGuard, txtGuard, lblAction, txtAction, lblProb, txtProb, b);
         AnchorPane panePopup = new AnchorPane(box);
         panePopup.setStyle("-fx-background-color: whitesmoke; -fx-effect: dropshadow( gaussian , gray , 5 , 0.0 , 0 , 1);");
         return panePopup;        

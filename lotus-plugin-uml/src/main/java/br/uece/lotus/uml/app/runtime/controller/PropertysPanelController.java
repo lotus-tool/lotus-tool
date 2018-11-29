@@ -243,7 +243,7 @@ public class PropertysPanelController {
 
             if(firstStateId == null || secondStateId == null){
                 try {
-                    throw new Exception("Not found state! ");
+                    throw new Exception("Not found stateInBase! ");
                 } catch (Exception e) {
                     e.printStackTrace();
                     return;

@@ -119,6 +119,7 @@ public class ProjectXMLSerializer implements ProjectSerializer {
                 xml.attr("label", s == null ? "" : s);
                 s = t.getGuard();
                 if (s != null) {
+
                     xml.attr("guard", s);
                 }
 

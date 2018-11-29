@@ -17,78 +17,102 @@ import java.util.Objects;
  */
 public class TransitionMSC {
 
-    
+
+
+
     public static class Builder {
         private /*final*/ StandardModeling mComponentBuild;
         private /*final*/ TransitionMSC mTransitionMSC;
         private /*final*/ ComponentDS mComponentDS;
 
         public Builder(StandardModeling mComponentBuild, TransitionMSC mTransitionMSC) {
-           this.mComponentBuild = mComponentBuild;
-           this.mTransitionMSC = mTransitionMSC;
-       }
+            this.mComponentBuild = mComponentBuild;
+            this.mTransitionMSC = mTransitionMSC;
+        }
 
         public Builder(ComponentDS mComponentDS, TransitionMSC mTransitionMSC) {
             this.mComponentDS = mComponentDS;
             this.mTransitionMSC = mTransitionMSC;
         }
 
-       public Builder setValue(String s, Object o) {
-           mTransitionMSC.putValue(s, o);
-           return this;
-       }
+        public Builder setValue(String s, Object o) {
+            mTransitionMSC.putValue(s, o);
+            return this;
+        }
 
-       public TransitionMSC create() {
-           mComponentBuild.add(mTransitionMSC);
-           return mTransitionMSC;
-       }
-       
-       public TransitionMSC createForXmlHMSC() {
-           mComponentBuild.add2(mTransitionMSC);
-           return mTransitionMSC;
-       }
-       
-       public TransitionMSC createForXmlBMSC() {
-           mComponentDS.add2(mTransitionMSC);
-           return mTransitionMSC;
-       }
+        public TransitionMSC create() {
+            mComponentBuild.add(mTransitionMSC);
+            return mTransitionMSC;
+        }
+
+        public TransitionMSC createForXmlHMSC() {
+            mComponentBuild.add2(mTransitionMSC);
+            return mTransitionMSC;
+        }
+
+        public TransitionMSC createForXmlBMSC() {
+            mComponentDS.add2(mTransitionMSC);
+            return mTransitionMSC;
+        }
 
         public TransitionMSC createDS() {
             mComponentDS.add(mTransitionMSC);
             return mTransitionMSC;
         }
-       
-       public Builder setIdSequence(int id){
-           mTransitionMSC.setIdSequence(id);
-           return this;
-       }
 
-       public Builder setLabel(String label) {
-           mTransitionMSC.setLabel(label);
-           return this;
-       }
+        public Builder setIdSequence(int id){
+            mTransitionMSC.setIdSequence(id);
+            return this;
+        }
 
-       public Builder setProbability(Double probability) {
-           mTransitionMSC.setProbability(probability);
-           return this;            
-       }
+        public Builder setLabel(String label) {
+            mTransitionMSC.setLabel(label);
+            return this;
+        }
 
-       
-       public Builder setGuard(String guard){
-           mTransitionMSC.setGuard(guard);
-           return this;
-       }
+        public Builder setProbability(Double probability) {
+            mTransitionMSC.setProbability(probability);
+            return this;
+        }
 
-       public Builder setViewType(int type) {
-           mTransitionMSC.putValue("view.type", type);
-           return this;
-       }
+        public Builder addAction(String action){
+            mTransitionMSC.addAction(action);
+            return this;
+        }
+
+        public Builder setActions(List<String> actions){
+            mTransitionMSC.setActions(actions);
+            return this;
+        }
+
+        public Builder addParameter(String parameter){
+            mTransitionMSC.addParameter(parameter);
+            return this;
+        }
+
+        public Builder setParameters(List<String> parameters){
+            mTransitionMSC.setParameters(parameters);
+            return this;
+        }
+
+
+        public Builder setGuard(String guard){
+            mTransitionMSC.setGuard(guard);
+            return this;
+        }
+
+        public Builder setViewType(int type) {
+            mTransitionMSC.putValue("view.type", type);
+            return this;
+        }
     }
-    
+
+
+
     public interface Listener {
         void onChange(TransitionMSC transitionMSC);
     }
-    
+
     public static final String TEXTSTYLE_NORMAL = "normal";
     public static final String TEXTSTYLE_BOLD = "bold";
     //Grafica
@@ -104,6 +128,8 @@ public class TransitionMSC {
     private int mTextSize = 13;
     //Transition
     private String mLabel;
+    private List<String>mParamList = new ArrayList<>();
+    private List<String>mActionList = new ArrayList<>();
     private Double mProbability;
     private String mGuard;
     private Integer mIdSequence;
@@ -112,6 +138,95 @@ public class TransitionMSC {
         this.mSource = mSource;
         this.mDestiny = mDestiny;
     }
+
+    public TransitionMSC addParameter(String param){
+        this.mParamList.add(param);
+
+        for(Listener l : mListeners){
+            l.onChange(this);
+        }
+
+        return this;
+    }
+
+    public TransitionMSC setParameters(List<String> parameters) {
+
+            mParamList.clear();
+
+            if(parameters != null){
+
+                mParamList.addAll(new ArrayList<>(parameters));
+
+                for(Listener l : mListeners){
+                    l.onChange(this);
+                }
+            }
+
+
+
+        return this;
+
+    }
+
+    public TransitionMSC clearParameters(){
+        this.mParamList.clear();
+
+        for(Listener l : mListeners){
+            l.onChange(this);
+        }
+
+        return this;
+
+    }
+
+    public List<String> getParameters() {
+        return mParamList;
+    }
+
+
+    public TransitionMSC addAction(String action){
+       this.mActionList.add(action);
+
+        for(Listener l : mListeners){
+            l.onChange(this);
+        }
+
+        return this;
+    }
+
+    public TransitionMSC setActions(List<String> actions){
+
+        mActionList.clear();
+
+        if(actions != null){
+            mActionList.addAll(new ArrayList<>(actions));
+
+            for(Listener l : mListeners){
+                l.onChange(this);
+            }
+        }
+
+
+
+        return this;
+    }
+
+    public TransitionMSC clearActions() {
+
+        mActionList.clear();
+
+        for(Listener l : mListeners){
+            l.onChange(this);
+        }
+
+        return this;
+    }
+
+
+    public List<String> getActions(){
+        return mActionList;
+    }
+
 
     public Object getSource() {
         return mSource;
@@ -188,6 +303,7 @@ public class TransitionMSC {
         return this;
     }
 
+
     public String getLabel() {
         return mLabel;
     }
@@ -199,14 +315,14 @@ public class TransitionMSC {
         }
         return this;
     }
-    
+
     public void setGuard(String guard) {
         this.mGuard = guard;
         for(Listener l : mListeners){
             l.onChange(this);
         }
     }
-    
+
     public String getGuard(){
         return mGuard;
     }
@@ -217,7 +333,7 @@ public class TransitionMSC {
             l.onChange(this);
         }
     }
-    
+
     public Integer getIdSequence(){
         return mIdSequence;
     }
@@ -255,13 +371,17 @@ public class TransitionMSC {
         if (!Objects.equals(this.mGuard, other.mGuard)) {
             return false;
         }
+
+        if (!Objects.equals(this.mParamList, other.mParamList)) {
+            return false;
+        }
         if (this.mIdSequence != other.mIdSequence) {
             return false;
         }
         return true;
     }
 
-    
+
     public void addListener(Listener l) {
         mListeners.add(l);
     }
@@ -277,5 +397,5 @@ public class TransitionMSC {
     public void putValue(String key, Object value) {
         mValues.put(key, value);
     }
-    
+
 }

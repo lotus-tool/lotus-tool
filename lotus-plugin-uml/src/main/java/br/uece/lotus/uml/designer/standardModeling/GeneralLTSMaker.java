@@ -698,7 +698,7 @@ public class GeneralLTSMaker {
                     }
                 }
 /*
-                geral.buildTransition(state, erro)
+                geral.buildTransition(stateInBase, erro)
                         .setViewType(1)
                         .setProbability(new_probability)
                         .setLabel("ERROR")

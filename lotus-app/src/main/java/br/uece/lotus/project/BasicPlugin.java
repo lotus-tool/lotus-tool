@@ -346,12 +346,12 @@ public class BasicPlugin extends Plugin {
                 .create();
         mMainMenu.newItem("File/Close All Projects...")
                 .setWeight(Integer.MIN_VALUE)
-                        // .setAction(mSaveAllProject)
+                        // .addAction(mSaveAllProject)
                 .setAction(mCloseAllProjects)
                 .create();
 //        mMainMenu.newItem("File/Open Recent")
 //                .setWeight(Integer.MIN_VALUE)
-//                .setAction(mOpenProject)
+//                .addAction(mOpenProject)
 //                .create();
         mMainMenu.newItem("File/-")
                 .setWeight(Integer.MIN_VALUE)

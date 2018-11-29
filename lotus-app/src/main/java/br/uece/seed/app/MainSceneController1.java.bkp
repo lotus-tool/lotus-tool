@@ -155,19 +155,19 @@ public class MainSceneController1 extends Plugin implements Initializable, UserI
         }
 
         @Override
-        public void onStateCreated(Component component, State state) {
+        public void onStateCreated(Component component, State stateInBase) {
         }
 
         @Override
-        public void onStateRemoved(Component component, State state) {
+        public void onStateRemoved(Component component, State stateInBase) {
         }
 
         @Override
-        public void onTransitionCreated(Component component, Transition state) {
+        public void onTransitionCreated(Component component, Transition stateInBase) {
         }
 
         @Override
-        public void onTransitionRemoved(Component component, Transition state) {
+        public void onTransitionRemoved(Component component, Transition stateInBase) {
         }
     };
     private final Project.Listener mProjectListener = new Project.Listener() {

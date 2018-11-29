@@ -38,7 +38,11 @@ public class OnPressedMouse implements Strategy{
             s.rectSelecao.setY(s.dragContextMouseAnchorY);
             s.rectSelecao.setWidth(0);
             s.rectSelecao.setHeight(0);
-            s.mViewer.getNode().getChildren().add(s.rectSelecao);
+
+            if(s.mViewer.getNode() != null){
+                s.mViewer.getNode().getChildren().add(s.rectSelecao);
+            }
+
 
         }
         

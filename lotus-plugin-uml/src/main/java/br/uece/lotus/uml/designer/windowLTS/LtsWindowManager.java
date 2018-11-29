@@ -24,8 +24,9 @@ public class LtsWindowManager extends DefaultWindowManagerPluginDS<LtsWindowImpl
     }
     
     @Override
-    protected void onShow(LtsWindowImpl window, Component c) {
+    protected void onShow(LtsWindowImpl window, Component c, ProjectExplorerPluginDS mProjectExplorerDS) {
         window.setComponentLTS(c);
+        window.createInitializeActionsVariablesView(mProjectExplorerDS);
     }
     
     @Override

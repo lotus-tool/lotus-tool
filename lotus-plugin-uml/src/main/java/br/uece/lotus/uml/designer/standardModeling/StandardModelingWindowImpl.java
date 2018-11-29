@@ -8,7 +8,9 @@ package br.uece.lotus.uml.designer.standardModeling;
 import br.uece.lotus.Component;
 import br.uece.lotus.Project;
 import br.uece.lotus.Transition;
+import br.uece.lotus.uml.api.project.ProjectDSSerializer;
 import br.uece.lotus.uml.app.ParallelComponentController;
+import br.uece.lotus.uml.app.project.ProjectDSxmlSerializer;
 import br.uece.lotus.uml.app.runtime.controller.PropertysPanelController;
 import br.uece.lotus.uml.api.ds.Hmsc;
 import br.uece.lotus.uml.api.ds.StandardModeling;
@@ -48,7 +50,6 @@ import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -60,7 +61,6 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
@@ -128,9 +128,12 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
     public double xInicial;
     public double yInicial;
     //Painel de Propriedades
+    public TextField txtLabel;
     public TextField txtAction;
     private TextField txtGuard;
     public TextField txtProbability;
+
+    private Label lblLabel;
     private Label lblAction;
     private Label lblGuard;
     private Label lblProbability;
@@ -490,33 +493,33 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
         
         //Panel de Proriedades
         VBox blockPropriedade = new VBox(5);
-        txtAction = new TextField();
-        txtAction.setPromptText("Name/Action");
-        txtAction.setOnKeyReleased((KeyEvent event) -> {
+        txtLabel = new TextField();
+        txtLabel.setPromptText("Name/Label");
+        txtLabel.setOnKeyReleased((KeyEvent event) -> {
             Object obj = mComponentSelecionado;
             if(event.getCode() != KeyCode.ENTER) {
                 if (obj instanceof TransitionMSCView) {
-                    ((TransitionMSCView) obj).getTransition().setLabel(txtAction.getText());
+                    ((TransitionMSCView) obj).getTransition().setLabel(txtLabel.getText());
                 }
                 if (!selecao.isEmpty()) {
                     Node node = selecao.iterator().next();
                     if (node instanceof HmscView) {
-                        ((HmscView) node).getHMSC().setLabel(txtAction.getText());
+                        ((HmscView) node).getHMSC().setLabel(txtLabel.getText());
                         // Se O bMSC sempre tiver que ter o mesmo nome do hMSC
                         if(((HmscView) node).getHMSC().getmDiagramSequence() != null) {
-                            ((HmscView) node).getHMSC().getmDiagramSequence().setName(txtAction.getText());
+                            ((HmscView) node).getHMSC().getmDiagramSequence().setName(txtLabel.getText());
                         }
                         projectExplorerPluginDS.clear2();
                     }
                 }
             }else{
                 if (obj instanceof TransitionMSCView) {
-                    txtAction.setText(((TransitionMSCView) obj).getTransition().getLabel());
+                    txtLabel.setText(((TransitionMSCView) obj).getTransition().getLabel());
                 }
                 if (!selecao.isEmpty()) {
                     Node node = selecao.iterator().next();
                     if (node instanceof HmscView) {
-                        txtAction.setText(((HmscView) node).getHMSC().getLabel());
+                        txtLabel.setText(((HmscView) node).getHMSC().getLabel());
                         projectExplorerPluginDS.clear2();
                     }
                 }
@@ -552,7 +555,7 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
         txtGuard = new TextField();
         txtGuard.setPrefWidth(50);
         txtGuard.setAlignment(Pos.CENTER);
-        txtGuard.setPromptText("[ Guard ]");
+        txtGuard.setPromptText("( Guard )");
         txtGuard.setOnAction(event -> {
             Object obj = mComponentSelecionado;
             if (obj instanceof TransitionMSCView) {
@@ -564,11 +567,37 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
             }
         });
 
-        lblAction = new Label("Name / Action:");
+
+        txtAction = new TextField();
+        txtAction.setPrefWidth(50);
+        txtAction.setAlignment(Pos.CENTER);
+        txtAction.setPromptText("{ Action }");
+        txtAction.setOnAction(event -> {
+            Object obj = mComponentSelecionado;
+            if (obj instanceof TransitionMSCView) {
+                TransitionMSC transitionMSC = ((TransitionMSCView) obj).getTransition();
+                if(txtAction.getText().isEmpty() || txtAction.getText().equals("")){
+                   if( transitionMSC.getActions() != null){
+                       transitionMSC.clearActions();
+                   }
+                }else {
+                    if( transitionMSC.getActions() != null){
+                        transitionMSC.clearActions();
+                    }
+                  for(String action: txtAction.getText().split(",")){
+                      action= action.trim();
+                      transitionMSC.addAction(action);
+                  }
+                }
+            }
+        });
+
+        lblLabel = new Label("Name / Label:");
         lblGuard = new Label("Guard:");
+        lblAction = new Label("Actions:");
         lblProbability = new Label("Probability:");
 
-        blockPropriedade.getChildren().addAll(lblAction,txtAction,lblGuard, txtGuard, lblProbability,txtProbability);
+        blockPropriedade.getChildren().addAll(lblLabel, txtLabel,lblGuard, txtGuard, lblAction, txtAction, lblProbability,txtProbability);
 
         ////////////////// Propriedades para Runtime ///////////////////
         popup.setHideOnEscape(false);
@@ -646,7 +675,8 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
         utilidade.getChildren().addAll(infoEmpyt,infoFull, infoInitial);
         
         Button buildLTSFromHMSC = new Button("Build LTS", new ImageView(new Image(getClass().getResourceAsStream("/imagens/ic_build_LTS.png"))));
-        buildLTSFromHMSC.setOnAction(buildLTSFromHMSCEvent);
+        buildLTSFromHMSC.setOnAction(buildLTSFromHMSCEvent );
+
         
         mInfoPanel.getChildren().addAll(utilidade,buildLTSFromHMSC);
         
@@ -782,22 +812,37 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
         }
     }
 
-    private void removeSelectedStyles(Object mComponentSelecionado) {
+    public void removeSelectedStyles(Object mComponentSelecionado) {
+
+
+
         if(mComponentSelecionado instanceof HmscView){
+
+            if(((HmscView) mComponentSelecionado).getHMSC()==null){
+                return;
+            }
+
+
             Hmsc b = ((HmscView) mComponentSelecionado).getHMSC();
             b.setBorderWidth(1);
             b.setBorderColor("black");
             b.setTextColor("black");
             b.setTextStyle(Hmsc.mTextStyleNormal);
+        }else if(mComponentSelecionado instanceof TransitionMSCView){
+
+            if(((TransitionMSCView)mComponentSelecionado).getTransition()==null){
+                return;
+            }
+
+                TransitionMSC t = ((TransitionMSCView)mComponentSelecionado).getTransition();
+                t.setWidth(1);
+                t.setColor("black");
+                t.setTextColor("black");
+                t.setTextStyle(TransitionMSC.TEXTSTYLE_NORMAL);
+            }
+
         }
-        else if(mComponentSelecionado instanceof TransitionMSCView){
-            TransitionMSC t = ((TransitionMSCView)mComponentSelecionado).getTransition();
-            t.setWidth(1);
-            t.setColor("black");
-            t.setTextColor("black");
-            t.setTextStyle(TransitionMSC.TEXTSTYLE_NORMAL);
-        }
-    }
+
     
     // Mascara para Probabilidade
     private void campoProbability(final TextField textField) {
@@ -814,11 +859,19 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
     private void updatePropriedades(Object obj) {
         if(obj instanceof TransitionMSCView){
             TransitionMSC t = ((TransitionMSCView)obj).getTransition();
-            txtAction.setText(t.getLabel());
-            txtAction.requestFocus();
-            txtProbability.setText(t.getProbability() == null ? null : String.valueOf(t.getProbability()));
+            txtLabel.setText(t.getLabel());
+            txtLabel.requestFocus();
+
             txtGuard.setText(t.getGuard()== null ? "" : t.getGuard());
             txtGuard.setVisible(true);
+
+            txtAction.setText(t.getActions().size() ==  0 ? "" : String.join(",", t.getActions()));
+            txtAction.setVisible(true);
+
+            txtAction.setText(t.getParameters().size() ==  0 ? "" : String.join(",", t.getParameters()));
+            txtAction.setVisible(true);
+
+            txtProbability.setText(t.getProbability() == null ? null : String.valueOf(t.getProbability()));
             lblProbability.setVisible(true);
             txtProbability.setVisible(true);
             
@@ -873,12 +926,14 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
         selecao.add(node);
         selecionadoPeloRetangulo = true;
         Hmsc hmsc = ((HmscView)node).getHMSC();
-        txtAction.setText(hmsc.getLabel());
-        txtAction.requestFocus();
+        txtLabel.setText(hmsc.getLabel());
+        txtLabel.requestFocus();
         lblProbability.setVisible(false);
         txtProbability.setVisible(false);
         txtGuard.setVisible(false);
         lblGuard.setVisible(false);
+        txtAction.setVisible(false);
+        lblAction.setVisible(false);
     }
     
     public void removeNoSelecao(Node node){
@@ -935,14 +990,14 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
             setComponentLTS(parallelComponent);
 
             //new project lts
-//            Project p = new Project();
-//            String namePrompt = "Untitled" + (projectExplorerPluginDS.mProjectExplorer.getAllProjects().size() + 1);
-//            String name = JOptionPane.showInputDialog(null, "Enter the new project's name", namePrompt);
-//
-//            p.setName(name);
-//
-//            p.addComponent(parallelComponent);
-//            projectExplorerPluginDS.mProjectExplorer.open(p);
+            Project p = new Project();
+            String namePrompt = "Untitled" + (projectExplorerPluginDS.projectExplorer.getAllProjects().size() + 1);
+            String name = JOptionPane.showInputDialog(null, "Enter the new project'run name", namePrompt);
+
+            p.setName(name);
+
+            p.addComponent(parallelComponent);
+            projectExplorerPluginDS.projectExplorer.open(p);
             parallelComponentController.addParallelComponentInLeftPanel(this, parallelComponent);
 
         } catch (Exception e) {
@@ -1063,9 +1118,9 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
 //    };
 //    public void layout(Component component) {
 //        int i = 1;
-//        for (State state : component.getStates()) {
-//            state.setLayoutX(i * 200);
-//            state.setLayoutY(300 + (i % 10));
+//        for (State stateInBase : component.getStates()) {
+//            stateInBase.setLayoutX(i * 200);
+//            stateInBase.setLayoutY(300 + (i % 10));
 //            i++;
 //        }
 //    }

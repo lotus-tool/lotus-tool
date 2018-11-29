@@ -46,7 +46,7 @@ public abstract class DefaultWindowManagerPluginDS<E extends WindowDS> extends P
     protected abstract E onCreateStandadM(ProjectExplorerPluginDS pep);
     protected abstract void onShow(E window, StandardModeling buildDS);
     protected abstract void onShow(E window, ComponentDS cds);
-    protected abstract void onShow(E window, Component c);
+    protected abstract void onShow(E window, Component c, ProjectExplorerPluginDS mProjectExplorerDS);
     protected abstract void onHide(E window);
     
     private ProjectExplorerPluginDS mProjectExplorerDS;
@@ -56,6 +56,8 @@ public abstract class DefaultWindowManagerPluginDS<E extends WindowDS> extends P
         mCenterPanel = ((UserInterface)extensionManager.get(UserInterface.class)).getCenterPanel();
         mOnStartCalled = true;
         mProjectExplorerDS = extensionManager.get(ProjectExplorerPluginDS.class);
+
+
     }
     
     
@@ -155,7 +157,7 @@ public abstract class DefaultWindowManagerPluginDS<E extends WindowDS> extends P
                     l.onCreateWindow(window);
                 }
                 c.addListener(mComponentLTSListener);
-                onShow(window, c);
+                onShow(window, c, mProjectExplorerDS);
             }
             id = mCenterPanel.newTab(window.getTitle(), window.getNode(),c.getID(), true);
             mComponentLTSids.put(c, id);

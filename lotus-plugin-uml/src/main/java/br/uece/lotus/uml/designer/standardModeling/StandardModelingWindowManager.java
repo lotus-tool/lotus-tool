@@ -51,7 +51,7 @@ public class StandardModelingWindowManager extends DefaultWindowManagerPluginDS<
     @Override
     protected void onShow(StandardModelingWindowImpl window, ComponentDS cds) {}
     @Override
-    protected void onShow(StandardModelingWindowImpl window, Component c) {}
+    protected void onShow(StandardModelingWindowImpl window, Component c, ProjectExplorerPluginDS mProjectExplorerDS) {}
 
     
 

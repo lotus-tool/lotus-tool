@@ -4,6 +4,7 @@ import br.uece.lotus.Component;
 import br.uece.lotus.State;
 
 import br.uece.lotus.uml.api.ds.*;
+import br.uece.lotus.uml.api.viewer.bMSC.BlockDSViewImpl;
 import br.uece.lotus.uml.app.project.ProjectExplorerPluginDS;
 
 import java.util.*;
@@ -96,6 +97,8 @@ public class IndividualLTSBuilder {
                    dstState = currentComponentLTS.newState(currentIDDstState);
                    currentComponentLTS.buildTransition(srcState, dstState)
                             .setLabel(createdLabel)
+                            .setActions(currentTransitionMSC.getActions())
+                            .setParameters(currentTransitionMSC.getParameters())
                             .create();
 
                     
@@ -219,9 +222,25 @@ public class IndividualLTSBuilder {
     }
 
     private static String buildLabelToCurrentTransitionLTS(TransitionMSC currentTransitionMSC) {
-        BlockDS srcBlockDS, dstBlockDS;
-        srcBlockDS = (BlockDS) currentTransitionMSC.getSource();
-        dstBlockDS = (BlockDS) currentTransitionMSC.getDestiny();
+        BlockDS srcBlockDS = null, dstBlockDS = null;
+
+        if(currentTransitionMSC.getSource() instanceof BlockDSViewImpl){
+            srcBlockDS = ((BlockDSViewImpl) currentTransitionMSC.getSource()).getBlockDS();
+        }
+
+        if(currentTransitionMSC.getDestiny() instanceof BlockDSViewImpl){
+            dstBlockDS =((BlockDSViewImpl) currentTransitionMSC.getDestiny()).getBlockDS();
+        }
+
+        if(currentTransitionMSC.getSource() instanceof BlockDS){
+            srcBlockDS = (BlockDS) currentTransitionMSC.getSource();
+        }
+
+        if(currentTransitionMSC.getDestiny() instanceof BlockDS){
+            dstBlockDS = (BlockDS) currentTransitionMSC.getDestiny();
+        }
+
+
 
         String createdLabel = srcBlockDS.getLabel()+"."
                 +dstBlockDS.getLabel() +"."

@@ -4,7 +4,7 @@ import br.uece.lotus.Component;
 import br.uece.lotus.State;
 import br.uece.lotus.Transition;
 import br.uece.lotus.uml.api.ds.*;
-import br.uece.lotus.uml.app.project.ProjectExplorerPluginDS;
+import br.uece.lotus.uml.api.viewer.hMSC.HmscViewImpl;
 import br.uece.lotus.viewer.TransitionView;
 import java.util.*;
 
@@ -53,8 +53,25 @@ public class LifeLTSBuilder {
 
 
         for(TransitionMSC transitionMSC : transitionsHmsc){
-            Hmsc srcHmsc = (Hmsc) transitionMSC.getSource();
-            Hmsc dstHmsc = (Hmsc) transitionMSC.getDestiny();
+
+            Hmsc srcHmsc = null;
+            Hmsc dstHmsc = null;
+
+            if(transitionMSC.getSource() instanceof HmscViewImpl){
+
+                srcHmsc =  ((HmscViewImpl) transitionMSC.getSource()).getHMSC();
+
+            }else  {
+                srcHmsc = (Hmsc) transitionMSC.getSource();
+            }
+
+            if(transitionMSC.getDestiny() instanceof HmscViewImpl){
+
+                dstHmsc =  ((HmscViewImpl) transitionMSC.getDestiny()).getHMSC();
+
+            }else  {
+                dstHmsc = (Hmsc) transitionMSC.getDestiny();
+            }
 
             String srcHmscLabel = srcHmsc.getLabel();
             String dstHmscLabel = dstHmsc.getLabel();
@@ -70,11 +87,11 @@ public class LifeLTSBuilder {
             }
 
             for(Component componentWithoutTals : componentListWithOutTals){
-                 int idSrc = Integer.valueOf(((String)componentWithoutTals.getValue(srcHmscLabel)).split(",")[1]);
+                int idSrc = Integer.valueOf(((String)componentWithoutTals.getValue(srcHmscLabel)).split(",")[1]);
                 int idDst = Integer.valueOf(((String)componentWithoutTals.getValue(dstHmscLabel)).split(",")[0]);
                 componentWithoutTals.buildTransition(idSrc, idDst)
                         .setLabel(srcHmscLabel.concat(".").concat(labelTrasition).concat(".").concat(dstHmscLabel)).setViewType(TransitionView.Geometry.CURVE)
-                        .setGuard(transitionMSC.getGuard()).create();
+                        .setGuard(transitionMSC.getGuard()).setActions(transitionMSC.getActions()).create();
             }
 
 
@@ -85,8 +102,24 @@ public class LifeLTSBuilder {
     }
 
     private static String buildTempLabelTranstion(TransitionMSC transitionMSC) {
-        Hmsc srcHmsc = (Hmsc) transitionMSC.getSource();
-        Hmsc dstHmsc = (Hmsc) transitionMSC.getDestiny();
+        Hmsc srcHmsc = null;
+        Hmsc dstHmsc = null;
+
+        if(transitionMSC.getSource() instanceof HmscViewImpl){
+
+            srcHmsc =  ((HmscViewImpl) transitionMSC.getSource()).getHMSC();
+
+        }else  {
+            srcHmsc = (Hmsc) transitionMSC.getSource();
+        }
+
+        if(transitionMSC.getDestiny() instanceof HmscViewImpl){
+
+            dstHmsc =  ((HmscViewImpl) transitionMSC.getDestiny()).getHMSC();
+
+        }else  {
+            dstHmsc = (Hmsc) transitionMSC.getDestiny();
+        }
 
         String srcHmscLabel = srcHmsc.getLabel();
         String dstHmscLabel = dstHmsc.getLabel();
@@ -175,7 +208,7 @@ public class LifeLTSBuilder {
          // newSrcState.putValue("hmsc",componentSrc.getName().split("_")[0]);
 
            componentDst.buildTransition(newIdSrc, newIdDst)
-                   .setLabel(trasitionSrc.getLabel()).setViewType(TransitionView.Geometry.CURVE)
+                   .setLabel(trasitionSrc.getLabel()).setViewType(TransitionView.Geometry.CURVE).setParameters(trasitionSrc.getParameters()).setActions(trasitionSrc.getActions())
                    .create();
        }
 
@@ -284,8 +317,29 @@ public class LifeLTSBuilder {
         Map<String, List<String>> stringListMap = new HashMap<>();
 
         for(TransitionMSC transitionMSC : transitions){
-            Hmsc srcHmsc = (Hmsc) transitionMSC.getSource();
-            Hmsc dstHmsc = (Hmsc) transitionMSC.getDestiny();
+            Hmsc srcHmsc = null;
+            Hmsc dstHmsc = null;
+
+            if(transitionMSC.getSource() instanceof HmscViewImpl){
+
+                srcHmsc =  ((HmscViewImpl) transitionMSC.getSource()).getHMSC();
+
+            }else  {
+                 srcHmsc = (Hmsc) transitionMSC.getSource();
+            }
+
+            if(transitionMSC.getDestiny() instanceof HmscViewImpl){
+
+                dstHmsc =  ((HmscViewImpl) transitionMSC.getDestiny()).getHMSC();
+
+            }else  {
+                 dstHmsc = (Hmsc) transitionMSC.getDestiny();
+            }
+
+            if(transitionMSC.getLabel()== null) {
+                transitionMSC.setLabel(""); //todo bad thing
+            }
+
 
             String labelAndDstHmsc = transitionMSC.getLabel().concat("$$").concat(dstHmsc.getLabel());
 

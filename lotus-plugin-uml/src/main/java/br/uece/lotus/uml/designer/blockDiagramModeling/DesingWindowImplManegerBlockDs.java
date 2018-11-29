@@ -6,12 +6,6 @@ import br.uece.lotus.uml.api.ds.ComponentDS;
 import br.uece.lotus.uml.api.window.DefaultWindowManagerPluginDS;
 import br.uece.lotus.uml.app.project.ProjectExplorerPluginDS;
 import br.uece.seed.ext.ExtensionManager;
-import javafx.fxml.FXMLLoader;
-import javafx.fxml.JavaFXBuilderFactory;
-import javafx.scene.Parent;
-
-import java.io.IOException;
-import java.net.URL;
 
 /**
  * Created by lva on 15/01/16.
@@ -39,7 +33,7 @@ public class DesingWindowImplManegerBlockDs extends DefaultWindowManagerPluginDS
     protected void onShow(DesingWindowImplBlockDs window, ComponentDS cds) {window.setComponentDS(cds);}
 
     @Override
-    protected void onShow(DesingWindowImplBlockDs window, Component c) {}
+    protected void onShow(DesingWindowImplBlockDs window, Component c, ProjectExplorerPluginDS mProjectExplorerDS) {}
 
     @Override
     protected void onHide(DesingWindowImplBlockDs window) {}

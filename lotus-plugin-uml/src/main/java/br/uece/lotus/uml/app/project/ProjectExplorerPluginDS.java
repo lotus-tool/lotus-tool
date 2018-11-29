@@ -8,6 +8,7 @@ package br.uece.lotus.uml.app.project;
 import br.uece.lotus.Component;
 import br.uece.lotus.State;
 import br.uece.lotus.Transition;
+import br.uece.lotus.project.ProjectDialogsHelper;
 import br.uece.lotus.project.ProjectExplorer;
 import br.uece.lotus.uml.api.ds.BlockDS;
 import br.uece.lotus.uml.api.ds.Hmsc;
@@ -15,6 +16,7 @@ import br.uece.lotus.uml.api.ds.StandardModeling;
 import br.uece.lotus.uml.api.ds.ComponentDS;
 import br.uece.lotus.uml.api.ds.ProjectDS;
 import br.uece.lotus.uml.api.ds.TransitionMSC;
+import br.uece.lotus.uml.api.project.ProjectDialogsDS;
 import br.uece.lotus.uml.api.project.ProjectExplorerDS;
 import br.uece.lotus.uml.designer.blockDiagramModeling.DesingWindowImplManegerBlockDs;
 import br.uece.lotus.uml.designer.standardModeling.StandardModelingWindowManager;
@@ -45,7 +47,7 @@ import javafx.scene.layout.AnchorPane;
 public final class ProjectExplorerPluginDS extends Plugin implements ProjectExplorerDS{
 
     private UserInterface mUserInterface;
-    
+    public ProjectExplorer projectExplorer;
     private final ContextMenu mMnuWorkspace;
     private final ContextMenu mMnuProjectDS;
     private final ContextMenu mMnuStandardModeling;
@@ -247,12 +249,13 @@ public final class ProjectExplorerPluginDS extends Plugin implements ProjectExpl
     DesingWindowImplManegerBlockDs dwimbd = new DesingWindowImplManegerBlockDs();
     StandardModelingWindowManager smwm = new StandardModelingWindowManager();
     LtsWindowManager lwm = new LtsWindowManager();
-    // public ProjectExplorer mProjectExplorer;
+
 
 
     @Override
     public void onStart(ExtensionManager extensionManager) throws Exception{
         mUserInterface = extensionManager.get(UserInterface.class);
+        projectExplorer = extensionManager.get(ProjectExplorer.class);
         extension = extensionManager;
         AnchorPane.setTopAnchor(mProjectDSView, 0D);
         AnchorPane.setRightAnchor(mProjectDSView, 0D);
@@ -416,7 +419,7 @@ public final class ProjectExplorerPluginDS extends Plugin implements ProjectExpl
                                 new Image(getClass().getResourceAsStream("/imagens/project/ic_componet_lts_geral.png")))));
                 compBuildDs.setExpanded(true);
             }
-            //-------------------------------------BMSC's---------------------------------------------------
+            //-------------------------------------BMSC'run---------------------------------------------------
             if(p.getComponentsDS() != null){
                 TreeItem<WrapperDS> pastaDS = new TreeItem<>(new WrapperDS("bMSCs"), new ImageView(
                                 new Image(getClass().getResourceAsStream("/imagens/project/ic_folders.png"))));

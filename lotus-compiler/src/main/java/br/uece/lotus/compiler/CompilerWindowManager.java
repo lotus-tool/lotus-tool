@@ -90,7 +90,7 @@ public class CompilerWindowManager extends DefaultWindowManagerPlugin<CompilerWi
 //                .create();
 //        componentMenu.newItem("Compiler")
 //                .setWeight(Integer.MAX_VALUE)
-//                .setAction(mOpenCompiler)
+//                .addAction(mOpenCompiler)
 //                .create();
         /**
          * *BOTÃO
@@ -104,7 +104,7 @@ public class CompilerWindowManager extends DefaultWindowManagerPlugin<CompilerWi
 //                .hideText(true)
 //                .setGraphic(getClass().getResourceAsStream("/images/ic_compiler.png"))
 //                .setWeight(Integer.MAX_VALUE)
-//                .setAction(mOpenCompiler)
+//                .addAction(mOpenCompiler)
 //                .setTooltip("Compiler")
 //                .create();
     }

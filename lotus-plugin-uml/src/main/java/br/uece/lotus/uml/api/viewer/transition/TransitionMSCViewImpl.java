@@ -92,24 +92,31 @@ public abstract class TransitionMSCViewImpl extends Region implements Transition
     
     protected String getComputedLabel(){
         String s = "";
-        ///////////////////////////////////////////////////////////////////////////
         if(mValueType.equals("hMSC")){
             if(mTransition.getGuard() != null){
                 if(mTransition.getGuard().equals("")){
                     s += "";
                 }else{
-                    s += " ["+mTransition.getGuard()+"]";
+                    s += " ("+mTransition.getGuard()+")";
                 }
             }
+            if(!mTransition.getActions().isEmpty()){
+                for(String action : mTransition.getActions()){
+                    s +="{"+action+"}";
+                }
+            }else {
+                s += "";
+            }
+
             if(mTransition.getProbability() != null){
                 if(mTransition.getProbability() == null){
                     s += "";
                 }else{
-                    s += String.format(" (%.2f)", mTransition.getProbability());
+                    s += String.format(" %.2f", mTransition.getProbability());
                 }
             }
             if(mTransition.getLabel() != null){
-                s += mTransition.getLabel();
+                s += " "+mTransition.getLabel();
             }
         }
         ///////////////////////////////////////////////////////////////////////////
@@ -121,15 +128,31 @@ public abstract class TransitionMSCViewImpl extends Region implements Transition
                 if(mTransition.getGuard().equals("")){
                     s += "";
                 }else{
-                    s += " ["+mTransition.getGuard()+"]";
+                    s += " ("+mTransition.getGuard()+")";
                 }
             }
             if(mTransition.getLabel() != null){
                 if(mTransition.getLabel().equals("")){
                     s += "";
                 }else{
-                    s += " "+mTransition.getLabel();
+                    s += " "+mTransition.getLabel()+" ";
                 }
+            }
+
+            if(!mTransition.getParameters().isEmpty()){
+                for(String param : mTransition.getParameters()){
+                    s +="["+param+"]";
+                }
+            }else {
+                s += "";
+            }
+
+            if(!mTransition.getActions().isEmpty()){
+                for(String action : mTransition.getActions()){
+                    s +="{"+action+"}";
+                }
+            }else {
+                s += "";
             }
         }
         ///////////////////////////////////////////////////////////////////////////

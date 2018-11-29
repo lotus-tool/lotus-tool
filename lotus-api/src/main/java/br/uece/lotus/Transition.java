@@ -39,12 +39,12 @@ public class Transition {
             mComponent = c;
             mTransition = t;
         }
-        
+
         public Builder setValue(String s, Object o) {
             mTransition.setValue(s, o);
             return this;
         }
-        
+
         public Transition create() {
             mComponent.add(mTransition);
             return mTransition;
@@ -55,21 +55,40 @@ public class Transition {
             return this;
         }
 
+        public Builder setParameters (List<String> parameters){
+            mTransition.setParameters(parameters);
+            return this;
+        }
+
         public Builder setProbability(Double probability) {
             mTransition.setProbability(probability);
-            return this;            
+            return this;
         }
 
         public Builder setGuard(String guard) {
             mTransition.setGuard(guard);
             return this;
         }
-        
+
+        public Builder addAction(String action){
+            mTransition.addAction(action);
+            return this;
+        }
+
+        public Builder setActions(List<String> actions){
+            mTransition.setActions(actions);
+            return this;
+        }
+
         public Builder setViewType(int type) {
             mTransition.setValue("view.type", type);
             return this;
         }
-               
+
+        public Builder addParameter(String parameter) {
+            mTransition.addParameter(parameter);
+            return this;
+        }
     }
     public interface Listener {
 
@@ -94,6 +113,9 @@ public class Transition {
     private Double mProbability;
     private String mLabel;
     private String mGuard;
+    private List<String> mActions = new ArrayList<>();
+    private List<String> mParameters = new ArrayList<>();
+
     //Used in simulations
     private int mVisitedTransitionsCount;
     //Used in BigState
@@ -102,6 +124,58 @@ public class Transition {
     Transition(State source, State destiny) {
         mSource = source;
         mDestiny = destiny;
+    }
+
+    public List<String> getParameters() {
+        return mParameters;
+    }
+
+    public void setParameters(List<String> parameters) {
+
+        this.mParameters.clear();
+
+        if(mParameters!= null){
+            mParameters.addAll(new ArrayList<>(parameters));
+
+            for (Listener l : mListeners) {
+                l.onChange(this);
+            }
+        }
+
+
+    }
+
+    public void addParameter(String parameters){
+        mParameters.add(parameters);
+
+        for (Listener l : mListeners) {
+            l.onChange(this);
+        }
+    }
+
+    public void addAction(String action){
+        this.mActions.add(action);
+        for (Listener l : mListeners) {
+            l.onChange(this);
+        }
+    }
+
+    public List<String> getActions() {
+        return mActions;
+    }
+
+    public void setActions(List<String> actions) {
+
+       mActions.clear();
+
+       if(actions != null){
+           this.mActions = new ArrayList<>(actions);
+           for (Listener l : mListeners) {
+               l.onChange(this);
+           }
+       }
+
+
     }
 
     public State getSource() {
@@ -174,7 +248,7 @@ public class Transition {
     }
 
     public void setLabel(String label) {
-        mLabel = label;        
+        mLabel = label;
         for (Listener l : mListeners) {
             l.onChange(this);
         }
@@ -185,7 +259,7 @@ public class Transition {
     }
 
     public void setProbability(Double probability) {
-        mProbability = probability;        
+        mProbability = probability;
         for (Listener l : mListeners) {
             l.onChange(this);
         }
@@ -196,12 +270,12 @@ public class Transition {
     }
 
     public void setGuard(String guard) {
-        mGuard = guard;        
+        mGuard = guard;
         for (Listener l : mListeners) {
             l.onChange(this);
         }
     }
-    
+
     public int getPropertyBigState() {
         return propertyBigState;
     }
@@ -245,6 +319,14 @@ public class Transition {
         if (!Objects.equals(this.mLabel, other.mLabel)) {
             return false;
         }
+
+        if (!Objects.equals(this.mActions, other.mActions)) {
+            return false;
+        }
+
+        if (!Objects.equals(this.mParameters, other.mParameters)) {
+            return false;
+        }
         if (!Objects.equals(this.mProbability, other.mProbability)) {
             return false;
         }
@@ -273,7 +355,9 @@ public class Transition {
         t.mColor = mColor;
         t.mGuard = mGuard;
         t.mLabel = mLabel;
-        t.mProbability = mProbability;        
+        t.mActions = mActions;
+        t.mParameters = mParameters;
+        t.mProbability = mProbability;
         t.mTextColor = mTextColor;
         t.mTextSize = mTextSize;
         t.mTextStyle = mTextStyle;
