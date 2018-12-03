@@ -41,11 +41,11 @@ public class LtsWindow extends AnchorPane implements Window, Initializable {
         mViewer = new ComponentViewImpl();
         System.out.println("\n============================================");
 
-//      Component c = mViewer.getComponent();
+//      Component c = viewer.getComponent();
 //        c.newState(1);
 //        c.newState(2);
-//        c.newTransition(1, 2);
-//        c.buildTransition(1, 2);.newState(1);
+//        c.newTransitionMSC(1, 2);
+//        c.buildTransitionMSC(1, 2);.newState(1);
 //        c.newState
         
     }

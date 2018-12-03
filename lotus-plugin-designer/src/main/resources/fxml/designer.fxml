@@ -19,22 +19,22 @@
         <items>
             <VBox>
                <children>
-                  <ToolBar fx:id="mToolbar" prefHeight="40.0" prefWidth="200.0"> </ToolBar>
-                      <ScrollPane fx:id="mComponentViewWrapper" VBox.vgrow="ALWAYS">
-                          <!--<ComponentViewImpl fx:id="mComponentView" />-->
+                  <ToolBar fx:ID="mToolbar" prefHeight="40.0" prefWidth="200.0"> </ToolBar>
+                      <ScrollPane fx:ID="mComponentViewWrapper" VBox.vgrow="ALWAYS">
+                          <!--<ComponentViewImpl fx:ID="mComponentView" />-->
                       </ScrollPane>
                </children>
             </VBox>
-            <AnchorPane fx:id="mPropertiesContainer">
+            <AnchorPane fx:ID="mPropertiesContainer">
                <children>
                    <VBox prefWidth="100.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" VBox.vgrow="ALWAYS">
                        <children>
                            <Label text="Guard" />
-                           <TextField fx:id="txtGuard" prefWidth="Infinity" />
+                           <TextField fx:ID="txtGuard" prefWidth="Infinity" />
                            <Label text="Probaiblity" />
-                           <TextField fx:id="txtProbability" prefWidth="Infinity" />
+                           <TextField fx:ID="txtProbability" prefWidth="Infinity" />
                            <Label text="Action" />
-                           <TextField fx:id="txtAction" prefWidth="Infinity" />
+                           <TextField fx:ID="txtAction" prefWidth="Infinity" />
                        </children>
                    </VBox>
                </children>

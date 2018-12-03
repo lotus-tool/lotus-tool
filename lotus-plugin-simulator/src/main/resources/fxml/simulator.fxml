@@ -7,14 +7,14 @@
 
 <VBox prefHeight="440.0" prefWidth="652.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="br.uece.lotus.simulator.SimulatorWindow">
    <children>
-      <ToolBar fx:id="mToolbar" prefHeight="40.0" prefWidth="200.0" VBox.vgrow="NEVER">
+      <ToolBar fx:ID="mToolbar" prefHeight="40.0" prefWidth="200.0" VBox.vgrow="NEVER">
         <items>
-          <Button fx:id="mBtnStart" mnemonicParsing="false" text="Restart" />
-            <Button fx:id="mBtnMakeStep" mnemonicParsing="false" text="Random Step" />
-            <Button fx:id="mBtnUnmakeStep" mnemonicParsing="false" text="Previous Step" />
+          <Button fx:ID="mBtnStart" mnemonicParsing="false" text="Restart" />
+            <Button fx:ID="mBtnMakeStep" mnemonicParsing="false" text="Random Step" />
+            <Button fx:ID="mBtnUnmakeStep" mnemonicParsing="false" text="Previous Step" />
         </items>
       </ToolBar>
-      <ScrollPane fx:id="mScrollPanel" prefViewportHeight="200.0" prefViewportWidth="652.0" VBox.vgrow="ALWAYS">
+      <ScrollPane fx:ID="mScrollPanel" prefViewportHeight="200.0" prefViewportWidth="652.0" VBox.vgrow="ALWAYS">
          <VBox.margin>
             <Insets left="5.0" right="5.0" top="5.0" />
          </VBox.margin>
@@ -25,11 +25,11 @@
             <content>
               <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                      <children>
-                        <TableView fx:id="mTableView" layoutX="68.0" layoutY="-24.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                        <TableView fx:ID="mTableView" layoutX="68.0" layoutY="-24.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                           <columns>
-                            <TableColumn fx:id="mActionCol" prefWidth="75.0" text="Action" />
-                            <TableColumn fx:id="mFromCol" prefWidth="75.0" text="From" />
-                              <TableColumn fx:id="mToCol" prefWidth="75.0" text="To" />
+                            <TableColumn fx:ID="mActionCol" prefWidth="75.0" text="Action" />
+                            <TableColumn fx:ID="mFromCol" prefWidth="75.0" text="From" />
+                              <TableColumn fx:ID="mToCol" prefWidth="75.0" text="To" />
                           </columns>
                         </TableView>
                      </children>

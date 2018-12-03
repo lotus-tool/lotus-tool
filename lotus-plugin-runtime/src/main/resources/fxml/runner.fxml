@@ -16,7 +16,7 @@
                         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                      </padding>
                      <children>
-                        <ListView fx:id="mLstTrace" layoutX="14.0" layoutY="79.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                        <ListView fx:ID="mLstTrace" layoutX="14.0" layoutY="79.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
                      </children>
                   </AnchorPane>
             </content>
@@ -27,15 +27,15 @@
                      <children>
                         <VBox spacing="5.0">
                            <children>
-                              <TextField fx:id="mEdtSymbolName" promptText="Name" />
-                              <TextField fx:id="mEdtSymbolValue" promptText="Value" />
-                              <Button fx:id="mBtnAddSaveSymbol" mnemonicParsing="false" prefWidth="1.7976931348623157E308" text="Add/Save" />
+                              <TextField fx:ID="mEdtSymbolName" promptText="Name" />
+                              <TextField fx:ID="mEdtSymbolValue" promptText="Value" />
+                              <Button fx:ID="mBtnAddSaveSymbol" mnemonicParsing="false" prefWidth="1.7976931348623157E308" text="Add/Save" />
                            </children>
                         </VBox>
-                        <TableView fx:id="mSymbolTable" layoutX="10.0" layoutY="10.0" prefHeight="359.0" prefWidth="173.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" VBox.vgrow="ALWAYS">
+                        <TableView fx:ID="mSymbolTable" layoutX="10.0" layoutY="10.0" prefHeight="359.0" prefWidth="173.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" VBox.vgrow="ALWAYS">
                           <columns>
-                            <TableColumn fx:id="mSymbolNameCol" minWidth="50.0" prefWidth="96.0" text="Name" />
-                            <TableColumn fx:id="mSymbolValueCol" minWidth="50.0" prefWidth="92.0" text="Value" />
+                            <TableColumn fx:ID="mSymbolNameCol" minWidth="50.0" prefWidth="96.0" text="Name" />
+                            <TableColumn fx:ID="mSymbolValueCol" minWidth="50.0" prefWidth="92.0" text="Value" />
                           </columns>
                         </TableView>
                      </children>
@@ -51,7 +51,7 @@
    <center>
       <BorderPane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
          <center>
-            <ScrollPane fx:id="mScrollPanel" prefViewportHeight="200.0" prefViewportWidth="652.0" BorderPane.alignment="CENTER" />
+            <ScrollPane fx:ID="mScrollPanel" prefViewportHeight="200.0" prefViewportWidth="652.0" BorderPane.alignment="CENTER" />
          </center>
          <bottom>
             <TabPane prefHeight="150.0" prefWidth="633.0" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER">
@@ -60,8 +60,8 @@
                     <content>
                         <VBox>
                            <children>
-                              <TextArea fx:id="mTxtOutput" layoutX="105.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
-                              <TextField fx:id="mTxtInput" layoutX="48.0" layoutY="70.0" />
+                              <TextArea fx:ID="mTxtOutput" layoutX="105.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                              <TextField fx:ID="mTxtInput" layoutX="48.0" layoutY="70.0" />
                            </children>
                            <padding>
                               <Insets bottom="5.0" left="5.0" top="5.0" />
@@ -77,7 +77,7 @@
               <tabs>
                 <Tab text="Actions">
                   <content>
-                        <VBox fx:id="mTransitionContainer" spacing="5.0">
+                        <VBox fx:ID="mTransitionContainer" spacing="5.0">
                            <padding>
                               <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                            </padding>

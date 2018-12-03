@@ -20,7 +20,7 @@
                 <Insets />
             </padding>
             <top>
-                <ToolBar fx:id="mToolbar" style="">          
+                <ToolBar fx:id="mToolbar" style="">
                 </ToolBar>
             </top>
             <bottom>

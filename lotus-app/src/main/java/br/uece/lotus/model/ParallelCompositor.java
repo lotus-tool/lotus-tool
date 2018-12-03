@@ -158,6 +158,8 @@ public class ParallelCompositor {
                 tt.setParameters(transitionOutFromFirstState.getParameters());
                 tt.setActions(transitionOutFromFirstState.getActions());
 
+
+
                 if(currentParallelState.getCompositeState().getID() > newParalledState.getCompositeState().getID()){
                  tt.setViewType(1);
                 }else {
@@ -276,6 +278,24 @@ public class ParallelCompositor {
         State s = p.getStateByID(id);
         if (s == null) {
             s = p.newState(id);
+
+            if(PrlState.getFirstState().getValue("isExceptional")!= null){
+                s.setValue("isExceptional",(boolean)PrlState.getFirstState().getValue("isExceptional"));
+            }
+
+            if(PrlState.getFirstState().getValue("isInterceptionNode")!= null){
+                s.setValue("isInterceptionNode",(boolean)PrlState.getFirstState().getValue("isInterceptionNode"));
+            }
+
+            if(PrlState.getSecondState().getValue("isExceptional")!= null){
+                s.setValue("isExceptional", ((boolean)s.getValue("isExceptional")) && (boolean)PrlState.getSecondState().getValue("isExceptional"));
+            }
+
+            if(PrlState.getSecondState().getValue("isInterceptionNode")!= null){
+                s.setValue("isInterceptionNode", ((boolean)s.getValue("isInterceptionNode")) && (boolean)PrlState.getSecondState().getValue("isInterceptionNode"));
+            }
+
+
             if (PrlState.getFirstState().isInitial() && PrlState.getSecondState().isInitial()) {
                 p.setInitialState(s);
             } else if (PrlState.getFirstState().isFinal() && PrlState.getSecondState().isFinal()) {

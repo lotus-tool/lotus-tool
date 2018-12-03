@@ -45,6 +45,11 @@ public class Transition {
             return this;
         }
 
+        public Builder setValues(Map<String,Object>values) {
+            mTransition.setValues(values);
+            return this;
+        }
+
         public Transition create() {
             mComponent.add(mTransition);
             return mTransition;
@@ -89,7 +94,21 @@ public class Transition {
             mTransition.addParameter(parameter);
             return this;
         }
+
+        public Map<String, Object> getValues() {
+            return mTransition.getValues();
+        }
     }
+
+    private void setValues(Map<String, Object> values) {
+        this.mValues.clear();
+        this.mValues.putAll(values);
+    }
+
+    public Map<String, Object> getValues() {
+        return mValues;
+    }
+
     public interface Listener {
 
         void onChange(Transition transition);
