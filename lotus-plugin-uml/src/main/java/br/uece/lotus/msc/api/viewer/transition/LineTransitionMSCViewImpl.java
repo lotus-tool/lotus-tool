@@ -69,15 +69,15 @@ public class LineTransitionMSCViewImpl extends TransitionMSCViewImpl  {
                     DoubleBinding destinoY = buildY(destino);
 
                     mSeta.rotateProperty().bind(Geom.angle(origem, destino));
-//                    mSeta.rotateProperty().bind(new Geom.CartesianCase(origem, destino)
-//                                    .first(Geom.angle(origem, destino))
-//                                    .second(Geom.angle(origem, destino).add(180))
-//                                    .thirth(Geom.angle(origem, destino).add(180))
-//                                    .fourth(Geom.angle(origem, destino))
-//                                    .firstAndSecond(Geom.angle(origem, destino).add(180))
-//                                    .secondAndThirth(Geom.angle(origem, destino).add(180))
-//                                    .thirthAndFourth(Geom.angle(origem, destino))
-//                    );
+                    mSeta.rotateProperty().bind(new Geom.CartesianCase(origem, destino)
+                                    .first(Geom.angle(origem, destino))
+                                    .second(Geom.angle(origem, destino).add(180))
+                                    .thirth(Geom.angle(origem, destino).add(180))
+                                    .fourth(Geom.angle(origem, destino))
+                                    .firstAndSecond(Geom.angle(origem, destino).add(180))
+                                    .secondAndThirth(Geom.angle(origem, destino).add(180))
+                                    .thirthAndFourth(Geom.angle(origem, destino))
+                    );
 
                     mLine.startXProperty().bind(origemX);
                     mLine.startYProperty().bind(origemY);
@@ -120,7 +120,9 @@ public class LineTransitionMSCViewImpl extends TransitionMSCViewImpl  {
                     );
 
                     mLine.startXProperty().bind(origemX);
+                    mLine.startYProperty().bind(origemY);
                     mLine.endXProperty().bind(destinoX);
+                    mLine.endYProperty().bind(destinoY);
 
                     mRotulo.layoutXProperty().bind(origemX.add(meioCaminhoX).subtract(mRotulo.widthProperty().divide(2)));
                     mRotulo.layoutYProperty().bind(mLine.endYProperty().subtract(mRotulo.heightProperty()));
@@ -142,7 +144,7 @@ public class LineTransitionMSCViewImpl extends TransitionMSCViewImpl  {
         if(region instanceof HmscBlockView){
          return region.layoutXProperty().add(region.widthProperty().divide(2));
         }else if(region instanceof InterceptionNodeView){
-            return region.layoutXProperty().add(region.widthProperty().subtract(15));
+            return region.layoutXProperty().add(0);
         }
        return null;
     }
@@ -151,7 +153,7 @@ public class LineTransitionMSCViewImpl extends TransitionMSCViewImpl  {
         if(region instanceof HmscBlockView){
           return  region.layoutYProperty().add(region.heightProperty().divide(2));
         }else if(region instanceof InterceptionNodeView){
-            return region.layoutYProperty().add(region.heightProperty().subtract(15));
+            return region.layoutYProperty().add(0);
         }
         return null;
 

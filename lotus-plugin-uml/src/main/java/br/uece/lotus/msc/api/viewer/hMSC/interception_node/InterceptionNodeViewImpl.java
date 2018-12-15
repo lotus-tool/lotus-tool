@@ -1,7 +1,6 @@
 package br.uece.lotus.msc.api.viewer.hMSC.interception_node;
 
 import br.uece.lotus.msc.api.model.msc.hmsc.GenericElement;
-import br.uece.lotus.msc.api.model.msc.hmsc.HmscBlock;
 import br.uece.lotus.msc.api.model.msc.hmsc.InterceptionNode;
 import br.uece.lotus.viewer.StyleBuilder;
 import javafx.geometry.Point2D;
@@ -67,9 +66,9 @@ public class InterceptionNodeViewImpl extends Region implements InterceptionNode
     }
 
     private void updateView() {
-
-        circle.setLayoutX(interceptionNode.getLayoutX());
-        circle.setLayoutY(interceptionNode.getLayoutY());
-        circle.setStyle(StyleBuilder.stroke(interceptionNode.getColor(), interceptionNode.getBorderWidth()));
+        setOpacity(0.1);
+       setLayoutX(interceptionNode.getLayoutX());
+       setLayoutY(interceptionNode.getLayoutY());
+       setStyle(StyleBuilder.stroke(interceptionNode.getColor(), interceptionNode.getBorderWidth()));
     }
 }
