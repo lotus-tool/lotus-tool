@@ -233,8 +233,10 @@ public class ComponentDSViewImpl extends AnchorPane implements ComponentDSView, 
         for(TransitionMSC t : mBmscComponent.getAllTransitions()){
             TransitionMSCViewImpl view = (TransitionMSCViewImpl) t.getValue("view");
             Line line = view.getLineTransition();
-            line.setStartY(y);
-            line.setEndY(y);
+            line.startYProperty().unbind();
+            line.startYProperty().setValue(y);
+            line.endYProperty().unbind();
+            line.endYProperty().setValue(y);
             y += 50;
         }
     }

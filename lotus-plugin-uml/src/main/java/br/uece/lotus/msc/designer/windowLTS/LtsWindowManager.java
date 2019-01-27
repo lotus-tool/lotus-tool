@@ -6,11 +6,14 @@
 package br.uece.lotus.msc.designer.windowLTS;
 
 import br.uece.lotus.Component;
+import br.uece.lotus.Project;
 import br.uece.lotus.msc.api.model.msc.bmsc.BmscComponent;
 import br.uece.lotus.msc.api.model.msc.hmsc.HmscComponent;
 import br.uece.lotus.msc.api.window.DefaultWindowManagerPluginMSC;
 import br.uece.lotus.msc.app.project.ProjectExplorerPluginMSC;
 import br.uece.seed.ext.ExtensionManager;
+
+import javax.swing.*;
 
 /**
  *
@@ -24,9 +27,19 @@ public class LtsWindowManager extends DefaultWindowManagerPluginMSC<LtsWindowImp
     }
     
     @Override
-    protected void onShow(LtsWindowImpl window, Component c, ProjectExplorerPluginMSC mProjectExplorerDS) {
+    protected void onShow(LtsWindowImpl window, Component c, ProjectExplorerPluginMSC projectExplorerPluginMSC) {
         window.setComponentLTS(c);
-        window.createInitializeActionsVariablesView(mProjectExplorerDS);
+        window.createInitializeActionsVariablesView(projectExplorerPluginMSC);
+
+//        Project p = new Project();
+//        String namePrompt = "Untitled" + (projectExplorerPluginMSC.projectExplorer.getAllProjects().size() + 1);
+//        String name = JOptionPane.showInputDialog(null, "Enter the new project'run name", namePrompt);
+//
+//        p.setName(name);
+//
+//        p.addComponent(c);
+//        projectExplorerPluginMSC.projectExplorer.open(p);
+
     }
     
     @Override

@@ -21,6 +21,8 @@ public class InterceptionNode implements GenericElement {
     private double layoutY;
     private String color = "black";
     private Integer borderWidth = 1;
+    private String textColor;
+    private String textStyle;
 
     public InterceptionNode(HmscComponent hmscComponent) {
         this.hmscComponent = hmscComponent;
@@ -44,6 +46,16 @@ public class InterceptionNode implements GenericElement {
 
     public Integer getBorderWidth() {
         return borderWidth;
+    }
+
+    public void setTextColor(String textColor) {
+        this.textColor = textColor;
+        customNotify();
+    }
+
+    public void setTextStyle(String textStyle) {
+        this.textStyle = textStyle;
+        customNotify();
     }
 
     public interface Listener{

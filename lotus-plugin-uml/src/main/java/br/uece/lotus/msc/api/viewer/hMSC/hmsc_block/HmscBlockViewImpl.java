@@ -7,10 +7,11 @@ package br.uece.lotus.msc.api.viewer.hMSC.hmsc_block;
 
 import br.uece.lotus.msc.api.model.msc.hmsc.GenericElement;
 import br.uece.lotus.msc.api.model.msc.hmsc.HmscBlock;
+import br.uece.lotus.viewer.RegionCustom;
+import javafx.beans.property.DoubleProperty;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
-import javafx.scene.layout.Region;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
@@ -20,9 +21,9 @@ import javafx.scene.shape.Rectangle;
  * @author Bruno Barbosa
  * edited by Lucas Vieira Alves 11/29/2018
  */
-public class HmscBlockViewImpl extends Region implements HmscBlockView, HmscBlock.Listener{
+public class HmscBlockViewImpl extends RegionCustom implements HmscBlockView, HmscBlock.Listener{
 
-    public static final int LARGURA = 150,ALTURA = 70;
+    public static final int WIDTH = 100, HEIGHT = 40;
     public static final Integer DEFAULT_BORDER_WIDTH = 2;
     public static final Integer EXCEPTIONAL_BORDER_WIDTH = 0;
     public static final String EXCEPTIONAL_COLOR = "#999966";
@@ -38,7 +39,7 @@ public class HmscBlockViewImpl extends Region implements HmscBlockView, HmscBloc
 
     
     public HmscBlockViewImpl() {
-        mRetangulo = new Rectangle(LARGURA, ALTURA);
+        mRetangulo = new Rectangle(WIDTH, HEIGHT);
         getChildren().add(mRetangulo);
         mRetangulo.setLayoutX(0);
         mRetangulo.setLayoutY(0);
@@ -71,6 +72,7 @@ public class HmscBlockViewImpl extends Region implements HmscBlockView, HmscBloc
         return this;
     }
 
+
     @Override
     public GenericElement getGenericElement() {
         return hmscBlock;
@@ -84,10 +86,12 @@ public class HmscBlockViewImpl extends Region implements HmscBlockView, HmscBloc
         //System.out.println("distanciaX:"+(point.getX()-aux.getX())+" distanciaY:"+(point.getY()-aux.getY()));
         double distanciaX = point.getX()-aux.getX();
         double distanciaY = point.getY()-aux.getY();
-        return((distanciaX >= 0 && distanciaX <= LARGURA) && (distanciaY >= 0 && distanciaY <= ALTURA));
+        return((distanciaX >= 0 && distanciaX <= WIDTH) && (distanciaY >= 0 && distanciaY <= HEIGHT));
             
         
     }
+
+
 
     @Override
     public HmscBlock getHMSC() {
@@ -137,8 +141,9 @@ public class HmscBlockViewImpl extends Region implements HmscBlockView, HmscBloc
         }else{
                 mInitial.setVisible(false);
         }
-        setLayoutX(hmscBlock.getLayoutX());
-        setLayoutY(hmscBlock.getLayoutY());
+
+        setLayoutX(hmscBlock.getLayoutX()-(WIDTH/2));
+        setLayoutY(hmscBlock.getLayoutY()- (HEIGHT/2));
     }
 
     private String computedColor() {
@@ -148,5 +153,20 @@ public class HmscBlockViewImpl extends Region implements HmscBlockView, HmscBloc
         }
         return cor;
     }
-    
+
+    @Override
+    public DoubleProperty layoutXPropertyCustom() {
+        DoubleProperty doublePropertyX = super.layoutXProperty();
+
+        doublePropertyX.set(doublePropertyX.get() + widthProperty().get()/2);
+        return doublePropertyX;
+    }
+
+    @Override
+    public DoubleProperty layoutYPropertyCustom() {
+        DoubleProperty doublePropertyY = super.layoutYProperty();
+
+        doublePropertyY.set(doublePropertyY.get() + heightProperty().get()/2);
+        return doublePropertyY;
+    }
 }

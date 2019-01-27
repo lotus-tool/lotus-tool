@@ -113,7 +113,7 @@ public class SelfTransitionMSCViewImpl extends TransitionMSCViewImpl{
         public TransicaoEmArcoMSC (Node origem, Node destino, TransitionMSC transition) {
             mTransition = transition;
             getChildren().addAll(rotulo, seta, arco);
-            arco.radiusXProperty().bind(Geom.distance(origem, destino).divide(2).add(fatorX(mTransition)));
+            arco.radiusXProperty().bind(Geom.distance(origem, destino).divide(2).add(fatorX(mTransition)).subtract(10));
             arco.radiusYProperty().bind(Geom.distance(origem, destino).divide(4).add(fatorY(mTransition)));
             arco.centerXProperty().bind(arco.radiusXProperty());
             arco.centerYProperty().bind(arco.radiusYProperty().add(17));

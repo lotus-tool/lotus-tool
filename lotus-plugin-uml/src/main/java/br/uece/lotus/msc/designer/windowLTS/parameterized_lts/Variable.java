@@ -6,10 +6,10 @@ import java.util.Map;
 public class Variable {
     public static Map<String, Variable> variables = new HashMap<>();
     String name = null;
-    Double initialValue = null;
-    Double currentValue = null;
-    Double initialValueRange = null;
-    Double finalValueRange = null;
+    Integer initialValue = null;
+    Integer currentValue = null;
+    Integer initialValueRange = null;
+    Integer finalValueRange = null;
 
     public String getName() {
         return name;
@@ -19,19 +19,19 @@ public class Variable {
         this.name = name;
     }
 
-    public Double getInitialValue() {
+    public Integer getInitialValue() {
         return initialValue;
     }
 
-    public void setInitialValue(Double initialValue) {
+    public void setInitialValue(Integer initialValue) {
         this.initialValue = initialValue;
     }
 
-    public Double getCurrentValue() {
+    public Integer getCurrentValue() {
         return currentValue;
     }
 
-    public void setCurrentValue(Double currentValue) {
+    public void setCurrentValue(Integer currentValue) {
         this.currentValue = currentValue;
     }
 
@@ -39,19 +39,19 @@ public class Variable {
         return variables;
     }
 
-    public Double getInitialValueRange() {
+    public Integer getInitialValueRange() {
         return initialValueRange;
     }
 
-    public void setInitialValueRange(Double initialValueRange) {
+    public void setInitialValueRange(Integer initialValueRange) {
         this.initialValueRange = initialValueRange;
     }
 
-    public Double getFinalValueRange() {
+    public Integer getFinalValueRange() {
         return finalValueRange;
     }
 
-    public void setFinalValueRange(Double finalValueRange) {
+    public void setFinalValueRange(Integer finalValueRange) {
         this.finalValueRange = finalValueRange;
     }
 

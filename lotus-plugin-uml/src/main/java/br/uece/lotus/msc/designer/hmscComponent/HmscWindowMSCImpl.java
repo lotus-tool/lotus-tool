@@ -40,6 +40,7 @@ import java.io.*;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 
+import br.uece.lotus.viewer.TransitionView;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -216,7 +217,7 @@ public class HmscWindowMSCImpl extends AnchorPane implements WindowMSC {
         mScrollPanel = new ScrollPane((Node) viewer);
         mPropriedadePanel = new AnchorPane();
         mInfoPanel = new HBox(20);
-        viewer.getNode().setPrefSize(1200, 500);
+        viewer.getNode().setPrefSize(1200, 400);
         mScrollPanel.viewportBoundsProperty().addListener((ObservableValue<? extends Bounds> observable, Bounds oldValue, Bounds newValue) -> {
             Node content = mScrollPanel.getContent();
             mScrollPanel.setFitToWidth(content.prefWidth(-1)<newValue.getWidth());
@@ -236,19 +237,19 @@ public class HmscWindowMSCImpl extends AnchorPane implements WindowMSC {
         AnchorPane.setTopAnchor(mScrollPanel, 44D);
         AnchorPane.setLeftAnchor(mScrollPanel, 0D);
         AnchorPane.setRightAnchor(mScrollPanel, 180D/*0D*/);
-        AnchorPane.setBottomAnchor(mScrollPanel, 30D);
+        AnchorPane.setBottomAnchor(mScrollPanel, 70D);
         
         //propriedades
         getChildren().add(mPropriedadePanel);
         AnchorPane.setTopAnchor(mPropriedadePanel, 44D);
         AnchorPane.setRightAnchor(mPropriedadePanel, 3D);
         AnchorPane.setBottomAnchor(mPropriedadePanel, 30D);
-        
+
         //info
         getChildren().add(mInfoPanel);
         AnchorPane.setLeftAnchor(mInfoPanel, 0D);
         AnchorPane.setRightAnchor(mInfoPanel, 0D);
-        AnchorPane.setBottomAnchor(mInfoPanel, 0D);
+        AnchorPane.setBottomAnchor(mInfoPanel, 43D);
 
 
 
@@ -386,7 +387,7 @@ public class HmscWindowMSCImpl extends AnchorPane implements WindowMSC {
             }
         });
 
-        mToolBar.getItems().addAll(mBtnArrow,mBtnBlock,interceptionNodeButton,mBtnTransitionLine,mBtnTransitionArc,mBtnEraser,mBtnHand,mBtnZoom, propertyPanelCheckBox);
+        mToolBar.getItems().addAll(mBtnArrow,mBtnBlock,interceptionNodeButton,mBtnTransitionLine,mBtnTransitionArc,mBtnEraser,mBtnHand,mBtnZoom /*,propertyPanelCheckBox*/);
         
         //ToolTips
         Tooltip arrowInfo = new Tooltip("Selection");
@@ -827,7 +828,25 @@ public class HmscWindowMSCImpl extends AnchorPane implements WindowMSC {
         if (mComponentSobMouse != null) {
             updatePropriedades(mComponentSobMouse);
             applySelectedStyles(componentSelecionado);
+        }else {
+            hideProppriedades();
         }
+    }
+
+    private void hideProppriedades() {
+        lblLabel.setVisible(false);
+        txtLabel.setVisible(false);
+
+
+        txtGuard.setVisible(false);
+        lblGuard.setVisible(false);
+
+        txtAction.setVisible(false);
+        lblAction.setVisible(false);
+
+
+        lblProbability.setVisible(false);
+        txtProbability.setVisible(false);
     }
 
     private void applySelectedStyles(Object mComponentSelecionado) {
@@ -847,8 +866,12 @@ public class HmscWindowMSCImpl extends AnchorPane implements WindowMSC {
 
         }else if(mComponentSelecionado instanceof InterceptionNodeView){
             InterceptionNode interceptionNode = ((InterceptionNodeView)mComponentSelecionado).getInterceptionNode();
-            interceptionNode.setBorderWidth(2);
+            interceptionNode.setBorderWidth(5);
             interceptionNode.setColor("blue");
+            interceptionNode.setTextColor("blue");
+            interceptionNode.setTextStyle(HmscBlock.mTextStyleBold);
+
+
 
         }
     }
@@ -899,6 +922,8 @@ public class HmscWindowMSCImpl extends AnchorPane implements WindowMSC {
     private void updatePropriedades(Object obj) {
         if(obj instanceof TransitionMSCView){
             TransitionMSC t = ((TransitionMSCView)obj).getTransition();
+            lblLabel.setVisible(true);
+            txtLabel.setVisible(true);
             txtLabel.setText(t.getLabel());
             txtLabel.requestFocus();
 
@@ -910,8 +935,8 @@ public class HmscWindowMSCImpl extends AnchorPane implements WindowMSC {
             txtAction.setVisible(true);
             lblAction.setVisible(true);
 
-            txtAction.setText(t.getParameters().size() ==  0 ? "" : String.join(",", t.getParameters()));
-            txtAction.setVisible(true);
+            /*txt.setText(t.getActions().size() ==  0 ? "" : String.join(",", t.getParameters()));
+            txtAction.setVisible(true);*/
 
             txtProbability.setText(t.getProbability() == null ? null : String.valueOf(t.getProbability()));
             lblProbability.setVisible(true);
@@ -1012,6 +1037,9 @@ public class HmscWindowMSCImpl extends AnchorPane implements WindowMSC {
     public boolean selecionadoPeloRetangulo = false;
     
     public void addNoSelecao(Node node){
+        if(componentSelecionado instanceof TransitionMSCView){
+            removeSelectedStyles(componentSelecionado);
+        }
 
         applySelectedStyles((Object)node);
         selecao.add(node);
@@ -1022,7 +1050,9 @@ public class HmscWindowMSCImpl extends AnchorPane implements WindowMSC {
         if(node instanceof GenericElementView) {
             GenericElement genericElement = ((GenericElementView) node).getGenericElement();
 
-            if (genericElement instanceof HmscBlockView) {
+            if (genericElement instanceof HmscBlock) {
+                lblLabel.setVisible(true);
+                txtLabel.setVisible(true);
                 txtLabel.setText(((HmscBlock) genericElement).getLabel());
             }
         }
@@ -1078,6 +1108,21 @@ public class HmscWindowMSCImpl extends AnchorPane implements WindowMSC {
             Component parallelComponent = parallelComponentController.buildParallelComponent();
 
 
+            //remover labals//
+            for(Transition transition : parallelComponent.getTransitionsList()){
+                transition.setProbability(null);
+                if( transition.getLabel().split("\\.")[1].isEmpty()){
+                    transition.setLabel(null);
+                }else {
+                    transition.setLabel(transition.getLabel().split("\\.")[2]);
+                }
+
+            }
+
+            removeTransictionWithoutLabelsAndActionAndGuard(parallelComponent);
+
+            changeStructureLabelState(parallelComponent);
+
             for(State state : parallelComponent.getStatesList()){
                 Boolean isExceptional = false;
                 Boolean isInterceptionNode = false;
@@ -1091,24 +1136,17 @@ public class HmscWindowMSCImpl extends AnchorPane implements WindowMSC {
                 }
 
 
-                System.out.println("state"+state.getLabel()+" isExceptional: "+isExceptional +"isInterceptionNode: "+isInterceptionNode);
+                System.out.println("state"+state.getLabel()+" isExceptional: "+isExceptional +" isInterceptionNode: "+isInterceptionNode);
             }
 
-            //remover labals//
-            for(Transition transition : parallelComponent.getTransitionsList()){
-                transition.setProbability(null);
-                if( transition.getLabel().split("\\.")[1].isEmpty()){
-                    transition.setLabel(null);
-                }else {
-                    transition.setLabel(transition.getLabel().split("\\.")[2]);
-                }
 
-            }
+
+
 
 
             setComponentLTS(parallelComponent);
 
-            //new project lts
+          /*  //new project lts
             Project p = new Project();
             String namePrompt = "Untitled" + (projectExplorerPluginMSC.projectExplorer.getAllProjects().size() + 1);
             String name = JOptionPane.showInputDialog(null, "Enter the new project'run name", namePrompt);
@@ -1116,7 +1154,7 @@ public class HmscWindowMSCImpl extends AnchorPane implements WindowMSC {
             p.setName(name);
 
             p.addComponent(parallelComponent);
-            projectExplorerPluginMSC.projectExplorer.open(p);
+            projectExplorerPluginMSC.projectExplorer.open(p);*/
             parallelComponentController.addParallelComponentInLeftPanel(this, parallelComponent);
 
         } catch (Exception e) {
@@ -1126,6 +1164,165 @@ public class HmscWindowMSCImpl extends AnchorPane implements WindowMSC {
         }
 
     };
+
+    private void changeStructureLabelState(Component parallelComponent) {
+        int newLabel = 0;
+        for(State state : parallelComponent.getStates()){
+            state.setLabel(state.getLabel().split(",")[0].replace("<"," ").trim());
+            state.setLabel(String.valueOf(newLabel++));
+        }
+    }
+
+    private void removeTransictionWithoutLabelsAndActionAndGuard(Component parallelComponent) {
+
+        List<State> statesToRemove = new ArrayList<>();
+        List<Transition> transitionsToAdd = new ArrayList<>();
+
+        for(Transition currentTransition : parallelComponent.getTransitionsList()){
+            if(currentTransition.getLabel() == null || currentTransition.getLabel().equals("")){
+                if(currentTransition.getGuard() == null || currentTransition.getGuard().equals("") ){
+                    if(currentTransition.getActions().size() == 0){
+                        if(currentTransition.getParameters().size()==0){
+
+                            join(currentTransition.getSource(), currentTransition.getDestiny(), transitionsToAdd, currentTransition);
+
+                            statesToRemove.add(currentTransition.getSource());
+                        }
+                    }
+
+                }
+            }
+        }
+
+
+
+
+        for(Transition transitionToAdd : transitionsToAdd){
+           Transition newTransition = parallelComponent.buildTransition(transitionToAdd.getSource(), transitionToAdd.getDestiny()).setViewType(TransitionView.Geometry.LINE).create();
+
+            newTransition.setLabel(transitionToAdd.getLabel());
+            newTransition.setProbability(transitionToAdd.getProbability());
+            newTransition.setActions(transitionToAdd.getActions());
+            newTransition.setGuard(transitionToAdd.getGuard());
+            newTransition.setParameters(transitionToAdd.getParameters());
+            newTransition.setValues(transitionToAdd.getValues());
+
+        }
+
+        for(State stateToRemove : statesToRemove){
+            parallelComponent.remove(stateToRemove);
+        }
+
+    }
+
+    private void join(State source, State destiny, List<Transition> transitionsToAdd, Transition currentTransition) {
+
+        Transition transitionToJump = currentTransition;
+
+        for(Transition inTransition :source.getIncomingTransitionsList()){
+
+            if(inTransition == transitionToJump){
+                continue;
+            }
+
+            buildTransitionIn(destiny, inTransition, transitionsToAdd);
+
+        }
+
+        for(Transition outTransition :source.getOutgoingTransitionsList()){
+
+            if(outTransition == transitionToJump){
+                continue;
+            }
+
+            buildTransitionOut(destiny,outTransition, transitionsToAdd);
+
+        }
+
+
+
+
+    }
+
+    private void buildTransitionIn(State destState, Transition inTransition, List<Transition> transitionsToAdd) {
+
+
+        State sourceState =  inTransition.getSource();
+
+        State currentState = inTransition.getDestiny();
+
+        Transition newTransition = new Transition(sourceState, destState);
+
+        newTransition.setLabel(inTransition.getLabel());
+        newTransition.setProbability(inTransition.getProbability());
+        newTransition.setActions(inTransition.getActions());
+        newTransition.setGuard(inTransition.getGuard());
+        newTransition.setParameters(inTransition.getParameters());
+        newTransition.setValues(inTransition.getValues());
+
+
+        Boolean isExceptional = false;
+        Boolean isInterceptionNode = false;
+
+        if(currentState.getValue("isExceptional")!= null){
+            isExceptional = (Boolean) currentState.getValue("isExceptional");
+
+            if(isExceptional){
+                destState.setValue("isExceptional", true);
+            }
+        }
+
+        if(currentState.getValue("isInterceptionNode")!= null){
+            isInterceptionNode = (Boolean) currentState.getValue("isInterceptionNode");
+        }
+
+        if(isInterceptionNode){
+            destState.setValue("isInterceptionNode", true);
+        }
+
+        transitionsToAdd.add(newTransition);
+
+    }
+
+    private void buildTransitionOut(State sourceState, Transition outTransition, List<Transition> transitionsToAdd) {
+
+
+
+        State destState =  outTransition.getDestiny();
+        State currentState = outTransition.getSource();
+
+        Transition newTransition = new Transition(sourceState, destState);
+        newTransition.setLabel(outTransition.getLabel());
+        newTransition.setProbability(outTransition.getProbability());
+        newTransition.setActions(outTransition.getActions());
+        newTransition.setGuard(outTransition.getGuard());
+        newTransition.setParameters(outTransition.getParameters());
+        newTransition.setValues(outTransition.getValues());
+
+        Boolean isExceptional = false;
+        Boolean isInterceptionNode = false;
+
+        if(currentState.getValue("isExceptional")!= null){
+            isExceptional = (Boolean) currentState.getValue("isExceptional");
+
+            if(isExceptional){
+                sourceState.setValue("isExceptional", true);
+            }
+        }
+
+        if(currentState.getValue("isInterceptionNode")!= null){
+            isInterceptionNode = (Boolean) currentState.getValue("isInterceptionNode");
+        }
+
+        if(isInterceptionNode){
+            sourceState.setValue("isInterceptionNode", true);
+        }
+
+        transitionsToAdd.add(newTransition);
+
+    }
+
+
 
     private List<Component> removeInterceptionNodeComponent(List<Component> createdComponentsWithIndividualLTS) {
         List<Component> componentList = new ArrayList<>();

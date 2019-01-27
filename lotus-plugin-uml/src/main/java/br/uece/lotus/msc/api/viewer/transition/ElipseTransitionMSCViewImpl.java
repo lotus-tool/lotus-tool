@@ -10,10 +10,12 @@ import br.uece.lotus.msc.api.model.msc.hmsc.HmscBlock;
 import br.uece.lotus.msc.api.model.msc.TransitionMSC;
 import br.uece.lotus.msc.api.viewer.hMSC.GenericElementView;
 import br.uece.lotus.msc.api.viewer.hMSC.hmsc_block.HmscBlockView;
+import br.uece.lotus.msc.api.viewer.hMSC.interception_node.InterceptionNodeView;
 import br.uece.lotus.viewer.Geom;
 import br.uece.lotus.viewer.Seta;
 import br.uece.lotus.viewer.StyleBuilder;
 import javafx.beans.binding.DoubleBinding;
+import javafx.beans.value.ObservableValue;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
@@ -41,7 +43,7 @@ public class ElipseTransitionMSCViewImpl extends TransitionMSCViewImpl{
         Region destino = null;
 
         switch (mValueType) {
-            case "hMSC":{
+            case "GenericElement":{
                 try{
                     origem = (Region) sourceGenericElementView.getNode();
                     destino = (Region) destinyGenericElementView.getNode();
@@ -52,8 +54,14 @@ public class ElipseTransitionMSCViewImpl extends TransitionMSCViewImpl{
                     destino = (Region) dst.getNode();
                 }
                 if(origem != null && destino != null) {
+
+
+
                     mCurva = new TransicaoEmArcoMSC(origem, destino, transition);
                     mCurva.setStyle(StyleBuilder.stroke("#f00", 1));
+                /*    mCurva.layoutXProperty().bind(buildLayoutXProperty(origem,de));
+                    mCurva.layoutYProperty().bind(buildLayoutYProperty(origem));*/
+
                     mCurva.layoutXProperty().bind(origem.layoutXProperty().add(origem.heightProperty().divide(2)));
                     mCurva.layoutYProperty().bind(origem.layoutYProperty().subtract(mCurva.heightProperty()).add(origem.heightProperty().divide(2)));
                     Rotate r = new Rotate();
@@ -81,6 +89,26 @@ public class ElipseTransitionMSCViewImpl extends TransitionMSCViewImpl{
         }
         
     }
+
+   /* private DoubleBinding buildLayoutXProperty(Region origem) {
+        if(origem instanceof HmscBlockView){
+           return origem.layoutXProperty().add(origem.widthProperty().divide(2));
+        }else if(origem instanceof InterceptionNodeView){
+            return origem.layoutXProperty().add(0);
+        }
+
+        return null;
+    }
+
+    private DoubleBinding buildLayoutYProperty(Region origem, Region destino) {
+        if(origem instanceof HmscBlockView){
+            return origem.layoutYProperty().subtract(mCurva.heightProperty()).add(origem.heightProperty().divide(2));
+        }else if(origem instanceof InterceptionNodeView){
+            return origem.layoutYProperty().add(0);
+        }
+
+        return null;
+    }*/
 
     @Override
     protected void updateView() {

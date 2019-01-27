@@ -10,8 +10,8 @@ import br.uece.lotus.msc.api.model.msc.hmsc.InterceptionNode;
 import br.uece.lotus.msc.api.model.msc.TransitionMSC;
 import br.uece.lotus.msc.api.viewer.hMSC.hmsc_block.HmscBlockView;
 
-import static br.uece.lotus.msc.api.viewer.hMSC.hmsc_block.HmscBlockViewImpl.ALTURA;
-import static br.uece.lotus.msc.api.viewer.hMSC.hmsc_block.HmscBlockViewImpl.LARGURA;
+import static br.uece.lotus.msc.api.viewer.hMSC.hmsc_block.HmscBlockViewImpl.HEIGHT;
+import static br.uece.lotus.msc.api.viewer.hMSC.hmsc_block.HmscBlockViewImpl.WIDTH;
 
 import br.uece.lotus.msc.api.viewer.hMSC.interception_node.InterceptionNodeView;
 import br.uece.lotus.msc.api.viewer.transition.TransitionMSCView;
@@ -90,7 +90,8 @@ public class OnClickedMouse implements Strategy {
                 s.setComponenteSelecionado(s.componentSobMouse);
             }
             if (s.componentSobMouse == null && !s.selecionadoPeloRetangulo) {
-                //run.changeToProperty();  // Apaga os Labels e talz
+               // Apaga os Labels e talz
+                s.setComponenteSelecionado(s.componentSobMouse);
             }
             //renomeando hMSC
             if (e.getClickCount() == 2 && MouseButton.PRIMARY.equals(e.getButton()) && s.componentSobMouse instanceof HmscBlockView) {
@@ -127,8 +128,8 @@ public class OnClickedMouse implements Strategy {
 //                s.updateCountHmscBlock();
 //                s.updateCountGenericElements();
 
-                hmscHmscBlock.setLayoutX(e.getX() - (LARGURA / 2));
-                hmscHmscBlock.setLayoutY(e.getY() - (ALTURA / 2));
+                hmscHmscBlock.setLayoutX(e.getX() /*- (WIDTH / 2)*/);
+                hmscHmscBlock.setLayoutY(e.getY() /*- (HEIGHT / 2)*/);
                 hmscHmscBlock.setLabel("New hMSC" + s.getHmscComponent().getHmscBlockList().size());
 
             }

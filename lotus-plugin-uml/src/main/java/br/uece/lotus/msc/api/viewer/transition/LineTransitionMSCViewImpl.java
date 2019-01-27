@@ -68,7 +68,7 @@ public class LineTransitionMSCViewImpl extends TransitionMSCViewImpl  {
                     DoubleBinding destinoX =  buildX(destino);
                     DoubleBinding destinoY = buildY(destino);
 
-                    mSeta.rotateProperty().bind(Geom.angle(origem, destino));
+                    mSeta.rotateProperty().bind(Geom.angle(origem, destino).add(90));
                     mSeta.rotateProperty().bind(new Geom.CartesianCase(origem, destino)
                                     .first(Geom.angle(origem, destino))
                                     .second(Geom.angle(origem, destino).add(180))

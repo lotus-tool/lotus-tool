@@ -30,7 +30,7 @@ public class OnDragDropped implements Strategy{
         
         if(s.finalGenericElementView != null){
             if(existTransition(s)){
-              //  s.mTransitionViewType = 1;
+                s.mTransitionViewType = 1;
             }
 
             TransitionMSC t = s.viewer.getHmscComponent().buildTransitionMSC(s.initialGenericElementView, s.finalGenericElementView)

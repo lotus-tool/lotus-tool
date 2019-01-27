@@ -5,7 +5,7 @@ import br.uece.lotus.msc.designer.blockDiagramModeling.DesingWindowImplBlockMSC;
 import javafx.scene.input.*;
 
 /**
- * Created by lva on 14/03/16.
+ * Created by Lucas Vieira Alves on 14/03/16.
  */
 public class OnDragDetected implements Strategy {
     @Override

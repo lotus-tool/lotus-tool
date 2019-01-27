@@ -49,10 +49,10 @@ public class OnReleasedMouse implements Strategy{
                                 s.addNoSelecao(node);
                             }
                         }
-                    } else if(node instanceof TransitionMSCView){
+                    }/* else if(node instanceof TransitionMSCView){
                         if(s.selecionadoPeloRetangulo){
                             if(node.getBoundsInParent().intersects(s.rectSelecao.getBoundsInParent())){
-                                s.addNoSelecao(node);
+                           //     s.addNoSelecao(node);
 
 
                             }
@@ -63,7 +63,7 @@ public class OnReleasedMouse implements Strategy{
                         }
 
 
-                    }
+                    }*/
                 }
                 s.rectSelecao.setX(0);
                 s.rectSelecao.setY(0);

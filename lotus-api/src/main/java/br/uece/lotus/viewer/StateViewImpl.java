@@ -24,13 +24,14 @@
 package br.uece.lotus.viewer;
 
 import br.uece.lotus.State;
+import javafx.beans.property.DoubleProperty;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.layout.Region;
 import javafx.scene.shape.Circle;
 
-public class StateViewImpl extends Region implements StateView, State.Listener {
+public class StateViewImpl extends RegionCustom implements StateView, State.Listener {
 
     public static final int RAIO_CIRCULO = 15;
 
@@ -148,5 +149,21 @@ public class StateViewImpl extends Region implements StateView, State.Listener {
     @Override
     public Node getNode() {
         return this;
+    }
+
+    @Override
+    public DoubleProperty layoutXPropertyCustom() {
+        DoubleProperty doublePropertyX = super.layoutXProperty();
+
+        doublePropertyX.set(widthProperty().get()/2);
+        return doublePropertyX;
+    }
+
+    @Override
+    public DoubleProperty layoutYPropertyCustom() {
+        DoubleProperty doublePropertyY = super.layoutYProperty();
+
+        doublePropertyY.set(heightProperty().get()/2);
+        return doublePropertyY;
     }
 }

@@ -80,7 +80,7 @@ public class JarModule implements Module {
                     if (!Plugin.class.isAssignableFrom(pluginClass)) {
                         //logger.log(Level.INFO, "Class {0} does not extends Plugin!", className);
                     } else {
-                        if(!className.equals("br.uece.lotus.msc.api.window.DefaultWindowManagerPluginDS")){// tratando erro de instancia de classe abstrata
+                        if(!className.equals("br.uece.lotus.msc.api.window.DefaultWindowManagerPluginMSC")){// tratando erro de instancia de classe abstrata
                             logger.log(Level.INFO, "Plugin founded at {0}!", className);
                             Object pluginInstance = pluginClass.newInstance();
                             aux.add((Plugin) pluginInstance);

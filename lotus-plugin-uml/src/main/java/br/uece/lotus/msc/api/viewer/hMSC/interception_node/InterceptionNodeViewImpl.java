@@ -2,13 +2,14 @@ package br.uece.lotus.msc.api.viewer.hMSC.interception_node;
 
 import br.uece.lotus.msc.api.model.msc.hmsc.GenericElement;
 import br.uece.lotus.msc.api.model.msc.hmsc.InterceptionNode;
+import br.uece.lotus.viewer.RegionCustom;
 import br.uece.lotus.viewer.StyleBuilder;
+import javafx.beans.property.DoubleProperty;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
-import javafx.scene.layout.Region;
 import javafx.scene.shape.Circle;
 
-public class InterceptionNodeViewImpl extends Region implements InterceptionNodeView,InterceptionNode.Listener  {
+public class InterceptionNodeViewImpl extends RegionCustom implements InterceptionNodeView,InterceptionNode.Listener  {
     public static final int RADIUS_CIRCLE = 15;
     private final Circle circle;
     private InterceptionNode interceptionNode;
@@ -66,9 +67,25 @@ public class InterceptionNodeViewImpl extends Region implements InterceptionNode
     }
 
     private void updateView() {
-        setOpacity(0.1);
        setLayoutX(interceptionNode.getLayoutX());
        setLayoutY(interceptionNode.getLayoutY());
        setStyle(StyleBuilder.stroke(interceptionNode.getColor(), interceptionNode.getBorderWidth()));
+    }
+
+
+    @Override
+    public DoubleProperty layoutXPropertyCustom() {
+        DoubleProperty doublePropertyX = super.layoutXProperty();
+
+        doublePropertyX.set(doublePropertyX.get() + widthProperty().get()/2);
+        return doublePropertyX;
+    }
+
+    @Override
+    public DoubleProperty layoutYPropertyCustom() {
+        DoubleProperty doublePropertyY = super.layoutXProperty();
+
+        doublePropertyY.set(doublePropertyY.get() + heightProperty().get()/2);
+        return doublePropertyY;
     }
 }

@@ -7,10 +7,11 @@ import javafx.scene.input.DragEvent;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
+import javafx.scene.layout.Region;
 import javafx.scene.shape.Line;
 
 /**
- * Created by lva on 14/03/16.
+ * Created by Lucas Vieira Alves on 14/03/16.
  */
 public class OnDragDropped implements Strategy {
     @Override
@@ -50,9 +51,14 @@ public class OnDragDropped implements Strategy {
                         .createDS();
                 TransitionMSCView tview = (TransitionMSCView)t.getValue("view");
                 Line l = tview.getLineTransition();
-                l.setStartY(event.getY());
-                l.setEndY(event.getY());
+
+                l.startYProperty().unbind();
+                l.startYProperty().setValue(event.getY());
+                l.endYProperty().unbind();
+                l.endYProperty().setValue(event.getY());
+
                 s.updateSequenceTransition();
+
             }
         }
 

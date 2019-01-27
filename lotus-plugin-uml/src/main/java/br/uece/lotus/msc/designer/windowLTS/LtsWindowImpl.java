@@ -183,7 +183,7 @@ public class LtsWindowImpl extends AnchorPane implements WindowMSC {
 
     protected Stage createInitializeActionsVariablesView(ProjectExplorerPluginMSC mProjectExplorerDS) {
 
-        actionsVariablesState.setTitle(" Initialize Actions Variables Panel");
+        actionsVariablesState.setTitle("Variables Initialization Panel");
         actionsVariablesState.setOnCloseRequest(event -> editVariableToogleButton.setSelected(false));
 
         FXMLLoader fxmlLoader = new FXMLLoader();

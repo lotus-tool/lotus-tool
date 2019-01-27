@@ -99,10 +99,21 @@ public class LifeLTSBuilder {
                 int idDst = Integer.valueOf(((String)componentWithoutTals.getValue(dstHmscLabel)).split(",")[0]);
 
                 State src = componentWithoutTals.getStateByID(idSrc);
-                updateValueMap(src, (GenericElement)transitionMSC.getSource());
+
+                if(transitionMSC.getSource() instanceof GenericElement){
+                    updateValueMap(src, (GenericElement)transitionMSC.getSource());
+                }else {
+                    updateValueMap(src, ((GenericElementView)transitionMSC.getSource()).getGenericElement());
+                }
+
 
                 State dst = componentWithoutTals.getStateByID(idDst);
-                updateValueMap(dst, (GenericElement)transitionMSC.getDestiny());
+
+                if(transitionMSC.getSource() instanceof GenericElement){
+                    updateValueMap(dst, (GenericElement)transitionMSC.getDestiny());
+                }else {
+                    updateValueMap(dst, ((GenericElementView)transitionMSC.getDestiny()).getGenericElement());
+                }
 
                 componentWithoutTals.buildTransition(src, dst)
                         .setLabel(srcHmscLabel.concat(".").concat(labelTrasition).concat(".").concat(dstHmscLabel)).setViewType(TransitionView.Geometry.CURVE)

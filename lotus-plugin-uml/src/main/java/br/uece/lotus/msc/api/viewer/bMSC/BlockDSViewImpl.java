@@ -15,7 +15,7 @@ import javafx.scene.shape.Rectangle;
  * Created by lva on 11/12/15.
  */
 public class BlockDSViewImpl extends Region implements BlockDSView, BmscBlock.Listener{
-    static final double ALTURA_RETANGULO = 60;
+    static final double ALTURA_RETANGULO = 40;
     static final double LARGURA_RETANGULO = 100;
    // private static final String DEFAULT_COLOR = "green" ;
     private static final String DEFAULT_COLOR = "cornsilk" ;

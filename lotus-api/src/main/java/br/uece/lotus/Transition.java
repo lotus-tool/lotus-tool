@@ -100,7 +100,7 @@ public class Transition {
         }
     }
 
-    private void setValues(Map<String, Object> values) {
+    public void setValues(Map<String, Object> values) {
         this.mValues.clear();
         this.mValues.putAll(values);
     }
@@ -140,7 +140,7 @@ public class Transition {
     //Used in BigState
     private int propertyBigState = 0;
 
-    Transition(State source, State destiny) {
+    public Transition(State source, State destiny) {
         mSource = source;
         mDestiny = destiny;
     }

@@ -59,6 +59,9 @@ public class ExecuteLTS {
         return traceComponent;
     }
 
+
+
+
     private State createInitialState(Component traceComponent) {
         return traceComponent.newState(0);
     }
@@ -116,8 +119,11 @@ public class ExecuteLTS {
                     updatedContextVariablesMap.clear();
                     updatedContextVariablesMap = cloneMap(backupContextVariablesMap);
                    // updatedContextVariablesMap.putAll(backupContextVariablesMap);
+                    continue;
 
                 } else {
+
+
                     currentStateInTraceLTS = buildTransition(currentTransitionInComposedLTS, currentStateInTraceLTS, updatedContextVariablesMap);
                 }
 
@@ -203,14 +209,13 @@ public class ExecuteLTS {
     }
 
     private Boolean processRange(Map<String, Variable> updatedContextVariablesMap) {
-
         for (Variable variable : updatedContextVariablesMap.values()) {
-            Double currentValue = variable.getCurrentValue();
-            Double initialValueRange = variable.getInitialValueRange();
-            Double finalValueRange = variable.getFinalValueRange();
+            Integer currentValue = variable.getCurrentValue();
+            Integer initialValueRange = variable.getInitialValueRange();
+            Integer finalValueRange = variable.getFinalValueRange();
 
             if (initialValueRange == null) {
-                return false;
+                continue;
             }
 
             if (currentValue > finalValueRange) {
@@ -235,10 +240,10 @@ public class ExecuteLTS {
         //create newInstance for remove referece
         for(Variable variable : updatedContextVariablesMap.values()){
             Variable newVariable = new Variable();
-            newVariable.setInitialValue(variable.getInitialValue().doubleValue());
-            newVariable.setCurrentValue(variable.getCurrentValue().doubleValue());
-            newVariable.setFinalValueRange(variable.getFinalValueRange()!= null ? variable.getFinalValueRange().doubleValue() : null);
-            newVariable.setInitialValueRange(variable.getInitialValueRange()!= null ? variable.getInitialValueRange().doubleValue() : null);
+            newVariable.setInitialValue(variable.getInitialValue());
+            newVariable.setCurrentValue(variable.getCurrentValue());
+            newVariable.setFinalValueRange(variable.getFinalValueRange());
+            newVariable.setInitialValueRange(variable.getInitialValueRange());
             newVariable.setName(variable.getName());
 
             clonedMap.put(newVariable.getName(), newVariable);
@@ -275,23 +280,39 @@ public class ExecuteLTS {
         List<String> stringBeforeAndAfterIqualaction = Arrays.asList(action.split("="));
         String receiverVariable = stringBeforeAndAfterIqualaction.get(0).trim();
         String equation = stringBeforeAndAfterIqualaction.get(1).trim();
-        Double result = null;
+        Integer result = null;
 
-        for (Variable variable : variablesDescOrderList) {
-            if (equation.contains(variable.getName())) {
-                equation = equation.replace(variable.getName(), String.valueOf(variable.getCurrentValue()));
+        if(isConstante(equation)) {
+            equation = action;
 
-                ScriptEngineManager mgr = new ScriptEngineManager();
-                ScriptEngine engine = mgr.getEngineByName("JavaScript");
-                try {
-                    result = (Double) engine.eval(equation);
-                } catch (ScriptException e) {
-                    e.printStackTrace();
+            ScriptEngineManager mgr = new ScriptEngineManager();
+            ScriptEngine engine = mgr.getEngineByName("JavaScript");
+            try {
+                result = (Integer) engine.eval(equation);
+            } catch (ScriptException e) {
+                e.printStackTrace();
+            }
+
+        }else {
+            for (Variable variable : variablesDescOrderList) {
+                if (equation.contains(variable.getName())) {
+                    equation = equation.replace(variable.getName(), String.valueOf(variable.getCurrentValue()));
+                    ScriptEngineManager mgr = new ScriptEngineManager();
+                    ScriptEngine engine = mgr.getEngineByName("JavaScript");
+                    try {
+                        result = (Integer) engine.eval(equation);
+                    } catch (ScriptException e) {
+                        e.printStackTrace();
+                    }
+                    break;
                 }
-                break;
+
+
 
             }
         }
+
+
 
         if (result != null) {
             //tester se eu tenho que setar dnvo ovalor no map ou ele já atualiza apenas pela refeência
@@ -300,11 +321,25 @@ public class ExecuteLTS {
     }
     }
 
-    private boolean containAction(Transition currentTransitionInComposedLTS) {
-        return currentTransitionInComposedLTS.getActions() != null && !currentTransitionInComposedLTS.getActions().equals("");
+    private boolean isConstante(String equation) {
+            try
+            {
+                double d = Double.parseDouble(equation);
+            }
+            catch(NumberFormatException nfe)
+            {
+                return false;
+            }
+            return true;
+
+
     }
 
-    private void updateContextVariablesMap(String receiverVariable, Double result, Map<String, Variable> currentContextVariablesMap) {
+    private boolean containAction(Transition currentTransitionInComposedLTS) {
+        return currentTransitionInComposedLTS.getActions() != null && (currentTransitionInComposedLTS.getActions()).size()!=0;
+    }
+
+    private void updateContextVariablesMap(String receiverVariable, Integer result, Map<String, Variable> currentContextVariablesMap) {
         Variable variable = currentContextVariablesMap.get(receiverVariable);
         variable.setCurrentValue(result);
         //tester se eu tenho que setar dnvo ovalor no map ou ele já atualiza apenas pela refeência
