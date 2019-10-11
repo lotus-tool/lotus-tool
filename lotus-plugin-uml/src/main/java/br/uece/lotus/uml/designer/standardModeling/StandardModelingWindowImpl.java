@@ -6,8 +6,6 @@
 package br.uece.lotus.uml.designer.standardModeling;
 
 import br.uece.lotus.Component;
-import br.uece.lotus.Project;
-import br.uece.lotus.Transition;
 import br.uece.lotus.uml.app.ParallelComponentController;
 import br.uece.lotus.uml.app.runtime.controller.PropertysPanelController;
 import br.uece.lotus.uml.api.ds.Hmsc;
@@ -48,7 +46,6 @@ import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -60,7 +57,6 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
@@ -71,6 +67,8 @@ import javafx.scene.transform.Scale;
 import javafx.stage.FileChooser;
 import javafx.stage.Popup;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
+
 import javax.swing.*;
 
 /**
@@ -129,10 +127,8 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
     public double yInicial;
     //Painel de Propriedades
     public TextField txtAction;
-    private TextField txtGuard;
     public TextField txtProbability;
     private Label lblAction;
-    private Label lblGuard;
     private Label lblProbability;
 
     private Button btnAddProperty;
@@ -155,7 +151,6 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
     public boolean segundaVezAoArrastar;
     public double ultimoInstanteX, ultimoInstanteY;
     private Component parallelComponet;
-    private MenuItem setAsDecisionNode;
 
     /////////////////////////////////////////////////////////////////////////
     //                   IMPLEMENTACAO DA WINDOW_DS                        //
@@ -239,8 +234,6 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
 
 
         startComponentesTela();
-
-      //  setAsDecisionNode.fire();
         
     }
 
@@ -382,8 +375,8 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
         Tooltip.install(mBtnZoom, zoomInfo);
         
         //Context Menu
-        MenuItem saveAsPNG = new MenuItem("Save as PNG");
-        saveAsPNG.setOnAction((ActionEvent event) -> {
+        MenuItem mSaveAsPNG = new MenuItem("Save as PNG");
+        mSaveAsPNG.setOnAction((ActionEvent event) -> {
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle("Save as PNG");
             fileChooser.setInitialFileName(mViewer.getComponentBuildDS().getName() + ".png");
@@ -402,8 +395,8 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
             alert.show();
         });
         
-        MenuItem creatHMSC = new MenuItem("Create bMSC");
-        creatHMSC.setOnAction((ActionEvent event) -> {
+        MenuItem creat_bMSC = new MenuItem("Create bMSC");
+        creat_bMSC.setOnAction((ActionEvent event) -> {
             Hmsc h = ((HmscView)mComponentSobMouse).getHMSC();
             if(!h.isFull()){
                 ComponentDS bmsc = new ComponentDS();
@@ -420,8 +413,8 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
             }
         });
 
-        MenuItem setAsInitial = new MenuItem("Set initial");
-        setAsInitial.setOnAction((ActionEvent event) ->{
+        MenuItem set_initial = new MenuItem("Set initial");
+        set_initial.setOnAction((ActionEvent event) ->{
             Hmsc h = ((HmscView)mComponentSobMouse).getHMSC();
             if(mViewer.getComponentBuildDS().getHmsc_inicial() == h){
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -431,9 +424,8 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
                 alert.show();
                 return;
             }
-
             Alert pergunta = new Alert(Alert.AlertType.CONFIRMATION);
-            pergunta.setTitle("Set as Initial");
+            pergunta.setTitle("Set initial");
             pergunta.setHeaderText(null);
             pergunta.setContentText("Set this HMSC as initial?");
 
@@ -443,14 +435,8 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
             }
         });
 
-         setAsDecisionNode = new MenuItem("Set as Decision Node");
-        setAsDecisionNode.setOnAction(event ->
-                setStyleDecisionNode(((HmscView)mComponentSelecionado)));
-
-
-
         
-        mContextMenuBlockBuild.getItems().addAll(creatHMSC, setAsInitial, setAsDecisionNode ,saveAsPNG);
+        mContextMenuBlockBuild.getItems().addAll(creat_bMSC, set_initial ,mSaveAsPNG);
         mViewer.setBlockBuildContextMenu(mContextMenuBlockBuild);
         
         mViewer.getNode().getTransforms().add(escala);
@@ -547,28 +533,10 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
                 }
             }
         });
-
-
-        txtGuard = new TextField();
-        txtGuard.setPrefWidth(50);
-        txtGuard.setAlignment(Pos.CENTER);
-        txtGuard.setPromptText("[ Guard ]");
-        txtGuard.setOnAction(event -> {
-            Object obj = mComponentSelecionado;
-            if (obj instanceof TransitionMSCView) {
-                if(txtGuard.getText().isEmpty() || txtGuard.getText().equals("")){
-                    ((TransitionMSCView) obj).getTransition().setGuard(null);
-                }else {
-                    ((TransitionMSCView) obj).getTransition().setGuard(txtGuard.getText());
-                }
-            }
-        });
-
         lblAction = new Label("Name / Action:");
-        lblGuard = new Label("Guard:");
         lblProbability = new Label("Probability:");
 
-        blockPropriedade.getChildren().addAll(lblAction,txtAction,lblGuard, txtGuard, lblProbability,txtProbability);
+        blockPropriedade.getChildren().addAll(lblAction,txtAction,lblProbability,txtProbability);
 
         ////////////////// Propriedades para Runtime ///////////////////
         popup.setHideOnEscape(false);
@@ -652,15 +620,6 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
         
     }
 
-    private void setStyleDecisionNode(HmscView hMSCView) {
-        Double layoutX = hMSCView.getHMSC().getLayoutX();
-        Double layoutY = hMSCView.getHMSC().getLayoutY();
-        Circle circle = new Circle(layoutX, layoutY, 5.0);
-        //hMSCView.getNode().
-
-
-    }
-
     private Stage createPropertyPanel(){
         Stage stage = new Stage();
         stage.setTitle("Property Panel");
@@ -683,16 +642,57 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
         stage.setScene(scene);
         stage.setOnCloseRequest(event -> {
             propertyPanelCheckBox.setSelected(false);
+//            Alert alert = new Alert(Alert.AlertType.NONE, "Really close the Propertys Panel?", ButtonType.YES, ButtonType.NO);
+//            if (alert.showAndWait().orElse(ButtonType.NO) == ButtonType.YES) {
+//                // you may need to close other windows or replace this with Platform.exit();
+//                stage.close();
+//                propertyPanelCheckBox.setSelected(false);
+//            }
         });
 
 
+    //   getChildren().add(propertyPanelAnchorPane);
+
         propertysPanelController.onCreatedView();
+
 
         return stage;
 
     }
 
+    private void hidePropertyPanel() {
 
+    }
+
+   // private AnchorPane showPropertyPanel() {
+
+
+//        getChildren().add(mInfoPanel);
+//        AnchorPane.setLeftAnchor(mInfoPanel, 0D);
+//        AnchorPane.setRightAnchor(mInfoPanel, 0D);
+//        AnchorPane.setBottomAnchor(mInfoPanel, 0D);
+
+
+//        PropertysPanelController equationsController = new PropertysPanelController();
+//        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/propertysPanel.fxml"));
+//        fxmlLoader.setController(equationsController);
+//        AnchorPane propertyPanelAnchorPane = null;
+//        try {
+//            propertyPanelAnchorPane = fxmlLoader.load();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//
+//
+//        getChildren().add(propertyPanelAnchorPane);
+//
+//        equationsController.onCreatedView();
+//
+//
+//        return propertyPanelAnchorPane;
+
+
+ //   }
 
     // Ao Mover o mouse----------------------------------------------------------------------
     private final EventHandler<? super MouseEvent> onMovedMouse = (MouseEvent event) -> {
@@ -817,8 +817,6 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
             txtAction.setText(t.getLabel());
             txtAction.requestFocus();
             txtProbability.setText(t.getProbability() == null ? null : String.valueOf(t.getProbability()));
-            txtGuard.setText(t.getGuard()== null ? "" : t.getGuard());
-            txtGuard.setVisible(true);
             lblProbability.setVisible(true);
             txtProbability.setVisible(true);
             
@@ -877,8 +875,6 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
         txtAction.requestFocus();
         lblProbability.setVisible(false);
         txtProbability.setVisible(false);
-        txtGuard.setVisible(false);
-        lblGuard.setVisible(false);
     }
     
     public void removeNoSelecao(Node node){
@@ -902,10 +898,7 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
     //////////////////////////////////////////////////////////////////////////////////
 
     EventHandler<ActionEvent> buildLTSFromHMSCEvent = (ActionEvent event) -> {
-
-     //   setAsDecisionNode.fire();
         StandardModeling standardModeling = this.getComponentBuildDS();
-
 
         ParallelComponentController parallelComponentController =  new ParallelComponentController(standardModeling);
 
@@ -919,30 +912,8 @@ public class StandardModelingWindowImpl extends AnchorPane implements WindowDS{
 
             Component parallelComponent = parallelComponentController.buildParallelComponent();
 
-
-            //remover labals//
-            for(Transition transition : parallelComponent.getTransitionsList()){
-                transition.setProbability(null);
-                if( transition.getLabel().split("\\.")[1].isEmpty()){
-                    transition.setLabel(null);
-                }else {
-                    transition.setLabel(transition.getLabel().split("\\.")[2]);
-                }
-
-            }
-
-
             setComponentLTS(parallelComponent);
 
-            //new project lts
-//            Project p = new Project();
-//            String namePrompt = "Untitled" + (projectExplorerPluginDS.mProjectExplorer.getAllProjects().size() + 1);
-//            String name = JOptionPane.showInputDialog(null, "Enter the new project's name", namePrompt);
-//
-//            p.setName(name);
-//
-//            p.addComponent(parallelComponent);
-//            projectExplorerPluginDS.mProjectExplorer.open(p);
             parallelComponentController.addParallelComponentInLeftPanel(this, parallelComponent);
 
         } catch (Exception e) {

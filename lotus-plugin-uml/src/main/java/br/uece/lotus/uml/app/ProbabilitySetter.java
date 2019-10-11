@@ -3,7 +3,6 @@ package br.uece.lotus.uml.app;
 
 import br.uece.lotus.Component;
 import br.uece.lotus.Transition;
-import br.uece.lotus.uml.api.ds.Hmsc;
 import br.uece.lotus.uml.api.ds.TransitionMSC;
 
 import java.util.HashMap;
@@ -45,7 +44,7 @@ public class ProbabilitySetter {
         Map<String, TransitionMSC> labelTalAndTransitionMap = new HashMap<>();
 
         for(TransitionMSC transitionMSC : transitionMSCList){
-            String label = (String) transitionMSC.getValue(LifeLTSBuilder.TRANSITION_LABEL);
+            String label = transitionMSC.getLabel();
 
             if(labelTalAndTransitionMap.containsKey(label)){
                 throw new Exception("Transitions in HMSC with same Labels!");

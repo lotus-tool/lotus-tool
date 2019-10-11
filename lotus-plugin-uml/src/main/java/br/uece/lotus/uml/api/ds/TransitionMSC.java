@@ -72,7 +72,6 @@ public class TransitionMSC {
            mTransitionMSC.setProbability(probability);
            return this;            
        }
-
        
        public Builder setGuard(String guard){
            mTransitionMSC.setGuard(guard);
