@@ -109,6 +109,16 @@ Use the maven to build the project:
 $ mvn clean install
 
 The distributable application will be generated at subdir target/jfx/
+
+### Running the app
+
+Go to lotus-tool/lotus-zip/target
+
+Unzip the lotus-zip folder
+Windows
+```
+
+
 	
 ### More Information
 
