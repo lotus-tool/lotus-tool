@@ -120,8 +120,7 @@ The distributable application will be generated at subdir target/jfx/
 
 Go to lotus-zip/target
 Unzip the lotus-tools zip folder
-
-Run the following command:
+And then run the following command:
 ```
 java -jar lotus-tool/lotus-app*
 ```
