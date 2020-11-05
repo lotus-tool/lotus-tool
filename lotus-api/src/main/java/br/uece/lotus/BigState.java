@@ -23,6 +23,9 @@ public class BigState {
         this.listaTransitionsForaChegando = new ArrayList<>();
     }
 
+    public void doSomething(String name, int id, String deptCode, String regNumber, int id, int id, int id, int id) {
+    }
+
     public boolean addStatesAndTransition(List<State> listaS) {
         if (listaS.size() <= 1) 
             return false;        
