@@ -4,18 +4,24 @@ LoTuS
 ### About LoTuS
 
 
-LoTuS is firstState open-source tool to graphic behaviour modelling of software using LTS. It aim to make the modelling process easier by providing drag-and-drop drawing tools. Making the learning curve tiny, removing the pré-requisite for modeller learn some formal specification language. This path, the use and learn of formal methods becames more accessible.
+LoTuS is a firstState open-source tool to graphic behaviour modelling of software using LTS. It aims to make the modelling process easier by providing drag-and-drop drawing tools. Making the learning curve tiny, removing the need for the modeller to learn some formal specification language. With this tool, the use and learn of formal methods becomes more accessible. Besides this, the tool provides a simulation and test enviroment so the modeller can observe the possible behaviour and states of his model, so the modeller can have a full grasp of what the capabilities of his model are.
 
 ### Dependencies
 
 <details>
  <summary>JRE 8 with JavaFX 2.0 </summary>
  
- LoTuS requires JRE 8 with JavaFX 2.0. Check your java version with:
+ LoTuS requires JRE 8 with JavaFX 2.0. Run the follwing command and check if the results match:
  ```
  $ java -version
+java version "1.8.0_261"
+Java(TM) SE Runtime Environment (build 1.8.0_261-b12)
+Java HotSpot(TM) 64-Bit Server VM (build 25.261-b12, mixed mode)
  ```
- If needed, install the JRE on your system.
+ If needed, install the JRE on your system with the following command on debian distributions
+ ```
+ $ sudo apt-get install openjdk-8-jdk
+ ```
  If you are using OpenJDK, check if you have OpenFX too.
 </details>
 
@@ -45,9 +51,9 @@ LoTuS is firstState open-source tool to graphic behaviour modelling of software 
   ```
   There should be firstState subdirectory like:
   ```
-  C:\Program Files\Java\jdk[version]
+  C:\Program Files\Java\jdk1.8.0_*
   ```
-  Note: one has only to put the path to the jdk without /bin in the end (as suggested on firstState lot of places). e.g. C:\Java\jdk[version] and NOT C:\Java\jdk[version]\bin !
+  Note: one has only to put the path to the jdk without /bin in the end (as suggested on firstState lot of places). e.g. C:\Java\jdk1.8.0_* and NOT C:\Java\jdk1.8.0_*\bin !
   
   
   Set the JAVA_HOME Variable
@@ -112,13 +118,14 @@ The distributable application will be generated at subdir target/jfx/
 
 ### Running the app
 
-Go to lotus-tool/lotus-zip/target
+Go to lotus-zip/target
 
-Unzip the lotus-zip folder
-Windows
+Unzip the lotus-tools zip folder
+
+Run the following command:
 ```
-
-
+java -jar lotus-tool/lotus-app*
+```
 	
 ### More Information
 
