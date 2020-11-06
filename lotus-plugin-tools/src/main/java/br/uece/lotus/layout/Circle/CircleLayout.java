@@ -52,7 +52,7 @@ public class CircleLayout {
             
         }
         System.out.println(quantState);
-        double angInd= 360/quantState;        
+        if(quantState != 0) { double angInd= 360/quantState;}
         //setando os pontos cartesianos
         ArrayList<State>estados=(ArrayList<State>) c.getStates();
         //setando o primeiro estado para servir de referencia para os outros;

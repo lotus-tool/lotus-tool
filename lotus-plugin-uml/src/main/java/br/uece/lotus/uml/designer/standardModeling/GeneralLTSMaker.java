@@ -691,7 +691,7 @@ public class GeneralLTSMaker {
                 }
             }else if(prob_total < 1.0){
              //   double new_probability = ( 1.0 - prob_total ) / (n_states_prob_null + 1); ( COM ERRO )
-                double new_probability = ( 1.0 - prob_total ) / (n_states_prob_null);
+                if( n_states_prob_null != 0 ) {double new_probability = ( 1.0 - prob_total ) / (n_states_prob_null);}
                 for(Transition transition : state.getOutgoingTransitionsList()){
                     if(transition.getProbability() == null){
                         transition.setProbability( new_probability);

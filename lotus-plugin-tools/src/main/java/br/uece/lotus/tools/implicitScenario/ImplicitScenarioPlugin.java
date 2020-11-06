@@ -156,6 +156,9 @@ public class ImplicitScenarioPlugin extends Plugin {
                 System.out.println("Problem in read bufferedReader");
             }
         }
+        finally {
+            bufferedReader.close()
+        }
         //Tratar elementos Repetidos (podem ser gerados pelo trace generator)
         Set<String> notRepeat = new HashSet<>();
         notRepeat.addAll(arrayList);
