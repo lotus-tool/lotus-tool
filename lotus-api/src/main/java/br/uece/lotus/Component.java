@@ -225,7 +225,7 @@ public class Component {
             l.onStateRemoved(this, state);
         }
         if (state.isInitial()) {
-            if (mStates.size() > 0) {
+            if (!mStates.isEmpty() ) {
                 setInitialState(mStates.get(0));
             }
         }
