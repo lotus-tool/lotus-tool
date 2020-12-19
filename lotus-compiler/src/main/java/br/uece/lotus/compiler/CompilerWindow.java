@@ -451,7 +451,7 @@ public class CompilerWindow extends AnchorPane implements Window, Initializable 
     }
 
     private boolean reservadas(String declara, String expressãoAtual) {
-        if (declara.equals("ERROR") | declara.equals("STOP")) {
+        if (declara.equals("ERROR") || declara.equals("STOP")) {
             System.out.println("Can not declare reserved word");
             mLabel.setTextFill(Color.ORANGE);
             mLabel.setText(" Warning - Can not declare reserved word:");
@@ -655,11 +655,11 @@ public class CompilerWindow extends AnchorPane implements Window, Initializable 
 
             total = total * 100;
             System.out.println("TOTAL: " + total + "%");
-            if (total >= 99.99 & total < 100) {
+            if (total >= 99.99 && total < 100) {
                 total = 100;
             }
             // soma: 100% ou 0 caso não seja probabilistico
-            if (total == 100 | total == 0) {
+            if (total == 100 || total == 0) {
                 System.out.println("Prob OK");
             } else {
                 System.out.println("Erro Probabilistico");
@@ -735,11 +735,11 @@ public class CompilerWindow extends AnchorPane implements Window, Initializable 
             total = total * 100;
             System.out.println("TOTAL: " + total + "%");
 
-            if (total >= 99.99 & total < 100) {
+            if (total >= 99.99 && total < 100) {
                 total = 100;
             }
             // soma: 100% ou 0 caso não seja probabilistico
-            if (total == 100 | total == 0) {
+            if (total == 100 || total == 0) {
                 System.out.println("Prob OK");
             } else {
                 System.out.println("Erro Probabilistico");

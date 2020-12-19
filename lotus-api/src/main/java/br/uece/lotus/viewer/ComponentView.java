@@ -4,7 +4,7 @@ import br.uece.lotus.Component;
 import javafx.geometry.Point2D;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.Region;
+
 
 import java.io.File;
 
