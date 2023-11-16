@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>br.uece.lotus</groupId>
@@ -10,15 +12,16 @@
 	<modules>
 		<module>lotus-api</module>
 		<module>lotus-app</module>
-                <module>lotus-plugin-uml</module>
+		<module>lotus-plugin-uml</module>
 		<module>lotus-plugin-tools</module>
 		<module>lotus-plugin-designer</module>
 		<module>lotus-plugin-simulator</module>
 		<module>lotus-plugin-runtime</module>
-                <module>lotus-compiler</module>
+		<module>lotus-compiler</module>
 		<module>lotus-zip</module>
-    
-  </modules>
+
+	</modules>
+
 
 	<properties>
 		<maven.compiler.source>8</maven.compiler.source>
@@ -27,6 +30,36 @@
 	</properties>
 
 	<dependencies>
+		<dependency>
+			<groupId>org.openjfx</groupId>
+			<artifactId>javafx-base</artifactId>
+			<version>21.0.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.openjfx</groupId>
+			<artifactId>javafx-fxml</artifactId>
+			<version>21.0.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.openjfx</groupId>
+			<artifactId>javafx-graphics</artifactId>
+			<version>21.0.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.openjfx</groupId>
+			<artifactId>javafx-swing</artifactId>
+			<version>21.0.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.openjfx</groupId>
+			<artifactId>javafx-controls</artifactId>
+			<version>21.0.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.openjfx</groupId>
+			<artifactId>javafx-media</artifactId>
+			<version>21.0.1</version>
+		</dependency>
 
 		<dependency>
 			<groupId>com.google.guava</groupId>
